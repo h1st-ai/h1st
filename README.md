@@ -1,4 +1,4 @@
-#### [Get a FREE high-quality T-shirt](https://bit.ly/free-tshirt-for-h1st) and celebrate the launch of H1st AI! :tada:
+#### [Get a FREE premium T-shirt](https://bit.ly/free-tshirt-for-h1st) and celebrate the launch of H1st AI! :tada:
 <img src="https://h1st-static.s3.amazonaws.com/H1st-logo.png" alt="H1st" width="100"/>
 
 
