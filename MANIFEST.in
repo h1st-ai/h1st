@@ -1,4 +1,4 @@
-include requirements*.txt
-include hfai/metadata.json
+include h1st/requirements*.txt
+include h1st/metadata.json
 
 recursive-exclude *.pyc

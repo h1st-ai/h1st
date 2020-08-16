@@ -5,7 +5,7 @@ from setuptools.command.install import install
 
 
 def __read_requirement(type=None):
-    filename = 'requirements%s.txt' % (".%s" % type if type else "")
+    filename = 'h1st/requirements%s.txt' % (".%s" % type if type else "")
     with open(filename) as f:
         return f.readlines()
 
