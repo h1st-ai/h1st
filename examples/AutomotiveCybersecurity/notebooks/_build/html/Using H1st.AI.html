@@ -1,0 +1,733 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>3. Using H1st.AI: Encoding Human Insights as a Model and Harmonizing Human + ML in a H1st.Graph &#8212; H1st.AI Tutorial - Automotive Cybersecurity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/jupyter-sphinx.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/sphinx-book-theme.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/mystnb.js"></script>
+    <script src="_static/sphinx-book-theme.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="shortcut icon" href="_static/h1st_logo.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="2. Monolithic AD &amp; ML Approaches and Why They are Unsatisfactory" href="Monolithic AD &amp; ML Approaches and Why They are Unsatisfactory.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  <img src="_static/h1st_logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">H1st.AI Tutorial - Automotive Cybersecurity</h1>
+  
+</a>
+</div>
+
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Automotive Cybersecurity - A Cold Start Problem.html">
+   1. Automotive Cybersecurity - A Cold Start Problem
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Monolithic AD &amp; ML Approaches and Why They are Unsatisfactory.html">
+   2. Monolithic AD &amp; ML Approaches and Why They are Unsatisfactory
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   3. Using H1st.AI: Encoding Human Insights as a Model and Harmonizing Human + ML in a H1st.Graph
+  </a>
+ </li>
+</ul>
+
+</nav>
+
+ <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        <div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/Using H1st.AI.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+    
+</div>
+        <!-- Source interaction buttons -->
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#b-problem-re-formulation-into-h1st-ai-graph">
+   3b. Problem (re)formulation into H1st.AI Graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#c-encoding-human-insights-for-event-detection-as-a-h1st-model">
+   3c. Encoding human insights for event detection as a H1st.Model
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#d-working-with-h1st-graph">
+   3d. Working with H1st Graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#e-adding-a-message-classifier-harmonizing-human-ml-models-in-the-graph">
+   3e. Adding a message classifier, harmonizing human + ML models in the graph
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#summary-further-resources">
+   Summary &amp; Further Resources
+  </a>
+ </li>
+</ul>
+
+        </nav>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="using-h1st-ai-encoding-human-insights-as-a-model-and-harmonizing-human-ml-in-a-h1st-graph">
+<h1>3. Using H1st.AI: Encoding Human Insights as a Model and Harmonizing Human + ML in a H1st.Graph<a class="headerlink" href="#using-h1st-ai-encoding-human-insights-as-a-model-and-harmonizing-human-ml-in-a-h1st-graph" title="Permalink to this headline">¶</a></h1>
+<p>The H1ST.AI approach to this problem begins by thinking about the end-users of the decision system, and their uses cases.</p>
+<p>What are the use cases for such Automotive Cybersecurity system? We can envision two distinctive use cases:</p>
+<ol class="simple">
+<li><p>The onboard intrusion detection system can detect an attack event in realtime and set the car into a safe mode so that drivers can safely get to a safe location and not be stuck in the highway with malfunctioning cars.</p></li>
+<li><p>An security expert could review the attack in post-mortem mode, in which the IDS provides message-by-message attack vs normal classification.</p></li>
+</ol>
+<p>For use case #1 “safe mode triggering by attack event detection”, the ML requirement is that it has near-zero FPR.</p>
+<p>To give an example, each second might contain 100 of CAN messages per car. If we have a fleet with just 1000 cars, each driven 1h per day, then a FPR of 0.00001 at message-level still means that each day we have 0.00001 x 100msg x 3600s x 1000cars = 3600 false positive events per day!</p>
+<p>Additionally, for deployment &amp; anticipated regulatory purpose, the system should behave robustly and explainably. While explainability is a complex subject, we meant that one could anticipate the system’s behavior reasonably well, as well as for legal/regulation purposes. As we saw with iForest or GBM ML models, they don’t quite meet this requirement, as it is hard to explain precisely how these models classify attacks, even if they can achieve good accuracy.</p>
+<p>For use case #2 “post-morterm analysis”, it turns out that the requirement is very different. Some FPR could be traded off for higher TPR for post-mortem. And the system might not need to highly explainable as it is after all the jobs of the security experts to analyze the attacks in depth and make the final decisions.</p>
+<div class="section" id="b-problem-re-formulation-into-h1st-ai-graph">
+<h2>3b. Problem (re)formulation into H1st.AI Graph<a class="headerlink" href="#b-problem-re-formulation-into-h1st-ai-graph" title="Permalink to this headline">¶</a></h2>
+<p>We reformulate the problem into the form of a decision graph, where the outermost flow detects attack events and corresponding yes branches handles message classification. For this tutorial we focus on injection attacks which are most common in the wild (we will revisit this later).</p>
+<p>The graph looks like this.</p>
+<img src="http://docs.arimo.com/H1ST_AI_Tutorial/img/graph2.png" alt="automotive cybersecurity solution graph"/></div>
+<div class="section" id="c-encoding-human-insights-for-event-detection-as-a-h1st-model">
+<h2>3c. Encoding human insights for event detection as a H1st.Model<a class="headerlink" href="#c-encoding-human-insights-for-event-detection-as-a-h1st-model" title="Permalink to this headline">¶</a></h2>
+<p>Remember when we start analyzing the CAN dataset, we have remarked that the normal data is highly regular, especially in terms of the message frequency for each CAN ID.</p>
+<p>It turns out that using message frequency statistics for injection event detection is highly accurate for safe-mode use cases (high TPR, low FNR). This surprising fact was first pointed out by the original CAN bus hackers Chris Valasek and Charlie Miller in the seminal white paper <a class="reference external" href="https://ioactive.com/pdfs/IOActive_Adventures_in_Automotive_Networks_and_Control_Units.pdf">Adventures in Automotive Networks and Control Units</a>.</p>
+<blockquote>
+<div><p>It is pretty straightforward to detect the attacks discussed in this paper.  They always involve either sending new, unusual CAN packets or flooding the CAN bus with common packets… Additionally, the frequency of normal CAN packets is very predictable… Therefore we propose that a system can detect CAN anomalies based on the known frequency of certain traffic and can alert a system or user if frequency levels vary drastically from what is well known.</p>
+</div></blockquote>
+<p>Using H1ST, we can encode insights of such “human” models and use them just like ML models. An h1.Model is essentially anything that can predict. H1ST provides tools to help automate their saving and loading, too, easing the way for using them in an integrated decision system.</p>
+<p>In a H1ST project structure, we typically organize this under <code class="docutils literal notranslate"><span class="pre">models</span></code> directory, e.g. the content of <code class="docutils literal notranslate"><span class="pre">models/msg_freq_event_detector.py</span></code> looks like this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SENSORS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SteeringAngle&quot;</span><span class="p">,</span> <span class="s2">&quot;CarSpeed&quot;</span><span class="p">,</span> <span class="s2">&quot;YawRate&quot;</span><span class="p">,</span> <span class="s2">&quot;Gx&quot;</span><span class="p">,</span> <span class="s2">&quot;Gy&quot;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">MsgFreqEventDetectorModel</span><span class="p">(</span><span class="n">h1</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">():</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">present_size</span><span class="o">=</span><span class="mf">0.1</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;df&#39;</span><span class="p">]</span>
+        <span class="n">window_starts</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;window_starts&quot;</span><span class="p">]</span>
+        <span class="n">window_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">window_start</span> <span class="ow">in</span> <span class="n">window_starts</span><span class="p">:</span>
+            <span class="n">w_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">&gt;=</span> <span class="n">window_start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">&lt;</span> <span class="n">window_start</span> <span class="o">+</span> <span class="n">WINDOW_SIZE</span><span class="p">)]</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">sensor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">SENSORS</span><span class="p">):</span>
+                <span class="n">w_df_sensor</span> <span class="o">=</span> <span class="n">w_df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">sensor</span><span class="p">])</span>
+                <span class="n">max_normal_message_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">sensor</span><span class="p">]</span>
+                <span class="n">msg_freq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">w_df_sensor</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">msg_freq</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">max_normal_message_freq</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span> <span class="c1">#or min_timediff &lt; min_normal_timediff:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">sensor</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">sensor</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                
+                <span class="c1"># print((window_start, sensor, msg_freq, max_normal_message_freq, results[sensor]))</span>
+                
+                <span class="n">results</span><span class="p">[</span><span class="s2">&quot;WindowInAttack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;window_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">window_start</span> <span class="c1"># information for down-stream</span>
+            <span class="n">window_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;event_detection_results&quot;</span><span class="p">:</span> <span class="n">window_results</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s import and train this <code class="docutils literal notranslate"><span class="pre">MsgFreqEventDetectorModel</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AutomotiveCybersecurity.models.msg_freq_event_detector</span> <span class="kn">import</span> <span class="n">MsgFreqEventDetectorModel</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">MsgFreqEventDetectorModel</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can look inside the model file <code class="docutils literal notranslate"><span class="pre">models/msg_freq_event_detector.py</span></code> to see the details of training. It’s quite simple, looping through a number of files to compute window statistics such as how many msg per CAN ID are found &amp; what’s the min &amp; max and percentile values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">num_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">stats</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>SteeringAngle</th>
+      <th>CarSpeed</th>
+      <th>YawRate</th>
+      <th>Gx</th>
+      <th>Gy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>23767.000000</td>
+      <td>23767.000000</td>
+      <td>23767.000000</td>
+      <td>23767.000000</td>
+      <td>23767.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>33.053309</td>
+      <td>16.526486</td>
+      <td>33.053267</td>
+      <td>33.053267</td>
+      <td>33.053267</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>0.425629</td>
+      <td>0.499308</td>
+      <td>0.426474</td>
+      <td>0.426474</td>
+      <td>0.426474</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>32.000000</td>
+      <td>16.000000</td>
+      <td>32.000000</td>
+      <td>32.000000</td>
+      <td>32.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>33.000000</td>
+      <td>16.000000</td>
+      <td>33.000000</td>
+      <td>33.000000</td>
+      <td>33.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>33.000000</td>
+      <td>17.000000</td>
+      <td>33.000000</td>
+      <td>33.000000</td>
+      <td>33.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>33.000000</td>
+      <td>17.000000</td>
+      <td>33.000000</td>
+      <td>33.000000</td>
+      <td>33.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>34.000000</td>
+      <td>17.000000</td>
+      <td>34.000000</td>
+      <td>34.000000</td>
+      <td>34.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The nice things about h1st.Model that we can easily save/load them. By default, the “model”, “stats” and “metrics” properties are persisted and they support a variety of flavors &amp; data structure.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="stderr docutils container">
+<pre class="stderr literal-block">2020-08-11 00:32:41,488 INFO h1st.model_repository: Saving stats property...
+</pre>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;01EFE6YZWFD2DF2GBQSNQ6E666&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="d-working-with-h1st-graph">
+<h2>3d. Working with H1st Graph<a class="headerlink" href="#d-working-with-h1st-graph" title="Permalink to this headline">¶</a></h2>
+<p>Let’s now make some event-level predictions.</p>
+<p>Note that since the model was persisted using H1st model repo, this means that we can easily come back to a notebooks and/or scripts and load the trained model or computed statistics.</p>
+<p>Importantly, H1st allows much speedier integration into a Graph (and later deployment, too).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AutomotiveCybersecurity.graph</span> <span class="kn">import</span> <span class="n">WindowGenerator</span>
+<span class="kn">from</span> <span class="nn">AutomotiveCybersecurity.models.msg_freq_event_detector</span> <span class="kn">import</span> <span class="n">MsgFreqEventDetectorModel</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">h1</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>\
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">WindowGenerator</span><span class="p">())</span>\
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MsgFreqEventDetectorModel</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">())</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;/Users/aht/Documents/autocyber/13Prius/predict_data/add/YawRate/*.csv&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;Label&#39;</span><span class="p">,</span> <span class="s1">&#39;CarSpeed&#39;</span><span class="p">,</span> <span class="s1">&#39;SteeringAngle&#39;</span><span class="p">,</span> <span class="s1">&#39;YawRate&#39;</span><span class="p">,</span> <span class="s1">&#39;Gx&#39;</span><span class="p">,</span> <span class="s1">&#39;Gy&#39;</span><span class="p">]</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">predict</span><span class="p">({</span><span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">})</span>
+<span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="stderr docutils container">
+<pre class="stderr literal-block">2020-08-14 22:23:15,192 INFO h1st.model_repository.model_repository: Loading version 01EFQN6454J0AHK60F81PXV8CB ....
+</pre>
+</div>
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/aht/Documents/autocyber/13Prius/predict_data/add/YawRate/Attack_YR_Cycle_Add_back_01_030_1to1_D_01.csv
+</pre></div>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;df&#39;, &#39;window_starts&#39;, &#39;event_detection_results&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<p>And we should see that starting we can detect attacks starting at Timestamp 604.3105000000011</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;event_detection_results&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;WindowInAttack&quot;</span><span class="p">]][:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>[{&#39;SteeringAngle&#39;: 0,
+  &#39;WindowInAttack&#39;: True,
+  &#39;CarSpeed&#39;: 0,
+  &#39;YawRate&#39;: 1,
+  &#39;Gx&#39;: 1,
+  &#39;Gy&#39;: 1,
+  &#39;window_start&#39;: 604.4104999999997},
+ {&#39;SteeringAngle&#39;: 0,
+  &#39;WindowInAttack&#39;: True,
+  &#39;CarSpeed&#39;: 0,
+  &#39;YawRate&#39;: 1,
+  &#39;Gx&#39;: 1,
+  &#39;Gy&#39;: 1,
+  &#39;window_start&#39;: 604.8104999999997},
+ {&#39;SteeringAngle&#39;: 0,
+  &#39;WindowInAttack&#39;: True,
+  &#39;CarSpeed&#39;: 0,
+  &#39;YawRate&#39;: 1,
+  &#39;Gx&#39;: 1,
+  &#39;Gy&#39;: 1,
+  &#39;window_start&#39;: 605.2104999999997},
+ {&#39;SteeringAngle&#39;: 0,
+  &#39;WindowInAttack&#39;: True,
+  &#39;CarSpeed&#39;: 0,
+  &#39;YawRate&#39;: 1,
+  &#39;Gx&#39;: 1,
+  &#39;Gy&#39;: 1,
+  &#39;window_start&#39;: 605.6104999999997},
+ {&#39;SteeringAngle&#39;: 0,
+  &#39;WindowInAttack&#39;: True,
+  &#39;CarSpeed&#39;: 0,
+  &#39;YawRate&#39;: 1,
+  &#39;Gx&#39;: 1,
+  &#39;Gy&#39;: 1,
+  &#39;window_start&#39;: 606.0104999999996}]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="e-adding-a-message-classifier-harmonizing-human-ml-models-in-the-graph">
+<h2>3e. Adding a message classifier, harmonizing human + ML models in the graph<a class="headerlink" href="#e-adding-a-message-classifier-harmonizing-human-ml-models-in-the-graph" title="Permalink to this headline">¶</a></h2>
+<p>For message-level classification we can simply bring back our gradient-boosted trees which did a decent job of recognizing injection messages. (Integrating sequence model such as Bidirectional LSTM is left as an exercise for the reader).</p>
+<p>For convenient, we’ve re-orgarnized it as a H1st.Model, ready for use. The content of <code class="docutils literal notranslate"><span class="pre">models/gradient_boosting_msg_classifier.py</span></code> looks like this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FEATURES</span> <span class="o">=</span> <span class="n">SENSORS</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_TimeDiff&quot;</span> <span class="o">%</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">SENSORS</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">GradientBoostingMsgClassifierModel</span><span class="p">(</span><span class="n">h1</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">load_data_daic</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">prep_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># concat multiple files into separate training/test pd.DataFrame</span>
+        <span class="k">def</span> <span class="nf">concat_processed_files</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+            <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">z</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;Label&#39;</span><span class="p">,</span> <span class="s1">&#39;CarSpeed&#39;</span><span class="p">,</span> <span class="s1">&#39;SteeringAngle&#39;</span><span class="p">,</span> <span class="s1">&#39;YawRate&#39;</span><span class="p">,</span> <span class="s1">&#39;Gx&#39;</span><span class="p">,</span> <span class="s1">&#39;Gy&#39;</span><span class="p">,]</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">compute_timediff_fillna</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+            <span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">df2</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;train_attack_df&quot;</span><span class="p">:</span> <span class="n">concat_processed_files</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;train_attack_files&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;test_attack_df&quot;</span><span class="p">:</span> <span class="n">concat_processed_files</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;test_attack_files&quot;</span><span class="p">])</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prepared_data</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">prepared_data</span><span class="p">[</span><span class="s2">&quot;train_attack_df&quot;</span><span class="p">]</span>
+        <span class="kn">from</span> <span class="nn">sklearn.experimental</span> <span class="kn">import</span> <span class="n">enable_hist_gradient_boosting</span>
+        <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">HistGradientBoostingClassifier</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">FEATURES</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Label</span> <span class="o">==</span> <span class="s2">&quot;Tx&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">HistGradientBoostingClassifier</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>        
+        <span class="n">df</span> <span class="o">=</span> <span class="n">prepared_data</span><span class="p">[</span><span class="s2">&quot;test_attack_df&quot;</span><span class="p">]</span>
+        <span class="n">ypred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">FEATURES</span><span class="p">])</span>
+        <span class="kn">import</span> <span class="nn">sklearn.metrics</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Label</span> <span class="o">==</span> <span class="s2">&quot;Tx&quot;</span><span class="p">,</span> <span class="n">ypred</span><span class="p">)</span>
+        <span class="n">acc</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Label</span> <span class="o">==</span> <span class="s2">&quot;Tx&quot;</span><span class="p">,</span> <span class="n">ypred</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy = </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">acc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;confusion_matrix&quot;</span><span class="p">:</span> <span class="n">cf</span><span class="p">,</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="n">acc</span><span class="p">}</span>
+    
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;df&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">compute_timediff_fillna</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;MsgIsAttack&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;WindowInAttack&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">event_result</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;event_detection_results&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">event_result</span><span class="p">[</span><span class="s1">&#39;WindowInAttack&#39;</span><span class="p">]:</span>
+                <span class="c1"># print(&quot;window %s in attack: event_result = %s&quot; % (event_result[&#39;window_start&#39;], event_result))</span>
+                <span class="n">in_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">&gt;=</span> <span class="n">event_result</span><span class="p">[</span><span class="s1">&#39;window_start&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">&lt;</span> <span class="n">event_result</span><span class="p">[</span><span class="s1">&#39;window_start&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">WINDOW_SIZE</span><span class="p">)</span>
+                <span class="n">w_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">in_window</span><span class="p">]</span>
+                <span class="n">ypred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">w_df</span><span class="p">[</span><span class="n">FEATURES</span><span class="p">])</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_window</span><span class="p">,</span> <span class="s2">&quot;WindowInAttack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_window</span><span class="p">,</span> <span class="s2">&quot;MsgIsAttack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ypred</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;injection_window_results&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AutomotiveCybersecurity.models.gradient_boosting_msg_classifier</span> <span class="kn">import</span> <span class="n">GradientBoostingMsgClassifierModel</span>
+
+<span class="n">m2</span> <span class="o">=</span> <span class="n">GradientBoostingMsgClassifierModel</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">num_files</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prepared_data</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">prep_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>len train_attack_df = 242167
+len test_attack_df = 243774
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m2</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">prepared_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m2</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">prepared_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>[[203136   2966]
+ [ 13066  24606]]
+Accuracy = 0.9342
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m2</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="stderr docutils container">
+<pre class="stderr literal-block">2020-08-14 22:21:08,989 INFO h1st.model_repository.model_repository: Saving metrics property...
+2020-08-14 22:21:08,990 INFO h1st.model_repository.model_repository: Saving model property...
+</pre>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;01EFR910BWJEPT466ARTNCC18E&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NoOp</span><span class="p">(</span><span class="n">h1</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">h1</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>\
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">WindowGenerator</span><span class="p">())</span>\
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">h1</span><span class="o">.</span><span class="n">Decision</span><span class="p">(</span><span class="n">MsgFreqEventDetectorModel</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(),</span> <span class="n">decision_field</span><span class="o">=</span><span class="s2">&quot;WindowInAttack&quot;</span><span class="p">))</span>\
+     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">yes</span><span class="o">=</span><span class="n">GradientBoostingMsgClassifierModel</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(),</span>
+          <span class="n">no</span><span class="o">=</span><span class="n">NoOp</span><span class="p">())</span>
+<span class="n">graph</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">predict</span><span class="p">({</span><span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">})</span>
+<span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="stderr docutils container">
+<pre class="stderr literal-block">2020-08-14 22:23:40,159 INFO h1st.model_repository.model_repository: Loading version 01EFQN6454J0AHK60F81PXV8CB ....
+2020-08-14 22:23:40,164 INFO h1st.model_repository.model_repository: Loading version 01EFR910BWJEPT466ARTNCC18E ....
+</pre>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;df&#39;, &#39;window_starts&#39;, &#39;event_detection_results&#39;, &#39;injection_window_results&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s evaluate the whole graph, especially focusing on the event-level TPR &amp; FPR since they are crucial in the safe-mode deployment use case.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AutomotiveCybersecurity.util</span> <span class="kn">import</span> <span class="n">evaluate_event_graph</span>
+
+<span class="n">evaluate_event_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;test_attack_files&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>============
+Event-level confusion matrix
+[[1155    0]
+ [   0 1300]]
+Event TPR = 1.0000, FPR = 0.0000
+</pre></div>
+</div>
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>(1155, 0, 0, 1300)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Woa! We ran through all 400ms windows in the test samples and got event-level FPR=0.0% with zero false positives! (Note that this is still a subsample of the data, but once you’ve tried it on the full dataset the results should be the same: zero false positive at event-level.)</p>
+<p>The message-level accuracy should be nearly the same because we used the same classifier. However the decomposition leads to separation of concerns and requirement for these two use cases. We’re much more comfortable with the solution now both in terms of accuracy as well as robustness and explainability.</p>
+<p>Another significance worth pointing out here is that we get multiple output streams from H1st.Graph: event-level outputs and msg-level outputs, exactly what we need for two different use cases we highlighted: safe-mode triggering and post-mortem analysis.</p>
+</div>
+<div class="section" id="summary-further-resources">
+<h2>Summary &amp; Further Resources<a class="headerlink" href="#summary-further-resources" title="Permalink to this headline">¶</a></h2>
+<p>That was a long tutorial! But not a trivial</p>
+<p>To recap, the H1ST.AI principles &amp; ideas we’ve learned:</p>
+<ul class="simple">
+<li><p>Leverage use-case analysis to decompose problems and adopt different models at the right level of abstractions</p></li>
+<li><p>Encoding human experience as a model</p></li>
+<li><p>Combine human experience and data-driven insights to work harmoniously in a H1st Graph</p></li>
+</ul>
+<p>Most importantly, we have used H1ST.AI to tackle a real-world challenging automotive cybersecurity problem, for which attack event labels are not available to start with, hence solving the Cold Start problem.</p>
+<p>It is important to stress that this is still a toy example IDS and much more is needed to handle attacks (e.g. replacement attacks where a whole ECU can be compromised &amp; normal messages silenced and there won’t be a zig-zag pattern) and of course on-device vs cloud deployment, OTA updates, etc. But it is clear adopting H1ST.AI makes the problem much more tractable and explainable.</p>
+<p>H1ST.AI framework further provides productivity tools for a team of Data Scientists and domain experts to collaborate on such complex software projects. Especially, we’ve seen our own productivity vastly when moving from a spaghetti code jungle of ML to a more principled H1ST project structure and make use of H1ST Model API &amp; repository as well as Graph.</p>
+<p>Interested? For further resources:</p>
+<ul class="simple">
+<li><p>Check out our documentation site!</p></li>
+<li><p>Contribute! Star/fork our Github repo, we’re looking forward to your contribution to move real-world industrial AI head and to drive “industrial processes and machines and robots”!</p></li>
+</ul>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="Monolithic AD &amp; ML Approaches and Why They are Unsatisfactory.html" title="previous page">2. Monolithic AD &amp; ML Approaches and Why They are Unsatisfactory</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By H1st.AI<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    <script src="_static/js/index.js"></script>
+    
+  </body>
+</html>

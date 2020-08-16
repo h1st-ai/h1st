@@ -1,0 +1,7 @@
+[run]
+branch = True
+omit = __init__.py
+       */.local/*
+       setup.py
+       venv/*
+       tests/*

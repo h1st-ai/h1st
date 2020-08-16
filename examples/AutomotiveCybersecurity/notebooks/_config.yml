@@ -1,0 +1,16 @@
+# Book settings
+title: H1st.AI Tutorial - Automotive Cybersecurity
+author: H1st.AI
+logo: "img/h1st_logo.png"
+
+repository:
+  url                       : https://github.com/h1st-ai/h1st
+
+html:
+  favicon                   : "img/h1st_logo.png"
+  use_repository_button     : true
+  baseurl                   : "http://h1st.ai/"
+  google_analytics_id       : "UA-40192392-7"
+
+execute:
+  execute_notebooks         : false  # Whether to execute notebooks at build time. Must be one of ("auto", "force", "cache", "off")

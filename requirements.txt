@@ -1,0 +1,19 @@
+# data management & processing
+NumPy >= 1.18.4, < 1.19
+Pandas >= 1.0.4, < 1.2
+PyArrow >= 0.17.1
+cloudpickle == 1.3.0
+Ray == 0.8.6
+# TSFresh
+
+Click >= 7.1.1
+Colored >= 1.4.2
+
+# graph
+GraphViz == 0.14
+
+# Machine Learning
+SciKit-Learn
+boto3
+s3fs==0.4.2
+ulid-py==0.1.0

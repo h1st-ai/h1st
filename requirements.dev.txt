@@ -1,0 +1,7 @@
+nose2
+pylint
+coverage
+#pytype
+faker
+tensorflow==2.2.0
+seaborn

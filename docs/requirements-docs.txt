@@ -1,0 +1,4 @@
+ReCommonMark >= 0.6.0
+Sphinx >= 3.0.4
+Sphinx-AutoBuild >= 0.7.1
+sphinx_rtd_theme
