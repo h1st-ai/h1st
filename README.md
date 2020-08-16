@@ -37,3 +37,4 @@ Get started with `H1st` Tutorial and API Documentation at [h1st.ai](http://h1st.
 We are collaborating with the open-source community. For Arimo-Panasonic, use cases include industrial applications such as Cybersecurity, Predictive Maintenance, Fault Prediction, Home Automation, Avionic & Automotive Experience Management, etc.
 
 We'd love to see your use cases and your contributions to open-source `H1st` AI. 
+
