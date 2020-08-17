@@ -225,6 +225,52 @@ class SimpleDecisionNodeTestCase(TestCase):
         self.assertEqual(result['no_sum'],  expected_no_sum)
 
     def test_decision_node_with_transform_output_for_yes_no_branches(self):
+        arr = [
+            {'x': 100, 'prediction': True},
+            {'x': 1, 'prediction': False},
+            {'x': 200, 'prediction': True},
+            {'x': 400, 'prediction': True},
+        ]
+
+        class MyModel(h1.Model):
+            def predict(self, inputs):
+                return {
+                    "results": arr
+                }
+
+        class YesAction(h1.NodeContainable):
+            def call(self, command, inputs):
+                return {'yes_results': sum([i['x'] for i in inputs['results']])}
+
+        class NoAction(h1.NodeContainable):
+            def call(self, command, inputs):
+                return {'no_results': sum([i['x'] for i in inputs['results']])}
+                
+        class MyGraph(h1.Graph):
+            def __init__(self):
+                super().__init__()
+
+                yes_node, no_node = (
+                    self
+                        .start()
+                        .add(Decision(MyModel()))
+                        .add(
+                            yes = YesAction(),
+                            no = NoAction()
+                        )
+                )
+
+                self.end() 
+
+                self.nodes.end.transform_output = lambda inputs: {'result': inputs['yes_results'] + inputs['no_results']*1000}
+                        
+        result = MyGraph().predict(data={})
+
+        expected_result = sum([i['x'] for i in arr if i['prediction']]) + sum([i['x'] for i in arr if not i['prediction']])*1000
+        self.assertEqual(result['result'],  expected_result)
+
+
+    def test_transform_output_for_end_node_of_graph_with_decision_node(self):
         x = [10, 100, 1000, 10000]
         predictions = [False, False, True, False]
 
