@@ -275,6 +275,35 @@ class Decision(Action):
                 no.add(Model5())
                 
                 self.end()
+
+    .. code-block:: python
+        :caption: Graph with conditional node using custom result_field and decision_field
+
+        import h1st as h1
+
+        class Model1(h1.Model):
+            def predict(data):
+                return {
+                    'predictions': [
+                        {gx: 10, gy: 20, label: True},
+                        {gx: 11, gy: 21, label: True},
+                        {gx: 12, gy: 22, label: False},
+                    ]
+                }
+
+        class MyGraph(h1.Graph)
+            def __init__(self):
+                yes, no = self.start()
+                    .add(h1.Decision(Model1(), result_field='predictions', decision_field='label'))
+                    .add(
+                        yes = Model2()
+                        no = Model3()
+                    )
+
+                yes.add(Model4())
+                no.add(Model5())
+                
+                self.end()
     """
 
     def __init__(self, containable: NodeContainable = None, id: str = None, result_field='results', decision_field='prediction'):
@@ -288,12 +317,14 @@ class Decision(Action):
         self._result_field = result_field
         self._decision_field = decision_field
 
-    def call(self, command: Optional[str], inputs: Dict[str, Any]) -> Any:
+    def _execute(self, command: Optional[str], inputs: Dict[str, Any]) -> Dict:
         """
-        This function is invoked by the framework and user will never need to call it.
+        super._execute() will be responsible for executing the node.
+        This will ensure the result's structure is valid for decision node.
 
         :returns:
-            a dictionary containing 'results' key
+            a dictionary containing 'results' key and each item will have a field whose name = 'prediction'
+            with bool value to decide whether the item belongs to yes or no branch
                 { 
                     'results': [{ 'prediction': True/False, ...}],
                     'other_key': ...,
@@ -304,9 +335,9 @@ class Decision(Action):
                     'your_key': [{ 'prediction': True/False, ...}]
                 }
         """
-        result = self._output
+        result = super()._execute(command, inputs)
         
-        if not isinstance(result, dict) or ((self._result_field not in  result) and len(list(result)) != 1):
+        if not isinstance(result, dict) or ((self._result_field not in result) and len(result.keys()) != 1):
             raise GraphException(f'output of {self._containable.__class__.__name__} must be a dict containing "results" field or only one key')
         
         return result    
