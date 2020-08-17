@@ -6,7 +6,7 @@ from typing import Union, Optional, Callable, List, NoReturn, Any, Dict, Tuple
 from .exception import GraphException
 from .model import Model
 from .node_containable import NodeContainable
-from h1st.schema import SchemaValidator
+from ..schema import SchemaValidator
 
 class Node:
     """

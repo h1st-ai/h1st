@@ -1,6 +1,6 @@
 from typing import Any, List, NoReturn, Union
-from h1st.schema import SchemaValidator
-from h1st.model_repository import ModelRepository
+from ..schema import SchemaValidator
+from ..model_repository import ModelRepository
 from .node_containable import NodeContainable
 
 

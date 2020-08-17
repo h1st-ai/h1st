@@ -1,5 +1,5 @@
 import importlib
-from h1st.core.exception import SchemaException
+from ..core.exception import SchemaException
 from .schema_validation_result import SchemaValidationResult
 from .schema_validator import SchemaValidator
 
