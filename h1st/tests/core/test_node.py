@@ -1,3 +1,4 @@
+import pandas as pd
 from unittest import TestCase, skip
 from h1st.core import Graph, Decision, Action, NodeContainable, GraphException
 import h1st as h1
@@ -171,6 +172,58 @@ class DecisionNodeTestCase(TestCase):
     def test_decision_no_only(self):
         result = self._g.predict(data={'values': [1, 2, 3, 4]})
         self.assertEqual(result['no_sum'], 10)
+
+class DecisionNodeWithDataframeTestCase(TestCase):     
+    def test_decision_node_returning_dataframe(self):
+        x = [1, 2, 3, 4]
+        y = [5, 10, 15, 20]
+        predictions = [True, False, False, True]
+
+        class MyModel(h1.Model):
+            def predict(self, inputs):
+                return {
+                    "results": pd.DataFrame({
+                            'x': x,
+                            'y': y,
+                            'label': predictions
+                        })
+                }
+
+        class YesAction(h1.NodeContainable):
+            def call(self, command, inputs):
+                df = inputs['results']
+                return {'yes_sum': sum(df['x']*df['y'])}
+
+        class NoAction(h1.NodeContainable):
+            def call(self, command, inputs):
+                df = inputs['results']
+                return {'no_sum': sum(df['x']*df['y'])}
+                
+        class MyGraph(h1.Graph):
+            def __init__(self):
+                super().__init__()
+
+                yes_node, no_node = (
+                    self
+                        .start()
+                        .add(DummyAction())
+                        .add(Decision(MyModel(), decision_field='label'))
+                        .add(
+                            yes = YesAction(),
+                            no = NoAction()
+                        )
+                )
+
+                no_node.add(DummyAction())
+                self.end() 
+                        
+        result = MyGraph().predict(data={})
+
+        expected_yes_sum = sum([x[i]*y[i] for i in range(len(x)) if predictions[i]])
+        self.assertEqual(result['yes_sum'], expected_yes_sum)
+
+        expected_no_sum = sum([x[i]*y[i] for i in range(len(x)) if not predictions[i]])
+        self.assertEqual(result['no_sum'],  expected_no_sum)
 
 class ModelNodeTestCase(TestCase):
     def test_model_predict(self):
