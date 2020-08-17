@@ -316,17 +316,16 @@ class Decision(Action):
         return visitor.render_dot_decision_node(self)
 
     def _get_edge_data(self, edge, node_output):
-        """splits data from the node's output to pass to the next node"""
-        result_field = self._result_field if self._result_field in node_output else list(node_output)[0]
+        """splits data for yes/no path from the node's output to pass to the next node"""
+        result_field = self._result_field if self._result_field in node_output else next(iter(node_output))
         results = node_output[result_field]
 
         decision_field = self._decision_field
-        if isinstance(results, pd.DataFrame):
-            data = results[results[decision_field] == (1 if edge[1] == 'yes' else 0)]
-        else:
-            data = [
-                item for item in results if (item[decision_field]
-                if edge[1] == 'yes' else not item[decision_field])
-            ]
+        is_yes_edge = edge[1] == 'yes'
 
-        return {result_field: data} if (data is not None and len(data) > 0) else None
+        if isinstance(results, pd.DataFrame):
+            data = results[results[decision_field] == is_yes_edge]
+        else:
+            data = [item for item in results if item[decision_field] == is_yes_edge]
+
+        return {result_field: data} if data is not None and len(data) > 0 else None
