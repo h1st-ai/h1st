@@ -323,16 +323,10 @@ class Decision(Action):
         decision_field = self._decision_field
         if isinstance(results, pd.DataFrame):
             data = results[results[decision_field] == (1 if edge[1] == 'yes' else 0)]
-            # print("framework 1 >>", data)
         else:
             data = [
                 item for item in results if (item[decision_field]
                 if edge[1] == 'yes' else not item[decision_field])
             ]
-            # print("framework 2 >>", data)
 
         return {result_field: data} if (data is not None and len(data) > 0) else None
-
-    def _get_connected_node_by_label(self, edge_label: str) -> Node:
-        return [edge[0] for edge in self.edges if edge[1] == edge_label][0]
-    
