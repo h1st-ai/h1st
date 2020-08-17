@@ -3,10 +3,10 @@ import pandas as pd
 from types import SimpleNamespace
 from typing import Union, Optional, Callable, List, NoReturn, Any, Dict, Tuple
 
-from .exception import GraphException
-from .model import Model
-from .node_containable import NodeContainable
-from ..schema import SchemaValidator
+from h1st.core.exception import GraphException
+from h1st.core.model import Model
+from h1st.core.node_containable import NodeContainable
+from h1st.schema import SchemaValidator
 
 class Node:
     """

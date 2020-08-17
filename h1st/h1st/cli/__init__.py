@@ -1,5 +1,5 @@
 import click
-from .project import new_project_cli, new_model_cli
+from h1st.cli.project import new_project_cli, new_model_cli
 
 
 def main():

@@ -1,7 +1,7 @@
 import importlib
-from ..core.exception import SchemaException
-from .schema_validation_result import SchemaValidationResult
-from .schema_validator import SchemaValidator
+from h1st.core.exception import SchemaException
+from h1st.schema.schema_validation_result import SchemaValidationResult
+from h1st.schema.schema_validator import SchemaValidator
 
 
 class ValidationSchema:
