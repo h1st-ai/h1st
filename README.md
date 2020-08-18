@@ -17,7 +17,7 @@ Human-First AI (`H1st` AI) solves three critical challenges in real-world data s
 
 2. __Data scientists need human tools:__ Today‘s tools are to compete rather than to collaborate. When multiple data scientists work on the same project, they are effectively competing to see who can build the better model. `H1st` breaks a large modeling problem into smaller, easier parts. This allows true collaboration and high productivity, in ways similar to well-established software engineering methodology. 
 
-3. __AI needs human trust:__ AI models can't be deployed when they lack user trust. AI increasingly face regulatory challenges. `H1st` supports model description and explaination at multiple layers, enabling transparent and trustworthy AI.
+3. __AI needs human trust:__ AI models can't be deployed when they lack user trust. AI increasingly face regulatory challenges. `H1st` supports model description and explanation at multiple layers, enabling transparent and trustworthy AI.
 
 
 ## Get started
