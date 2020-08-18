@@ -1,7 +1,7 @@
 from unittest import TestCase
 import inspect
 from h1st.schema.validation_schema import ValidationSchema
-from h1st.schema import SchemaValidationResult
+from h1st.schema.schema_validation_result import SchemaValidationResult
 
 
 def setup_schema_tests(graph, scope, prepare_func=None):

@@ -1,5 +1,5 @@
-from .base import BaseValidator
-from .type_helper import is_list_type, get_list_type, type_name
+from h1st.schema.validators.base import BaseValidator
+from h1st.schema.validators.type_helper import is_list_type, get_list_type, type_name
 
 
 class ListValidator(BaseValidator):

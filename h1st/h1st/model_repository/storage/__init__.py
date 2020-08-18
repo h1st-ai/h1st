@@ -14,5 +14,5 @@ read and write raw bytes or python objects It currently supports local disk and 
 
 """
 
-from .local import LocalStorage
-from .s3 import S3Storage
+from h1st.model_repository.storage.local import LocalStorage
+from h1st.model_repository.storage.s3 import S3Storage

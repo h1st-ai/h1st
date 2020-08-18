@@ -1,5 +1,5 @@
 import pyarrow as pa
-from .base import BaseValidator
+from h1st.schema.validators.base import BaseValidator
 
 
 class PyArrowSchemaValidator(BaseValidator):

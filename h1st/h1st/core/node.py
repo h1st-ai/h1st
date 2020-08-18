@@ -3,9 +3,9 @@ import pandas as pd
 from types import SimpleNamespace
 from typing import Union, Optional, Callable, List, NoReturn, Any, Dict, Tuple
 
-from .exception import GraphException
-from .model import Model
-from .node_containable import NodeContainable
+from h1st.core.exception import GraphException
+from h1st.core.model import Model
+from h1st.core.node_containable import NodeContainable
 from h1st.schema import SchemaValidator
 
 class Node:
@@ -275,6 +275,35 @@ class Decision(Action):
                 no.add(Model5())
                 
                 self.end()
+
+    .. code-block:: python
+        :caption: Graph with conditional node using custom result_field and decision_field
+
+        import h1st as h1
+
+        class Model1(h1.Model):
+            def predict(data):
+                return {
+                    'predictions': [
+                        {gx: 10, gy: 20, label: True},
+                        {gx: 11, gy: 21, label: True},
+                        {gx: 12, gy: 22, label: False},
+                    ]
+                }
+
+        class MyGraph(h1.Graph)
+            def __init__(self):
+                yes, no = self.start()
+                    .add(h1.Decision(Model1(), result_field='predictions', decision_field='label'))
+                    .add(
+                        yes = Model2()
+                        no = Model3()
+                    )
+
+                yes.add(Model4())
+                no.add(Model5())
+                
+                self.end()
     """
 
     def __init__(self, containable: NodeContainable = None, id: str = None, result_field='results', decision_field='prediction'):
@@ -288,12 +317,14 @@ class Decision(Action):
         self._result_field = result_field
         self._decision_field = decision_field
 
-    def call(self, command: Optional[str], inputs: Dict[str, Any]) -> Any:
+    def _execute(self, command: Optional[str], inputs: Dict[str, Any]) -> Dict:
         """
-        This function is invoked by the framework and user will never need to call it.
+        super._execute() will be responsible for executing the node.
+        This will ensure the result's structure is valid for decision node.
 
         :returns:
-            a dictionary containing 'results' key
+            a dictionary containing 'results' key and each item will have a field whose name = 'prediction'
+            with bool value to decide whether the item belongs to yes or no branch
                 { 
                     'results': [{ 'prediction': True/False, ...}],
                     'other_key': ...,
@@ -304,9 +335,9 @@ class Decision(Action):
                     'your_key': [{ 'prediction': True/False, ...}]
                 }
         """
-        result = self._output
+        result = super()._execute(command, inputs)
         
-        if not isinstance(result, dict) or ((self._result_field not in  result) and len(list(result)) != 1):
+        if not isinstance(result, dict) or ((self._result_field not in result) and len(result.keys()) != 1):
             raise GraphException(f'output of {self._containable.__class__.__name__} must be a dict containing "results" field or only one key')
         
         return result    
@@ -316,23 +347,16 @@ class Decision(Action):
         return visitor.render_dot_decision_node(self)
 
     def _get_edge_data(self, edge, node_output):
-        """splits data from the node's output to pass to the next node"""
-        result_field = self._result_field if self._result_field in node_output else list(node_output)[0]
+        """splits data for yes/no path from the node's output to pass to the next node"""
+        result_field = self._result_field if self._result_field in node_output else next(iter(node_output))
         results = node_output[result_field]
 
         decision_field = self._decision_field
+        is_yes_edge = edge[1] == 'yes'
+
         if isinstance(results, pd.DataFrame):
-            data = results[results[decision_field] == (1 if edge[1] == 'yes' else 0)]
-            # print("framework 1 >>", data)
+            data = results[results[decision_field] == is_yes_edge]
         else:
-            data = [
-                item for item in results if (item[decision_field]
-                if edge[1] == 'yes' else not item[decision_field])
-            ]
-            # print("framework 2 >>", data)
+            data = [item for item in results if item[decision_field] == is_yes_edge]
 
-        return {result_field: data} if (data is not None and len(data) > 0) else None
-
-    def _get_connected_node_by_label(self, edge_label: str) -> Node:
-        return [edge[0] for edge in self.edges if edge[1] == edge_label][0]
-    
+        return {result_field: data} if data is not None and len(data) > 0 else None

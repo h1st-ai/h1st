@@ -1,7 +1,7 @@
-from .schema_inferrer import SchemaInferrer
-from .validators.type_helper import type_name, is_list_type, get_list_type, validate_python_type
-from .validators import UnionValidator, ListValidator, PyArrowSchemaValidator, NumpySchemaValidator, FieldValidator
-from .schema_validation_result import SchemaValidationResult
+from h1st.schema.schema_inferrer import SchemaInferrer
+from h1st.schema.validators.type_helper import type_name, is_list_type, get_list_type, validate_python_type
+from h1st.schema.validators import UnionValidator, ListValidator, PyArrowSchemaValidator, NumpySchemaValidator, FieldValidator
+from h1st.schema.schema_validation_result import SchemaValidationResult
 
 __all__ = ['SchemaValidator']
 

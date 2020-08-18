@@ -55,6 +55,6 @@ You can use the ``SchemaValidator`` to validate the schema as following
 """
 
 
-from .schema_inferrer import SchemaInferrer
-from .schema_validation_result import SchemaValidationResult
-from .schema_validator import SchemaValidator
+from h1st.schema.schema_inferrer import SchemaInferrer
+from h1st.schema.schema_validation_result import SchemaValidationResult
+from h1st.schema.schema_validator import SchemaValidator

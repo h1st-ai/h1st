@@ -1,5 +1,5 @@
 import numpy  as np
-from .base import BaseValidator
+from h1st.schema.validators.base import BaseValidator
 
 
 class NumpySchemaValidator(BaseValidator):

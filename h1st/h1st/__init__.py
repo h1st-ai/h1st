@@ -1,1 +1,1 @@
-from .core import *
+from h1st.core import *
