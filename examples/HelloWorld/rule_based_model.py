@@ -8,14 +8,5 @@ import h1st as h1
 
 class RuleBasedModel(h1.Model):
     def predict(sef, input_data):
-        value = input_data["value"]
-        is_odd = (value % 2 == 0)
+        is_odd = (input_data["value"] % 2 == 0)
         return is_odd
-
-
-def hello_world():
-    m = RuleBasedModel()
-    for value in range(6):
-        print("Prediction for " + str(value) + " is " + str(m.predict({"value": value})))
-
-hello_world()
