@@ -1,7 +1,7 @@
 import os
 from typing import Any, NoReturn
 import cloudpickle
-from .base import Storage
+from h1st.model_repository.storage.base import Storage
 
 
 class LocalStorage(Storage):

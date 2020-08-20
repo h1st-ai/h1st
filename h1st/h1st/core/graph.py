@@ -2,10 +2,10 @@ import sys
 from types import SimpleNamespace
 from typing import List, Union, Any, Optional, NoReturn, Callable, Dict
 
-from .node import Node, Action
-from .node_containable import NodeContainable
-from .exception import GraphException
-from .viz import DotGraphVisualizer
+from h1st.core.node import Node, Action
+from h1st.core.node_containable import NodeContainable
+from h1st.core.exception import GraphException
+from h1st.core.viz import DotGraphVisualizer
 
 
 class Graph(NodeContainable):

@@ -4,7 +4,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 
-from .model import Model
+from h1st.core.model import Model
 
 
 class StackEnsemble(Model):

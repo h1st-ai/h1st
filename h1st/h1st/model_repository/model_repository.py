@@ -8,8 +8,8 @@ from distutils import dir_util
 import yaml
 import ulid
 
-from .storage.s3 import S3Storage
-from .storage.local import LocalStorage
+from h1st.model_repository.storage.s3 import S3Storage
+from h1st.model_repository.storage.local import LocalStorage
 
 SEP = "::"
 logger = logging.getLogger(__name__)

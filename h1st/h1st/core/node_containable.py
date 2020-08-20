@@ -1,5 +1,5 @@
 from typing import Any, Dict
-from .exception import GraphException
+from h1st.core.exception import GraphException
 
 
 class NodeContainable:
@@ -27,7 +27,7 @@ class NodeContainable:
     @property
     def node(self) -> 'Node':
         if not self._node:
-            from .graph import Graph 
+            from h1st.core.graph import Graph 
 
             g = Graph()
             g.start()

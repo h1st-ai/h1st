@@ -1,5 +1,5 @@
-from .base import BaseValidator
-from .type_helper import is_union_type
+from h1st.schema.validators.base import BaseValidator
+from h1st.schema.validators.type_helper import is_union_type
 
 
 class UnionValidator(BaseValidator):
