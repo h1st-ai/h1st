@@ -7,5 +7,5 @@ install:
 script:
   - cd ./h1st
   - python3 setup.py install
-  - nose2 --verbosity 2 --with-coverage --coverage-report xml
+  - nose2 -c ./tests/unittest.cfg --verbosity 2 --with-coverage --coverage-report xml
 
