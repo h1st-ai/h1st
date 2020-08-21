@@ -1,10 +1,26 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=cbf6c4884966ec4827747194f8370b8eeb51c912aa22bcb4a2449a8532bc6fa7
+
 language: python
 python:
-  - 3.6
+  - 3.7
+
+before_install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+
 install:
   - pip install --no-cache -r h1st/requirements.txt
   - pip install --no-cache -r h1st/requirements.dev.txt
+
+before_script:
+  - ./cc-test-reporter before-build
+
 script:
   - python3 setup.py install
-  - nose2 -c ./tests/unittest.cfg --verbosity 2 --with-coverage --coverage-report xml
+  - nose2 -X -c ./tests/unittest.cfg --verbosity 2 --with-coverage --coverage-report xml
+  - coverage xml
 
+after_script:
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
