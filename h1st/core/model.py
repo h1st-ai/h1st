@@ -1,10 +1,11 @@
-from typing import Any, List, NoReturn, Union
+from typing import Any
 from h1st.schema import SchemaValidator
 from h1st.model_repository import ModelRepository
 from h1st.core.node_containable import NodeContainable
+from h1st.core.serializable import Serializable
 
 
-class Model(NodeContainable):
+class Model(NodeContainable, Serializable):
     """
     Base class for H1ST Model.
 
@@ -49,7 +50,6 @@ class Model(NodeContainable):
 
         :returns: loaded data
         """
-        raise NotImplementedError()
 
     def prep_data(self, data: Any) -> Any:
         """
@@ -58,13 +58,11 @@ class Model(NodeContainable):
         :param data: loaded data from ``load_data`` method
         :returns: prepared data
         """
-        raise NotImplementedError()
 
     def explore(self) -> Any:
         """
         Implement logic to explore data from loaded data
         """
-        raise NotImplementedError()
 
     def train(self, prepared_data: dict):
         """
@@ -73,7 +71,6 @@ class Model(NodeContainable):
         :param prepared_data: prepared data from ``prep_data`` method
         """
         # not raise NotImplementedError so the initial model created by integrator will just work
-        pass
 
     def persist(self, version=None):
         """
@@ -103,7 +100,6 @@ class Model(NodeContainable):
 
         :param data: loaded data
         """
-        raise NotImplementedError()
 
     def predict(self, data: dict) -> dict:
         """
@@ -112,8 +108,7 @@ class Model(NodeContainable):
         :params data: data for prediction
         :returns: prediction result as a dictionary
         """
-        # not raise NotImplementedError so the initial model created by integrator will just work 
-        return {}
+        return data
 
     def test_output(self, input_data: Any = None, schema=None):
         """
@@ -129,10 +124,38 @@ class Model(NodeContainable):
         """
         Implement logic to describe about your model
         """
-        pass
 
     def explain(self, prediction: dict):
         """
         Implement logic to explain about a given prediction
         """
-        pass
+
+
+    ########
+    # Serializable implementation
+    ########
+
+    @property
+    def parameters(self):
+        if getattr(self, "__parameters", None) is None:
+            self.parameters = {}
+        return getattr(self, "__parameters")
+
+    @parameters.setter
+    def parameters(self, value):
+        setattr(self, "__parameters", value)
+
+    def serialize(self):
+        """
+        Subclasses should override this to set `self.parameters` to the model parameters, and call
+        `return super().serialize()` to have those parameters properly serialized for over-the-wire transport.
+
+        ```
+        def serialize(self):
+            self.add_serialized_data("some_property")
+            self.parameters = { .. }
+            return super().serialize()
+        ```
+        """
+        self.add_serialized_data("parameters", self.parameters)
+        return super().serialize()

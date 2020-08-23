@@ -82,5 +82,4 @@ class NodeContainable:
 
         :param inputs: subclass will use this input data to call a specific function to get the result
         :schema: the schema to verify if the result conforming with
-        """        
-        pass
+        """
