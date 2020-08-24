@@ -1,7 +1,6 @@
 """
 This is an example of a very simple rule-based (if-then-else) H1st model.
 It doesn't need any data or training, and hence has only a predict() function.
-Run this example as: % python3 rule_based_model.py
 """
 
 import h1st as h1
