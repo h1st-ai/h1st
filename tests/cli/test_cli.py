@@ -25,12 +25,12 @@ class CliTestCase(TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdir:
             subprocess.check_call(
-                ["h1st", "new-project", "AutoCyber"],
+                ["h1", "new-project", "AutoCyber"],
                 cwd=tmpdir
             )
 
             subprocess.check_call(
-                ["h1st", "new-model", "Model2"],
+                ["h1", "new-model", "Model2"],
                 cwd=tmpdir + '/AutoCyber'
             )
 
