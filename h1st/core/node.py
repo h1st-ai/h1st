@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-from types import SimpleNamespace
 from typing import Union, Optional, Callable, List, NoReturn, Any, Dict, Tuple
 
 from h1st.core.exception import GraphException
@@ -132,7 +131,7 @@ class Node:
         """
         return self._graph._add_and_connect(node, yes, no, id, self)
 
-    def _execute(self, command: Optional[str], inputs: Dict[str, Any]) -> Dict:
+    def _execute(self, command: Optional[str], inputs: Dict[str, Any], state: Dict) -> Dict:
         """
         The execution of graph will be executed recursively. The upstream node will invoke the down stream nodes to be executed.
         If it is the start node, this function will be invoked by the graph.
@@ -140,62 +139,46 @@ class Node:
 
         :param command: for this node to know which flow (predict, train, ...) the graph is running
         :param inputs: the input data to execute the node. During the graph execution, output of all executed nodes will be merged into inputs
+        :param state: executing state
         """
-        if os.environ.get('DEBUG'):
-            print('>>>', self.id, list(inputs))
-
         # transform input
         if callable(self.transform_input):
-            transformed_inputs = self.transform_input(inputs)
-            inputs.clear()
-            inputs.update(transformed_inputs)
+            inputs = self.transform_input(inputs)
 
-        # execute
-        func = self._containable.call if self._containable else self.call        
-        node_output = func(command, inputs)
+        # execute        
+        node_output = self.call(command, inputs)
 
         # transform output
         if self.id != "end" and callable(self.transform_output):
-            if node_output:
-                inputs.update(node_output)
+            node_output = self.transform_output({**inputs, **node_output})
 
-            node_output = self.transform_output(inputs)
+        # validate output
+        self._validate_output(node_output)
 
-        # merge output
+        # state = state or {}
         if node_output:
-            inputs.update(node_output)
+            state.update(node_output)
 
         # recursively executing downstream nodes
         for edge in self.edges:
             edge_data = self._get_edge_data(edge, node_output)
 
             # data is available to execute the next node
-            if edge_data is not None:
+            if edge_data is not None:                
                 next_node = edge[0]
-                inputs.update(edge_data)
+                next_inputs = {**inputs, **edge_data}
+                next_node._execute(command, next_inputs, state)
 
-                next_output = next_node._execute(command, inputs)
-
-                if next_output:
-                    inputs.update(next_output)
-
-        if self.id == 'end':
-            return node_output
-        else:
-            output = {}
-
-            if node_output:
-                output.update(node_output)
-
-            output.update(inputs)
-
-            return output or inputs or {}
+        return {**node_output, **state}
 
     def call(self, command: Optional[str], inputs: Dict[str, Any]) -> Dict:
         """
         Subclass may need to override this function to perform the execution depending the type of node.
         This function is invoked by the framework and user will never need to call it.
         """
+        if self._containable:
+            return self._containable.call(command, inputs)
+
         return {}
 
     def to_dot_node(self, visitor):
@@ -220,6 +203,9 @@ class Node:
     def _get_edge_data(self, edge, node_output):
         """Gets data from node's output to pass to the next node"""
         return node_output
+
+    def _validate_output(self, node_output) -> bool:
+        return True
 
 
 class Action(Node):
@@ -317,31 +303,6 @@ class Decision(Action):
         self._result_field = result_field
         self._decision_field = decision_field
 
-    def _execute(self, command: Optional[str], inputs: Dict[str, Any]) -> Dict:
-        """
-        super._execute() will be responsible for executing the node.
-        This will ensure the result's structure is valid for decision node.
-
-        :returns:
-            a dictionary containing 'results' key and each item will have a field whose name = 'prediction'
-            with bool value to decide whether the item belongs to yes or no branch
-                { 
-                    'results': [{ 'prediction': True/False, ...}],
-                    'other_key': ...,
-                }
-
-            or a dictionary containing only one key
-                {
-                    'your_key': [{ 'prediction': True/False, ...}]
-                }
-        """
-        result = super()._execute(command, inputs)
-        
-        if not isinstance(result, dict) or ((self._result_field not in result) and len(result.keys()) != 1):
-            raise GraphException(f'output of {self._containable.__class__.__name__} must be a dict containing "results" field or only one key')
-        
-        return result    
-
     def to_dot_node(self, visitor):
         """Constructs and returns the graphviz compatible node"""
         return visitor.render_dot_decision_node(self)
@@ -360,3 +321,24 @@ class Decision(Action):
             data = [item for item in results if item[decision_field] == is_yes_edge]
 
         return {result_field: data} if data is not None and len(data) > 0 else None
+
+    def _validate_output(self, node_output) -> bool:
+        """
+        This will ensure the result's structure is valid for decision node.
+        
+        node_output must be a dictionary containing 'results' key and each item will have a field whose name = 'prediction'
+        with bool value to decide whether the item belongs to yes or no branch
+            { 
+                'results': [{ 'prediction': True/False, ...}],
+                'other_key': ...,
+            }
+
+        or a dictionary containing only one key
+            {
+                'your_key': [{ 'prediction': True/False, ...}]
+            }
+        """
+        if not isinstance(node_output, dict) or ((self._result_field not in node_output) and len(node_output.keys()) != 1):
+            raise GraphException(f'output of {type(self._containable)} must be a dict containing "results" field or only one key')
+        
+        return True
