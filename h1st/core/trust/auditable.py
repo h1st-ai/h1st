@@ -20,7 +20,7 @@ class Auditable:
 
     def audit_trail_set(self, key, value):
         if not self.audit_trailing: return
-        pass # to be implemented
+        # to be implemented
 
     def audit_trail_delete(self, key):
         pass # to be implemented
