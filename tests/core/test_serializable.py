@@ -23,7 +23,6 @@ class SerializeableModelTestCase(TestCase, h1.Model):
 
     def test_serialize(self):
         result = self.serialize()
-        print(result)
 
         self.assertIsInstance(self.the_thing.serialized_data, dict)
         self.assertEqual(self.the_thing.serialized_data["class_name"], utils.class_name(self.the_thing))

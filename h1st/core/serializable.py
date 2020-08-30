@@ -90,7 +90,15 @@ class Serializable:
             module_name = ".".join(words[:-1])
             class_name = words[-1:][0]
             the_class = getattr(sys.modules[module_name], class_name)
+
+            pre_deserialize = getattr(the_class, "pre_deserialize")
+            if callable(pre_deserialize):
+                pre_deserialize(serialized_data)
+
             instance = the_class()
+
+        if isinstance(instance, Serializable):
+            instance.post_deserialize()
 
         return instance
 
