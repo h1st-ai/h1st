@@ -44,7 +44,8 @@ def new_model_cli(model_name):
         if not model_path.exists():
             raise ValueError('Please run this command in the package folder')
 
-        class_name, module_name = _clean_name(model_name)
+        class_name, _ = _clean_name(model_name)
+        module_name = class_name
 
         if not class_name.lower().endswith("model"):
             class_name = f"{class_name}Model"
@@ -75,7 +76,7 @@ def new_project(project_name, base_path):
     :param project_name: name of the project
     :param base_path: target folder to create the project
     """
-    project_name_camel_case, project_name_snake_case = _clean_name(project_name)
+    project_name_camel_case, _ = _clean_name(project_name)
 
     class_prefix = project_name_camel_case
 
@@ -112,7 +113,7 @@ def new_project(project_name, base_path):
         (data_folder / '.gitkeep').touch()
 
         with open(graph_file, "w") as f:
-            f.write(_render_init_graph_class(project_name_snake_case, class_prefix))
+            f.write(_render_init_graph_class(class_prefix))
 
         with open(test_folder / "test_schema.py", "w") as f:
             f.write(_render_schema_testcase(project_name_camel_case, class_prefix))
@@ -121,7 +122,7 @@ def new_project(project_name, base_path):
             f"{class_prefix}Model",
             tmppath,
             project_package=project_name_camel_case,
-            module_name=project_name_snake_case,
+            module_name=project_name_camel_case,
         )
 
         shutil.move(tmpdir, project_module)
@@ -157,9 +158,9 @@ def new_model(name, project_path, project_package, module_name=None):
         ))
 
 
-def _render_init_graph_class(model_module, prefix):
+def _render_init_graph_class(prefix):
     return """import h1st as h1
-from .models.{model_module} import {prefix}Model
+from .models.{prefix} import {prefix}Model
 
 
 class {prefix}Graph(h1.Graph):
@@ -169,7 +170,7 @@ class {prefix}Graph(h1.Graph):
         self.start()
         self.add({prefix}Model())
         self.end()
-""".format(prefix=prefix, model_module=model_module)
+""".format(prefix=prefix)
 
 
 def _render_schema_testcase(project_package, prefix):
@@ -187,9 +188,9 @@ def _render_model_class(name, base_package):
 
 
 class {name}(h1.Model):
-    def get_data(self):
+    def load_data(self):
         # Implement code to retrieve your data here
-        return dict()
+        return {{}}
 
     def prep(self, data):
         # Implement code to prepare your data here
@@ -205,7 +206,7 @@ class {name}(h1.Model):
     def predict(self, data):
         # Implement your predict function
         raise NotImplementedError()
-""".format(name=name, base_package=base_package)
+""".format(name=name)
 
 
 def _clean_name(name):
