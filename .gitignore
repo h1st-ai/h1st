@@ -145,3 +145,5 @@ Digraph.gv*
 .pytype
 
 flake8.txt
+
+examples/Ensemble/notebooks/models

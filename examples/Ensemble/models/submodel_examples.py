@@ -1,5 +1,5 @@
 import os
-
+import logging
 from matplotlib import pyplot as plt
 import tensorflow as tf
 import numpy as np
@@ -10,8 +10,10 @@ from sklearn import svm
 from sklearn.metrics import accuracy_score
 
 import h1st as h1
-from Ensemble import config
+from examples.Ensemble import config
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class SK_SVM_Classifier(h1.Model):
     def __init__(self):
@@ -38,7 +40,8 @@ class SK_SVM_Classifier(h1.Model):
         y = df[config.DATA_TARGETS].values
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.33, shuffle=True, random_state=10)
-        print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+
+        logger.info('%s, %s, %s, %s', X_train.shape, X_test.shape, y_train.shape, y_test.shape)
         
         return {
             'X_train': X_train,
@@ -96,7 +99,8 @@ class TF_FC_Classifier(h1.Model):
         y = df[config.DATA_TARGETS].values
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.33, shuffle=True, random_state=10)
-        print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+        
+        logger.info('%s, %s, %s, %s', X_train.shape, X_test.shape, y_train.shape, y_test.shape)
         
         return {
             'X_train': X_train,
@@ -121,7 +125,9 @@ class TF_FC_Classifier(h1.Model):
         y_test = prepared_data['y_test']
         y_pred = self.predict({'X': X_test})['predictions']
         # self.metrics = {'accuracy': accuracy_score(y_test, np.reshape(y_pred, [-1]))}
-        print(y_test.shape, y_pred.shape)
+
+        logger.info('%s, %s', y_test.shape, y_pred.shape)
+
         self.metrics = {'accuracy': accuracy_score(y_test, y_pred)}
 
     def predict(self, input_data):
