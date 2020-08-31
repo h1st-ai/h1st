@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List
 
-MODEL_REPO_PATH = "./models"
+MODEL_REPO_PATH = ".models"
 
 DATA_PATH = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls'
 DATA_FEATURES = [
