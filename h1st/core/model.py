@@ -125,14 +125,35 @@ class Model(NodeContainable):
         prediction = self.predict(input_data)
         return SchemaValidator().validate(prediction, schema)
 
-    def describe(self):
+    def describe(self, constituent):
         """
         Implement logic to describe about your model
         """
         pass
 
-    def explain(self, prediction: dict):
+    def explain(self, constituent, prediction: dict):
         """
         Implement logic to explain about a given prediction
         """
         pass
+
+    def performance(self, constituent):
+        """
+        Implement logic to provide the performance of your model
+        """
+        pass
+
+    def consequence(self, constituent, predction: dict):
+        """
+        Implement logic to provide the causal-effect of your model
+        """
+        pass
+
+    def document(self):
+        """
+        Implement logic to document specific details about your model
+        For Example, what dataset was the model trained on and statistics of the dataset, 
+        The Model type, architecture, hyperparameters etc
+        """
+        pass
+
