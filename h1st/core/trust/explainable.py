@@ -26,6 +26,19 @@ class Explainable:
         LEGISLATOR = 70
         ANY = 99
         OTHER = 100
+
+    class Aspect(Enum):
+
+        """
+        [summary]
+        """
+        ACCOUNTABLE = 10
+        FUNCTIONAL = 10
+        OPERATIONAL = 30
+        ANY = 99
+        OTHER = 100
+
+
     
     @property
     def description(self):
@@ -35,18 +48,12 @@ class Explainable:
     def description(self, value):
         setattr(self, "__description", value)
     
-    def describe(self, constituency=Constituency.ANY):
+    def describe(self, constituency=Constituency.ANY, apect=Aspect.ANY):
         return {}
 
-    def explain(self, constituency=Constituency.ANY, decision=None):
+    def explain(self, constituency=Constituency.ANY, apect=Aspect.ANY,decision=None):
         return {}
 
-    def performance(self, constituency=Constituency.ANY):
-        return {}
-
-    def consequence(self, constituency=Constituency.ANY, decision=None):
-        return {}
-
-    def document(self, constituency=Constituency.ANY):
-        return {}
+    
+    
 
