@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import numpy as np
 import pandas as pd
 import lime
@@ -16,7 +16,7 @@ from h1st.core.trust.explainable import Explainable
 from h1st.core.trust.explainers.shap_explainer import SHAPExplainer
 from h1st.core.trust.explainers.lime_explainer import LIMEExplainer
 
-class TestModelExplainDescribe(h1.Model, Explainable):
+class TestModelExplainDescribe(h1.Model):
     def __init__(self):
         super().__init__()
         self.model = None
@@ -35,9 +35,11 @@ class TestModelExplainDescribe(h1.Model, Explainable):
         ]
         # self.data_dir = config.DATA_PATH
         self.test_size = 0.2
+        self.shap=True
+        self.lime=True
+        self.plot=False
 
         self.load_data()
-        self.explore()
         self.prep_data()
         self.train(self.prepared_data)
         self.evaluate(self.prepared_data)
@@ -49,9 +51,10 @@ class TestModelExplainDescribe(h1.Model, Explainable):
         self.data = df
 
     def explore(self):
-        self.data["quality"].hist()
-        plt.title("Wine Quality Rating Labels Distribution")
-        plt.show()
+        if self.plot:
+            self.data["quality"].hist()
+            plt.title("Wine Quality Rating Output Labels Distribution")
+            plt.show()
 
     def prep_data(self):
         """
@@ -96,30 +99,19 @@ class TestModelExplainDescribe(h1.Model, Explainable):
         input_data = df[self.features]
         return self.model.predict(input_data)
 
-
-    def describe(self, constituent):        
-        d = SHAPExplainer(self.model, self.prepared_data)      
+    def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE):               
+        d = SHAPExplainer(self.model, self.prepared_data, self.plot)      
         return {'shap_values':d.shap_values}
 
-    def explain(self, constituent,predictions):
-        e = LIMEExplainer(self.model, self.prepared_data, predictions)
-        return {'lime_predictions':e.prediction.as_list()}
+    def explain(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE, decision=None):
+        e = LIMEExplainer(self.model, self.prepared_data, decision, self.plot)
+        return {'lime_predictions':e.decision_explainer.as_list()}
 
 
 class TestExplainable(unittest.TestCase):
     def test_explainable(self):
         e = TestModelExplainDescribe()
-        self.assertIsInstance(e.describe("regulator"), dict)
-        self.assertIsInstance(e.explain("data_scientist", {'random':10}), dict)
-
-
-class SomeExplainableThing(Explainable):
-    pass
-
-
-class TestExplainable(unittest.TestCase):
-
-    def test_explainable(self):
-        e = SomeExplainableThing()
         self.assertIsInstance(e.describe(), dict)
-        self.assertIsInstance(e.explain(), dict)
+        self.assertIsInstance(e.explain(decision = {'sample':10}), dict)
+
+

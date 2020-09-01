@@ -29,7 +29,7 @@ class Explainable:
 
     class Aspect(Enum):
         """
-        [summary]
+        An Aspect is the type of the question being asked. Different types of questions may warrant very different responses. For example, `how do you prevent an autocyber attack in the future?` is an `Operational` type question asking you to describe how the system will be used in the future. Or `what if your model is wrong?1 - this is a type of `Accountability` question, expecting you to take responsibility for the models error.
         """
         ACCOUNTABLE = 10
         FUNCTIONAL = 10

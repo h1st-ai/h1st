@@ -6,23 +6,21 @@ import matplotlib.pyplot as plt
 
 
 class SHAPExplainer():
-    def __init__(self, model, data):
+    def __init__(self, model, data, plot):
         super().__init__()
         self.model = model
         self.data = data         
         self.model_type = str(type(self.model).__name__)
         self.get_shap_explainer()
-        self.get_shap_values()        
-        self.generate_plots()
-        
-       
+        self.get_shap_values()
+        self.plot = plot
+        if plot:
+            self.generate_plots()      
  
     def _shap_local_plot(self, j):
         explainer_model = shap.TreeExplainer(self.model)
         shap_values_model = explainer_model.shap_values(self.samples)
-        print(
-            explainer_model.expected_value, shap_values_model[j], self.samples.iloc[[j]]
-        )
+        
         p = shap.force_plot(
             explainer_model.expected_value,
             shap_values_model[j],
@@ -48,6 +46,6 @@ class SHAPExplainer():
     def generate_plots(self):
         shap.initjs()
         df = self.data["train_df"].reset_index(drop=True)
-        shap.summary_plot(self.shap_values, self.data["train_df"])       
-        shap.force_plot(self.shap_explainer.expected_value, self.shap_values, df)
+        shap.summary_plot(self.shap_values, self.data["train_df"],)       
+        # shap.force_plot(self.shap_explainer.expected_value, self.shap_values, df)
 
