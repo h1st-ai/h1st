@@ -113,7 +113,6 @@ def new_project(project_name, base_path):
 
         # create all empty files
         (tmppath / '__init__.py').touch()
-        (tmppath / 'schema.py').touch()
         (tmppath / 'config.py').touch()
         (model_folder / '__init__.py').touch()
         (test_folder / '__init__.py').touch()
@@ -210,15 +209,16 @@ class {name}(h1.Model):
         return data
 
     def train(self, prepared_data):
-        # Implement your train method
-        raise NotImplementedError()
+        # Implement your train logic here
+        pass
 
     def evaluate(self, data):
-        raise NotImplementedError()
+        # Implement your evaluation logic here
+        pass
 
     def predict(self, data):
-        # Implement your predict function
-        raise NotImplementedError()
+        # Implement your predict logic here
+        return {{}}
 """.format(name=name)
 
 
