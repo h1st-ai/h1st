@@ -30,19 +30,12 @@ class SK_SVM_Classifier(h1.Model):
             plt.show()
 
     def prep_data(self, loaded_data):
-        """
-        Prepare data for modelling
-        :param loaded_data: data return from load_data method
-        :returns: dictionary contains train data and test data
-        """
         df = loaded_data
         X = df[config.DATA_FEATURES].values
         y = df[config.DATA_TARGETS].values
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.33, shuffle=True, random_state=10)
-
         logger.info('%s, %s, %s, %s', X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-        
         return {
             'X_train': X_train,
             'X_test': X_test,
@@ -61,7 +54,6 @@ class SK_SVM_Classifier(h1.Model):
         X_test = prepared_data['X_test']
         y_test = prepared_data['y_test']
         y_pred = self.predict({'X': X_test})['predictions']
-        # self.metrics = {'accuracy': accuracy_score(y_test, np.reshape(y_pred, [-1]))}
         self.metrics = {'accuracy': accuracy_score(y_test, y_pred)}
 
     def predict(self, input_data):
@@ -89,19 +81,12 @@ class TF_FC_Classifier(h1.Model):
         return df
 
     def prep_data(self, loaded_data):
-        """
-        Prepare data for modelling
-        :param loaded_data: data return from load_data method
-        :returns: dictionary contains train data and test data
-        """
         df = loaded_data
         X = df[config.DATA_FEATURES].values
         y = df[config.DATA_TARGETS].values
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.33, shuffle=True, random_state=10)
-        
         logger.info('%s, %s, %s, %s', X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-        
         return {
             'X_train': X_train,
             'X_test': X_test,
@@ -124,16 +109,12 @@ class TF_FC_Classifier(h1.Model):
         X_test = prepared_data['X_test']
         y_test = prepared_data['y_test']
         y_pred = self.predict({'X': X_test})['predictions']
-        # self.metrics = {'accuracy': accuracy_score(y_test, np.reshape(y_pred, [-1]))}
-
         logger.info('%s, %s', y_test.shape, y_pred.shape)
-
         self.metrics = {'accuracy': accuracy_score(y_test, y_pred)}
 
     def predict(self, input_data):
         X = input_data['X']
         X = self.stats.transform(X)
         predictions = np.argmax(self.model.predict(X), axis=-1)
-        # predictions = np.reshape(np.argmax(predictions, axis=1), [-1, 1])
         predictions = np.reshape(predictions, [len(predictions), -1])
         return {'predictions': predictions}
