@@ -43,33 +43,6 @@ class Model(NodeContainable):
            my_model_2.load('1st_version')
     """
 
-    @property
-    def model(self) -> Any:
-        return getattr(self, '__model', None)
-
-    @model.setter
-    def model(self, value: Any):
-        setattr(self, '__model', value)
-
-    @property
-    def metrics(self) -> Any:
-        if not hasattr(self, '__metrics'):
-            setattr(self, '__metrics', {})
-
-        return getattr(self, '__metrics')
-
-    @metrics.setter
-    def metrics(self, value: Any):
-        setattr(self, '__metrics', value)
-
-    @property
-    def stats(self) -> Any:
-        return getattr(self, '__stats', None)
-
-    @stats.setter
-    def stats(self, value: Any):
-        setattr(self, '__stats', value)
-
     def load_data(self) -> Any:
         """
         Implement logic of load data from data source

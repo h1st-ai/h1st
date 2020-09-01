@@ -1,182 +1,107 @@
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Any
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import RobustScaler
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import precision_recall_fscore_support
-from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 
 from h1st.core.model import Model
-from h1st.core.exception import ModelException
 
 
 class StackEnsemble(Model):
-    """
-    Base StackEnsemble class to implement StackEnsemble classifiers or regressors.
-    """
-
-    def __init__(self, ensembler: MultiOutputClassifier, sub_models: List[Model]):
-        """
-        :param ensembler: ensembler model, currently it is sklearn's MultiOutputClassifier
-            when framework supports StackEnsembleRegressor,
-            ensembler could be either MultiOutputClassifier or another specific base model 
-        :param sub_models: list of h1st.Model participating in the stack ensemble
-        """
+    def __init__(self, models, ensembler):
+        self.models = models
+        # must have .fit() / .predict(), currently assumes sklearn
         self.model = ensembler
-        self._sub_models = sub_models
 
-    def _preprocess(self, X: Any) -> Any:
-        """
-        Predicts all sub models then merge input raw data with predictions for ensembler's training or prediction
-        :param X: raw input data
-        """
+    def _extract_prediction(self, results):
+        if not isinstance(results, dict):
+            raise ValueError('output of ensemble submodel must return a dict with only one key')
 
-        # Feed input_data to each sub-model and get predictions 
-        predictions = [m.predict({'X': X})['predictions'] for m in self._sub_models]
+        key = 'results'
+        if len(list(results)) == 1:
+            key = list(results)[0]
+        else:
+            raise ValueError('output of ensemble submodel must return a dict with only one key')
+
+        if not isinstance(results[key], pd.DataFrame):
+            raise ValueError('value of dictionary must be pandas.dataframe')
+
+        return results[key]
+
+    def predict(self, input_data):
+        """
+        Predicts output for input_data.
+        The predicted class or predicted value of an input sample is estmiated prediction based on individual models prediction. 
         
-        # Combine raw_data and predictions
-        return np.hstack([X] + predictions)
+        :param input_data: dictionary with values is a dataframe of numpy array. 
+        :returns: dictionary of predicted value/class. The key must be results and values is Pandas Dataframe or numpy array
+        """
 
-    def train(self, prepared_data: Dict):
-        """
-        Trains ensembler with input is merging raw data 'X_train' and predictions of sub models, with targets 'y_train'
-        :param prepared_data: output of prep_data() implemented in subclass of StackEnsemble, its structure must be this dictionary
-            {
-                'X_train': ...,
-                'X_test': ...,
-                'y_train': ...,
-                'y_test': ...
-            }
-        """
-        X_train, y_train = (prepared_data['X_train'], prepared_data['y_train'])
+        df_results = None
+        inputs = None
+        for i, model in enumerate(self.models):
+            df_prediction = self._extract_prediction(model.predict(input_data))
+            df_prediction = df_prediction[self.prediction_columns]
+
+            
+            df_prediction.fillna(0, inplace=True)
+            remain_columns = list(set(df_prediction.columns) - set(self.prediction_columns))
+            df_results = df_prediction[remain_columns]
+            if inputs is None:
+                inputs = df_prediction.values
+            else:
+                inputs = np.hstack((inputs, df_prediction.values))
+            
+        #debug length of input
+        # assumption: inptus are numpy array (or pandas)
+        ensemble_prediction = self.model.predict(inputs)
         
-        X_train = self._preprocess(X_train)
-        scaler = RobustScaler(quantile_range=(5.0, 95.0), with_centering=False)
-        self.stats = scaler.fit(X_train)
-        X_train = self.stats.transform(X_train)
+        df_predictions = pd.DataFrame(ensemble_prediction, columns=self.prediction_columns)
+        df_results.reset_index(drop=True, inplace=True)
+        df_predictions.reset_index(drop=True, inplace=True)
+        df_results = pd.concat([df_results, df_predictions], axis=1)
+        assert len(df_results) == len(df_predictions)
 
-        self.model.fit(X_train, y_train)
+        return { 'results': df_results }
 
-    def predict(self, data: Dict) -> Dict:
+    def train(self, prepared_data):
         """
-        Returns predictions of ensembler model for input raw data combining with predictions from sub models
+        Trains the StackEnsemble.
 
-        This method will raise ModelException if ensembler model has not been trained.
-
-        :param data: must be a dictionary {'X': ...}, with X is raw data
-        :return:
-            output will be a dictionary {'predictions': ....}
+        :param prepared_data: Dictionary object contains train data, labels and validation data.
         """
-        if not self.stats:
-            raise ModelException('This model has not been trained')
-
-        X = self._preprocess(data['X'])
-        X = self.stats.transform(X)
-        return {'predictions': self.model.predict(X)}
-
-
-class StackEnsembleClassifier(StackEnsemble):
-    """StackEnsemble classifier
-
-    This is the base class for stack ensemble classifiers
-    """
-
-    def evaluate(self, data: Dict, metrics: List[str]=None) -> Dict:
-        """
-        Evaluates for the test data
-        :param data: a dictionary {'X_test': ..., 'y_test': ...}
-        :param metrics: list of metrics to return and to persist later by the model.
-            Default value = ['confusion_matrix', 'precision', 'recall', 'f1', 'support', 'accuracy']
+        train_data = prepared_data['train_data']
+        train_labels = prepared_data['train_labels']
+        all_inputs = None
+        all_labels = None
         
-        :return:
-            a dictionary containing requested metrics
+        for each_input, each_label in zip(train_data, train_labels):
+            inputs = None
+            labels = each_label
+            for model in self.models:
+                df_prediction = self._extract_prediction(model.predict(each_input))
+                
+                df_prediction = df_prediction[self.prediction_columns]
+                df_prediction.fillna(0, inplace=True)
+                p1 = df_prediction.values
+                if inputs is None:
+                    inputs = p1
+                else:
+                    inputs = np.hstack((inputs, p1))
+            if all_inputs is None:
+                all_inputs = inputs
+            else:
+                all_inputs = np.vstack((all_inputs, inputs))
+            if all_labels is None:
+                all_labels = labels
+            else:
+                all_labels = np.vstack((all_labels, labels))
 
-        """
-        def add_metric(name, value):
-            if name in metrics:
-                self.metrics[name] = value
-
-        if not metrics:
-            metrics = ['confusion_matrix', 'precision', 'recall', 'f1', 'support', 'accuracy']
-
-        X_test, y_test = data['X_test'], data['y_test']
-        y_pred = self.predict({'X': X_test})['predictions']     
-        
-        precision, recall, f1, support = precision_recall_fscore_support(y_test, y_pred)
-
-        add_metric('confusion_matrix', confusion_matrix(y_test, y_pred))        
-        add_metric('precision', precision)
-        add_metric('recall', recall)
-        add_metric('f1', f1)
-        add_metric('support', support)
-        add_metric('accuracy', accuracy_score(y_test, y_pred))
-
-        return self.metrics
+        # assumption: all_inputs ~ numpy array, all_labels ~ numpy array
+        self.model.fit(all_inputs, all_labels)
 
 
-class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
-    """
-    A ready to use StackEnsemble for classifier with ensembler is a sklearn's MultiOutputClassifier using RandomForestClassifier
-
-    Each sub model must be a subclass of h1.Model and its .predict() method will receive an input data as dictionary and return a dictionary
-
-    .. code-block:: python
-           :caption: Sub model for a StackEnsemble Example
-
-            class AModel(h1.Model):
-                def predict(self, data):
-                    X = data['X']
-                    ...
-                    return {'predictions': }
-
-    .. code-block:: python
-        :caption: RandomForestStackEnsembleClassifier usage Example
-
-        class BModel(h1.Model):
-                def predict(self, data):
-                    X = data['X']
-                    ...
-                    return {'predictions': }
-
-        class RandomForestStackEnsembleClassifier(RandomForestStackEnsembleClassifier):
-            def __init__(self):
-                super().__init__([
-                    AModel().load('version_of_model_A'),
-                    BModel().load('version_of_model_B')
-                ])
-
-            def load_data(self,):
-                ...
-                return loaded_data
-
-            def prep_data(self, loaded_data):
-                ...
-                return prepared_data
-
-        m = AModel()
-        loaded_data = m.load_data()
-        prepared_data = m.prep_data(loaded_data)
-        m.train(prepared_data)
-        m.persist('version_of_model_A')
-
-        m = BModel()
-        loaded_data = m.load_data()
-        prepared_data = m.prep_data(loaded_data)
-        m.train(prepared_data)
-        m.persist('version_of_model_B')
-
-        m = RandomForestStackEnsembleClassifier()
-        loaded_data = m.load_data()
-        prepared_data = m.prep_data(loaded_data)
-        m.train(prepared_data)
-        m.persist('version_of_model_B')
-        m.predict(...)
-    """
-    def __init__(self, sub_models: List[Model]):
-        super().__init__(
-            MultiOutputClassifier(RandomForestClassifier(n_jobs=-1, max_depth=4, random_state=42)),
-            sub_models
-        )
-
+class MultiOutputClassifierEnsemble(StackEnsemble):
+    def __init__(self, models):
+        ensembler = MultiOutputClassifier(RandomForestClassifier(n_jobs=-1, max_depth=4, random_state=42))
+        super().__init__(models, ensembler)

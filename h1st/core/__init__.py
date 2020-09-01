@@ -4,6 +4,5 @@ from h1st.core.model import Model
 from h1st.core.node import Action, Decision
 from h1st.core.exception import GraphException
 from h1st.core.node_containable import NodeContainable
-from h1st.core.ensemble import RandomForestStackEnsembleClassifier
 
 setup_logger()
