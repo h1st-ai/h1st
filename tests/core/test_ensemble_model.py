@@ -53,11 +53,11 @@ class RandomForestStackEnsembleClassifierTestCase(TestCase):
         ensemble.train(prepared_data)
         ensemble.evaluate(prepared_data)
         ensemble.persist('ensemble')
-        self.assertIn('accuracy', ensemble.metrics)
+        self.assertIn('f1', ensemble.metrics)
 
         # ensure performance of ensemble is better than any sub models
-        self.assertGreaterEqual(ensemble.metrics['accuracy'], m1.metrics['accuracy'])
-        self.assertGreaterEqual(ensemble.metrics['accuracy'], m2.metrics['accuracy'])
+        self.assertGreaterEqual(ensemble.metrics['f1'], m1.metrics['f1'])
+        self.assertGreaterEqual(ensemble.metrics['f1'], m2.metrics['f1'])
 
 
         
