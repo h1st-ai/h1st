@@ -43,7 +43,7 @@ class WineQualityModel(h1.Model, h1.Explainable):
 
     def explore(self):
         self.data["quality"].hist()
-        plt.title("Wind Quality Rating Labels Distribution")
+        plt.title("Wine Quality Rating Labels Distribution")
 
     def prep_data(self):
         """
