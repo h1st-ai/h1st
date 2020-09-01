@@ -28,7 +28,6 @@ class Explainable:
         OTHER = 100
 
     class Aspect(Enum):
-
         """
         [summary]
         """
@@ -38,8 +37,6 @@ class Explainable:
         ANY = 99
         OTHER = 100
 
-
-    
     @property
     def description(self):
         return getattr(self, "__description", {})
@@ -47,13 +44,9 @@ class Explainable:
     @description.setter
     def description(self, value):
         setattr(self, "__description", value)
-    
+
     def describe(self, constituency=Constituency.ANY, apect=Aspect.ANY):
         return {}
 
     def explain(self, constituency=Constituency.ANY, apect=Aspect.ANY,decision=None):
         return {}
-
-    
-    
-

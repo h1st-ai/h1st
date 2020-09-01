@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import numpy as np
 import pandas as pd
 import lime
@@ -105,10 +106,20 @@ class TestModelExplainDescribe(h1.Model, Explainable):
         return {'lime_predictions':e.prediction.as_list()}
 
 
-
-
 class TestExplainable(unittest.TestCase):
     def test_explainable(self):
         e = TestModelExplainDescribe()
         self.assertIsInstance(e.describe("regulator"), dict)
         self.assertIsInstance(e.explain("data_scientist", {'random':10}), dict)
+
+
+class SomeExplainableThing(Explainable):
+    pass
+
+
+class TestExplainable(unittest.TestCase):
+
+    def test_explainable(self):
+        e = SomeExplainableThing()
+        self.assertIsInstance(e.describe(), dict)
+        self.assertIsInstance(e.explain(), dict)

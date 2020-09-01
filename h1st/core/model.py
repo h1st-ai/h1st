@@ -53,18 +53,18 @@ class Model(NodeContainable, Explainable):
         """
         raise NotImplementedError()
 
+    def explore_data(self, data) -> Any:
+        """
+        Implement logic to explore data from loaded data
+        """
+        raise NotImplementedError()
+
     def prep_data(self, data: Any) -> Any:
         """
         Implement logic to prepare data from loaded data
 
         :param data: loaded data from ``load_data`` method
         :returns: prepared data
-        """
-        raise NotImplementedError()
-
-    def explore(self) -> Any:
-        """
-        Implement logic to explore data from loaded data
         """
         raise NotImplementedError()
 
