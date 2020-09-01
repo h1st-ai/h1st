@@ -1,63 +1,80 @@
-import math
-import pandas as pd
-from unittest import TestCase, skip
-from sklearn.model_selection import train_test_split
-from h1st import RandomForestStackEnsembleClassifier
 import h1st as h1
-import examples.Ensemble.config as config
-from examples.Ensemble.models.submodel_examples import SK_SVM_Classifier, TF_FC_Classifier
+import sklearn
+from sklearn.linear_model import LogisticRegression
+import joblib
+from unittest import TestCase, skip
+import numpy as np
+import pandas as pd
+from h1st.core.ensemble import MultiOutputClassifierEnsemble
 
-class RandomForestStackEnsembleClassifier(RandomForestStackEnsembleClassifier):
-    def load_data(self,):
-        df = pd.read_excel(config.DATA_PATH, header=1)
-        return df
+def get_numpy_data(nums_input):
+    a = [[1, 1, 1, 1, 1, 1, 1]]
+    b = [a * nums_input]
+    numpy_data = np.array(b)
+    numpy_data = numpy_data.reshape((-1, len(a[0])))
+    return numpy_data
 
-    def prep_data(self, loaded_data):
-        df = loaded_data
-        X = df[config.DATA_FEATURES].values
-        y = df[config.DATA_TARGETS].values
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.33, shuffle=True, random_state=10)
-        
+class ModelA(h1.Model):
+    def __init__(self):
+        pass
+    def predict(self, input_data):
+        nums_input = len(input_data['results'])
+        numpy_data = get_numpy_data(nums_input)
+        sensors = ['CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy']
+        cols = ['Timestamp','prediction'] + ['prediction_%s' % s for s in sensors]
+        df = pd.DataFrame(data=numpy_data, columns=cols)
+        return {'result': df}
+
+class MyEnsemble(MultiOutputClassifierEnsemble):
+    def __init__(self):
+        super().__init__([ModelA(), ModelA()])
+        #prediction columns are across individual models 
+        sensors = ['CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy']
+        self.prediction_columns = ['prediction'] + ['prediction_%s' % s for s in sensors]
+        self.labels = ['label_1', 'label_2', 'label_3', 'label_4', 'label_5', 'label_6']
+        self.car_model = '13Prius'
+        self.attack_mode = 'injection'
+
+    def get_data(self):
+        train_files = ["tests/core/dummy_test_attack.csv"]
+        test_files = ["tests/core/dummy_test_attack.csv"]
+        return {'train_data_files': train_files, 'test_data_files': test_files}
+
+    def prep_data(self, data):
+        train_data_files = data['train_data_files']
+        train_inputs = []
+        train_labels = []
+
+        for filename in train_data_files:
+            df = pd.read_csv(filename)
+            df_ts = pd.read_csv(filename)
+            for c in self.labels:
+                df[c] = 1
+                df_ts[c] = 1
+            train_inputs.append({
+                'results': df_ts,
+                'filename': filename
+            })
+            train_labels.append(df[self.labels])
+
         return {
-            'X_train': X_train,
-            'X_test': X_test,
-            'y_train': y_train,
-            'y_test': y_test
+            'train_data': train_inputs, 
+            'train_labels': train_labels,  
         }
 
-class RandomForestStackEnsembleClassifierTestCase(TestCase):
-    def test_ensemble(self):
-        m1 = SK_SVM_Classifier()
-        data = m1.load_data()
-        prepared_data = m1.prep_data(data)
-        m1.train(prepared_data)
-        m1.evaluate(prepared_data)
-        m1.persist('m1')
-        self.assertIn('accuracy', m1.metrics)
-
-        m2 = TF_FC_Classifier()
-        data = m2.load_data()
-        prepared_data = m2.prep_data(data)
-        m2.train(prepared_data)
-        m2.evaluate(prepared_data)
-        m2.persist('m2')
-        self.assertIn('accuracy', m2.metrics)
-
-        ensemble = RandomForestStackEnsembleClassifier([
-            SK_SVM_Classifier().load('m1'),
-            TF_FC_Classifier().load('m2')
-        ])
-        data = ensemble.load_data()
+class TestEnsembleTestCase(TestCase):
+    def test_train_predict(self):
+        ensemble = MyEnsemble()
+        data = ensemble.get_data()
         prepared_data = ensemble.prep_data(data)
         ensemble.train(prepared_data)
-        ensemble.evaluate(prepared_data)
-        ensemble.persist('ensemble')
-        self.assertIn('accuracy', ensemble.metrics)
-
-        # ensure performance of ensemble is better than any sub models
-        self.assertGreaterEqual(ensemble.metrics['accuracy'], m1.metrics['accuracy'])
-        self.assertGreaterEqual(ensemble.metrics['accuracy'], m2.metrics['accuracy'])
 
 
-        
+        numpy_data = get_numpy_data(100)
+        sensors = ['CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy']
+        cols = ['Timestamp','prediction'] + ['prediction_%s' % s for s in sensors]
+        df = pd.DataFrame(data=numpy_data, columns=cols)
+
+        res = ensemble.predict({'results': df})['results']
+        #assertion predict = number of rows
+        assert len(res) == len(df)

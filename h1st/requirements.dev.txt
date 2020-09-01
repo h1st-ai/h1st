@@ -4,4 +4,3 @@ coverage==5.2.1
 #pytype
 tensorflow==2.2.0
 seaborn==0.10.1
-xlrd==1.2.0

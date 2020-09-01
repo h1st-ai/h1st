@@ -80,17 +80,17 @@ class ModelSerDe:
         """
         meta_info = {}
 
-        if model.metrics:
+        if hasattr(model, 'metrics'):
             logger.info('Saving metrics property...')
             meta_info['metrics'] = self.METRICS_PATH
             self._serialize_dict(model.metrics, path, self.METRICS_PATH)
 
-        if model.stats:
+        if hasattr(model, 'stats'):
             logger.info('Saving stats property...')
             meta_info['stats'] = self.STATS_PATH
             self._serialize_dict(model.stats, path, self.STATS_PATH)
 
-        if model.model:
+        if hasattr(model, 'model'):
             logger.info('Saving model property...')
             if type(model.model) == list:
                 meta_info['models'] = []
@@ -133,7 +133,7 @@ class ModelSerDe:
 
         if 'models' in meta_info.keys():
             model_infos = meta_info['models']
-            org_model = model.model  # original model object from Model class
+            org_model = getattr(model, 'model', None)  # original model object from Model class
             if type(model_infos) == list:
                 if len(model_infos) == 1:
                     # Single model
@@ -324,18 +324,13 @@ class ModelRepository:
             repo_path = None
             if ref is not None:
                 # root module
-                root_module_name = ''
-                
-                # find the first folder containing config.py to get MODEL_REPO_PATH
-                for sub in ref.__class__.__module__.split('.'):
-                    root_module_name = sub if not root_module_name else root_module_name + '.' + sub
+                root_module_name = ref.__class__.__module__.split('.')[0]
 
-                    try:
-                        module = importlib.import_module(root_module_name + ".config")
-                        repo_path = getattr(module, 'MODEL_REPO_PATH', None)
-                        break
-                    except ModuleNotFoundError:
-                        repo_path = None
+                try:
+                    module = importlib.import_module(root_module_name + ".config")
+                    repo_path = getattr(module, 'MODEL_REPO_PATH', None)
+                except ModuleNotFoundError:
+                    repo_path = None
 
             if not repo_path:
                 raise RuntimeError('Please set MODEL_REPO_PATH in config.py')
