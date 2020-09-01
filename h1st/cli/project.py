@@ -2,6 +2,7 @@ import pathlib
 import tempfile
 import shutil
 import re
+import os
 from distutils import dir_util
 
 import click
@@ -45,6 +46,7 @@ def new_model_cli(model_name):
             raise ValueError('Please run this command in the package folder')
 
         class_name, _ = _clean_name(model_name)
+        project_package = path.name
         module_name = class_name
 
         if not class_name.lower().endswith("model"):
@@ -53,9 +55,14 @@ def new_model_cli(model_name):
         new_model(
             class_name,
             path,
-            path.name,
+            project_package,
             module_name=module_name
         )
+
+        with open(path / 'notebooks' / f"{module_name}.ipynb", "w") as f:
+            f.write(
+                _render_notebook(project_package, class_name, module_name)
+            )
 
         print('Model %s%s%s is created successfully.' % (
             attr('bold'),
@@ -68,6 +75,7 @@ def new_model_cli(model_name):
             attr('reset'),
             ex,
         ))
+
 
 def new_project(project_name, base_path):
     """
@@ -124,6 +132,11 @@ def new_project(project_name, base_path):
             project_package=project_name_camel_case,
             module_name=project_name_camel_case,
         )
+
+        with open(notebook_folder / f"{class_prefix}.ipynb", "w") as f:
+            f.write(_render_notebook(
+                project_name_camel_case, f"{class_prefix}Model", class_prefix
+            ))
 
         shutil.move(tmpdir, project_module)
         return project_module, project_name
@@ -207,6 +220,24 @@ class {name}(h1.Model):
         # Implement your predict function
         raise NotImplementedError()
 """.format(name=name)
+
+
+def _render_notebook(package_name, model_name, model_file_name):
+    notebook_tpl = os.path.join(os.path.dirname(__file__), 'notebook.json')
+
+    with open(notebook_tpl, 'r') as f:
+        notebook = f.read()
+
+    subl = {
+        '$$MODEL_NAME$$': model_name,
+        '$$MODEL_FILE$$': model_file_name,
+        '$$PACKAGE_NAME$$': package_name,
+    }
+
+    for k, v in subl.items():
+        notebook = notebook.replace(k, v)
+
+    return notebook
 
 
 def _clean_name(name):
