@@ -17,7 +17,8 @@ class SHAPExplainer():
         if plot:
             self.generate_plots()
         
-
+    
+    
     def return_shap_values(self):
         return {'shap_values':self.shap_values}
  

@@ -2,14 +2,15 @@ import numpy as np
 import pandas as pd
 import lime
 import lime.lime_tabular as lt
+from .utils import get_model_name
  
 class LIMEExplainer():
-    def __init__(self, model, data, predictions, plot):
+    def __init__(self, model, data, predictions, plot, verbose=0):
         super().__init__()
-        self.plot =plot    
-        self.model = model
-        self.data = data
-        self.model_type = str(type(self.model).__name__)
+        self.plot=plot    
+        self.model=model
+        self.data=data
+        self.model_type=get_model_name(self.model)
         self.features = list(self.data["train_df"].columns)
         self.predictions = predictions
         self.get_lime_explainer()
