@@ -8,21 +8,23 @@ FEATURES = config.SENSORS + ["%s_TimeDiff" % s for s in config.SENSORS]
 
 class GradientBoostingMsgClassifierModel(h1.Model):
     def load_data(self, num_files=None):
-        return util.load_data(num_files, shuffle=True)
+        return util.load_data(num_files, shuffle=False)
 
     def prep_data(self, data):
         def concat_processed_files(files):
             dfs = []
             for f in files:
-                z = pd.read_csv(f)
-                z.columns = ['Timestamp', 'Label', 'CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy',]
+                z = pd.read_parquet(f)
                 z = util.compute_timediff_fillna(z)
                 dfs.append(z)
             df2 = pd.concat(dfs)
             return df2
+        split = int(len(data["attack_files"])*0.8)
+        train_files = data["attack_files"][:split]
+        test_files = data["attack_files"][split:]
         result = {
-            "train_attack_df": concat_processed_files(data["train_attack_files"]),
-            "test_attack_df": concat_processed_files(data["test_attack_files"])
+            "train_attack_df": concat_processed_files(train_files),
+            "test_attack_df": concat_processed_files(test_files)
         }
         print("len train_attack_df = %s" % len(result["train_attack_df"]))
         print("len test_attack_df = %s" % len(result["test_attack_df"]))

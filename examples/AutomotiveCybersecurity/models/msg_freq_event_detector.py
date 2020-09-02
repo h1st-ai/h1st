@@ -7,15 +7,14 @@ import AutomotiveCybersecurity.util as util
 
 class MsgFreqEventDetectorModel(h1.Model):
     def load_data(self, num_files=None):
-        return util.load_data(num_files)
+        return util.load_data(num_files, shuffle=True)
     
     def train(self, prepared_data):
-        files = prepared_data["train_normal_files"]
+        files = prepared_data["normal_files"]
         
         from collections import defaultdict
         def count_messages(f):
-            df = pd.read_csv(f)
-            df.columns = ['Timestamp', 'Label', 'CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy']
+            df = pd.read_parquet(f)
             counts = defaultdict(list)
             
             for window_start in util.gen_windows(df, window_size=config.WINDOW_SIZE, step_size=config.WINDOW_SIZE):
