@@ -15,14 +15,16 @@ class GradientBoostingMsgClassifierModel(h1.Model):
             dfs = []
             for f in files:
                 z = pd.read_parquet(f)
-                z = util.compute_timediff_fillna(z)
+                z = util.compute_timediff_fillna(z, dropna_subset=FEATURES)
                 dfs.append(z)
             df2 = pd.concat(dfs)
             return df2
-        split = int(len(data["attack_files"])*0.8)
+        split = int(len(data["attack_files"])*0.5)
         train_files = data["attack_files"][:split]
         test_files = data["attack_files"][split:]
         result = {
+            "train_files": train_files,
+            "test_files": test_files,
             "train_attack_df": concat_processed_files(train_files),
             "test_attack_df": concat_processed_files(test_files)
         }
@@ -35,7 +37,7 @@ class GradientBoostingMsgClassifierModel(h1.Model):
         from sklearn.experimental import enable_hist_gradient_boosting
         from sklearn.ensemble import HistGradientBoostingClassifier
         X = df[FEATURES]
-        y = df.Label == "Tx"
+        y = df.Label == config.ATTACK_LABEL
         self.model = HistGradientBoostingClassifier(max_iter=500).fit(X, y)
 
     def evaluate(self, prepared_data):
@@ -58,7 +60,8 @@ class GradientBoostingMsgClassifierModel(h1.Model):
                 # print("window %s in attack: event_result = %s" % (event_result['window_start'], event_result))
                 in_window = (df.Timestamp >= event_result['window_start']) & (df.Timestamp < event_result['window_start'] + config.WINDOW_SIZE)
                 w_df = df[in_window]
-                ypred = self.model.predict(w_df[FEATURES])
-                df.loc[in_window, "WindowInAttack"] = 1
-                df.loc[in_window, "MsgIsAttack"] = ypred.astype(int)
+                if len(w_df) > 0:
+                    ypred = self.model.predict(w_df[FEATURES])
+                    df.loc[in_window, "WindowInAttack"] = 1
+                    df.loc[in_window, "MsgIsAttack"] = ypred.astype(int)
         return {"injection_window_results": df}

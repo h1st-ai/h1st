@@ -134,6 +134,11 @@ def do_injection(df, sensor_name, scale, period, max_attack_dt=20., method="cons
     
     df2 = pd.concat([df, dfinj]).sort_values("Timestamp")
 
+    # these values always go together   
+    if sensor_name in ("YawRate", "Gx", "Gy"):
+        df2_filled = df2.fillna(method="ffill")
+        df2.loc[df2.Label == "Attack", ["YawRate", "Gx", "Gy"]] = df2_filled.loc[df2_filled.Label == "Attack", ["YawRate", "Gx", "Gy"]]
+
     if DEBUG: print("injected %s rows, before = %s, after = %s" % (len(dfinj), len(df), len(df2)))
     # print(df2)
     return df2, start, end
@@ -248,6 +253,7 @@ def synthesize_attacks(df, num_passes, sensor=None, chunk_dt=30., chunk_attk_pro
                 else:
                     chunks.append(dfsub)
             dfi = pd.concat(chunks, axis=0).reset_index()
+            dfi["AttackEventIndex"] = pd.to_numeric(dfi["AttackEventIndex"], errors="coerce").astype("Int64") # nullable int
             del dfi['index']
             # fname = "%s/%s-%s.parquet" % (output_dir, os.path.basename(f).replace(".parquet", ""), n_pass)
             # print("saving %s" % fname)

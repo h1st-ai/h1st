@@ -19,8 +19,9 @@ def gen_windows(df, window_size, step_size):
 
 def load_data(num_files=None, shuffle=False):
     fs = s3fs.S3FileSystem(anon=False)
-    normal_files = ['s3://' + f for f in fs.glob(config.AUTOCYBER_DATA_PATH + "/normal-data/*.parquet", recursive=True)]
-    attack_files = ['s3://' + f for f in fs.glob(config.AUTOCYBER_DATA_PATH + "/attack-samples/*.parquet", recursive=True)]
+    AUTOCYBER_DATA_PATH = "s3://h1st-tutorial-autocyber"
+    normal_files = ['s3://' + f for f in fs.glob(AUTOCYBER_DATA_PATH + "/driving-trips/*.parquet", recursive=True)]
+    attack_files = ['s3://' + f for f in fs.glob(AUTOCYBER_DATA_PATH + "/attack-samples/*.parquet", recursive=True)]
     if shuffle:
         random.shuffle(normal_files)
         random.shuffle(attack_files)
@@ -34,7 +35,7 @@ def load_data(num_files=None, shuffle=False):
         'attack_files': attack_files,
     }
 
-def compute_timediff_fillna(df):
+def compute_timediff_fillna(df, dropna_subset=None):
     df = df.copy()
     for s in config.SENSORS:
         sensor_not_isna = df[~df[s].isna()]
@@ -43,8 +44,9 @@ def compute_timediff_fillna(df):
 
     for s in config.SENSORS:
         df[s] = df[s].fillna(method="ffill")
-        df["%s_TimeDiff" % s] = df["%s_TimeDiff" % s].fillna(0.)
-    df.dropna(inplace=True)
+        df["%s_TimeDiff" % s] = df["%s_TimeDiff" % s].fillna(-1) # method="ffill")
+    if dropna_subset:
+        df.dropna(subset=dropna_subset, inplace=True)
     
     return df
 
@@ -66,8 +68,7 @@ def evaluate_event_graph(graph, files):
     
     for f in files:
         # print(f)
-        df = pd.read_csv(f)
-        df.columns = ['Timestamp', 'Label', 'CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy']
+        df = pd.read_parquet(f)
         result = graph.predict({"df": df})
             
         event_preds = []
@@ -78,7 +79,7 @@ def evaluate_event_graph(graph, files):
 
             in_window = (df.Timestamp >= event_result['window_start']) & (df.Timestamp < event_result['window_start'] + config.WINDOW_SIZE)
             w_df = df[in_window]
-            label = np.any(w_df.Label == "Tx")
+            label = np.any(w_df.Label == config.ATTACK_LABEL)
             event_labels.append(label)
         dfw = pd.DataFrame({"WindowLabel": event_labels, "WindowInAttack": event_preds})
 
