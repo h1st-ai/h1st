@@ -19,8 +19,8 @@ def gen_windows(df, window_size, step_size):
 
 def load_data(num_files=None, shuffle=False):
     fs = s3fs.S3FileSystem(anon=False)
-    train_normal_files = ['s3://' + f for f in fs.glob(config.AUTOCYBER_DATA_PATH + "/train/Normal/*.csv", recursive=True)]
-    train_attack_files = ['s3://' + x for x in fs.glob(config.AUTOCYBER_DATA_PATH + "/train/Attack/*/*.csv", recursive=True)]
+    train_normal_files = ['s3://' + f for f in fs.glob(config.AUTOCYBER_DATA_PATH + "/normal-data/*.parquet", recursive=True)]
+    train_attack_files = ['s3://' + f for f in fs.glob(config.AUTOCYBER_DATA_PATH + "/normal-data/*.parquet", recursive=True)]
     test_normal_files = ['s3://' + x for x in fs.glob(config.AUTOCYBER_DATA_PATH + "/test/public/Normal/*.csv", recursive=True)]
     test_attack_files = ['s3://' + x for x in fs.glob(config.AUTOCYBER_DATA_PATH + "/test/public/Attack/*/*.csv", recursive=True)]
     if shuffle:

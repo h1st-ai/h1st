@@ -36,12 +36,12 @@ class GradientBoostingMsgClassifierModel(h1.Model):
         y = df.Label == "Tx"
         self.model = HistGradientBoostingClassifier(max_iter=500).fit(X, y)
 
-    def evaluate(self, prepared_data):        
+    def evaluate(self, prepared_data):
         df = prepared_data["test_attack_df"]
         ypred = self.model.predict(df[FEATURES])
         import sklearn.metrics
-        cf = sklearn.metrics.confusion_matrix(df.Label == "Tx", ypred)
-        acc = sklearn.metrics.accuracy_score(df.Label == "Tx", ypred)
+        cf = sklearn.metrics.confusion_matrix(df.Label == config.ATTACK_LABEL, ypred)
+        acc = sklearn.metrics.accuracy_score(df.Label == config.ATTACK_LABEL, ypred)
         print(cf)
         print("Accuracy = %.4f" % acc)
         self.metrics = {"confusion_matrix": cf, "accuracy": acc}
