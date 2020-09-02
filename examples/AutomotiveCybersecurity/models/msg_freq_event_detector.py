@@ -7,7 +7,7 @@ import AutomotiveCybersecurity.util as util
 
 class MsgFreqEventDetectorModel(h1.Model):
     def load_data(self, num_files=None):
-        return util.load_data(num_files, shuffle=True)
+        return util.load_data(num_files, shuffle=False)
     
     def train(self, prepared_data):
         files = prepared_data["normal_files"]
