@@ -101,17 +101,24 @@ class TestModelExplainDescribe(h1.Model):
 
     def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE):               
         d = SHAPExplainer(self.model, self.prepared_data, self.plot)      
-        return {'shap_values':d.shap_values}
+        return d.return_shap_values()
+        
 
     def explain(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE, decision=None):
         e = LIMEExplainer(self.model, self.prepared_data, decision, self.plot)
-        return {'lime_predictions':e.decision_explainer.as_list()}
+        return e.return_lime_predictions()
+        
 
 
 class TestExplainable(unittest.TestCase):
     def test_explainable(self):
         e = TestModelExplainDescribe()
-        self.assertIsInstance(e.describe(), dict)
-        self.assertIsInstance(e.explain(decision = {'sample':10}), dict)
+        describe = e.describe()
+        explain = e.explain(decision={'sample':10})
+        
+        self.assertEquals(len(explain['lime_predictions']), len(e.features)-1)
+        self.assertEquals(describe['shap_values'].shape, e.prepared_data['train_df'].shape)
+        self.assertIsInstance(describe, dict)
+        self.assertIsInstance(explain, dict)
 
 

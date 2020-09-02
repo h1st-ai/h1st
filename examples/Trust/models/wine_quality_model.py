@@ -93,7 +93,7 @@ class WineQualityModel(h1.Model):
         input_data = df[self.features]
         return self.model.predict(input_data)
 
-    def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE):
+    def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST.name, aspect=h1.Model.Aspect.ACCOUNTABLE.name):
         ## TODO: For each pair of constituent and aspect write functions to show relevant information.
         print("Description type: {}"\
             .format(h1.Model.Aspect.ACCOUNTABLE.name))
@@ -109,7 +109,7 @@ class WineQualityModel(h1.Model):
             d = SHAPExplainer(self.model, self.prepared_data, self.plot)      
             return {'shap_values':d.shap_values}
 
-    def explain(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE, decision=None):
+    def explain(self, constituent=h1.Model.Constituency.DATA_SCIENTIST.name, aspect=h1.Model.Aspect.ACCOUNTABLE.name, decision=None):
         e = LIMEExplainer(self.model, self.prepared_data, decision, self.plot)
         return {'lime_predictions':e.decision_explainer.as_list()}
 

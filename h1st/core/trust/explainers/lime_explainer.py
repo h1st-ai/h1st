@@ -14,8 +14,12 @@ class LIMEExplainer():
         self.predictions = predictions
         self.get_lime_explainer()
         self.get_decision_lime_explainer()
-          
         
+          
+
+    def return_lime_predictions(self):
+        return {"lime_predictions":self.decision_explainer.as_list()}
+    
     def generate_plots(self):
         self.decision_explainer.show_in_notebook(
             show_table=True, show_all=True)

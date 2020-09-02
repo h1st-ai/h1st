@@ -15,7 +15,11 @@ class SHAPExplainer():
         self.get_shap_values()
         self.plot = plot
         if plot:
-            self.generate_plots()      
+            self.generate_plots()
+        
+
+    def return_shap_values(self):
+        return {'shap_values':self.shap_values}
  
     def _shap_local_plot(self, j):
         explainer_model = shap.TreeExplainer(self.model)

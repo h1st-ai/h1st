@@ -29,7 +29,10 @@ class Explainable:
 
     class Aspect(Enum):
         """
-        An Aspect is the type of the question being asked. Different types of questions may warrant very different responses. For example, `how do you prevent an autocyber attack in the future?` is an `Operational` type question asking you to describe how the system will be used in the future. Or `what if your model is wrong?1 - this is a type of `Accountability` question, expecting you to take responsibility for the models error.
+        An Aspect is the type of question being asked. Different types of questions may warrant very different responses. 
+        For example, `how do you prevent an autocyber attack in the future?` is an `Operational` 
+        type question asking you to describe how the system handle a future attack. 
+        Or `what if your model is wrong? - this is a type of `Accountability` question about how you will respond to an incorrect decision.
         """
         ACCOUNTABLE = 10
         FUNCTIONAL = 10
@@ -46,7 +49,63 @@ class Explainable:
         setattr(self, "__description", value)
 
     def describe(self, constituency=Constituency.ANY, apect=Aspect.ANY):
+        '''
+        Returns a description of the model's behavior and properties based on `Who's asking` for `what`.
+
+            Parameters:
+                constituent : str or int
+                    The Constituency asking for the explanation `Who`
+                    DATA_SCIENTIST or 10
+                    BUSINESS_MANAGER or 20
+                    CUSTOMER or 30
+                    USER or 40
+                    CONSUMER or 50
+                    REGULATOR or 60
+                    LEGISLATOR or 70
+                    ANY or 99
+                    OTHER or 100
+
+                aspect : str or int
+                    The Aspect of the question `what`
+                    ACCOUNTABLE or 10
+                    FUNCTIONAL or 10
+                    OPERATIONAL or 30
+                    ANY or 99
+                    OTHER or 100
+
+            Returns:
+                out : Description of Model's behavior and properties (SHAP)               
+        '''
         return {}
 
     def explain(self, constituency=Constituency.ANY, apect=Aspect.ANY,decision=None):
+        '''
+        Returns an explanation for a decision made by the Model based on `Who's asking` and `why`.
+
+            Parameters:
+                constituent : str or int
+                    The Constituency asking for the explanation
+                    DATA_SCIENTIST or 10
+                    BUSINESS_MANAGER or 20
+                    CUSTOMER or 30
+                    USER or 40
+                    CONSUMER or 50
+                    REGULATOR or 60
+                    LEGISLATOR or 70
+                    ANY or 99
+                    OTHER or 100
+
+                aspect : str or int
+                    The Aspect of the question (Accountable, Functional, Operational)
+                    ACCOUNTABLE or 10
+                    FUNCTIONAL or 10
+                    OPERATIONAL or 30
+                    ANY or 99
+                    OTHER or 100
+
+                decision : array-like: the input data of the decision to be explained
+
+            Returns:
+                out : Specific decision explanation (SHAP or LIME)               
+        '''
         return {}
