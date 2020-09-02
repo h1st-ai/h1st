@@ -244,7 +244,7 @@ class Graph(NodeContainable):
 
         :return: result as a dictionary
         """
-        output = self.nodes.start._execute(command, data)
+        output = self.nodes.start._execute(command, data, {})
 
         if self.nodes.end.transform_output:
             output = self.nodes.end.transform_output(output)

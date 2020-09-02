@@ -1,6 +1,6 @@
 import math
 from unittest import TestCase, skip
-from h1st.core import NodeContainable
+from h1st.core import NodeContainable, Decision
 import h1st as h1
 
 class GraphTestCase(TestCase):
@@ -70,3 +70,49 @@ class GraphTestCase(TestCase):
 
         self.assertEqual(len(result['arr']), 10)
         self.assertEqual(result['total'], sum([math.floor(i['x']) for i in values if math.floor(i['x']) >= 2]))
+
+
+    def test_override_output_key(self):
+        arr = [
+            {'x': 100, 'prediction': True},
+            {'x': 200, 'prediction': False},
+            {'x': 300, 'prediction': True},
+            {'x': 400, 'prediction': True},
+        ]
+
+        class MyModel(h1.Model):
+            def predict(self, inputs):
+                return {
+                    "results": arr
+                }
+
+        class YesAction(h1.NodeContainable):
+            def call(self, command, inputs):
+                return {'results': sum([i['x'] for i in inputs['results']])}
+
+        class NoAction(h1.NodeContainable):
+            def call(self, command, inputs):
+                return {'no_results': sum([i['x'] for i in inputs['results']])}
+                
+        class MyGraph(h1.Graph):
+            def __init__(self):
+                super().__init__()
+
+                yes_node, no_node = (
+                    self
+                        .start()
+                        .add(Decision(MyModel()))
+                        .add(
+                            yes = YesAction(),
+                            no = NoAction()
+                        )
+                )
+
+                self.end() 
+
+                self.nodes.end.transform_output = lambda inputs: {'result': inputs['results'] + inputs['no_results']*1000}
+                        
+        result = MyGraph().predict(data={})
+
+        expected_result = sum([i['x'] for i in arr if i['prediction']]) + sum([i['x'] for i in arr if not i['prediction']])*1000
+        self.assertEqual(result['result'],  expected_result)
