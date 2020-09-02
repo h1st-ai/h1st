@@ -32,7 +32,7 @@ class Explainable:
         An Aspect is the type of question being asked. Different types of questions may warrant very different responses. 
         For example, `how do you prevent an autocyber attack in the future?` is an `Operational` 
         type question asking you to describe how the system handle a future attack. 
-        Or `what if your model is wrong? - this is a type of `Accountability` question about how you will respond to an incorrect decision.
+        Or `what if your model is wrong? - this is a type of `Accountability` question.
         """
         ACCOUNTABLE = 10
         FUNCTIONAL = 10
