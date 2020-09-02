@@ -55,6 +55,7 @@ class SK_SVM_Classifier(h1.Model):
         y_test = prepared_data['y_test']
         y_pred = self.predict({'X': X_test})['predictions']
         self.metrics = {'accuracy': accuracy_score(y_test, y_pred)}
+        return self.metrics
 
     def predict(self, input_data):
         X = input_data['X']
@@ -111,6 +112,7 @@ class TF_FC_Classifier(h1.Model):
         y_pred = self.predict({'X': X_test})['predictions']
         logger.info('%s, %s', y_test.shape, y_pred.shape)
         self.metrics = {'accuracy': accuracy_score(y_test, y_pred)}
+        return self.metrics        
 
     def predict(self, input_data):
         X = input_data['X']
