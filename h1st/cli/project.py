@@ -277,6 +277,8 @@ def _clean_name(name):
     # keep only valid character
     name = re.sub(r"[^a-zA-Z0-9]", "_", name)
     snake_case = "".join(['_' + i.lower() if i.isupper() else i for i in name]).lstrip('_')
+    snake_case = re.sub("_+", "_", snake_case)
+
     camel_case = "".join([i.title() for i in snake_case.split("_")])
     camel_case = camel_case.replace("H1St", "H1st")  # special treatment for the name
 
