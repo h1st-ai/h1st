@@ -1,5 +1,6 @@
 include h1st/requirements*.txt
 include h1st/metadata.json
 include h1st/**/*.json
+include h1st/**/*.txt
 
 recursive-exclude *.pyc

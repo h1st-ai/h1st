@@ -45,9 +45,8 @@ def new_model_cli(model_name):
         if not model_path.exists():
             raise ValueError('Please run this command in the package folder')
 
-        class_name, _ = _clean_name(model_name)
+        class_name, module_name = _clean_name(model_name)
         project_package = path.name
-        module_name = class_name
 
         if not class_name.lower().endswith("model"):
             class_name = f"{class_name}Model"
@@ -84,7 +83,7 @@ def new_project(project_name, base_path):
     :param project_name: name of the project
     :param base_path: target folder to create the project
     """
-    project_name_camel_case, _ = _clean_name(project_name)
+    project_name_camel_case, project_name_snake_case = _clean_name(project_name)
 
     class_prefix = project_name_camel_case
 
@@ -116,26 +115,48 @@ def new_project(project_name, base_path):
         (tmppath / 'config.py').touch()
         (model_folder / '__init__.py').touch()
         (test_folder / '__init__.py').touch()
-        (notebook_folder / ".gitkeep").touch()
+        (notebook_folder / '.gitkeep').touch()
         (data_folder / '.gitkeep').touch()
 
         with open(graph_file, "w") as f:
-            f.write(_render_init_graph_class(class_prefix))
+            f.write(_render_init_graph_class(class_prefix, project_name_snake_case))
 
         with open(test_folder / "test_schema.py", "w") as f:
             f.write(_render_schema_testcase(project_name_camel_case, class_prefix))
 
+        with open(tmppath / 'config.py', 'w') as f:
+            f.write("""# Please update your data path here
+DATA_PATH = './data'
+""")
+
+        model_name = f"{class_prefix}Model"
         new_model(
             f"{class_prefix}Model",
             tmppath,
             project_package=project_name_camel_case,
-            module_name=project_name_camel_case,
+            module_name=project_name_snake_case,
         )
 
-        with open(notebook_folder / f"{class_prefix}.ipynb", "w") as f:
-            f.write(_render_notebook(
-                project_name_camel_case, f"{class_prefix}Model", class_prefix
-            ))
+        with open(test_folder / 'test_model.py', 'w') as f:
+            f.write("""\"""
+You can test your model code here by typing "nose2" in the terminal. 
+Very soon, we will provide jupyter notebook so that you can test your model code easier. 
+Please remove this file if not necessary.
+\"""
+
+from {package_name}.models.{model_package} import {model_name}
+
+def test_model_load_data():
+    m = {model_name}()
+    m.load_data()
+
+""".format(package_name=project_name_camel_case, model_package=project_name_snake_case, model_name=model_name))
+
+
+        # with open(notebook_folder / f"{class_prefix}.ipynb", "w") as f:
+        #     f.write(_render_notebook(
+        #         project_name_camel_case, f"{class_prefix}Model", project_name_snake_case
+        #     ))
 
         shutil.move(tmpdir, project_module)
         return project_module, project_name
@@ -170,9 +191,9 @@ def new_model(name, project_path, project_package, module_name=None):
         ))
 
 
-def _render_init_graph_class(prefix):
+def _render_init_graph_class(prefix, model_package):
     return """import h1st as h1
-from .models.{prefix} import {prefix}Model
+from .models.{model_package} import {prefix}Model
 
 
 class {prefix}Graph(h1.Graph):
@@ -182,7 +203,7 @@ class {prefix}Graph(h1.Graph):
         self.start()
         self.add({prefix}Model())
         self.end()
-""".format(prefix=prefix)
+""".format(prefix=prefix, model_package=model_package)
 
 
 def _render_schema_testcase(project_package, prefix):
@@ -195,13 +216,25 @@ setup_schema_tests({prefix}Graph(), globals())
 """.format(prefix=prefix, project_package=project_package)
 
 
-def _render_model_class(name, base_package):
-    return """import h1st as h1
+def _render_model_class(name, package_name):
+    return """\"""
+The following is a boilerplate code that is provided by workbench. 
+Please fill in each function with your own code and modify the name of 
+h1st_model.py and H1stModelClass if you want. 
+\"""
 
+import h1st as h1
+from {package_name} import config
 
 class {name}(h1.Model):
+    def __init__(self):
+        # Please instantiate your ML/DL/Human model here if necessary
+        self.model = None
+    
     def load_data(self):
         # Implement code to retrieve your data here
+        data_path = config.DATA_PATH
+        print('data_path:', data_path)
         return {{}}
 
     def prep(self, data):
@@ -219,7 +252,7 @@ class {name}(h1.Model):
     def predict(self, data):
         # Implement your predict logic here
         return {{}}
-""".format(name=name)
+""".format(name=name, package_name=package_name)
 
 
 def _render_notebook(package_name, model_name, model_file_name):
