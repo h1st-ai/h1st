@@ -1,10 +1,7 @@
 import numpy as np
-import pandas as pd
-import lime
-import lime.lime_tabular as lt
-from .utils import get_model_name
+#import lime.lime_tabular as lt
  
-class LIMEExplainer():
+class LIMEModelExplainer():
     def __init__(self, model, data, predictions, plot, verbose=0):
         super().__init__()
         self.plot=plot    

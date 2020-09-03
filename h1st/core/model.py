@@ -2,15 +2,12 @@ from typing import Any, List, NoReturn, Union
 from h1st.schema import SchemaValidator
 from h1st.model_repository import ModelRepository
 from h1st.core.node_containable import NodeContainable
-from h1st.core.trust.explainable import Explainable
-from h1st.core.trust.debiasable import Debiasable
-from h1st.core.trust.auditable import Auditable
+from h1st.core.trust.trustable import Trustable
 
 
-
-class Model(NodeContainable, Explainable, Debiasable, Auditable):
+class Model(NodeContainable, Trustable):
     """
-    Base class for H1ST Model.
+    Base class for H1st Model.
 
     To create your own model, inherit `Model` class and implement `prepare_data`, `train` and
     `predict` accordingly. Please refer to Tutorial for more details how to create a model.
