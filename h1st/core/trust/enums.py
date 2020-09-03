@@ -19,9 +19,9 @@ class Constituency(Enum):
 
 class Aspect(Enum):
     """
-    An Aspect is the type of question being asked. Different types of questions may warrant very different responses. 
-    For example, `how do you prevent an autocyber attack in the future?` is an `Operational` 
-    type question asking you to describe how the system handle a future attack. 
+    An Aspect is the type of the question being asked. Different types of questions may warrant very different responses. 
+    For example, `how do you prevent an autocyber attack in the future?` is an `Operational` type question 
+    asking you to describe how the system will be used in the event of a future attack. 
     Or `what if your model is wrong? - this is a type of `Accountability` question.
     """
     ACCOUNTABLE = 10

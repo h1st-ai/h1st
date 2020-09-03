@@ -66,7 +66,6 @@ class WineQualityModel(h1.Model):
             "train_labels": Y_train.reset_index(drop=True),
             "val_labels": Y_test.reset_index(drop=True),
         }
-
         return self.prepared_data
 
     def train(self, prepared_data):
@@ -89,3 +88,5 @@ class WineQualityModel(h1.Model):
         df["quality"] = df["quality"].astype(int)
         input_data = df[self.features]
         return self.model.predict(input_data)
+
+    def describe(self, connstituent=h1.Model.)
