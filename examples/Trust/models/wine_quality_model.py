@@ -33,7 +33,7 @@ class WineQualityModel(h1.Model):
         self.test_size = 0.2
         self.shap=True
         self.lime=True
-        self.plot=True
+        self.verbose=True
 
     def load_data(self):
         filename = "s3://arimo-pana-cyber/explain_data/winequality_red.csv"
@@ -42,7 +42,7 @@ class WineQualityModel(h1.Model):
         self.data = df
 
     def explore(self):
-        if self.plot:
+        if self.verbose:
             self.data["quality"].hist()
             plt.title("Wine Quality Rating Output Labels Distribution")
             plt.show()
@@ -61,10 +61,10 @@ class WineQualityModel(h1.Model):
         )
 
         self.prepared_data = {
-            "train_df": X_train,
-            "val_df": X_test,
-            "train_labels": Y_train,
-            "val_labels": Y_test,
+            "train_df": X_train.reset_index(drop=True),
+            "val_df": X_test.reset_index(drop=True),
+            "train_labels": Y_train.reset_index(drop=True),
+            "val_labels": Y_test.reset_index(drop=True),
         }
 
         return self.prepared_data

@@ -37,7 +37,7 @@ class TestModelExplainDescribe(h1.Model):
         self.test_size = 0.2
         self.shap=True
         self.lime=True
-        self.plot=False
+        self.verbose=False
 
         self.load_data()
         self.prep_data()
@@ -51,7 +51,7 @@ class TestModelExplainDescribe(h1.Model):
         self.data = df
 
     def explore(self):
-        if self.plot:
+        if self.verbose:
             self.data["quality"].hist()
             plt.title("Wine Quality Rating Output Labels Distribution")
             plt.show()
@@ -99,14 +99,13 @@ class TestModelExplainDescribe(h1.Model):
         input_data = df[self.features]
         return self.model.predict(input_data)
 
-    def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE):               
-        d = SHAPExplainer(self.model, self.prepared_data, self.plot)      
-        return d.return_shap_values()
-        
+    def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST.name, aspect=h1.Model.Aspect.ACCOUNTABLE.name):     
+        d = SHAPExplainer(self.model, self.prepared_data, self.metrics, constituent, aspect, self.verbose)      
+        return {'shap_explainer':d}
 
-    def explain(self, constituent=h1.Model.Constituency.DATA_SCIENTIST, aspect=h1.Model.Aspect.ACCOUNTABLE, decision=None):
-        e = LIMEExplainer(self.model, self.prepared_data, decision, self.plot)
-        return e.return_lime_predictions()
+    def explain(self, constituent=h1.Model.Constituency.DATA_SCIENTIST.name, aspect=h1.Model.Aspect.ACCOUNTABLE.name, decision=None):
+        e = LIMEExplainer(self.model, self.prepared_data, self.metrics,decision, constituent, aspect, self.verbose)
+        return {'lime_explainer':e}
         
 
 
@@ -114,10 +113,11 @@ class TestExplainable(unittest.TestCase):
     def test_explainable(self):
         e = TestModelExplainDescribe()
         describe = e.describe()
-        explain = e.explain(decision={'sample':10})
-        
-        self.assertEquals(len(explain['lime_predictions']), len(e.features)-1)
-        self.assertEquals(describe['shap_values'].shape, e.prepared_data['train_df'].shape)
+        idx = 1
+        sample_input = e.prepared_data['train_df'].iloc[idx], e.prepared_data['train_labels'].iloc[idx]
+        explain = e.explain(decision=sample_input)        
+        self.assertEquals(len(explain['lime_explainer'].explainer.feature_names), len(e.features))
+        self.assertEquals(describe['shap_explainer'].shap_values.shape, e.prepared_data['train_df'].shape)
         self.assertIsInstance(describe, dict)
         self.assertIsInstance(explain, dict)
 
