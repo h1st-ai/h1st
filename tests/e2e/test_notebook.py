@@ -6,7 +6,6 @@ import shutil
 class AutoCyberE2ETest(TestCase):
     slow = 0
 
-    @SkipTest
     def test_e2e_autocyber_tutorial(self):
         try:
             subprocess.check_call(['ipython', '-V'])
