@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import accuracy_score, f1_score
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import sklearn
 
 
@@ -88,5 +88,3 @@ class WineQualityModel(h1.Model):
         df["quality"] = df["quality"].astype(int)
         input_data = df[self.features]
         return self.model.predict(input_data)
-
-    def describe(self, connstituent=h1.Model.)

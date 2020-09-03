@@ -4,9 +4,6 @@ import shap
 import pandas as pd
 from h1st.core.trust.utils import get_model_name
 
-
-
-
 class SHAPModelDescriber():
     def __init__(self, model, data):
         self.model = model
