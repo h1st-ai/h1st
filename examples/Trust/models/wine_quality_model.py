@@ -36,7 +36,7 @@ class WineQualityModel(h1.Model):
         self.test_size = 0.2
         self.shap=True
         self.lime=True
-        self.plot=True
+        self.verbose=True
 
     def load_data(self):
         filename = "s3://arimo-pana-cyber/explain_data/winequality_red.csv"
@@ -45,7 +45,7 @@ class WineQualityModel(h1.Model):
         self.data = df
 
     def explore(self):
-        if self.plot:
+        if self.verbose:
             self.data["quality"].hist()
             plt.title("Wine Quality Rating Output Labels Distribution")
             plt.show()
@@ -64,10 +64,10 @@ class WineQualityModel(h1.Model):
         )
 
         self.prepared_data = {
-            "train_df": X_train,
-            "val_df": X_test,
-            "train_labels": Y_train,
-            "val_labels": Y_test,
+            "train_df": X_train.reset_index(drop=True),
+            "val_df": X_test.reset_index(drop=True),
+            "train_labels": Y_train.reset_index(drop=True),
+            "val_labels": Y_test.reset_index(drop=True),
         }
 
         return self.prepared_data
@@ -93,23 +93,11 @@ class WineQualityModel(h1.Model):
         input_data = df[self.features]
         return self.model.predict(input_data)
 
-    def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST.name, aspect=h1.Model.Aspect.ACCOUNTABLE.name):
-        ## TODO: For each pair of constituent and aspect write functions to show relevant information.
-        print("Description type: {}"\
-            .format(h1.Model.Aspect.ACCOUNTABLE.name))
-        print("Targeted Constituent: {}"\
-            .format(h1.Model.Constituency.DATA_SCIENTIST.name))
-        print("Model Metrics : {}".format(self.metrics))
-        
-        print("Size of the WineQuality dataset: {}".format(self.data.shape[0]))
-        print("Number of features of the WineQuality dataset: {}".format(len(self.features)))
-
-        if self.shap:
-            print("Overview of the features that are most important for the WineQualityModel. Seen in the plot are SHAP values of every feature for every sample.The plot below sorts features by the sum of SHAP value magnitudes over all samples, and uses SHAP values to show the distribution of the impacts each feature has on the model output. The color represents the feature value (red high, blue low). This reveals for example that a high alcohol increases the predicted wine quality.".format())
-            d = SHAPExplainer(self.model, self.prepared_data, self.plot)      
-            return {'shap_values':d.shap_values}
+    def describe(self, constituent=h1.Model.Constituency.DATA_SCIENTIST.name, aspect=h1.Model.Aspect.ACCOUNTABLE.name):     
+        d = SHAPExplainer(self.model, self.prepared_data, self.metrics , constituent, aspect, self.verbose)      
+        return {'shap_explainer':d}
 
     def explain(self, constituent=h1.Model.Constituency.DATA_SCIENTIST.name, aspect=h1.Model.Aspect.ACCOUNTABLE.name, decision=None):
-        e = LIMEExplainer(self.model, self.prepared_data, decision, self.plot)
-        return {'lime_predictions':e.decision_explainer.as_list()}
+        e = LIMEExplainer(self.model, self.prepared_data, self.metrics ,decision, constituent, aspect, self.verbose)
+        return {'lime_explainer':e}
 

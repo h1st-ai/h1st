@@ -35,7 +35,7 @@ class Explainable:
         Or `what if your model is wrong? - this is a type of `Accountability` question.
         """
         ACCOUNTABLE = 10
-        FUNCTIONAL = 10
+        FUNCTIONAL = 20
         OPERATIONAL = 30
         ANY = 99
         OTHER = 100
@@ -53,25 +53,25 @@ class Explainable:
         Returns a description of the model's behavior and properties based on `Who's asking` for `what`.
 
             Parameters:
-                constituent : str or int
+                constituent : str
                     The Constituency asking for the explanation `Who`
-                    DATA_SCIENTIST or 10
-                    BUSINESS_MANAGER or 20
-                    CUSTOMER or 30
-                    USER or 40
-                    CONSUMER or 50
-                    REGULATOR or 60
-                    LEGISLATOR or 70
-                    ANY or 99
-                    OTHER or 100
+                    DATA_SCIENTIST
+                    BUSINESS_MANAGER
+                    CUSTOMER
+                    USER
+                    CONSUMER
+                    REGULATOR
+                    LEGISLATOR
+                    ANY
+                    OTHER
 
-                aspect : str or int
+                aspect : str
                     The Aspect of the question `what`
-                    ACCOUNTABLE or 10
-                    FUNCTIONAL or 10
-                    OPERATIONAL or 30
-                    ANY or 99
-                    OTHER or 100
+                    ACCOUNTABLE
+                    FUNCTIONAL
+                    OPERATIONAL
+                    ANY
+                    OTHER
 
             Returns:
                 out : Description of Model's behavior and properties (SHAP)               
