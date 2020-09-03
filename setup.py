@@ -36,7 +36,7 @@ setup(
     python_requires='>= 3',
     entry_points="""
     [console_scripts]
-    h1st=h1st.cli:main
+    h1=h1st.cli:main
     """,
     extras_require={}
 )

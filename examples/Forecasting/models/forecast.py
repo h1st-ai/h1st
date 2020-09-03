@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import sklearn
 import sklearn.metrics
+import subprocess
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.compose import make_column_transformer
@@ -22,12 +23,11 @@ class ForecastModel(h1.Model):
         self.data_dir = config.FORECAST_DATA_PATH
     
     def load_data(self):
-        # does it "fetch" the data or also perform join etc.?
         # needs to have kaggle tools, and user credentials, and agreed to competition rules etc.
-        os.system("mkdir {data}".format(data=self.data_dir))
+        subprocess.run("mkdir {data}".format(data=self.data_dir), shell=True, check=True)
         if not os.path.isfile(os.path.join(self.data_dir, "train.csv")):
-            os.system("kaggle competitions download -c rossmann-store-sales -p {data}/".format(data=self.data_dir))
-            os.system("cd {data}; unzip rossmann-store-sales.zip".format(data=self.data_dir))
+            subprocess.run("kaggle competitions download -c rossmann-store-sales -p {data}/".format(data=self.data_dir), shell=True, check=True)
+            subprocess.run("cd {data}; unzip rossmann-store-sales.zip".format(data=self.data_dir), shell=True, check=True)
 
         df = pd.read_csv(os.path.join(self.data_dir, "train.csv"), low_memory=False)
 
