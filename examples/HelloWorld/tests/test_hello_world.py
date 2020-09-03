@@ -1,6 +1,6 @@
 import unittest
-from HelloWorld.models.rule_based_model import RuleBasedModel
-from HelloWorld.models.ml_model import MLModel
+from HelloWorld.rule_based_model import RuleBasedModel
+from HelloWorld.ml_model import MLModel
 from sklearn import metrics
 
 
