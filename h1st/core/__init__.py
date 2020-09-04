@@ -8,5 +8,6 @@ from h1st.core.trust.explainable import Explainable
 from h1st.core.trust.describable import Describable
 from h1st.core.trust.trustable import Trustable
 from h1st.core.trust.auditable import Auditable
+from h1st.core.trust.debiasable import Debiasable
 
 setup_logger()
