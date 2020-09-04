@@ -88,8 +88,8 @@ class Model(NodeContainable):
         Load parameters from the specified `version` from the ModelRepository.
         Leave version blank to load latest version.
         """
-        mm = ModelRepository.get_model_repo(self)
-        mm.load(model=self, version=version)
+        repo = ModelRepository.get_model_repo(self)
+        repo.load(model=self, version=version)
 
         return self
 
