@@ -158,6 +158,8 @@ class Node:
         # state = state or {}
         if node_output:
             state.update(node_output)
+        else:
+            node_output = {}
 
         # recursively executing downstream nodes
         for edge in self.edges:

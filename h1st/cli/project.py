@@ -191,7 +191,7 @@ class {name}(h1.Model):
         # Implement code to retrieve your data here
         return dict()
 
-    def prep_data(self, data):
+    def prep(self, data):
         # Implement code to prepare your data here
         return data
 
