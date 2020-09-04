@@ -5,11 +5,11 @@ class SchemaSampleModel(h1.Model):
         # Implement code to retrieve your data here
         return dict()
 
-    def prep_data(self, data):
+    def prep(self, data):
         # Implement code to prepapre your data here
         return data
 
-    def train(self, prep_data):
+    def train(self, prep):
         # Implement your train method
         raise NotImplementedError()
 

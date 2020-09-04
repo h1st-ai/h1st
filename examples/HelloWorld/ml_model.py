@@ -21,7 +21,7 @@ class MLModel(h1.Model):
     def explore_data(self, data):
         pass
 
-    def prep_data(self, data):
+    def prep(self, data):
         x = data["x"]
         y = data["y"]
         num_tests = 10
