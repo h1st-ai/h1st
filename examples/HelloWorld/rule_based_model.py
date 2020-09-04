@@ -9,6 +9,6 @@ class RuleBasedModel(h1.Model):
     """
     Simple rule-based model that "predicts" if a given value is an even number
     """
-    def predict(self, data: dict) -> dict:
-        is_even = (data["value"] % 2 == 0)
-        return is_even
+    def predict(self, input_data: dict) -> dict:
+        is_even = (input_data["value"] % 2 == 0)
+        return {"result": is_even}

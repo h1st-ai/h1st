@@ -40,7 +40,7 @@ class MyEnsemble(MultiOutputClassifierEnsemble):
         test_files = ["tests/core/dummy_test_attack.csv"]
         return {'train_data_files': train_files, 'test_data_files': test_files}
 
-    def prep_data(self, data):
+    def prep(self, data):
         train_data_files = data['train_data_files']
         train_inputs = []
         train_labels = []
@@ -66,7 +66,7 @@ class TestEnsembleTestCase(TestCase):
     def test_train_predict(self):
         ensemble = MyEnsemble()
         data = ensemble.get_data()
-        prepared_data = ensemble.prep_data(data)
+        prepared_data = ensemble.prep(data)
         ensemble.train(prepared_data)
 
 

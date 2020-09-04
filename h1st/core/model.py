@@ -1,4 +1,4 @@
-from typing import Any, List, NoReturn, Union
+from typing import Any
 from h1st.schema import SchemaValidator
 from h1st.model_repository import ModelRepository
 from h1st.core.node_containable import NodeContainable
@@ -43,37 +43,32 @@ class Model(NodeContainable):
            my_model_2.load('1st_version')
     """
 
-    def load_data(self) -> Any:
+    def load_data(self) -> dict:
         """
         Implement logic of load data from data source
 
         :returns: loaded data
         """
-        raise NotImplementedError()
 
-    def prep_data(self, data: Any) -> Any:
+    def prep(self, loaded_data: dict) -> dict:
         """
         Implement logic to prepare data from loaded data
 
         :param data: loaded data from ``load_data`` method
         :returns: prepared data
         """
-        raise NotImplementedError()
 
-    def explore(self) -> Any:
+    def explore(self, loaded_data: dict) -> None:
         """
         Implement logic to explore data from loaded data
         """
-        raise NotImplementedError()
 
     def train(self, prepared_data: dict):
         """
         Implement logic of training model
 
-        :param prepared_data: prepared data from ``prep_data`` method
+        :param prepared_data: prepared data from ``prep`` method
         """
-        # not raise NotImplementedError so the initial model created by integrator will just work
-        pass
 
     def persist(self, version=None):
         """
@@ -85,27 +80,27 @@ class Model(NodeContainable):
         :param version: model version, leave blank for autogeneration
         :returns: model version
         """
-        mm = ModelRepository.get_model_repo(self)
-        return mm.persist(model=self, version=version)
+        repo = ModelRepository.get_model_repo(self)
+        return repo.persist(model=self, version=version)
 
-    def load(self, version: str = None):
+    def load(self, version: str = None) -> "Model":
         """
-        Load the specified `version` from the ModelRepository. Leave version blank to load latest version.
+        Load parameters from the specified `version` from the ModelRepository.
+        Leave version blank to load latest version.
         """
         mm = ModelRepository.get_model_repo(self)
         mm.load(model=self, version=version)
 
         return self
 
-    def evaluate(self, data: dict):
+    def evaluate(self, data: dict) -> dict:
         """
         Implement logic to evaluate the model using the loaded data
 
         :param data: loaded data
         """
-        raise NotImplementedError()
 
-    def predict(self, data: dict) -> dict:
+    def predict(self, input_data: dict) -> dict:
         """
         Implement logic to generate prediction from data
 
@@ -117,22 +112,10 @@ class Model(NodeContainable):
 
     def test_output(self, input_data: Any = None, schema=None):
         """
-        Validate the models' prediction with a schema.::
+        From `NodeContainable`. Validates the models' prediction with a schema.::
         :param input_data: input data for prediction, it can be anything.
         :param schema: target schema
         :return: validation result
         """
         prediction = self.predict(input_data)
         return SchemaValidator().validate(prediction, schema)
-
-    def describe(self):
-        """
-        Implement logic to describe about your model
-        """
-        pass
-
-    def explain(self, prediction: dict):
-        """
-        Implement logic to explain about a given prediction
-        """
-        pass
