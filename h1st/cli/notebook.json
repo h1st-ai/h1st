@@ -51,7 +51,7 @@
       "metadata": {},
       "outputs": [],
       "source": [
-       "prepared_data = m.prep_data(loaded_data)\n",
+       "prepared_data = m.prep(loaded_data)\n",
        "prepared_data"
       ]
      },

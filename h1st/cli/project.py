@@ -127,9 +127,12 @@ def new_project(project_name, base_path):
             f.write(_render_schema_testcase(project_name_snake_case, class_prefix))
 
         with open(tmppath / 'config.py', 'w') as f:
+            model_repo_path = os.environ.get('H1ST_MODEL_REPO_PATH', './data/models')
+
             f.write("""# Please update your data path here
 DATA_PATH = './data'
-""")
+MODEL_REPO_PATH = '{model_repo_path}'
+""".format(model_repo_path=model_repo_path))
 
         model_name = f"{class_prefix}Model"
         new_model(
@@ -157,7 +160,7 @@ m = {model_name}()
 data = m.load_data()
 
 # prepare your data
-prepared_data = m.prep_data(data)
+prepared_data = m.prep(data)
 
 # train your model
 m.train(prepared_data)
@@ -166,9 +169,7 @@ m.train(prepared_data)
 
         with open(test_folder / f'test_{project_name_snake_case}.py', 'w') as f:
             f.write("""\"""
-You can test your model code here by typing "nose2" in the terminal. 
-Very soon, we will provide jupyter notebook so that you can test your model code easier. 
-Please remove this file if not necessary.
+You can test your model code here by typing "nose2" in the terminal.
 \"""
 
 from {package_name} import {model_name}
@@ -237,11 +238,11 @@ class {prefix}Graph(h1.Graph):
 
 
 def _render_schema_testcase(project_package, prefix):
-    return """
-from h1st.schema.testing import setup_schema_tests
+    return """from h1st.schema.testing import setup_schema_tests
 from {project_package}_graph import {prefix}Graph
 
-
+# Setup all schema test cases for graph
+# Please refer to https://docs.h1st.ai for more details.
 setup_schema_tests({prefix}Graph(), globals())
 """.format(prefix=prefix, project_package=project_package)
 
@@ -249,8 +250,7 @@ setup_schema_tests({prefix}Graph(), globals())
 def _render_model_class(name, package_name):
     return """\"""
 The following is a boilerplate code that is provided by workbench. 
-Please fill in each function with your own code and modify the name of 
-h1st_model.py and H1stModelClass if you want. 
+Please fill in each function with your own code.
 \"""
 
 import h1st as h1
@@ -260,26 +260,25 @@ class {name}(h1.Model):
     def __init__(self):
         # Please instantiate your ML/DL/Human model here if necessary
         self.model = None
-    
-    def load_data(self):
+
+    def load_data(self) -> dict:
         # Implement code to retrieve your data here
-        data_path = config.DATA_PATH
-        print('data_path:', data_path)
+        print('data_path:', config.DATA_PATH)
         return {{}}
 
-    def prep(self, data):
+    def prep(self, data: dict) -> dict:
         # Implement code to prepare your data here
         return data
 
-    def train(self, prepared_data):
+    def train(self, prepared_data: dict) -> dict:
         # Implement your train logic here
         pass
 
-    def evaluate(self, data):
+    def evaluate(self, data: dict) -> dict:
         # Implement your evaluation logic here
         pass
 
-    def predict(self, data):
+    def predict(self, data: dict) -> dict:
         # Implement your predict logic here
         return {{}}
 """.format(name=name, package_name=package_name)
