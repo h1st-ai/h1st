@@ -15,7 +15,7 @@ class CliTestCase(TestCase):
             p = pathlib.Path(project_path)
 
             self.assertTrue(p.exists())
-            self.assertTrue((p / 'graph.py').exists())
+            self.assertTrue((p / 'test_graph.py').exists())
         finally:
             dir_util.remove_tree(tempdir)
 
@@ -36,16 +36,16 @@ class CliTestCase(TestCase):
 
             # test if we can import the graph
             subprocess.check_call(
-                ["python", "-m", "AutoCyber.graph"],
-                cwd=tmpdir,
+                ["python", "-m", "autocyber_graph"],
+                cwd=tmpdir + '/AutoCyber',
             )
 
             subprocess.check_call(
-                ["python", "-m", "AutoCyber.models.Model2"],
-                cwd=tmpdir,
+                ["python", "-m", "models.model2"],
+                cwd=tmpdir + '/AutoCyber'
             )
 
             subprocess.check_call(
                 ["nose2"],
-                cwd=tmpdir,
+                cwd=tmpdir + '/AutoCyber'
             )

@@ -148,7 +148,6 @@ You can test your H1st model here. Run the following command in the terminal exe
 
 python {package_name}_modeling.py
 
-
 Jupyter Notebook will be released in next version!
 \"""
 
@@ -270,7 +269,7 @@ class {name}(h1.Model):
         # Implement code to prepare your data here
         return data
 
-    def train(self, prepared_data: dict) -> dict:
+    def train(self, prepared_data: dict):
         # Implement your train logic here
         pass
 
