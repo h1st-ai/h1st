@@ -42,8 +42,10 @@ def new_model_cli(model_name):
 
         # TODO: try to figure out the project folder if possible
 
-        if not model_path.exists():
+        if not (path / "config.py").exists():
             raise ValueError('Please run this command in the package folder')
+
+        model_path.mkdir(exist_ok=True)
 
         class_name, module_name = _clean_name(model_name)
         project_package = path.name
@@ -58,10 +60,10 @@ def new_model_cli(model_name):
             module_name=module_name
         )
 
-        with open(path / 'notebooks' / f"{module_name}.ipynb", "w") as f:
-            f.write(
-                _render_notebook(project_package, class_name, module_name)
-            )
+        # with open(path / 'notebooks' / f"{module_name}.ipynb", "w") as f:
+        #     f.write(
+        #         _render_notebook(project_package, class_name, module_name)
+        #     )
 
         print('Model %s%s%s is created successfully.' % (
             attr('bold'),
@@ -98,31 +100,31 @@ def new_project(project_name, base_path):
     tmpdir = tempfile.mkdtemp()
     try:
         tmppath = pathlib.Path(tmpdir)
-        graph_file = tmppath / 'graph.py'
         data_folder = tmppath / 'data'
-        model_folder = tmppath / 'models'
-        notebook_folder = tmppath / 'notebooks'
+        # model_folder = tmppath / 'models'
+        # notebook_folder = tmppath / 'notebooks'
         test_folder = tmppath / 'tests'
 
         # create all folders
-        notebook_folder.mkdir(exist_ok=True)
-        model_folder.mkdir(exist_ok=True)
+        # notebook_folder.mkdir(exist_ok=True)
+        # model_folder.mkdir(exist_ok=True)
         data_folder.mkdir(exist_ok=True)
         test_folder.mkdir(exist_ok=True)
 
         # create all empty files
-        (tmppath / '__init__.py').touch()
+        # (tmppath / '__init__.py').touch()
         (tmppath / 'config.py').touch()
-        (model_folder / '__init__.py').touch()
+        # (model_folder / '__init__.py').touch()
         (test_folder / '__init__.py').touch()
-        (notebook_folder / '.gitkeep').touch()
+        # (notebook_folder / '.gitkeep').touch()
         (data_folder / '.gitkeep').touch()
 
+        graph_file = tmppath / f'{project_name_snake_case}_graph.py'
         with open(graph_file, "w") as f:
             f.write(_render_init_graph_class(class_prefix, project_name_snake_case))
 
         with open(test_folder / "test_schema.py", "w") as f:
-            f.write(_render_schema_testcase(project_name_camel_case, class_prefix))
+            f.write(_render_schema_testcase(project_name_snake_case, class_prefix))
 
         with open(tmppath / 'config.py', 'w') as f:
             f.write("""# Please update your data path here
@@ -134,23 +136,48 @@ DATA_PATH = './data'
             f"{class_prefix}Model",
             tmppath,
             project_package=project_name_camel_case,
-            module_name=project_name_snake_case,
+            model_file=f"{project_name_snake_case}.py",
         )
 
-        with open(test_folder / 'test_model.py', 'w') as f:
+        with open(tmppath / f"{project_name_snake_case}_notebook.py", "w") as f:
+            f.write("""\"""
+You can test your H1st model here. Run the following command in the terminal execute the script:
+
+python {package_name}_notebook.py
+
+
+Jupyter Notebook will be released in next version!
+\"""
+
+from {package_name} import {model_name}
+
+m = {model_name}()
+
+# load your data
+data = m.load_data()
+
+# prepare your data
+prepared_data = m.prep_data(data)
+
+# train your model
+m.train(prepared_data)
+
+""".format(package_name=project_name_snake_case, model_name=model_name))
+
+        with open(test_folder / f'test_{project_name_snake_case}.py', 'w') as f:
             f.write("""\"""
 You can test your model code here by typing "nose2" in the terminal. 
 Very soon, we will provide jupyter notebook so that you can test your model code easier. 
 Please remove this file if not necessary.
 \"""
 
-from {package_name}.models.{model_package} import {model_name}
+from {package_name} import {model_name}
 
 def test_model_load_data():
     m = {model_name}()
     m.load_data()
 
-""".format(package_name=project_name_camel_case, model_package=project_name_snake_case, model_name=model_name))
+""".format(package_name=project_name_snake_case, model_name=model_name))
 
 
         # with open(notebook_folder / f"{class_prefix}.ipynb", "w") as f:
@@ -169,7 +196,7 @@ def test_model_load_data():
         raise
 
 
-def new_model(name, project_path, project_package, module_name=None):
+def new_model(name, project_path, project_package, module_name=None, model_file=None):
     """
     Create a new model template under the project path
 
@@ -178,11 +205,14 @@ def new_model(name, project_path, project_package, module_name=None):
     :param project_package: package name of the project
     :param module_name: module name for the model. By default it is model name in snake case format
     """
-    assert module_name, "module_name is missing"
-    model_file = pathlib.Path(project_path) / 'models' / (module_name + ".py")
+    if not model_file:
+        assert module_name, "module_name is missing"
+        model_file = pathlib.Path(project_path) / 'models' / (module_name + ".py")
+    else:
+        model_file = pathlib.Path(project_path) / model_file
 
     if model_file.exists():
-        raise ValueError(f'File {module_name}.py already exists')
+        raise ValueError(f'File {model_file} already exists')
 
     with open(model_file, "w") as f:
         f.write(_render_model_class(
@@ -193,7 +223,7 @@ def new_model(name, project_path, project_package, module_name=None):
 
 def _render_init_graph_class(prefix, model_package):
     return """import h1st as h1
-from .models.{model_package} import {prefix}Model
+from {model_package} import {prefix}Model
 
 
 class {prefix}Graph(h1.Graph):
@@ -209,7 +239,7 @@ class {prefix}Graph(h1.Graph):
 def _render_schema_testcase(project_package, prefix):
     return """
 from h1st.schema.testing import setup_schema_tests
-from {project_package}.graph import {prefix}Graph
+from {project_package}_graph import {prefix}Graph
 
 
 setup_schema_tests({prefix}Graph(), globals())
@@ -224,7 +254,7 @@ h1st_model.py and H1stModelClass if you want.
 \"""
 
 import h1st as h1
-from {package_name} import config
+import config
 
 class {name}(h1.Model):
     def __init__(self):
@@ -281,5 +311,7 @@ def _clean_name(name):
 
     camel_case = "".join([i.title() for i in snake_case.split("_")])
     camel_case = camel_case.replace("H1St", "H1st")  # special treatment for the name
+
+    snake_case = snake_case.replace("_", "") # XXX
 
     return camel_case, snake_case
