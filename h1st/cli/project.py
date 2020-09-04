@@ -139,11 +139,11 @@ DATA_PATH = './data'
             model_file=f"{project_name_snake_case}.py",
         )
 
-        with open(tmppath / f"{project_name_snake_case}_notebook.py", "w") as f:
+        with open(tmppath / f"{project_name_snake_case}_modeling.py", "w") as f:
             f.write("""\"""
 You can test your H1st model here. Run the following command in the terminal execute the script:
 
-python {package_name}_notebook.py
+python {package_name}_modeling.py
 
 
 Jupyter Notebook will be released in next version!
