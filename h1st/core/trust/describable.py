@@ -12,12 +12,12 @@ class Describable:
     @property
     def description(self):
         return getattr(self, "__description", {})
-    
+
     @description.setter
     def description(self, value):
         setattr(self, "__description", value)
 
-    def describe(self, constituency=Constituency.ANY, apect=Aspect.ANY):
+    def describe(self, constituency=Constituency.ANY, aspect=Aspect.ANY):
         '''
         Returns a description of the model's behavior and properties based on `Who's asking` for `what`.
 
@@ -26,8 +26,8 @@ class Describable:
                 aspect : The Aspect of the question. `What`
 
             Returns:
-                out : Description of Model's behavior and properties (SHAP)               
+                out : Description of Model's behavior and properties (SHAP)
         '''
 
-        d = SHAPModelDescriber(self.model, self.prepared_data)      
+        d = SHAPModelDescriber(self.model, self.prepared_data)
         return {'shap_describer':d}
