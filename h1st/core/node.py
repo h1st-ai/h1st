@@ -185,9 +185,8 @@ class Node:
 
     def to_dot_node(self, visitor):
         """Subclass will need to implement this function to construct and return the graphviz compatible node"""
-        pass
 
-    def test_output(self, inputs: Any = None, schema=None, command='predict'):
+    def validate_output(self, input_data: dict = None, schema=None, command='predict'):
         """
         Invokes the call function the node with given input data, then verifies if output of the node conforming with the output schema of this node.
         Framework will look up the output schema for this node in the schemas object loaded by the graph from schemas.py using id of this node.
@@ -197,9 +196,9 @@ class Node:
         :param command: the command param to invoke the call function of the node
         """
         if self._containable:
-            return self._containable.test_output(inputs, schema)
+            return self._containable.validate_node_output(input_data, schema)
         else:
-            output = self.call(command, inputs)
+            output = self.call(command, input_data)
             return SchemaValidator().validate(output, schema)
 
     def _get_edge_data(self, edge, node_output):
