@@ -1,4 +1,0 @@
-class OutputFormatters:
-    """
-    [summary]
-    """

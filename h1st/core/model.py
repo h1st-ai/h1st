@@ -2,11 +2,10 @@ from typing import Any
 from h1st.schema import SchemaValidator
 from h1st.model_repository import ModelRepository
 from h1st.core.node_containable import NodeContainable
-from h1st.core.trust.trustable import Trustable
 from h1st.schema.schema_validation_result import SchemaValidationResult
 
 
-class Model(NodeContainable, Trustable):
+class Model(NodeContainable):
     """
     Base class for H1st Model.
 
