@@ -1,7 +1,9 @@
 import os
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
 import sklearn
 import h1st as h1
@@ -10,6 +12,7 @@ import h1st as h1
 class WineQuality(h1.Model):
     def __init__(self):
         super().__init__()
+        self.dataset_name = "WineQuality"
         self.model = None
         self.features = None
         self.test_size = 0.2
@@ -44,7 +47,7 @@ class WineQuality(h1.Model):
             "train_df": X_train,
             "test_df": X_test,
             "train_labels": Y_train,
-            "test_labels": Y_test
+            "test_labels": Y_test,
         }
         return self.prepared_data
 
@@ -54,11 +57,16 @@ class WineQuality(h1.Model):
         model.fit(X_train, Y_train)
         self.model = model
 
+    def _mean_absolute_percentage_error(self, y_true, y_pred):
+        y_true, y_pred = np.array(y_true), np.array(y_pred)
+        return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
     def evaluate(self, data):
         X_test, y_true = data["test_df"], data["test_labels"]
         y_pred = self.model.predict(X_test)
         return {
-            "mae": sklearn.metrics.mean_absolute_error(y_true, y_pred),
+            "mape": self._mean_absolute_percentage_error(y_true, y_pred),
+            "auc": roc_auc_score(y_true, y_pred),
         }
 
     def predict(self, data):

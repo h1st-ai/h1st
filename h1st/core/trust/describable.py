@@ -1,5 +1,7 @@
 from .shap_model_describer import SHAPModelDescriber
 from .enums import Constituency, Aspect
+from .describer import Describer
+
 
 class Describable:
     """
@@ -18,7 +20,7 @@ class Describable:
         setattr(self, "__description", value)
 
     def describe(self, constituency=Constituency.ANY, aspect=Aspect.ANY):
-        '''
+        """
         Returns a description of the model's behavior and properties based on `Who's asking` for `what`.
 
             Parameters:
@@ -27,7 +29,7 @@ class Describable:
 
             Returns:
                 out : Description of Model's behavior and properties (SHAP)
-        '''
-
-        d = SHAPModelDescriber(self.model, self.prepared_data)
-        return {'shap_describer':d}
+        """
+        describer = Describer(self)
+        describer.shap_describer = SHAPModelDescriber(self.model, self.prepared_data)
+        return {"describer": describer}

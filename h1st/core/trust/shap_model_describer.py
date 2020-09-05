@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 import shap
 import pandas as pd
 
-class SHAPModelDescriber():
+
+class SHAPModelDescriber:
     def __init__(self, model, data):
         self.model = model
         self.data = data
         self.get_shap_describer()
-        self.get_shap_values() 
+        self.get_shap_values()
 
     def get_shap_describer(self):
         self.shap_describer = shap.TreeExplainer(self.model)
@@ -17,5 +18,3 @@ class SHAPModelDescriber():
         self.shap_values = self.shap_describer.shap_values(
             self.data["train_df"].reset_index(drop=True)
         )
-
-    

@@ -1,15 +1,15 @@
-from breast_cancer import BreastCancer
+from wine_quality import WineQuality
 
-model = BreastCancer()
+model = WineQuality()
 data = model.load_data()
 prepared_data = model.prep_data(data)
 model.train(prepared_data)
 evaluation = model.evaluate(prepared_data)
-print(evaluation)
+model.model.__getattribute__()
+# print(evaluation)
 
-describer = model.describe()
-
-print(describer.describe)
+# describer = model.describe()
+# print(describer)
 # idx = 4
 # sample_input = model.prepared_data["train_df"].iloc[idx]
 # # print(sample_input)

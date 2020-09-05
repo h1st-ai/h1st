@@ -1,5 +1,6 @@
 from .lime_model_explainer import LIMEModelExplainer
 from .enums import Constituency, Aspect
+from .decision import Decision
 
 
 class Explainable:
@@ -22,5 +23,8 @@ class Explainable:
             Returns:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
-        e = LIMEModelExplainer(decision, self.model, self.prepared_data)
-        return {"lime_explainer": e}
+        explainer = Decision(self)
+        explainer.lime_explainer = LIMEModelExplainer(
+            decision, self.model, self.prepared_data
+        )
+        return {"explainer": explainer}
