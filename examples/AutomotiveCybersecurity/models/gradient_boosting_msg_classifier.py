@@ -10,7 +10,7 @@ class GradientBoostingMsgClassifierModel(h1.Model):
     def load_data(self, num_files=None):
         return util.load_data(num_files, shuffle=True)
 
-    def prep_data(self, data):
+    def prep(self, data):
         def concat_processed_files(files):
             dfs = []
             for f in files:

@@ -3,8 +3,8 @@ This is an example of a very simple H1st ML model.
 We demonstrate here how to wrap a ScikitLearn model within an h1.Model
 """
 
-import h1st as h1
 from sklearn import svm, datasets, metrics
+import h1st as h1
 
 
 class MLModel(h1.Model):
@@ -21,7 +21,7 @@ class MLModel(h1.Model):
     def explore_data(self, data):
         pass
 
-    def prep_data(self, data):
+    def prep(self, data):
         x = data["x"]
         y = data["y"]
         num_tests = 10
