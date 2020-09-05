@@ -181,7 +181,7 @@ class BlstmInjectionMsgClassifier(h1.Model):
     def load_data(self, num_files=None, shuffle=True):
         return util.load_data(num_files=num_files, shuffle=shuffle)
 
-    def prep_data(self, data):
+    def prep(self, data):
         # Implement code to prepapre your data here
         attack_files = data["train_attack_files"]
         random.shuffle(attack_files)
