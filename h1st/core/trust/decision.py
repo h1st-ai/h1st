@@ -14,15 +14,16 @@ class Decision:
         self.lime_explainer = {}
         self.data_description(h1stmodel)
         self.model_description(h1stmodel)
+        self.decision_description(h1stmodel)
         self.decision_describer = self.decision_dict
         self.model_describer = self.model_dict
         self.decision_describer = self.data_dict
 
-    def data_description(self, data):
+    def data_description(self, h1stmodel):
         pass
 
-    def model_description(self, model):
+    def model_description(self, h1stmodel):
         pass
 
-    def decision_description(self, decision):
+    def decision_description(self, h1stmodel):
         pass
