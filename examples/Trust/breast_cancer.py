@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import sklearn
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
 import h1st as h1
@@ -38,9 +39,15 @@ class BreastCancer(h1.Model):
         :param loaded_data: data return from load_data method
         :returns: dictionary contains train data and validation data
         """
+
+
         self.features = [c for c in data.columns if c != "benign"]
         target = "benign"
         X = data[self.features]
+        scaler = MinMaxScaler()
+        X = scaler.fit_transform(X.values)
+        X = pd.DataFrame(data = X, columns = self.features)
+        print(X.describe())
         Y = data[target]
         X_train, X_test, Y_train, Y_test = train_test_split(
             X, Y, test_size=self.test_size

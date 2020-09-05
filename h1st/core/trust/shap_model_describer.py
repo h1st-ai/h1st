@@ -16,5 +16,5 @@ class SHAPModelDescriber:
 
     def get_shap_values(self):
         self.shap_values = self.shap_describer.shap_values(
-            self.data["train_df"].reset_index(drop=True)
+            self.data["train_df"], check_additivity=False
         )

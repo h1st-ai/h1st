@@ -9,7 +9,7 @@ print(evaluation)
 
 describer = model.describe()
 
-print(describer.describe)
+print(describer)
 # idx = 4
 # sample_input = model.prepared_data["train_df"].iloc[idx]
 # # print(sample_input)
