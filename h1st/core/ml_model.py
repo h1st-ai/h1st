@@ -1,7 +1,8 @@
 from typing import Any
-import h1st as h1
+from h1st.core.model import Model
 
-class MLModel(h1.Model):
+
+class MLModel(Model):
 
     @property
     def base_model(self) -> Any:
