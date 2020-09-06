@@ -227,6 +227,12 @@ def new_model(name, project_path, project_package, module_name=None, model_file=
 
 
 def _render_init_graph_class(prefix, model_package):
+    return _render_template("graph", {
+        "GRAPH_CLASS": f"{prefix}Graph",
+        "MODEL_CLASS": f"{prefix}Model",
+        "MODEL_PACKAGE": model_package
+    })
+
     return """import h1st as h1
 from {model_package} import {prefix}Model
 
@@ -329,3 +335,14 @@ def _clean_name(name):
     camel_case = camel_case.replace("H1St", "H1st")  # special treatment for the name
 
     return camel_case, snake_case
+
+
+def _render_template(name, replaces):
+    tpl = os.path.join(os.path.dirname(__file__), 'templates', f"{name}.txt")
+    with open(tpl, 'r') as f:
+        content = f.read()
+
+    for k, v in replaces.items():
+        content = content.replace(f"$${k}$$", v)
+
+    return content
