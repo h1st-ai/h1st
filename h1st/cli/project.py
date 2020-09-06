@@ -56,7 +56,6 @@ def new_model_cli(model_name):
         new_model(
             class_name,
             path,
-            project_package,
             module_name=module_name
         )
 
@@ -119,70 +118,37 @@ def new_project(project_name, base_path):
         # (notebook_folder / '.gitkeep').touch()
         (data_folder / '.gitkeep').touch()
 
+        model_name = f"{class_prefix}Model"
+        model_package = f"{project_name_snake_case}_model"
+
         graph_file = tmppath / f'{project_name_snake_case}_graph.py'
         with open(graph_file, "w") as f:
-            f.write(_render_init_graph_class(class_prefix, project_name_snake_case))
+            f.write(_render_init_graph_class(class_prefix, model_package))
 
         with open(test_folder / "test_schema.py", "w") as f:
             f.write(_render_schema_testcase(project_name_snake_case, class_prefix))
 
         with open(tmppath / 'config.py', 'w') as f:
-            model_repo_path = os.environ.get('H1ST_MODEL_REPO_PATH', './data/models')
+            f.write(_render_template('config', {}))
 
-            f.write("""# Please update your data path here
-DATA_PATH = './data'
-MODEL_REPO_PATH = '{model_repo_path}'
-""".format(model_repo_path=model_repo_path))
-
-        model_name = f"{class_prefix}Model"
         new_model(
-            f"{class_prefix}Model",
+            model_name,
             tmppath,
-            project_package=project_name_camel_case,
-            model_file=f"{project_name_snake_case}.py",
+            model_file=f"{model_package}.py",
         )
 
         with open(tmppath / f"{project_name_snake_case}_modeling.py", "w") as f:
-            f.write("""\"""
-You can test your H1st model here. Run the following command in the terminal execute the script:
+            f.write(_render_template('modeling', {
+                'SCRIPT_NAME': f'{project_name_snake_case}_modeling.py',
+                'MODEL_CLASS': model_name,
+                'MODEL_PACKAGE': model_package,
+            }))
 
-python {package_name}_modeling.py
-
-Jupyter Notebook will be released in next version!
-\"""
-
-from {package_name} import {model_name}
-
-model = {model_name}()
-
-# load your data
-data = model.load_data()
-
-# prepare your data
-prepared_data = model.prep(data)
-
-# train your model
-model.train(prepared_data)
-
-# evaluate your model
-model.evaluate(prepared_data)
-
-# generate prediction
-print(model.predict({{"input_data": None}}))
-""".format(package_name=project_name_snake_case, model_name=model_name))
-
-        with open(test_folder / f'test_{project_name_snake_case}.py', 'w') as f:
-            f.write("""\"""
-You can test your model code here by typing "nose2" in the terminal.
-\"""
-
-from {package_name} import {model_name}
-
-def test_model_load_data():
-    m = {model_name}()
-    m.load_data()
-
-""".format(package_name=project_name_snake_case, model_name=model_name))
+        with open(test_folder / f'test_{model_package}.py', 'w') as f:
+            f.write(_render_template('testcase', {
+                'MODEL_CLASS': model_name,
+                'MODEL_PACKAGE': model_package,
+            }))
 
 
         # with open(notebook_folder / f"{class_prefix}.ipynb", "w") as f:
@@ -201,13 +167,12 @@ def test_model_load_data():
         raise
 
 
-def new_model(name, project_path, project_package, module_name=None, model_file=None):
+def new_model(name, project_path, module_name=None, model_file=None):
     """
     Create a new model template under the project path
 
     :param name: model name
     :param project_path: path to the project directory
-    :param project_package: package name of the project
     :param module_name: module name for the model. By default it is model name in snake case format
     """
     if not model_file:
@@ -220,10 +185,9 @@ def new_model(name, project_path, project_package, module_name=None, model_file=
         raise ValueError(f'File {model_file} already exists')
 
     with open(model_file, "w") as f:
-        f.write(_render_model_class(
-            name,
-            project_package,
-        ))
+        f.write(_render_template("model", {
+            "MODEL_CLASS": name,
+        }))
 
 
 def _render_init_graph_class(prefix, model_package):
@@ -232,26 +196,6 @@ def _render_init_graph_class(prefix, model_package):
         "MODEL_CLASS": f"{prefix}Model",
         "MODEL_PACKAGE": model_package
     })
-
-    return """import h1st as h1
-from {model_package} import {prefix}Model
-
-
-class {prefix}Graph(h1.Graph):
-    def __init__(self):
-        super().__init__()
-
-        self.start()
-        self.add({prefix}Model())
-        self.end()
-
-
-if __name__ == '__main__':
-    graph = {prefix}Graph()
-    print(graph.predict({{"input_data": None}}))
-
-""".format(prefix=prefix, model_package=model_package)
-
 
 def _render_schema_testcase(project_package, prefix):
     return """from h1st.schema.testing import setup_schema_tests
@@ -263,66 +207,14 @@ setup_schema_tests({prefix}Graph(), globals())
 """.format(prefix=prefix, project_package=project_package)
 
 
-def _render_model_class(name, package_name):
-    return """\"""
-The following is a boilerplate code that is provided by workbench. 
-Please fill in each function with your own code.
-\"""
-
-import h1st as h1
-import config
-
-class {name}(h1.Model):
-    def __init__(self):
-        # Please instantiate your ML/DL/Human model here if necessary
-        self.model = None
-
-    def load_data(self) -> dict:
-        # Implement code to retrieve your data here
-        print('data_path:', config.DATA_PATH)
-        return {{}}
-
-    def prep(self, data: dict) -> dict:
-        # Implement code to prepare your data here
-        return data
-
-    def train(self, prepared_data: dict):
-        # Implement your train logic here
-        pass
-
-    def evaluate(self, data: dict) -> dict:
-        # Implement your evaluation logic here
-        pass
-
-    def predict(self, data: dict) -> dict:
-        # Implement your predict logic here
-        print(f'{{self.__class__.__name__}}.predict() was called')
-        return {{'result': True}}
-
-
-if __name__ == "__main__":
-    model = {name}()
-    model.predict({{"input_data": None}})
-
-""".format(name=name, package_name=package_name)
-
-
 def _render_notebook(package_name, model_name, model_file_name):
-    notebook_tpl = os.path.join(os.path.dirname(__file__), 'notebook.json')
-
-    with open(notebook_tpl, 'r') as f:
-        notebook = f.read()
-
     subl = {
-        '$$MODEL_NAME$$': model_name,
-        '$$MODEL_FILE$$': model_file_name,
-        '$$PACKAGE_NAME$$': package_name,
+        'MODEL_NAME': model_name,
+        'MODEL_FILE': model_file_name,
+        'PACKAGE_NAME': package_name,
     }
 
-    for k, v in subl.items():
-        notebook = notebook.replace(k, v)
-
-    return notebook
+    return _render_template('notebook', subl)
 
 
 def _clean_name(name):

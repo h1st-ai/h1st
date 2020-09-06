@@ -36,7 +36,12 @@ class CliTestCase(TestCase):
 
             # test if we can import the graph
             subprocess.check_call(
-                ["python", "-m", "autocyber_graph"],
+                ["python", "-m", "auto_cyber_graph"],
+                cwd=tmpdir + '/AutoCyber',
+            )
+
+            subprocess.check_call(
+                ["python", "auto_cyber_modeling.py"],
                 cwd=tmpdir + '/AutoCyber',
             )
 
