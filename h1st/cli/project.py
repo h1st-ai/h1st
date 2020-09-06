@@ -151,6 +151,11 @@ def new_project(project_name, base_path):
             }))
 
 
+        with open(tmppath / 'run_tests.sh', 'w') as f:
+            f.write(_render_template('run_tests', {}))
+
+        (tmppath / 'run_tests.sh').chmod(0o777)
+
         # with open(notebook_folder / f"{class_prefix}.ipynb", "w") as f:
         #     f.write(_render_notebook(
         #         project_name_camel_case, f"{class_prefix}Model", project_name_snake_case
