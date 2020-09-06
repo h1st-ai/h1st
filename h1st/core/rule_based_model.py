@@ -1,6 +1,5 @@
-import h1st as h1
+from h1st.core.model import Model
 
-class RuleBasedModel(h1.Model):
-
+class RuleBasedModel(Model):
     def predict(self, input_data: dict) -> dict:
-        raise NotImplementedError(input_data)
+        raise NotImplementedError()
