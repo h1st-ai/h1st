@@ -153,17 +153,22 @@ Jupyter Notebook will be released in next version!
 
 from {package_name} import {model_name}
 
-m = {model_name}()
+model = {model_name}()
 
 # load your data
-data = m.load_data()
+data = model.load_data()
 
 # prepare your data
-prepared_data = m.prep(data)
+prepared_data = model.prep(data)
 
 # train your model
-m.train(prepared_data)
+model.train(prepared_data)
 
+# evaluate your model
+model.evaluate(prepared_data)
+
+# generate prediction
+print(model.predict({{"input_data": None}}))
 """.format(package_name=project_name_snake_case, model_name=model_name))
 
         with open(test_folder / f'test_{project_name_snake_case}.py', 'w') as f:
@@ -233,6 +238,12 @@ class {prefix}Graph(h1.Graph):
         self.start()
         self.add({prefix}Model())
         self.end()
+
+
+if __name__ == '__main__':
+    graph = {prefix}Graph()
+    print(graph.predict({{"input_data": None}}))
+
 """.format(prefix=prefix, model_package=model_package)
 
 
@@ -279,7 +290,14 @@ class {name}(h1.Model):
 
     def predict(self, data: dict) -> dict:
         # Implement your predict logic here
-        return {{}}
+        print(f'{{self.__class__.__name__}}.predict() was called')
+        return {{'result': True}}
+
+
+if __name__ == "__main__":
+    model = {name}()
+    model.predict({{"input_data": None}})
+
 """.format(name=name, package_name=package_name)
 
 
@@ -309,7 +327,5 @@ def _clean_name(name):
 
     camel_case = "".join([i.title() for i in snake_case.split("_")])
     camel_case = camel_case.replace("H1St", "H1st")  # special treatment for the name
-
-    snake_case = snake_case.replace("_", "") # XXX
 
     return camel_case, snake_case
