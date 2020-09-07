@@ -24,6 +24,7 @@ class $$MODEL_CLASS$$TestCase(unittest.TestCase):
 
         self.prepared_data = self.model.prep(self.data)
         self.assertIsInstance(self.prepared_data, dict)
+        return self.prepared_data
 
     def test_train(self):
         if not hasattr(self, 'prepared_data'):

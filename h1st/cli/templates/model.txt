@@ -35,4 +35,5 @@ class $$MODEL_CLASS$$(h1.MLModel):
 
 if __name__ == "__main__":
     model = $$MODEL_CLASS$$()
-    model.predict({"input_data": None})
+    print(model.predict({"input_data": None}))
+
