@@ -1,15 +1,19 @@
-import os
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+import lime
+import lime.lime_tabular as lt
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score, f1_score
 import matplotlib.pyplot as plt
 import sklearn
+
 import h1st as h1
+import unittest
 
-
-class WineQuality(h1.Model):
+class TestModelDescribable(h1.Model):
     def __init__(self):
         super().__init__()
         self.dataset_name = "WineQuality"
@@ -20,20 +24,13 @@ class WineQuality(h1.Model):
         self.features = None
         self.metrics = None
         self.test_size = 0.2
-        self.prepared_data = None
+        self.prepared_data = None        
 
     def load_data(self):
-        path = os.path.dirname(__file__)
-        filename = os.path.join(path, "data/wine_quality.csv")
+        filename = "s3://arimo-pana-cyber/explain_data/winequality_red.csv"
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
-
-    def explore_data(self, data):
-        if self.verbose:
-            data["quality"].hist()
-            plt.title("Wine Quality Rating Output Labels Distribution")
-            plt.show()
 
     def prep_data(self, data):
         """
@@ -60,19 +57,15 @@ class WineQuality(h1.Model):
         model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
         model.fit(X_train, Y_train)
         self.ml_model = model
+        
+class TestDescribable(unittest.TestCase):
+    def test_describable(self):
+        m = TestModelDescribable()
+        data = m.load_data()
+        prepared_data = m.prep_data(data)
+        m.train(prepared_data)
+        describer = m.describe()     
+        self.assertEquals(describer.shap_describer.shap_values.shape, m.prepared_data['train_df'].shape)
+        self.assertIsInstance(describer, object)
 
-    def _mean_absolute_percentage_error(self, y_true, y_pred):
-        y_true, y_pred = np.array(y_true), np.array(y_pred)
-        return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
-    def evaluate(self, data):
-        X_test, y_true = data["test_df"], data["test_labels"]
-        y_pred = self.ml_model.predict(X_test)
-        return {
-            "mape": self._mean_absolute_percentage_error(y_true, y_pred)
-        }
-
-    def predict(self, data):
-        data["quality"] = data["quality"].astype(int)
-        input_data = data[self.features]
-        return self.ml_model.predict(input_data)

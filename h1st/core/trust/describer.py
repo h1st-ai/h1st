@@ -8,26 +8,27 @@ class Describer:
     """
 
     def __init__(self, h1stmodel):
-        self.data_dict = {}
-        self.model_dict = {}
-        self.shap_describer = {}
+        self.shap_describer = None
         self.data_description(h1stmodel)
         self.model_description(h1stmodel)
-        self.data_describer = self.data_dict
-        self.model_describer = self.model_dict
+       
 
     def data_description(self, h1stmodel):
+        _dict = {}
         data = h1stmodel.prepared_data
-        self.data_dict["data_set_name"] = h1stmodel.dataset_name
-        self.data_dict["data_set_description"] = h1stmodel.dataset_description
-        self.data_dict["label_column"] = h1stmodel.label_column
-        self.data_dict["features"] = list(data["train_df"].columns)
-        self.data_dict["number_of_features"] = len(self.data_dict["features"])
-        self.data_dict["number_of_rows"] = data["train_df"].shape[0]
-        self.data_dict["statistics"] = data["train_df"].describe()
+        _dict["data_set_name"] = h1stmodel.dataset_name
+        _dict["data_set_description"] = h1stmodel.dataset_description
+        _dict["label_column"] = h1stmodel.label_column
+        _dict["features"] = list(data["train_df"].columns)
+        _dict["number_of_features"] = len(_dict["features"])
+        _dict["number_of_rows"] = data["train_df"].shape[0]
+        _dict["statistics"] = data["train_df"].describe()
+        self.data_describer = _dict
 
     def model_description(self, h1stmodel):
-        model = h1stmodel.model
-        self.model_dict["model_name"] = str(type(model).__name__)
-        self.model_dict["model_params"] = model.get_params()
-        self.model_dict["model_metrics"] = h1stmodel.metrics
+        _dict = {}
+        model = h1stmodel.ml_model
+        _dict["model_name"] = str(type(model).__name__)
+        _dict["model_params"] = model.get_params()
+        _dict["model_metrics"] = h1stmodel.metrics
+        self.model_describer = _dict

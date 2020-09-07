@@ -15,8 +15,8 @@ class BreastCancer(h1.Model):
         self.dataset_description = "The dataset contains 30 features\
             extracted from an image of a fine needle aspirate (FNA)\
              of a breast mass."
-        self.label_column = "diagnosis"
-        self.model = None
+        self.label_column = "benign"
+        self.ml_model = None
         self.metrics = None
         self.features = None
         self.test_size = 0.2
@@ -64,11 +64,11 @@ class BreastCancer(h1.Model):
         X_train, Y_train = prepared_data["train_df"], prepared_data["train_labels"]
         model = RandomForestClassifier(n_estimators=100)
         model.fit(X_train, Y_train)
-        self.model = model
+        self.ml_model = model
 
     def evaluate(self, data):
         X_test, Y_test = data["val_df"], data["val_labels"]
-        Y_pred = self.model.predict(X_test)
+        Y_pred = self.ml_model.predict(X_test)
         self.metrics = {
             "mae": sklearn.metrics.mean_absolute_error(Y_test, Y_pred),
             "auc": roc_auc_score(Y_test, Y_pred),
@@ -76,4 +76,4 @@ class BreastCancer(h1.Model):
         return self.metrics
 
     def predict(self, data):
-        return self.model.predict(data)
+        return self.ml_model.predict(data)

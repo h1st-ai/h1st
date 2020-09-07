@@ -28,8 +28,8 @@ class Describable:
                 aspect : The Aspect of the question. `What`
 
             Returns:
-                out : Description of Model's behavior and properties (SHAP)
+                out : Description of Model's behavior and properties
         """
         describer = Describer(self)
-        describer.shap_describer = SHAPModelDescriber(self.model, self.prepared_data)
-        return {"describer": describer}
+        describer.shap_describer = SHAPModelDescriber(self.ml_model, self.prepared_data)
+        return describer

@@ -7,23 +7,11 @@ class Decision:
     and `tell me how does the model make decisions`
     """
 
-    def __init__(self, h1stmodel):
-        self.data_dict = {}
-        self.model_dict = {}
-        self.decision_dict = {}
-        self.lime_explainer = {}
-        self.data_description(h1stmodel)
-        self.model_description(h1stmodel)
-        self.decision_description(h1stmodel)
-        self.decision_describer = self.decision_dict
-        self.model_describer = self.model_dict
-        self.decision_describer = self.data_dict
-
-    def data_description(self, h1stmodel):
+    def data_description(self, data):
         pass
 
-    def model_description(self, h1stmodel):
+    def model_description(self, model):
         pass
 
-    def decision_description(self, h1stmodel):
+    def decision_explainer(self, decision):
         pass
