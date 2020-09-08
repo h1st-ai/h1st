@@ -29,11 +29,10 @@ class WineQuality(h1.Model):
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
 
-    def explore_data(self, data):
-        if self.verbose:
-            data["quality"].hist()
-            plt.title("Wine Quality Rating Output Labels Distribution")
-            plt.show()
+    def explore_data(self, data):        
+        data["quality"].hist()
+        plt.title("Wine Quality Rating Output Labels Distribution")
+        plt.show()
 
     def prep_data(self, data):
         """

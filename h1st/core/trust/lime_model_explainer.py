@@ -9,7 +9,7 @@ class LIMEModelExplainer:
         self.model = model
         self.data = data
         self.feature_names = list(self.data["train_df"].columns)
-        self.decision_input = decision
+        self.decision_input = decision[0]
         self.lime_explainer()
         self.explain_decision()
 

@@ -1,3 +1,5 @@
+import shap
+from .enums import Constituency, Aspect
 class Describer:
     """
     A Describer is one that stores all relevant details about the objects (e.g., `Models`, `Graphs`).
@@ -10,10 +12,10 @@ class Describer:
     def __init__(self, h1stmodel):
         self.shap_describer = None
         self.data_description(h1stmodel)
-        self.model_description(h1stmodel)
-       
+        self.model_description(h1stmodel)       
 
     def data_description(self, h1stmodel):
+        self.h1stmodel = h1stmodel
         _dict = {}
         data = h1stmodel.prepared_data
         _dict["data_set_name"] = h1stmodel.dataset_name
@@ -32,3 +34,25 @@ class Describer:
         _dict["model_params"] = model.get_params()
         _dict["model_metrics"] = h1stmodel.metrics
         self.model_describer = _dict
+
+    def generate_report(self, constituent, aspect):        
+        method_name = str(Constituency(constituent).name)
+        aspect_name = str(Aspect(aspect).name)
+        print('\n\t\t\tConstituent:{};  Aspect:{}\n'.format(method_name, aspect_name))
+        method = getattr(self, method_name, lambda: "Invalid Constituent Method Name")
+        return method()
+            
+    def DATA_SCIENTIST(self):
+        print("\n\t\tDataset Details\n")
+        print(self.data_describer.items())
+        print("\n\t\tModel Details\n")
+        print(self.model_describer.items())
+        print('\n\t\tModel Describer\n')
+        shap.summary_plot(self.shap_describer.shap_values, self.h1stmodel.prepared_data['train_df'])
+
+    def REGULATOR(self):
+        print("\n\t\tDataset Details\n")
+        print(self.data_describer.items())
+        print('\n\t\tModel Describer\n')
+        shap.summary_plot(self.shap_describer.shap_values, self.h1stmodel.prepared_data['train_df'])
+

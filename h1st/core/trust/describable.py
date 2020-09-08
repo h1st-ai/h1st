@@ -32,4 +32,5 @@ class Describable:
         """
         describer = Describer(self)
         describer.shap_describer = SHAPModelDescriber(self.ml_model, self.prepared_data)
+        describer.generate_report(constituency, aspect)
         return describer

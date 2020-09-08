@@ -24,13 +24,13 @@ class TestModelExplainable(h1.Model):
         self.features = None
         self.metrics = None
         self.test_size = 0.2
-        self.prepared_data = None        
-
-    def load_data(self):
-        filename = "s3://arimo-pana-cyber/explain_data/winequality_red.csv"
-        df = pd.read_csv(filename)
-        df["quality"] = df["quality"].astype(int)
-        return df.reset_index(drop=True)
+        self.prepared_data = None
+        
+        def load_data(self):
+            filename = "s3://arimo-pana-cyber/explain_data/winequality_red.csv"
+            df = pd.read_csv(filename)
+            df["quality"] = df["quality"].astype(int)
+            return df.reset_index(drop=True)
 
     def prep_data(self, data):
         """

@@ -47,7 +47,6 @@ class BreastCancer(h1.Model):
         scaler = MinMaxScaler()
         X = scaler.fit_transform(X.values)
         X = pd.DataFrame(data = X, columns = self.features)
-        print(X.describe())
         Y = data[target]
         X_train, X_test, Y_train, Y_test = train_test_split(
             X, Y, test_size=self.test_size

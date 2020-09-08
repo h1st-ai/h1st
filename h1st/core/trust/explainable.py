@@ -11,7 +11,7 @@ class Explainable:
     it made at some specified time or on a given set of inputs in the past.
     """
 
-    def explain(self, decision_input=None, constituent=Constituency.ANY, aspect=Aspect.ANY):
+    def explain(self, decision=None, constituent=Constituency.ANY, aspect=Aspect.ANY):
         """
         Returns an explanation for a decision made by the Model based on `Who's asking` and `why`.
 
@@ -23,8 +23,9 @@ class Explainable:
             Returns:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
-        explainer = Explainer(self, decision_input)
+        explainer = Explainer(self, decision)
         explainer.lime_explainer = LIMEModelExplainer(
-            decision_input, self.ml_model, self.prepared_data
+            decision, self.ml_model, self.prepared_data
         )
+        explainer.generate_report(decision, constituent, aspect)
         return explainer
