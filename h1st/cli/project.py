@@ -94,9 +94,11 @@ def new_project(project_name, base_path):
         data_folder = tmppath / 'data'
         model_folder = tmppath / 'models'
         notebook_folder = tmppath / 'notebooks'
+        visualization_folder = tmppath / 'visualization'
         test_folder = tmppath / 'tests'
 
         # create all folders
+        visualization_folder.mkdir(exist_ok=True)
         notebook_folder.mkdir(exist_ok=True)
         model_folder.mkdir(exist_ok=True)
         data_folder.mkdir(exist_ok=True)
@@ -106,7 +108,11 @@ def new_project(project_name, base_path):
         (tmppath / '__init__.py').touch()
         (tmppath / 'schema.py').touch()
         (tmppath / 'config.py').touch()
+        (tmppath / 'LICENSE').touch()
+        (tmppath / 'README.md').touch()
+        (tmppath / 'requirements.txt').touch()
         (model_folder / '__init__.py').touch()
+        (visualization_folder / '__init__.py').touch()
         (test_folder / '__init__.py').touch()
         (notebook_folder / ".gitkeep").touch()
         (data_folder / '.gitkeep').touch()
