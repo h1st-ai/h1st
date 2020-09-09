@@ -20,3 +20,7 @@ ulid-py==0.1.0
 lime==0.2.0.1
 shap==0.35.0
 
+# IPython packages
+ipython==7.16.1
+ipython-genutils==0.2.0
+
