@@ -9,14 +9,14 @@ import sklearn
 import h1st as h1
 
 
-class WineQuality(h1.Model):
+class WineQuality(h1.MLModel):
     def __init__(self):
         super().__init__()
         self.dataset_name = "WineQuality"
         self.dataset_description = "The dataset is related to red variants of the Portuguese `Vinho Verde` wine.\
              The task is to determine the `Quality` of the wine based on 11 physicochemical tests as input."
         self.label_column = "Quality"
-        self.ml_model = None
+        self._native_model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
         self.features = None
         self.metrics = None
         self.test_size = 0.2
@@ -56,22 +56,22 @@ class WineQuality(h1.Model):
 
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data["train_labels"]
-        model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
-        model.fit(X_train, Y_train)
-        self.ml_model = model
+        # model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
+        self._native_model.fit(X_train, Y_train)
+        # self.ml_model = model
 
-    def _mean_absolute_percentage_error(self, y_true, y_pred):
-        y_true, y_pred = np.array(y_true), np.array(y_pred)
-        return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    # def _mean_absolute_percentage_error(self, y_true, y_pred):
+    #     y_true, y_pred = np.array(y_true), np.array(y_pred)
+    #     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
-    def evaluate(self, data):
-        X_test, y_true = data["test_df"], data["test_labels"]
-        y_pred = self.ml_model.predict(X_test)
-        return {
-            "mape": self._mean_absolute_percentage_error(y_true, y_pred)
-        }
+    # def evaluate(self, data):
+    #     X_test, y_true = data["test_df"], data["test_labels"]
+    #     y_pred = self.ml_model.predict(X_test)
+    #     return {
+    #         "mape": self._mean_absolute_percentage_error(y_true, y_pred)
+    #     }
 
-    def predict(self, data):
-        data["quality"] = data["quality"].astype(int)
-        input_data = data[self.features]
-        return self.ml_model.predict(input_data)
+    # def predict(self, data):
+    #     data["quality"] = data["quality"].astype(int)
+    #     input_data = data[self.features]
+    #     return self.ml_model.predict(input_data)

@@ -11,7 +11,7 @@ describer = model.describe()
 
 # print(describer.shap_describer.shap_values)
 idx = 4
-decision_input = model.prepared_data["train_df"].iloc[idx]
+decision = model.prepared_data["train_df"].iloc[idx], model.prepared_data["train_labels"].iloc
 
-explainer = model.explain(decision_input=decision_input, constituent=10, aspect=10)
+explainer = model.explain(decision=decision, constituent=10, aspect=10)
 print(explainer.decision_describer)
