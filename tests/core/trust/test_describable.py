@@ -27,7 +27,7 @@ class TestModelDescribable(h1.MLModel):
         self.prepared_data = None
 
     def load_data(self):
-        filename = "s3://arimo-pana-cyber/explain_data/winequality_red.csv"
+        filename = "./examples/Trust/data/wine_quality.csv"
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
