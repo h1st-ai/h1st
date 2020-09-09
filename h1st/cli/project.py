@@ -100,22 +100,15 @@ def new_project(project_name, base_path):
     try:
         tmppath = pathlib.Path(tmpdir)
         data_folder = tmppath / 'data'
-        # model_folder = tmppath / 'models'
-        # notebook_folder = tmppath / 'notebooks'
         test_folder = tmppath / 'tests'
 
         # create all folders
-        # notebook_folder.mkdir(exist_ok=True)
-        # model_folder.mkdir(exist_ok=True)
         data_folder.mkdir(exist_ok=True)
         test_folder.mkdir(exist_ok=True)
 
         # create all empty files
-        # (tmppath / '__init__.py').touch()
         (tmppath / 'config.py').touch()
-        # (model_folder / '__init__.py').touch()
         (test_folder / '__init__.py').touch()
-        # (notebook_folder / '.gitkeep').touch()
         (data_folder / '.gitkeep').touch()
 
         model_name = f"{class_prefix}Model"
