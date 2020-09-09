@@ -5,7 +5,7 @@ class Explainer:
     `what was the original decision`, `what were the key factors that led to that decision` and
     `what type of model was used to make the decision` etc.
     """
-    def __init__(self, decision, h1stmodel):
+    def __init__(self, h1stmodel, decision):
         self.lime_explainer = None
         self.decision_description(decision, h1stmodel)
 
