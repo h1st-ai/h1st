@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 import h1st as h1
 
 
-class BreastCancer(h1.Model):
+class BreastCancer(h1.MLModel):
     def __init__(self):
         super().__init__()
         self.dataset_name = "Wisconsin Breast Cancer Dataset"
@@ -16,10 +16,9 @@ class BreastCancer(h1.Model):
             extracted from an image of a fine needle aspirate (FNA)\
              of a breast mass."
         self.label_column = "benign"
-        self.ml_model = None
+        self._native_model = RandomForestClassifier(n_estimators=100)
         self.metrics = None
         self.features = None
-        self.test_size = 0.2
         self.prepared_data = None
 
     def load_data(self):
@@ -39,17 +38,15 @@ class BreastCancer(h1.Model):
         :param loaded_data: data return from load_data method
         :returns: dictionary contains train data and validation data
         """
-
-
         self.features = [c for c in data.columns if c != "benign"]
         target = "benign"
         X = data[self.features]
         scaler = MinMaxScaler()
         X = scaler.fit_transform(X.values)
-        X = pd.DataFrame(data = X, columns = self.features)
+        X = pd.DataFrame(data=X, columns=self.features)
         Y = data[target]
         X_train, X_test, Y_train, Y_test = train_test_split(
-            X, Y, test_size=self.test_size
+            X, Y, test_size=0.2
         )
         self.prepared_data = {
             "train_df": X_train,
@@ -61,18 +58,13 @@ class BreastCancer(h1.Model):
 
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data["train_labels"]
-        model = RandomForestClassifier(n_estimators=100)
-        model.fit(X_train, Y_train)
-        self.ml_model = model
+        self._native_model.fit(X_train, Y_train)
 
     def evaluate(self, data):
         X_test, Y_test = data["val_df"], data["val_labels"]
-        Y_pred = self.ml_model.predict(X_test)
+        Y_pred = self._native_model.predict(X_test)
         self.metrics = {
             "mae": sklearn.metrics.mean_absolute_error(Y_test, Y_pred),
             "auc": roc_auc_score(Y_test, Y_pred),
         }
         return self.metrics
-
-    def predict(self, data):
-        return self.ml_model.predict(data)

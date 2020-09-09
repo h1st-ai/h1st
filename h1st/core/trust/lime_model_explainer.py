@@ -1,8 +1,5 @@
 import numpy as np
-import pandas as pd
-import lime
 import lime.lime_tabular as lt
-
 
 class LIMEModelExplainer:
     def __init__(self, decision, model, data):
@@ -12,6 +9,10 @@ class LIMEModelExplainer:
         self.decision_input = decision[0]
         self.lime_explainer()
         self.explain_decision()
+        self.plot_lime_explanation()
+
+    def plot_lime_explanation(self):
+        self.explanation.show_in_notebook(show_table=True, show_all=False)
 
     def explain_decision(self):
         self.explanation = self.explainer.explain_instance(

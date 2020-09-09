@@ -1,8 +1,4 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import shap
-import pandas as pd
-
 
 class SHAPModelDescriber:
     def __init__(self, model, data):
@@ -10,6 +6,10 @@ class SHAPModelDescriber:
         self.data = data
         self.get_shap_describer()
         self.get_shap_values()
+        self.plot_shap_describer()
+
+    def plot_shap_describer(self):
+        shap.summary_plot(self.shap_values, self.data['train_df'])
 
     def get_shap_describer(self):
         self.shap_describer = shap.TreeExplainer(self.model)

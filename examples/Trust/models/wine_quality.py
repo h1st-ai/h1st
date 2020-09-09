@@ -3,9 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import roc_auc_score
 import matplotlib.pyplot as plt
-import sklearn
 import h1st as h1
 
 
@@ -17,8 +15,8 @@ class WineQuality(h1.MLModel):
              The task is to determine the `Quality` of the wine based on 11 physicochemical tests as input."
         self.label_column = "Quality"
         self._native_model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
-        self.features = None
         self.metrics = None
+        self.features = None
         self.test_size = 0.2
         self.prepared_data = None
 
@@ -29,7 +27,7 @@ class WineQuality(h1.MLModel):
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
 
-    def explore_data(self, data):        
+    def explore_data(self, data):
         data["quality"].hist()
         plt.title("Wine Quality Rating Output Labels Distribution")
         plt.show()
@@ -56,22 +54,16 @@ class WineQuality(h1.MLModel):
 
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data["train_labels"]
-        # model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
         self._native_model.fit(X_train, Y_train)
-        # self.ml_model = model
 
-    # def _mean_absolute_percentage_error(self, y_true, y_pred):
-    #     y_true, y_pred = np.array(y_true), np.array(y_pred)
-    #     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    def _mean_absolute_percentage_error(self, y_true, y_pred):
+        y_true, y_pred = np.array(y_true), np.array(y_pred)
+        return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
-    # def evaluate(self, data):
-    #     X_test, y_true = data["test_df"], data["test_labels"]
-    #     y_pred = self.ml_model.predict(X_test)
-    #     return {
-    #         "mape": self._mean_absolute_percentage_error(y_true, y_pred)
-    #     }
-
-    # def predict(self, data):
-    #     data["quality"] = data["quality"].astype(int)
-    #     input_data = data[self.features]
-    #     return self.ml_model.predict(input_data)
+    def evaluate(self, data):
+        X_test, y_true = data["test_df"], data["test_labels"]
+        y_pred = self._native_model.predict(X_test)
+        self.metrics = {
+            "mape": self._mean_absolute_percentage_error(y_true, y_pred)
+        }
+        return self.metrics

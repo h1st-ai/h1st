@@ -31,6 +31,6 @@ class Describable:
                 out : Description of Model's behavior and properties
         """
         describer = Describer(self)
-        describer.shap_describer = SHAPModelDescriber(self.ml_model, self.prepared_data)
+        describer.shap_describer = SHAPModelDescriber(self._native_model, self.prepared_data)
         describer.generate_report(constituency, aspect)
         return describer

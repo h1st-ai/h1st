@@ -25,7 +25,7 @@ class Explainable:
         """
         explainer = Explainer(self, decision)
         explainer.lime_explainer = LIMEModelExplainer(
-            decision, self.ml_model, self.prepared_data
+            decision, self._native_model, self.prepared_data
         )
         explainer.generate_report(decision, constituent, aspect)
         return explainer
