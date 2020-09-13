@@ -59,11 +59,6 @@ def new_model_cli(model_name):
             module_name=module_name
         )
 
-        # with open(path / 'notebooks' / f"{module_name}.ipynb", "w") as f:
-        #     f.write(
-        #         _render_notebook(project_package, class_name, module_name)
-        #     )
-
         print('Model %s%s%s is created successfully.' % (
             attr('bold'),
             model_name,
@@ -119,7 +114,10 @@ def new_project(project_name, base_path):
             f.write(_render_init_graph_class(class_prefix, model_package))
 
         with open(test_folder / "test_schema.py", "w") as f:
-            f.write(_render_schema_testcase(project_name_snake_case, class_prefix))
+            f.write(_render_template('schema_testcase', {
+                'GRAPH_PACKAGE': f'{project_name_snake_case}_graph',
+                'GRAPH_CLASS': f'{class_prefix}Graph'
+            }))
 
         with open(tmppath / 'config.py', 'w') as f:
             f.write(_render_template('config', {}))
@@ -144,15 +142,10 @@ def new_project(project_name, base_path):
             }))
 
 
-        with open(tmppath / 'run_tests.sh', 'w') as f:
+        with open(tmppath / 'run_tests.py', 'w') as f:
             f.write(_render_template('run_tests', {}))
 
-        (tmppath / 'run_tests.sh').chmod(0o777)
-
-        # with open(notebook_folder / f"{class_prefix}.ipynb", "w") as f:
-        #     f.write(_render_notebook(
-        #         project_name_camel_case, f"{class_prefix}Model", project_name_snake_case
-        #     ))
+        (tmppath / 'run_tests.py').chmod(0o777)
 
         shutil.move(tmpdir, project_module)
         return project_module, project_name
@@ -195,15 +188,6 @@ def _render_init_graph_class(prefix, model_package):
         "MODEL_PACKAGE": model_package
     })
 
-def _render_schema_testcase(project_package, prefix):
-    return """from h1st.schema.testing import setup_schema_tests
-from {project_package}_graph import {prefix}Graph
-
-# Setup all schema test cases for graph
-# Please refer to https://docs.h1st.ai for more details.
-setup_schema_tests({prefix}Graph(), globals())
-""".format(prefix=prefix, project_package=project_package)
-
 
 def _render_notebook(package_name, model_name, model_file_name):
     subl = {
@@ -228,6 +212,10 @@ def _clean_name(name):
 
 
 def _render_template(name, replaces):
+    """
+    Simple function to do template replacement. All variables are prefixed and suffixed
+    with ``$$``, and then replace accordingly.
+    """
     tpl = os.path.join(os.path.dirname(__file__), 'templates', f"{name}.txt")
     with open(tpl, 'r') as f:
         content = f.read()

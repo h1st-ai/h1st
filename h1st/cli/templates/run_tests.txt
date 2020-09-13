@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env python
+import os
+import subprocess
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-(cd $DIR && nose2)
+subprocess.check_call(["nose2"], cwd=os.path.dirname(__file__) or ".")
