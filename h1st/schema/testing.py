@@ -77,7 +77,7 @@ def _make_test_case(name, scope_name, node, schema_info, prepare_test_data):
 
             item = prepare_test_data(node, test_data, schema)
 
-            result = node.test_output(item, schema=schema)
+            result = node.validate_output(item, schema=schema)
 
             if result is None:
                 pass  # no verification was implemented

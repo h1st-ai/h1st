@@ -1,5 +1,7 @@
-from typing import Any, Dict
+from typing import Dict
 from h1st.core.exception import GraphException
+from h1st.schema.schema_validator import SchemaValidator
+from h1st.schema.schema_validation_result import SchemaValidationResult
 
 
 class NodeContainable:
@@ -64,7 +66,7 @@ class NodeContainable:
         :param command: to know which graph's execution flow (predict, train, ...) it is involving
         :inputs: input data to proceed accordingly to the flow
 
-        :return: result as a dictionary            
+        :return: result as a dict
         """
         func = getattr(self, command)
         if not func:
@@ -76,11 +78,11 @@ class NodeContainable:
 
         return result
 
-    def test_output(self, inputs: Any = None, schema=None):
+    def validate_node_output(self, input_data: dict=None, schema=None) -> SchemaValidationResult:
         """
         Subclass will implement this function to verify its output schema
 
         :param inputs: subclass will use this input data to call a specific function to get the result
         :schema: the schema to verify if the result conforming with
         """        
-        pass
+        return SchemaValidator().validate(input_data, schema)

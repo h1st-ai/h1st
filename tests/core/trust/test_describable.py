@@ -13,7 +13,7 @@ import sklearn
 import h1st as h1
 import unittest
 
-class TestModelExplainable(h1.MLModel):
+class TestModelDescribable(h1.MLModel):
     def __init__(self):
         super().__init__()
         self.dataset_name = "WineQuality"
@@ -73,16 +73,14 @@ class TestModelExplainable(h1.MLModel):
         }
         return self.metrics
         
-class TestExplainable(unittest.TestCase):
-    def test_explainable(self):
-        m = TestModelExplainable()
+class TestDescribable(unittest.TestCase):
+    def test_describable(self):
+        m = TestModelDescribable()
         data = m.load_data()
         prepared_data = m.prep_data(data)
         m.train(prepared_data)
-        idx = 4
-        decision = m.prepared_data["train_df"].iloc[idx], m.prepared_data["train_labels"].iloc[idx]
-        explainer = m.explain(decision=decision)
-        self.assertEquals(len(explainer.lime_explainer.explainer.feature_names), len(m.features))
-        self.assertIsInstance(explainer, object)
+        describer = m.describe()     
+        self.assertEquals(describer.shap_describer.shap_values.shape, m.prepared_data['train_df'].shape)
+        self.assertIsInstance(describer, object)
 
 
