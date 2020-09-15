@@ -6,7 +6,8 @@ class SHAPModelDescriber:
         self.data = data
         self.get_shap_describer()
         self.get_shap_values()
-        self.plot_shap_describer()
+        ## Only for testing if plots are generated
+        # self.plot_shap_describer()
 
     def plot_shap_describer(self):
         shap.summary_plot(self.shap_values, self.data['train_df'])
