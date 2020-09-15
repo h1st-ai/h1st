@@ -16,12 +16,16 @@ class $$MODEL_CLASS$$(h1.MLModel):
         # Implement code to retrieve your data here
         return {"data_path": config.DATA_PATH}
 
-    def prep(self, data: dict) -> dict:
+    def prep(self, loaded_data: dict) -> dict:
         # Implement code to prepare your data here
-        return data
+        return loaded_data
 
     def train(self, prepared_data: dict):
         # Implement your train logic here
+        pass
+
+    def explore(self, loaded_data: dict) -> None:
+        # Implement logic to explore data from loaded data
         pass
 
     def evaluate(self, data: dict) -> dict:

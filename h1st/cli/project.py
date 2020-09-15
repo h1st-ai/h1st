@@ -48,7 +48,6 @@ def new_model_cli(model_name):
         model_path.mkdir(exist_ok=True)
 
         class_name, module_name = _clean_name(model_name)
-        project_package = path.name
 
         if not class_name.lower().endswith("model"):
             class_name = f"{class_name}Model"
