@@ -2,11 +2,13 @@ from typing import Any
 from h1st.schema import SchemaValidator
 from h1st.model_repository import ModelRepository
 from h1st.core.node_containable import NodeContainable
+from h1st.core.trust.trustable import Trustable
+from h1st.schema.schema_validation_result import SchemaValidationResult
 
 
-class Model(NodeContainable):
+class Model(NodeContainable, Trustable):
     """
-    Base class for H1ST Model.
+    Base class for H1st Model.
 
     To create your own model, inherit `Model` class and implement `prepare_data`, `train` and
     `predict` accordingly. Please refer to Tutorial for more details how to create a model.
@@ -108,14 +110,13 @@ class Model(NodeContainable):
         :returns: prediction result as a dictionary
         """
         # not raise NotImplementedError so the initial model created by integrator will just work 
-        return {}
+        return {"input_data" : input_data}
 
-    def test_output(self, input_data: Any = None, schema=None):
+    def validate_node_output(self, input_data: dict=None, schema=None) -> SchemaValidationResult:
         """
         From `NodeContainable`. Validates the models' prediction with a schema.::
         :param input_data: input data for prediction, it can be anything.
         :param schema: target schema
         :return: validation result
         """
-        prediction = self.predict(input_data)
-        return SchemaValidator().validate(prediction, schema)
+        return super().validate_node_output(self.predict(input_data), schema)

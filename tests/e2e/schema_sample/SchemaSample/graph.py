@@ -7,6 +7,6 @@ class SchemaSampleGraph(h1.Graph):
         super().__init__()
 
         self.start()
-        self.add(h1.Action(SampleNode()))
-        self.add(h1.Action(SchemaSampleModel()))
+        self.add(SampleNode())
+        self.add(SchemaSampleModel())
         self.end()
