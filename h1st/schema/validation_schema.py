@@ -48,6 +48,8 @@ class ValidationSchema:
         prefix = graph.__class__.__module__.split(".")
         prefix.pop()
         config_module_name = ".".join(prefix) + ".config"
+        if config_module_name == ".config":
+            config_module_name = "config"
 
         schema_name = graph._node_validation_schema_name  # XXX
         try:
