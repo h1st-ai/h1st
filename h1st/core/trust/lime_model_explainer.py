@@ -9,7 +9,8 @@ class LIMEModelExplainer:
         self.decision_input = decision[0]
         self.lime_explainer()
         self.explain_decision()
-        self.plot_lime_explanation()
+        ## Only for testing if plots are generated
+        # self.plot_lime_explanation()
 
     def plot_lime_explanation(self):
         self.explanation.show_in_notebook(show_table=True, show_all=False)
