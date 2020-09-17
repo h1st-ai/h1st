@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+_build/
 build/
 develop-eggs/
 dist/
@@ -145,3 +146,4 @@ Digraph.gv*
 .pytype
 
 flake8.txt
+data

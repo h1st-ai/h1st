@@ -1,5 +1,10 @@
+import glob
+import os
+import pathlib
 import random
-import s3fs
+import urllib.request
+import zipfile
+
 import pandas as pd
 import numpy as np
 import sklearn.metrics
@@ -18,10 +23,24 @@ def gen_windows(df, window_size, step_size):
 
 
 def load_data(num_files=None, shuffle=False):
-    fs = s3fs.S3FileSystem(anon=False)
-    AUTOCYBER_DATA_PATH = "s3://h1st-tutorial-autocyber"
-    normal_files = ['s3://' + f for f in fs.glob(AUTOCYBER_DATA_PATH + "/driving-trips/*.parquet", recursive=True)]
-    attack_files = ['s3://' + f for f in fs.glob(AUTOCYBER_DATA_PATH + "/attack-samples/*.parquet", recursive=True)]
+    pathlib.Path("data").mkdir(parents=True, exist_ok=True)
+
+    # check 2 files, check files count later
+    if not os.path.isfile('data/driving-trips/20181113_Driver1_Trip1.parquet') or not os.path.isfile('data/attack-samples/20181203_Driver1_Trip10-0.parquet'):
+        print('Fetching https://h1st-tutorial-autocyber.s3.amazonaws.com/h1st_autocyber_tutorial_data.zip ...')
+        with urllib.request.urlopen('https://h1st-tutorial-autocyber.s3.amazonaws.com/h1st_autocyber_tutorial_data.zip') as f:
+            content = f.read()
+        with open('data/h1st_autocyber_tutorial_data.zip', 'wb') as f:
+            f.write(content)
+        with zipfile.ZipFile('data/h1st_autocyber_tutorial_data.zip', 'r') as zip_ref:
+            zip_ref.extractall("data")
+
+    normal_files = glob.glob('data/driving-trips/*.parquet', recursive=True)
+    attack_files = glob.glob('data/attack-samples/*.parquet', recursive=True)
+
+    if num_files is None and ((len(normal_files) != 21) or (len(attack_files) != 9)):
+        raise RuntimeError("unexpected number of files found, please clear the 'data' folder and rerun load_data()")
+
     if shuffle:
         random.shuffle(normal_files)
         random.shuffle(attack_files)
