@@ -39,7 +39,7 @@ class MsgFreqEventDetectorModel(h1.Model):
                 w_df_sensor = w_df.dropna(subset=[sensor])
                 max_normal_message_freq = self.stats.at['max', sensor]
                 msg_freq = len(w_df_sensor)
-                if msg_freq > (max_normal_message_freq+1): #or min_timediff < min_normal_timediff:
+                if msg_freq > (max_normal_message_freq * 1.1):
                     results[sensor] = 1
                 else:
                     results[sensor] = 0
