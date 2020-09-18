@@ -22,7 +22,7 @@ class AutoCyberE2ETest(TestCase):
         with open(nb_file) as f:
             nb = nbformat.read(f, as_version=4)
 
-        ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
+        ep = ExecutePreprocessor(timeout=600)
 
         try:
             ep.preprocess(nb, {'metadata': {'path': autocyber_folder}})
