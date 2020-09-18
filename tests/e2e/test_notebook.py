@@ -19,9 +19,7 @@ class AutoCyberE2ETest(TestCase):
 
         try:
 
-            subprocess.check_call(['ipython', nb_file],
-                cwd=nb_folder,
-            )
+            subprocess.check_call(['ipython', "AutoCyberTutorial.ipynb"], cwd=nb_folder)
         finally:
             # not to make this tutorial folder dirty
             os.unlink(os.path.join(nb_folder, "AutoCyberTutorial.ipynb"))
