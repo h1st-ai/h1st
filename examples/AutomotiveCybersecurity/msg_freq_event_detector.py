@@ -1,21 +1,19 @@
 import pandas as pd 
 import h1st as h1
 
-import AutomotiveCybersecurity.config as config
-import AutomotiveCybersecurity.util as util
-
+import config
+import util
 
 class MsgFreqEventDetectorModel(h1.Model):
     def load_data(self, num_files=None):
-        return util.load_data(num_files)
+        return util.load_data(num_files, shuffle=False)
     
     def train(self, prepared_data):
-        files = prepared_data["train_normal_files"]
+        files = prepared_data["normal_files"]
         
         from collections import defaultdict
         def count_messages(f):
-            df = pd.read_csv(f)
-            df.columns = ['Timestamp', 'Label', 'CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy']
+            df = pd.read_parquet(f)
             counts = defaultdict(list)
             
             for window_start in util.gen_windows(df, window_size=config.WINDOW_SIZE, step_size=config.WINDOW_SIZE):
@@ -41,7 +39,7 @@ class MsgFreqEventDetectorModel(h1.Model):
                 w_df_sensor = w_df.dropna(subset=[sensor])
                 max_normal_message_freq = self.stats.at['max', sensor]
                 msg_freq = len(w_df_sensor)
-                if msg_freq > (max_normal_message_freq+1): #or min_timediff < min_normal_timediff:
+                if msg_freq > (max_normal_message_freq * 1.1):
                     results[sensor] = 1
                 else:
                     results[sensor] = 0

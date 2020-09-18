@@ -1,10 +1,15 @@
+import glob
+import os
+import pathlib
 import random
-import s3fs
+import urllib.request
+import zipfile
+
 import pandas as pd
 import numpy as np
 import sklearn.metrics
 
-import AutomotiveCybersecurity.config as config
+import config as config
 
 
 def gen_windows(df, window_size, step_size):
@@ -18,31 +23,38 @@ def gen_windows(df, window_size, step_size):
 
 
 def load_data(num_files=None, shuffle=False):
-    fs = s3fs.S3FileSystem(anon=False)
-    train_normal_files = ['s3://' + f for f in fs.glob(config.AUTOCYBER_DATA_PATH + "/train/Normal/*.csv", recursive=True)]
-    train_attack_files = ['s3://' + x for x in fs.glob(config.AUTOCYBER_DATA_PATH + "/train/Attack/*/*.csv", recursive=True)]
-    test_normal_files = ['s3://' + x for x in fs.glob(config.AUTOCYBER_DATA_PATH + "/test/public/Normal/*.csv", recursive=True)]
-    test_attack_files = ['s3://' + x for x in fs.glob(config.AUTOCYBER_DATA_PATH + "/test/public/Attack/*/*.csv", recursive=True)]
+    pathlib.Path("data").mkdir(parents=True, exist_ok=True)
+
+    # check 2 files, check files count later
+    if not os.path.isfile('data/driving-trips/20181113_Driver1_Trip1.parquet') or not os.path.isfile('data/attack-samples/20181116_Driver1_Trip4-0.parquet'):
+        print('Fetching https://h1st-tutorial-autocyber.s3.amazonaws.com/h1st_autocyber_tutorial_data.zip ...')
+        with urllib.request.urlopen('https://h1st-tutorial-autocyber.s3.amazonaws.com/h1st_autocyber_tutorial_data.zip') as f:
+            content = f.read()
+        with open('data/h1st_autocyber_tutorial_data.zip', 'wb') as f:
+            f.write(content)
+        with zipfile.ZipFile('data/h1st_autocyber_tutorial_data.zip', 'r') as zip_ref:
+            zip_ref.extractall("data")
+
+    normal_files = glob.glob('data/driving-trips/*.parquet', recursive=True)
+    attack_files = glob.glob('data/attack-samples/*.parquet', recursive=True)
+
+    if num_files is None and ((len(normal_files) != 21) or (len(attack_files) != 12)):
+        raise RuntimeError("unexpected number of files found, please clear the 'data' folder and rerun load_data()")
+
     if shuffle:
-        random.shuffle(train_normal_files)
-        random.shuffle(train_attack_files)
-        random.shuffle(test_normal_files)
-        random.shuffle(test_attack_files)
+        random.shuffle(normal_files)
+        random.shuffle(attack_files)
     if num_files:
         return {
-            'train_normal_files': train_normal_files[:num_files], 
-            'train_attack_files': train_attack_files[:num_files],
-            'test_normal_files': test_normal_files[:num_files],
-            'test_attack_files': test_attack_files[:num_files]
+            'normal_files': normal_files[:num_files], 
+            'attack_files': attack_files[:num_files],
         }
     return {
-        'train_normal_files': train_normal_files, 
-        'train_attack_files': train_attack_files,
-        'test_normal_files': test_normal_files,
-        'test_attack_files': test_attack_files
+        'normal_files': normal_files, 
+        'attack_files': attack_files,
     }
 
-def compute_timediff_fillna(df):
+def compute_timediff_fillna(df, dropna_subset=None):
     df = df.copy()
     for s in config.SENSORS:
         sensor_not_isna = df[~df[s].isna()]
@@ -51,8 +63,9 @@ def compute_timediff_fillna(df):
 
     for s in config.SENSORS:
         df[s] = df[s].fillna(method="ffill")
-        df["%s_TimeDiff" % s] = df["%s_TimeDiff" % s].fillna(0.)
-    df.dropna(inplace=True)
+        df["%s_TimeDiff" % s] = df["%s_TimeDiff" % s].fillna(-1) # method="ffill")
+    if dropna_subset:
+        df.dropna(subset=dropna_subset, inplace=True)
     
     return df
 
@@ -74,8 +87,7 @@ def evaluate_event_graph(graph, files):
     
     for f in files:
         # print(f)
-        df = pd.read_csv(f)
-        df.columns = ['Timestamp', 'Label', 'CarSpeed', 'SteeringAngle', 'YawRate', 'Gx', 'Gy']
+        df = pd.read_parquet(f)
         result = graph.predict({"df": df})
             
         event_preds = []
@@ -86,7 +98,7 @@ def evaluate_event_graph(graph, files):
 
             in_window = (df.Timestamp >= event_result['window_start']) & (df.Timestamp < event_result['window_start'] + config.WINDOW_SIZE)
             w_df = df[in_window]
-            label = np.any(w_df.Label == "Tx")
+            label = np.any(w_df.Label == config.ATTACK_LABEL)
             event_labels.append(label)
         dfw = pd.DataFrame({"WindowLabel": event_labels, "WindowInAttack": event_preds})
 

@@ -1,13 +1,13 @@
 # Book settings
 title: H1st.AI Tutorial - Automotive Cybersecurity
 author: H1st.AI
-logo: "img/h1st_logo.png"
+logo: H1st-logo.png
 
 repository:
   url                       : https://github.com/h1st-ai/h1st
 
 html:
-  favicon                   : "img/h1st_logo.png"
+  favicon                   : H1st-logo.png
   use_repository_button     : true
   baseurl                   : "http://h1st.ai/"
   google_analytics_id       : "UA-40192392-7"
