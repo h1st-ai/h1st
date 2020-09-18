@@ -53,6 +53,7 @@ junit.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+AutoCyberTutorial_output.ipynb
 
 # Translations
 *.mo
