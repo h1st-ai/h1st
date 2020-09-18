@@ -13,7 +13,7 @@ class AutoCyberE2ETest(TestCase):
             raise SkipTest('IPython is not installed')
 
         nb_file = os.path.join(os.path.dirname(__file__), "AutoCyberTutorial.ipynb")
-        nb_folder = "examples/AutomotiveCybersecurity/notebooks"
+        nb_folder = "examples/AutomotiveCybersecurity/"
 
         shutil.copy2(nb_file, nb_folder)
 
