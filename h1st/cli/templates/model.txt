@@ -1,0 +1,43 @@
+"""
+The following is a boilerplate code that is provided by workbench. 
+Please fill in each function with your own code.
+"""
+
+import h1st as h1
+import config
+
+class $$MODEL_CLASS$$(h1.MLModel):
+    def __init__(self):
+        # Instantiate your base (tensorflow, sklearn, pytorch, etc.) model here
+        # self.base_model = xxx
+        pass
+
+    def load_data(self) -> dict:
+        # Implement code to retrieve your data here
+        return {"data_path": config.DATA_PATH}
+
+    def prep(self, loaded_data: dict) -> dict:
+        # Implement code to prepare your data here
+        return loaded_data
+
+    def train(self, prepared_data: dict):
+        # Implement your train logic here
+        pass
+
+    def explore(self, loaded_data: dict) -> None:
+        # Implement logic to explore data from loaded data
+        pass
+
+    def evaluate(self, data: dict) -> dict:
+        # Implement your evaluation logic here, then assign metrics
+        self.metrics = {}
+        return self.metrics
+
+    def predict(self, data: dict) -> dict:
+        # Implement your predict logic here
+        return {"result": True}
+
+if __name__ == "__main__":
+    model = $$MODEL_CLASS$$()
+    print(model.predict({"input_data": None}))
+

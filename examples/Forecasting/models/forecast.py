@@ -45,7 +45,7 @@ class ForecastModel(h1.Model):
         print(df.count()) # count NA
         seaborn.distplot(df.Sales) # Sales distribution
 
-    def prep_data(self, loaded_data):
+    def prep(self, loaded_data):
         """
         Prepare data for modelling
         :param loaded_data: data return from load_data method

@@ -1,5 +1,5 @@
 from unittest import TestCase, skip
-from h1st import Model
+from h1st import Model, RuleBasedModel
 from h1st.model_repository import ModelRepository, ModelSerDe
 from h1st.model_repository.storage.local import LocalStorage
 import tempfile
@@ -174,6 +174,7 @@ class ModelSerDeTestCase(TestCase):
 
         self.assert_models(MyModel, 'tensorflow-keras', 'model_Iris', 'dict')
 
+
 class ModelRepositoryTestCase(TestCase):
     def test_serialize_sklearn_model(self):
         class MyModel(Model):
@@ -236,3 +237,13 @@ class ModelStatsSerDeTestCase(TestCase):
 
                 model_serde.deserialize(model_2, path)
                 assert 'CarSpeed' in model_2.stats
+
+
+class RuleModelTestCase(TestCase):
+    def test_ruled_based_model(self):
+        class MyRule(RuleBasedModel):
+            def predict(self, input_data):
+                return {"result": sum(input_data['X'])}
+
+        model = MyRule()
+        self.assertEquals({'result': 42}, model.predict({'X': [1, 1, 10, 10, 20]}))
