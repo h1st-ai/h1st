@@ -1,9 +1,9 @@
 import h1st as h1
 
-import AutomotiveCybersecurity.config as config
-import AutomotiveCybersecurity.util as util
-from AutomotiveCybersecurity.models.msg_freq_event_detector import MsgFreqEventDetectorModel
-from AutomotiveCybersecurity.models.gradient_boosting_msg_classifier import GradientBoostingMsgClassifierModel
+import config
+import util
+from msg_freq_event_detector import MsgFreqEventDetectorModel
+from gradient_boosting_msg_classifier import GradientBoostingMsgClassifierModel
 
 
 class WindowGenerator(h1.Action):

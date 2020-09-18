@@ -1,9 +1,8 @@
 import pandas as pd 
 import h1st as h1
 
-import AutomotiveCybersecurity.config as config
-import AutomotiveCybersecurity.util as util
-
+import config
+import util
 
 class MsgFreqEventDetectorModel(h1.Model):
     def load_data(self, num_files=None):

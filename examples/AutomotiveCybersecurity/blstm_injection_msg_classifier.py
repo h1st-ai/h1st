@@ -7,8 +7,8 @@ import pandas as pd
 import numpy as np
 import h1st as h1
 
-import AutomotiveCybersecurity.config as config
-import AutomotiveCybersecurity.util as util
+import config
+import util
 
 
 def create_model(rnn_size=128, lr=1e-3, clip_norm=10., n_sensors=5, classif=True, multilabel=False, compile=True):

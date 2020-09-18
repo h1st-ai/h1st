@@ -1,8 +1,8 @@
 import h1st as h1
 import pandas as pd
 
-import AutomotiveCybersecurity.config as config
-import AutomotiveCybersecurity.util as util
+import config
+import util
 
 FEATURES = config.SENSORS + ["%s_TimeDiff" % s for s in config.SENSORS]
 

@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import sklearn.metrics
 
-import AutomotiveCybersecurity.config as config
+import config as config
 
 
 def gen_windows(df, window_size, step_size):
@@ -26,7 +26,7 @@ def load_data(num_files=None, shuffle=False):
     pathlib.Path("data").mkdir(parents=True, exist_ok=True)
 
     # check 2 files, check files count later
-    if not os.path.isfile('data/driving-trips/20181113_Driver1_Trip1.parquet') or not os.path.isfile('data/attack-samples/20181203_Driver1_Trip10-0.parquet'):
+    if not os.path.isfile('data/driving-trips/20181113_Driver1_Trip1.parquet') or not os.path.isfile('data/attack-samples/20181116_Driver1_Trip4-0.parquet'):
         print('Fetching https://h1st-tutorial-autocyber.s3.amazonaws.com/h1st_autocyber_tutorial_data.zip ...')
         with urllib.request.urlopen('https://h1st-tutorial-autocyber.s3.amazonaws.com/h1st_autocyber_tutorial_data.zip') as f:
             content = f.read()
@@ -38,7 +38,7 @@ def load_data(num_files=None, shuffle=False):
     normal_files = glob.glob('data/driving-trips/*.parquet', recursive=True)
     attack_files = glob.glob('data/attack-samples/*.parquet', recursive=True)
 
-    if num_files is None and ((len(normal_files) != 21) or (len(attack_files) != 9)):
+    if num_files is None and ((len(normal_files) != 21) or (len(attack_files) != 12)):
         raise RuntimeError("unexpected number of files found, please clear the 'data' folder and rerun load_data()")
 
     if shuffle:
