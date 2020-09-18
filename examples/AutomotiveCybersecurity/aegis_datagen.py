@@ -3,7 +3,17 @@ import random
 import pandas as pd
 import numpy as np
 
-# +
+"""
+This dataset is originally based on:
+
+Kaiser, Christian, Stocker, Alexander, & Festl, Andreas. (2019). Automotive CAN bus data: An Example Dataset from the AEGIS Big Data Project [Data set]. Zenodo. http://doi.org/10.5281/zenodo.3267184)
+
+Important processing done by Arimo. The reason is that recreating realistic message frequency for each CAN ID is crucial for this problem.
+Simply following along the H1st tutorial at https://h1st.ai/ would help you understand why this is needed.
+
+This derivative dataset is licensed under a Creative Commons Attribution 4.0 International License (https://creativecommons.org/licenses/by/4.0/).
+"""
+
 DEBUG = False
 
 def add_timestamp_noise(CarSpeed, noise_scale):
