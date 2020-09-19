@@ -6,7 +6,6 @@ class SHAPModelDescriber:
         self.data = data
         self.get_shap_describer()
         self.get_shap_values()
-        ## Only for testing if plots are generated
         # self.plot_shap_describer()
 
     def plot_shap_describer(self):
