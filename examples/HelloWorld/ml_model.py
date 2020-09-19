@@ -7,7 +7,7 @@ from sklearn import svm, datasets, metrics
 import h1st as h1
 
 
-class MLModel(h1.Model):
+class MLModel(h1.MLModel):
     def __init__(self):
         self._native_model = svm.SVC(gamma=0.001, C=100.)
 
@@ -40,8 +40,8 @@ class MLModel(h1.Model):
         metric = metrics.accuracy_score(data["test_y"], pred_y)
         return metric
 
-    """
-    We expect an array of input data rows in the "x" field of the input_data dict
-    """
-    def predict(self, input_data):
+    def predict(self, input_data: dict) -> dict:
+        """
+        We expect an array of input data rows in the "x" field of the input_data dict
+        """
         return self._native_model.predict(input_data["x"])

@@ -30,7 +30,7 @@ To fully understand H1st philosophy and features, do check out the [H1st AI Tuto
 
 
 ## Read the Tutorials and API Documentation
-Get started with `H1st` Tutorial and API Documentation at [h1st.ai](https://docs.h1st.ai/).
+Get started with [H1st Tutorial](https://h1st.ai) and API Documentation at [h1st.ai](https://docs.h1st.ai/).
 
 
 ## Join and Learn from Our Open-Source Community
