@@ -32,7 +32,7 @@ class WineQuality(h1.MLModel):
         plt.title("Wine Quality Rating Output Labels Distribution")
         plt.show()
 
-    def prep_data(self, data):
+    def prep(self, data):
         """
         Prepare data for modelling
         :param loaded_data: data return from load_data method

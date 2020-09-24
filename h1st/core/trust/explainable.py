@@ -22,6 +22,8 @@ class Explainable:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
         explainer = Explainer(self, decision)
+        if not all(hasattr(self, attr) for attr in ["_native_model", "prepared_data"]):
+            raise AttributeError("Attributes _native_model or prepared_data do not exist.")
         explainer.lime_explainer = LIMEModelExplainer(
             decision, self._native_model, self.prepared_data
         )

@@ -1,3 +1,5 @@
+
+
 class Describer:
     """
     A Describer is one that stores all relevant details about the objects (e.g., `Models`, `Graphs`).
@@ -7,30 +9,37 @@ class Describer:
     `by whom' and 'on what data was the model trained'
     """
 
-    def __init__(self, h1stmodel):
-        self.shap_describer = None
-        self.data_description(h1stmodel)
-        self.model_description(h1stmodel)
+    def __init__(self, model):
+        self._data_description(model)
+        self._model_description(model)
+
+    @property
+    def shap_describer(self):
+        return self._describer
+
+    @shap_describer.setter
+    def shap_describer(self, value):   
+        self._describer = value
         
-    def data_description(self, h1stmodel):
-        self.h1stmodel = h1stmodel
+    def _data_description(self, model):
+        self.model = model
         _dict = {}
-        data = h1stmodel.prepared_data
-        _dict["data_set_name"] = h1stmodel.dataset_name
-        _dict["data_set_description"] = h1stmodel.dataset_description
-        _dict["label_column"] = h1stmodel.label_column
+        data = model.prepared_data
+        _dict["data_set_name"] = model.dataset_name
+        _dict["data_set_description"] = model.dataset_description
+        _dict["label_column"] = model.label_column
         _dict["features"] = list(data["train_df"].columns)
         _dict["number_of_features"] = len(_dict["features"])
         _dict["number_of_rows"] = data["train_df"].shape[0]
         _dict["statistics"] = data["train_df"].describe()
         self.data_describer = _dict
 
-    def model_description(self, h1stmodel):
+    def _model_description(self, model):
         _dict = {}
-        model = h1stmodel._native_model
-        _dict["model_name"] = str(type(model).__name__)
-        _dict["model_params"] = model.get_params()
-        _dict["model_metrics"] = h1stmodel.metrics
+        _native_model = model._native_model
+        _dict["model_name"] = str(type(_native_model).__name__)
+        _dict["model_params"] = _native_model.get_params()
+        _dict["model_metrics"] = model.metrics
         self.model_describer = _dict
 
     def generate_report(self, constituency, aspect):

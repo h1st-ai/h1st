@@ -2,19 +2,19 @@ import shap
 
 class SHAPModelDescriber:
     def __init__(self, model, data):
-        self.model = model
+        self._model = model
         self.data = data
-        self.get_shap_describer()
-        self.get_shap_values()
-        # self.plot_shap_describer()
+        self._get_shap_describer()
+        self._get_shap_values()
+        # self._plot_shap_describer()
 
-    def plot_shap_describer(self):
+    def _plot_shap_describer(self):
         shap.summary_plot(self.shap_values, self.data['train_df'])
 
-    def get_shap_describer(self):
-        self.shap_describer = shap.TreeExplainer(self.model)
+    def _get_shap_describer(self):
+        self.shap_describer = shap.TreeExplainer(self._model)
 
-    def get_shap_values(self):
+    def _get_shap_values(self):
         self.shap_values = self.shap_describer.shap_values(
             self.data["train_df"], check_additivity=False
         )

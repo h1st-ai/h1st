@@ -31,6 +31,8 @@ class Describable:
                 out : Description of Model's behavior and properties
         """
         describer = Describer(self)
+        if not all(hasattr(self, attr) for attr in ["_native_model", "prepared_data"]):
+            raise AttributeError("Attributes _native_model or prepared_data do not exist.")
         describer.shap_describer = SHAPModelDescriber(self._native_model, self.prepared_data)
         describer.generate_report(constituency, aspect)
         return describer

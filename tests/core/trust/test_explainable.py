@@ -27,7 +27,7 @@ class TestModelExplainable(h1.MLModel):
         self.prepared_data = None
 
     def load_data(self):
-        filename = "./examples/Trust/data/wine_quality.csv"
+        filename = "./data/wine_quality.csv"
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
@@ -37,7 +37,7 @@ class TestModelExplainable(h1.MLModel):
         plt.title("Wine Quality Rating Output Labels Distribution")
         plt.show()
 
-    def prep_data(self, data):
+    def prep(self, data):
         """
         Prepare data for modelling
         :param loaded_data: data return from load_data method
@@ -77,7 +77,7 @@ class TestExplainable(unittest.TestCase):
     def test_explainable(self):
         m = TestModelExplainable()
         data = m.load_data()
-        prepared_data = m.prep_data(data)
+        prepared_data = m.prep(data)
         m.train(prepared_data)
         idx = 4
         decision = m.prepared_data["train_df"].iloc[idx], m.prepared_data["train_labels"].iloc[idx]
