@@ -1,4 +1,4 @@
-
+from h1st.core.model import Model
 
 class Describer:
     """
