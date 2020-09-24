@@ -64,6 +64,6 @@ if __name__ == "__main__":
 
     version_id = m.persist()
     print("Persisted to version_id = %s" % version_id)
-    m = MLModel.load(version_id)
+    m = MLModel().load(version_id)
     print(m.metrics)
 
