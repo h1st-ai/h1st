@@ -1,5 +1,3 @@
-from h1st.core.model import Model
-
 class Describer:
     """
     A Describer is one that stores all relevant details about the objects (e.g., `Models`, `Graphs`).
