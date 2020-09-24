@@ -5,14 +5,19 @@ It doesn't need any data or training, and hence has only a predict() function.
 
 import h1st as h1
 
-from rule_based_model import RuleBasedModel 
+class RuleBasedModel(h1.Model):
+    """
+    Simple rule-based model that "predicts" if a given value is an even number.
+    """
+    def predict(self, input_data: dict) -> dict:
+        predictions = [{'prediction': x % 2 == 0, 'value': x} for x in input_data["values"]]
+        return {"predictions": predictions}
 
 class HelloPrinter(h1.Action):
     """Print hello to the inputs value"""
     def call(self, command, inputs):
-        for value, prediction in zip(inputs["values"], inputs["predictions"]):
-            if prediction:
-                print(f"Hello world {value}!")
+        for d in inputs["predictions"]:
+            print("Hello world {}!".format(d["value"]))
 
 class NoOp(h1.Action):
     """Do nothing"""
@@ -30,8 +35,8 @@ def create_graph():
 
 if __name__ == "__main__":
     graph = create_graph()
-    # should print out:
-    # "Hello world 0!"
-    # "Hello world 2!"
-    # "Hello world 4!"
-    graph.predict({"values": range(6)})
+    results = graph.predict({"values": range(6)})
+    # Should get:
+    # Hello world 0!
+    # Hello world 2!
+    # Hello world 4!
