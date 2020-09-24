@@ -8,7 +8,7 @@ python3 ml_model.py
 python3 helloworld_graph.py
 ```
 
-Best way to quickly see everything in action is to run the test suite:
+To quickly see everything in action at once, run the test suite:
 
 ```
 % nose2
@@ -19,3 +19,6 @@ Some of the examples may require that you install various standard frameworks, e
 ```
 % pip3 install -U scikit-learn nose2
 ```
+
+For a more complex example that demonstrate the power of H1st graph in a real-world use case, 
+see the [AutoCyber tutorial](../AutoCyber)

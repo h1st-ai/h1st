@@ -23,15 +23,23 @@ Human-First AI (`H1st` AI) solves three critical challenges in real-world data s
 ## Get started
 `H1st` runs on Python 3.7 or above. Install with `pip3 install h1st`.
 
-For a simple example to get started, take a look at the [forecasting example](examples/Forecasting). H1st Model API is designed to work well interactive in notebooks e.g. [examples/Forecasting/notebooks/forecast.ipynb](examples/Forecasting/notebooks/forecast.ipynb) as well as in structured project where models & components are importable e.g. [examples/Forecasting/models/forecast.py](examples/Forecasting//models/forecast.py).
+For simple "Hello world" examples of using H1st rule-based & machine-learned Model and using H1st Graph, see the [examples/HelloWorld folder](examples/HelloWorld).
 
-To fully understand H1st philosophy and features, do check out the [H1st AI Tutorial](https://h1st.ai).
+For a simple real-world data science example using H1st Model API, take a look at the [forecasting example](examples/Forecasting).
+H1st Model API is designed to work well interactive in notebooks e.g. [examples/Forecasting/notebooks/forecast.ipynb](examples/Forecasting/notebooks/forecast.ipynb)
+as well as in structured project where models & components are submodules e.g. [examples/Forecasting/models/forecast.py](examples/Forecasting//models/forecast.py).
+
+To fully understand H1st philosophy and power, check out the [H1st Automotive Cybersecurity Tutorial](https://h1st.ai).
 
 
+## Read the Tutorials, Wiki, and API Documentation
+We highly recommend following the [H1st Automotive Cybersecurity Tutorial](https://h1st.ai) as well as the quick-start ["hello world" examples](examples/HelloWorld)
 
-## Read the Tutorials and API Documentation
-Get started with [H1st Tutorial](https://h1st.ai) and API Documentation at [h1st.ai](https://docs.h1st.ai/).
+See the wiki for design consideration e.g. [H1st.AI Model Explained](../../wiki/Human-First-AI-Graph-Explained), [H1st.AI Graph Explained](../../wiki/Human-First-AI-Graph-Explained).
 
+Our full API Documentation is at [docs.h1st.ai](https://docs.h1st.ai/).
+
+[Here is H1st.AI's public roadmap](../../wiki/Human-First-AI-Roadmap).
 
 ## Join and Learn from Our Open-Source Community
 We are collaborating with the open-source community. For Arimo-Panasonic, use cases include industrial applications such as Cybersecurity, Predictive Maintenance, Fault Prediction, Home Automation, Avionic & Automotive Experience Management, etc.

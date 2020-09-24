@@ -1,6 +1,6 @@
 """
-This is an example of a very simple rule-based (if-then-else) H1st model.
-It doesn't need any data or training, and hence has only a predict() function.
+This is an example of a very simple graph which prints hello for each even number x in the input stream,
+using a conditional RuleBasedModel node and a HelloPrinter h1.Action.
 """
 
 import h1st as h1
@@ -16,6 +16,8 @@ class RuleBasedModel(h1.Model):
 class HelloPrinter(h1.Action):
     """Print hello to the inputs value"""
     def call(self, command, inputs):
+        # Note that H1st does the conditional/filtering orchestration already.
+        # All we need to do here is just to print.
         for d in inputs["predictions"]:
             print("Hello world {}!".format(d["value"]))
 
@@ -25,7 +27,8 @@ class NoOp(h1.Action):
         pass
 
 def create_graph():
-    """Create a graph which prints hello to the input value if RuleBasedModel "classifier" returns true (given the same input value)"""
+    """Create a graph which prints hello for each even number x in the input stream,
+    using a conditional RuleBasedModel node and a HelloPrinter h1.Action."""
     graph = h1.Graph()
     graph.start()\
         .add(h1.Decision(RuleBasedModel(), result_field="predictions"))\
