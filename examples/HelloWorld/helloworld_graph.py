@@ -14,10 +14,6 @@ class HelloPrinter(h1.Action):
         for d in inputs["predictions"]:
             print("Hello world {}!".format(d["value"]))
 
-class NoOp(h1.Action):
-    """Do nothing"""
-    def call(self, command, inputs):
-        pass
 
 def create_graph():
     """Create a graph which prints hello for each even number x in the input stream,
@@ -25,7 +21,7 @@ def create_graph():
     graph = h1.Graph()
     graph.start()\
         .add(h1.Decision(RuleBasedModel(), result_field="predictions"))\
-        .add(yes=HelloPrinter(), no=NoOp())
+        .add(yes=HelloPrinter(), no=h1.NoOp())
     graph.end()
     return graph
 
