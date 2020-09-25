@@ -4,14 +4,7 @@ using a conditional RuleBasedModel node and a HelloPrinter h1.Action.
 """
 
 import h1st as h1
-
-class RuleBasedModel(h1.Model):
-    """
-    Simple rule-based model that "predicts" if a given value is an even number.
-    """
-    def predict(self, input_data: dict) -> dict:
-        predictions = [{'prediction': x % 2 == 0, 'value': x} for x in input_data["values"]]
-        return {"predictions": predictions}
+from rule_based_model import RuleBasedModel
 
 class HelloPrinter(h1.Action):
     """Print hello to the inputs value"""

@@ -50,6 +50,8 @@ class MLModel(h1.MLModel):
         return self.model.predict(input_data["x"])
 
 if __name__ == "__main__":
+    h1.init(MODEL_REPO_PATH=".models")
+    
     m = MLModel()
     raw_data = m.get_data()
     print(raw_data)

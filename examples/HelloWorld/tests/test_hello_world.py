@@ -1,4 +1,6 @@
 import unittest
+import h1st as h1
+
 from HelloWorld.rule_based_model import RuleBasedModel
 from HelloWorld.ml_model import MLModel
 from HelloWorld.helloworld_graph import create_graph
@@ -11,9 +13,11 @@ class TestHellloWorld(unittest.TestCase):
         xs = list(range(6))
         results = m.predict({"values": xs})
         print(f"RuleBasedModel's predictions for {xs} is {results}")
-        self.assertTrue(results["predictions"] == [True, False, True, False, True, False])
+        self.assertTrue(results["predictions"] == [
+            {'prediction': True, 'value': 0}, {'prediction': False, 'value': 1}, {'prediction': True, 'value': 2}, {'prediction': False, 'value': 3}, {'prediction': True, 'value': 4}, {'prediction': False, 'value': 5}])
 
     def test_ml_model(self):
+        h1.init(MODEL_REPO_PATH=".models")
         m = MLModel()
         raw_data = m.get_data()
         prepared_data = m.prep(raw_data)
