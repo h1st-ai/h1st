@@ -9,7 +9,9 @@ import h1st as h1
 
 class MLModel(h1.MLModel):
     def __init__(self):
-        self._native_model = svm.SVC(gamma=0.001, C=100.)
+        # This is the native SKLearn model
+        # H1st can automatically save/load this "self.model" property if it's a SKlearn or tf.keras.Model
+        self.model = svm.SVC(gamma=0.001, C=100.)
 
     def get_data(self):
         digits = datasets.load_digits()
@@ -33,15 +35,37 @@ class MLModel(h1.MLModel):
         }
 
     def train(self, prepared_data):
-        self._native_model.fit(prepared_data["train_x"], prepared_data["train_y"])
+        self.model.fit(prepared_data["train_x"], prepared_data["train_y"])
 
     def evaluate(self, data):
         pred_y = self.predict({"x": data["test_x"]})
-        metric = metrics.accuracy_score(data["test_y"], pred_y)
-        return metric
+        # self.metrics can also be persisted automatically by H1st
+        self.metrics = metrics.accuracy_score(data["test_y"], pred_y)
+        return self.metrics
 
     def predict(self, input_data: dict) -> dict:
         """
         We expect an array of input data rows in the "x" field of the input_data dict
         """
-        return self._native_model.predict(input_data["x"])
+        return self.model.predict(input_data["x"])
+
+if __name__ == "__main__":
+    h1.init(MODEL_REPO_PATH=".models")
+    
+    m = MLModel()
+    raw_data = m.get_data()
+    print(raw_data)
+
+    prepared_data = m.prep(raw_data)
+    print(prepared_data['train_x'].shape)
+    print(prepared_data['test_x'].shape)
+    
+    m.train(prepared_data)
+    m.evaluate(prepared_data)
+    print("accuracy_score = %.4f" % m.metrics)
+
+    version_id = m.persist()
+    print("Persisted to version_id = %s" % version_id)
+    m = MLModel().load(version_id)
+    print(m.metrics)
+

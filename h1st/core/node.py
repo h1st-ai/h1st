@@ -240,6 +240,12 @@ class Action(Node):
         return visitor.render_dot_action_node(self)
 
 
+class NoOp(Action):
+    """A do-nothing action."""
+    def call(self, command, inputs):
+        pass
+
+
 class Decision(Action):
     """
     H1st conditional node
