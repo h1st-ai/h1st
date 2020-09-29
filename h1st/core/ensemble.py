@@ -12,7 +12,24 @@ from h1st.core.model import Model
 from h1st.core.exception import ModelException
 
 
-class StackEnsemble(Model):
+class Ensemble(Model):
+    """
+    Base Ensemble class to implement various ensemble classes in the future
+    even though we currently only have StackEnsemble.
+    """
+
+    def __init__(self, ensembler, sub_models: List[Model]):
+        """
+        :param ensembler: ensembler model, currently it is sklearn's MultiOutputClassifier
+            when framework supports StackEnsembleRegressor,
+            ensembler could be either MultiOutputClassifier or another specific base model 
+        :param sub_models: list of h1st.Model participating in the stack ensemble
+        """
+        self.model = ensembler
+        self._sub_models = sub_models
+
+
+class StackEnsemble(Ensemble):
     """
     Base StackEnsemble class to implement StackEnsemble classifiers or regressors.
     """
@@ -123,28 +140,28 @@ class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
     Each sub model must be a subclass of h1.Model and its .predict() method will receive an input data as dictionary and return a dictionary
 
     .. code-block:: python
-           :caption: Sub model for a StackEnsemble Example
+        :caption: Sub model for a StackEnsemble Example
 
-            class AModel(h1.Model):
-                def predict(self, data):
-                    X = data['X']
-                    ...
-                    return {'predictions': }
+        class Model1(h1.Model):
+            def predict(self, data):
+                X = data['X']
+                ...
+                return {'predictions': }
 
     .. code-block:: python
         :caption: RandomForestStackEnsembleClassifier usage Example
 
-        class BModel(h1.Model):
+        class Model2(h1.Model):
                 def predict(self, data):
                     X = data['X']
                     ...
                     return {'predictions': }
 
-        class RandomForestStackEnsembleClassifier(RandomForestStackEnsembleClassifier):
+        class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
             def __init__(self):
                 super().__init__([
-                    AModel().load('version_of_model_A'),
-                    BModel().load('version_of_model_B')
+                    Model1().load('version_of_model_1'),
+                    Model2().load('version_of_model_2')
                 ])
 
             def load_data(self,):
@@ -155,28 +172,29 @@ class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
                 ...
                 return prepared_data
 
-        m = AModel()
-        loaded_data = m.load_data()
-        prepared_data = m.prep_data(loaded_data)
-        m.train(prepared_data)
-        m.persist('version_of_model_A')
+        m1 = Model1()
+        loaded_data = m1.load_data()
+        prepared_data = m1.prep_data(loaded_data)
+        m1.train(prepared_data)
+        m1.persist('version_of_model_1')
 
-        m = BModel()
-        loaded_data = m.load_data()
-        prepared_data = m.prep_data(loaded_data)
-        m.train(prepared_data)
-        m.persist('version_of_model_B')
+        m2 = Model2()
+        loaded_data = m2.load_data()
+        prepared_data = m2.prep_data(loaded_data)
+        m2.train(prepared_data)
+        m2.persist('version_of_model_2')
 
-        m = RandomForestStackEnsembleClassifier()
-        loaded_data = m.load_data()
-        prepared_data = m.prep_data(loaded_data)
-        m.train(prepared_data)
-        m.persist('version_of_model_B')
-        m.predict(...)
+        ensemble = RandomForestStackEnsembleClassifier(
+            [Model1().load('version_of_model_1'),
+             Model2().load('version_of_model_2')])
+        loaded_data = ensemble.load_data()
+        prepared_data = ensemble.prep_data(loaded_data)
+        ensemble.train(prepared_data)
+        ensemble.persist('version_of_model_ensemble')
+        ensemble.predict(...)
     """
     def __init__(self, sub_models: List[Model]):
         super().__init__(
             MultiOutputClassifier(RandomForestClassifier(n_jobs=-1, max_depth=4, random_state=42)),
             sub_models
         )
-
