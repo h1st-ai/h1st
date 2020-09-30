@@ -3,7 +3,7 @@ import h1st as h1
 
 from HelloWorld.rule_based_model import RuleBasedModel
 from HelloWorld.ml_model import MLModel
-from HelloWorld.helloworld_graph import create_graph
+from HelloWorld.graph import create_graph
 
 
 class TestHellloWorld(unittest.TestCase):
