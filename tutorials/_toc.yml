@@ -2,6 +2,7 @@
 
 - part: Quick Start Guide
   chapters:
+  - file: motivation.md
   - file: ml_model_tutorial.ipynb
   - file: rule_based_model_tutorial.ipynb
   - file: graph_tutorial.ipynb
