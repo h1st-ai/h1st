@@ -6,7 +6,15 @@
       "metadata": {},
       "outputs": [],
       "source": [
-       "from $$MODEL_PACKAGE$$ import $$MODEL_CLASS$$ \n",
+       "from $$MODEL_PACKAGE$$ import $$MODEL_CLASS$$"
+      ]
+     },
+     {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
        "m = $$MODEL_CLASS$$()"
       ]
      },
