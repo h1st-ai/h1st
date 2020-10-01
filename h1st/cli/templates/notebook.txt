@@ -6,23 +6,7 @@
       "metadata": {},
       "outputs": [],
       "source": [
-       "### H1st Configuration ###\n",
-       "'''\n",
-       "This part configures the default variable names for various step of the modelling process.\n",
-       "Modify with care.\n",
-       "'''\n",
-       "VAR_MODEL_FILE = '$$MODEL_FILE$$.py'\n",
-       "VAR_MODEL = 'm'\n",
-       "VAR_LOADED_DATA = 'loaded_data'\n",
-       "VAR_PREPARED_DATA = 'prepared_data'\n",
-       "VAR_PREDICTED_VALUE = 'predicted_val'\n",
-       "\n",
-       "\n",
-       "%load_ext autoreload\n",
-       "%autoreload 3\n",
-       "import h1st as h1\n",
-       "h1.init()\n",
-       "### End H1st Configuration ###"
+       "from $$MODEL_PACKAGE$$ import $$MODEL_CLASS$$"
       ]
      },
      {
@@ -31,8 +15,7 @@
       "metadata": {},
       "outputs": [],
       "source": [
-       "from $$PACKAGE_NAME$$.models.$$MODEL_FILE$$ import $$MODEL_NAME$$ \n",
-       "m = $$MODEL_NAME$$()"
+       "m = $$MODEL_CLASS$$()"
       ]
      },
      {
@@ -70,8 +53,7 @@
       "metadata": {},
       "outputs": [],
       "source": [
-       "eval_data = {} # Load evaluation data\n",
-       "m.evaluate(eval_data)"
+       "m.evaluate(prepared_data)"
       ]
      },
      {
@@ -89,16 +71,9 @@
       "metadata": {},
       "outputs": [],
       "source": [
-       "predict_data = {} # Get your data \n",
-       "predicted_val = m.predict(predict_data)"
+       "input_data = {} # Get your data \n",
+       "m.predict(input_data)"
       ]
-     },
-     {
-      "cell_type": "code",
-      "execution_count": null,
-      "metadata": {},
-      "outputs": [],
-      "source": []
      }
     ],
     "metadata": {

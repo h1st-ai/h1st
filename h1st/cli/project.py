@@ -127,9 +127,8 @@ def new_project(project_name, base_path):
             model_file=f"{model_package}.py",
         )
 
-        with open(tmppath / f"{project_name_snake_case}_modeling.py", "w") as f:
-            f.write(_render_template('modeling', {
-                'SCRIPT_NAME': f'{project_name_snake_case}_modeling.py',
+        with open(tmppath / f"{project_name_snake_case}_notebook.ipynb", "w") as f:
+            f.write(_render_template('notebook', {
                 'MODEL_CLASS': model_name,
                 'MODEL_PACKAGE': model_package,
             }))

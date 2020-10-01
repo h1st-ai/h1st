@@ -332,6 +332,14 @@ class ModelRepository:
                 except ModuleNotFoundError:
                     repo_path = None
 
+            # in the new structure, the config file may be at root folder
+            if not repo_path:
+                try:
+                    import config
+                    repo_path = config.MODEL_REPO_PATH
+                except ModuleNotFoundError:
+                    repo_path = None
+
             if not repo_path:
                 repo_path = os.environ.get('H1ST_MODEL_REPO_PATH', '')
 
