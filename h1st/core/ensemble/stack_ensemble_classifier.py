@@ -14,16 +14,8 @@ class StackEnsembleClassifier(StackEnsemble):
     This is the base class for stack ensemble classifiers
     """
 
-    def __init__(self,
-                 ensembler: MultiOutputClassifier,
-                 sub_models: List[Model],
-                 submodel_input_key,
-                 submodel_output_key):
-        super().__init__(
-            ensembler,
-            sub_models,
-            submodel_input_key,
-            submodel_output_key)
+    def __init__(self, ensembler: MultiOutputClassifier, sub_models: List[Model], **kwargs):
+        super().__init__(ensembler, sub_models, **kwargs)
 
     def evaluate(self, data: Dict, metrics: List[str]=None) -> Dict:
         """
