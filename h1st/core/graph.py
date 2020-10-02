@@ -1,14 +1,15 @@
 import sys
 from types import SimpleNamespace
-from typing import List, Union, Any, Optional, NoReturn, Callable, Dict
+from typing import List, Union, Any, NoReturn, Dict
 
 from h1st.core.node import Node, Action
 from h1st.core.node_containable import NodeContainable
 from h1st.core.exception import GraphException
 from h1st.core.viz import DotGraphVisualizer
+from h1st.core.trust.trustable import Trustable
 
 
-class Graph(NodeContainable):
+class Graph(NodeContainable, Trustable):
     """
     A Graph is itself a NodeContainable, meaning it can be enclosed within a Node,
     forming a hierarchy of Graphs

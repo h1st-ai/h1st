@@ -4,13 +4,14 @@ from matplotlib import pyplot as plt
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
+
 from sklearn.preprocessing import RobustScaler
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 
 import h1st as h1
 from examples.Ensemble import config
+from examples.Ensemble.utils import prepare_train_test_data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 class TensorflowMLPClassifier(h1.Model):
     def __init__(self):    
         self.model = self.build_tf_architecture(units=16, num_class=config.NUM_CLASS)
-    
+
     def build_tf_architecture(self, units, num_class):
         inputs = tf.keras.Input(shape=(len(config.DATA_FEATURES)))
         x = tf.keras.layers.Dense(units, activation=tf.nn.selu)(inputs)
@@ -32,19 +33,8 @@ class TensorflowMLPClassifier(h1.Model):
         df = pd.read_excel(config.DATA_PATH, header=1)
         return df
 
-    def prep_data(self, loaded_data):
-        df = loaded_data
-        X = df[config.DATA_FEATURES].values
-        y = df[config.DATA_TARGETS].values
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.33, shuffle=True, random_state=10)
-        logger.info('%s, %s, %s, %s', X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-        return {
-            'X_train': X_train,
-            'X_test': X_test,
-            'y_train': y_train,
-            'y_test': y_test
-        }
+    def prep(self, loaded_data):
+        return prepare_train_test_data(loaded_data)
 
     def train(self, prepared_data):
         X_train = prepared_data['X_train']

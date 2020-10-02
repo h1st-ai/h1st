@@ -4,6 +4,7 @@ import os
 import sklearn
 import sklearn.metrics
 import subprocess
+import pathlib
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.compose import make_column_transformer
@@ -24,8 +25,10 @@ class ForecastModel(h1.Model):
     
     def load_data(self):
         # needs to have kaggle tools, and user credentials, and agreed to competition rules etc.
-        subprocess.run("mkdir {data}".format(data=self.data_dir), shell=True, check=True)
+        pathlib.Path(self.data_dir).mkdir(parents=True, exist_ok=True)
         if not os.path.isfile(os.path.join(self.data_dir, "train.csv")):
+            print("Using `kaggle` command to download data from rossmann-store-sales competition.")
+            print("You'll need https://pypi.org/project/kaggle/ tool and agrees to the terms of the competition at https://www.kaggle.com/c/rossmann-store-sales/")
             subprocess.run("kaggle competitions download -c rossmann-store-sales -p {data}/".format(data=self.data_dir), shell=True, check=True)
             subprocess.run("cd {data}; unzip rossmann-store-sales.zip".format(data=self.data_dir), shell=True, check=True)
 
@@ -42,7 +45,7 @@ class ForecastModel(h1.Model):
         print(df.count()) # count NA
         seaborn.distplot(df.Sales) # Sales distribution
 
-    def prep_data(self, loaded_data):
+    def prep(self, loaded_data):
         """
         Prepare data for modelling
         :param loaded_data: data return from load_data method

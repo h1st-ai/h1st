@@ -338,6 +338,9 @@ class ModelRepository:
                         repo_path = None
 
             if not repo_path:
+                repo_path = os.environ.get('H1ST_MODEL_REPO_PATH', '')
+
+            if not repo_path:
                 raise RuntimeError('Please set MODEL_REPO_PATH in config.py')
 
             setattr(cls, 'MODEL_REPO', ModelRepository(storage=repo_path))

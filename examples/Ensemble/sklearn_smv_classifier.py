@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score
 
 import h1st as h1
 from examples.Ensemble import config
+from examples.Ensemble.utils import prepare_train_test_data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,19 +30,8 @@ class SklearnSVMClassifier(h1.Model):
             df[target].hist()
             plt.show()
 
-    def prep_data(self, loaded_data):
-        df = loaded_data
-        X = df[config.DATA_FEATURES].values
-        y = df[config.DATA_TARGETS].values
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.33, shuffle=True, random_state=10)
-        logger.info('%s, %s, %s, %s', X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-        return {
-            'X_train': X_train,
-            'X_test': X_test,
-            'y_train': y_train,
-            'y_test': y_test
-        }
+    def prep(self, loaded_data):
+        return prepare_train_test_data(loaded_data)
 
     def train(self, prepared_data):
         X_train = prepared_data['X_train']

@@ -2,17 +2,17 @@ import math
 import pandas as pd
 from unittest import TestCase, skip
 from sklearn.model_selection import train_test_split
-from h1st import RandomForestStackEnsembleClassifier
 import h1st as h1
 import examples.Ensemble.config as config
-from examples.Ensemble.models.submodel_examples import SK_SVM_Classifier, TF_FC_Classifier
+from examples.Ensemble.sklearn_smv_classifier import SklearnSVMClassifier
+from examples.Ensemble.tensorflow_mlp_classifier import TensorflowMLPClassifier
 
-class RandomForestStackEnsembleClassifier(RandomForestStackEnsembleClassifier):
+class RandomForestStackEnsembleClassifier(h1.RandomForestStackEnsembleClassifier):
     def load_data(self,):
         df = pd.read_excel(config.DATA_PATH, header=1)
         return df
 
-    def prep_data(self, loaded_data):
+    def prep(self, loaded_data):
         df = loaded_data
         X = df[config.DATA_FEATURES].values
         y = df[config.DATA_TARGETS].values
@@ -28,28 +28,28 @@ class RandomForestStackEnsembleClassifier(RandomForestStackEnsembleClassifier):
 
 class RandomForestStackEnsembleClassifierTestCase(TestCase):
     def test_ensemble(self):
-        m1 = SK_SVM_Classifier()
+        m1 = SklearnSVMClassifier()
         data = m1.load_data()
-        prepared_data = m1.prep_data(data)
+        prepared_data = m1.prep(data)
         m1.train(prepared_data)
         m1.evaluate(prepared_data)
         m1.persist('m1')
         self.assertIn('accuracy', m1.metrics)
 
-        m2 = TF_FC_Classifier()
+        m2 = TensorflowMLPClassifier()
         data = m2.load_data()
-        prepared_data = m2.prep_data(data)
+        prepared_data = m2.prep(data)
         m2.train(prepared_data)
         m2.evaluate(prepared_data)
         m2.persist('m2')
         self.assertIn('accuracy', m2.metrics)
 
         ensemble = RandomForestStackEnsembleClassifier([
-            SK_SVM_Classifier().load('m1'),
-            TF_FC_Classifier().load('m2')
+            SklearnSVMClassifier().load('m1'),
+            TensorflowMLPClassifier().load('m2')
         ])
         data = ensemble.load_data()
-        prepared_data = ensemble.prep_data(data)
+        prepared_data = ensemble.prep(data)
         ensemble.train(prepared_data)
         ensemble.evaluate(prepared_data)
         ensemble.persist('ensemble')

@@ -2,6 +2,7 @@ import pathlib
 import tempfile
 import shutil
 import re
+import os
 from distutils import dir_util
 
 import click
@@ -41,8 +42,10 @@ def new_model_cli(model_name):
 
         # TODO: try to figure out the project folder if possible
 
-        if not model_path.exists():
+        if not (path / "config.py").exists():
             raise ValueError('Please run this command in the package folder')
+
+        model_path.mkdir(exist_ok=True)
 
         class_name, module_name = _clean_name(model_name)
 
@@ -52,7 +55,6 @@ def new_model_cli(model_name):
         new_model(
             class_name,
             path,
-            path.name,
             module_name=module_name
         )
 
@@ -67,6 +69,7 @@ def new_model_cli(model_name):
             attr('reset'),
             ex,
         ))
+
 
 def new_project(project_name, base_path):
     """
@@ -90,39 +93,58 @@ def new_project(project_name, base_path):
     tmpdir = tempfile.mkdtemp()
     try:
         tmppath = pathlib.Path(tmpdir)
-        graph_file = tmppath / 'graph.py'
         data_folder = tmppath / 'data'
-        model_folder = tmppath / 'models'
-        notebook_folder = tmppath / 'notebooks'
         test_folder = tmppath / 'tests'
 
         # create all folders
-        notebook_folder.mkdir(exist_ok=True)
-        model_folder.mkdir(exist_ok=True)
         data_folder.mkdir(exist_ok=True)
         test_folder.mkdir(exist_ok=True)
 
         # create all empty files
-        (tmppath / '__init__.py').touch()
-        (tmppath / 'schema.py').touch()
         (tmppath / 'config.py').touch()
-        (model_folder / '__init__.py').touch()
         (test_folder / '__init__.py').touch()
-        (notebook_folder / ".gitkeep").touch()
         (data_folder / '.gitkeep').touch()
 
+        model_name = f"{class_prefix}Model"
+        model_package = f"{project_name_snake_case}_model"
+
+        graph_file = tmppath / f'{project_name_snake_case}_graph.py'
         with open(graph_file, "w") as f:
-            f.write(_render_init_graph_class(project_name_snake_case, class_prefix))
+            f.write(_render_init_graph_class(class_prefix, model_package))
 
         with open(test_folder / "test_schema.py", "w") as f:
-            f.write(_render_schema_testcase(project_name_camel_case, class_prefix))
+            f.write(_render_template('schema_testcase', {
+                'GRAPH_PACKAGE': f'{project_name_snake_case}_graph',
+                'GRAPH_CLASS': f'{class_prefix}Graph'
+            }))
+
+        with open(tmppath / 'config.py', 'w') as f:
+            f.write(_render_template('config', {}))
 
         new_model(
-            f"{class_prefix}Model",
+            model_name,
             tmppath,
-            project_package=project_name_camel_case,
-            module_name=project_name_snake_case,
+            model_file=f"{model_package}.py",
         )
+
+        with open(tmppath / f"{project_name_snake_case}_modeling.py", "w") as f:
+            f.write(_render_template('modeling', {
+                'SCRIPT_NAME': f'{project_name_snake_case}_modeling.py',
+                'MODEL_CLASS': model_name,
+                'MODEL_PACKAGE': model_package,
+            }))
+
+        with open(test_folder / f'test_{model_package}.py', 'w') as f:
+            f.write(_render_template('testcase', {
+                'MODEL_CLASS': model_name,
+                'MODEL_PACKAGE': model_package,
+            }))
+
+
+        with open(tmppath / 'run_tests.py', 'w') as f:
+            f.write(_render_template('run_tests', {}))
+
+        (tmppath / 'run_tests.py').chmod(0o777)
 
         shutil.move(tmpdir, project_module)
         return project_module, project_name
@@ -135,82 +157,69 @@ def new_project(project_name, base_path):
         raise
 
 
-def new_model(name, project_path, project_package, module_name=None):
+def new_model(name, project_path, module_name=None, model_file=None):
     """
     Create a new model template under the project path
 
     :param name: model name
     :param project_path: path to the project directory
-    :param project_package: package name of the project
     :param module_name: module name for the model. By default it is model name in snake case format
     """
-    assert module_name, "module_name is missing"
-    model_file = pathlib.Path(project_path) / 'models' / (module_name + ".py")
+    if not model_file:
+        assert module_name, "module_name is missing"
+        model_file = pathlib.Path(project_path) / 'models' / (module_name + ".py")
+    else:
+        model_file = pathlib.Path(project_path) / model_file
 
     if model_file.exists():
-        raise ValueError(f'File {module_name}.py already exists')
+        raise ValueError(f'File {model_file} already exists')
 
     with open(model_file, "w") as f:
-        f.write(_render_model_class(
-            name,
-            project_package,
-        ))
+        f.write(_render_template("model", {
+            "MODEL_CLASS": name,
+        }))
 
 
-def _render_init_graph_class(model_module, prefix):
-    return """import h1st as h1
-from .models.{model_module} import {prefix}Model
+def _render_init_graph_class(prefix, model_package):
+    return _render_template("graph", {
+        "GRAPH_CLASS": f"{prefix}Graph",
+        "MODEL_CLASS": f"{prefix}Model",
+        "MODEL_PACKAGE": model_package
+    })
 
 
-class {prefix}Graph(h1.Graph):
-    def __init__(self):
-        super().__init__()
+def _render_notebook(package_name, model_name, model_file_name):
+    subl = {
+        'MODEL_NAME': model_name,
+        'MODEL_FILE': model_file_name,
+        'PACKAGE_NAME': package_name,
+    }
 
-        self.start()
-        self.add({prefix}Model())
-        self.end()
-""".format(prefix=prefix, model_module=model_module)
-
-
-def _render_schema_testcase(project_package, prefix):
-    return """
-from h1st.schema.testing import setup_schema_tests
-from {project_package}.graph import {prefix}Graph
-
-
-setup_schema_tests({prefix}Graph(), globals())
-""".format(prefix=prefix, project_package=project_package)
-
-
-def _render_model_class(name, base_package):
-    return """import h1st as h1
-
-
-class {name}(h1.Model):
-    def get_data(self):
-        # Implement code to retrieve your data here
-        return dict()
-
-    def prep_data(self, data):
-        # Implement code to prepare your data here
-        return data
-
-    def train(self, prepared_data):
-        # Implement your train method
-        raise NotImplementedError()
-
-    def evaluate(self, data):
-        raise NotImplementedError()
-
-    def predict(self, data):
-        # Implement your predict function
-        raise NotImplementedError()
-""".format(name=name, base_package=base_package)
+    return _render_template('notebook', subl)
 
 
 def _clean_name(name):
     # keep only valid character
     name = re.sub(r"[^a-zA-Z0-9]", "_", name)
     snake_case = "".join(['_' + i.lower() if i.isupper() else i for i in name]).lstrip('_')
+    snake_case = re.sub("_+", "_", snake_case)
+
     camel_case = "".join([i.title() for i in snake_case.split("_")])
+    camel_case = camel_case.replace("H1St", "H1st")  # special treatment for the name
+
     return camel_case, snake_case
+
+
+def _render_template(name, replaces):
+    """
+    Simple function to do template replacement. All variables are prefixed and suffixed
+    with ``$$``, and then replace accordingly.
+    """
+    tpl = os.path.join(os.path.dirname(__file__), 'templates', f"{name}.txt")
+    with open(tpl, 'r') as f:
+        content = f.read()
+
+    for k, v in replaces.items():
+        content = content.replace(f"$${k}$$", v)
+
+    return content
