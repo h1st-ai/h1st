@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.preprocessing import RobustScaler
-from typing import Dict, List, Any, Str
+from typing import Dict, List, Any
 
 from h1st.core.model import Model
 from h1st.core.exception import ModelException
@@ -15,8 +15,8 @@ class StackEnsemble(Ensemble):
     def __init__(self,
                  ensembler: MultiOutputClassifier,
                  sub_models: List[Model],
-                 submodel_input_key: Str,
-                 submodel_output_key: Str):
+                 submodel_input_key: str,
+                 submodel_output_key: str):
         super().__init__(ensembler, sub_models)
         self._submodel_input_key = submodel_input_key
         self._submodel_output_key = submodel_output_key
