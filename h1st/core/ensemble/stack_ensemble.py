@@ -11,13 +11,14 @@ class StackEnsemble(Ensemble):
     """
     Base StackEnsemble class to implement StackEnsemble classifiers or regressors.
     """
-    def __init__(self, ensembler, sub_models: List[Model], **kwargs)
+    def __init__(self, ensembler, sub_models: List[Model], **kwargs):
         """
-        :param kwargs: currently the predict function of h1st model receives a dictionary
-            and returns a dictionary. users can set their submodel_input_key, and submodel_output_key 
-            of those input and output dictionary
-            **submodel_input_key (str): the default value of submodel_input_key is 'X'
-            **submodel_output_key (str): the default value of submodel_output_key is 'predictions'
+        :param **kwargs: StackEnsemble use h1st models as submodels and the predict function of
+        h1st model receives a dictionary and returns a dictionary. users can set the key of these
+        dictionaries with the following keyword arguments.
+
+        **submodel_input_key (str): the default value of submodel_input_key is 'X' \n
+        **submodel_output_key (str): the default value of submodel_output_key is 'predictions'
         """
         super().__init__(ensembler, sub_models)
         self._submodel_input_key = kwargs.get('submodel_input_key', 'X')
