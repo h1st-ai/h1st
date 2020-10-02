@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.multioutput import MultiOutputClassifier
 from sklearn.preprocessing import RobustScaler
 from typing import Dict, List, Any
 
@@ -12,14 +11,10 @@ class StackEnsemble(Ensemble):
     """
     Base StackEnsemble class to implement StackEnsemble classifiers or regressors.
     """
-    def __init__(self,
-                 ensembler: MultiOutputClassifier,
-                 sub_models: List[Model],
-                 submodel_input_key: str,
-                 submodel_output_key: str):
+    def __init__(self, ensembler, sub_models: List[Model], **kwargs)
         super().__init__(ensembler, sub_models)
-        self._submodel_input_key = submodel_input_key
-        self._submodel_output_key = submodel_output_key
+        self._submodel_input_key = kwargs.get('submodel_input_key', 'X')
+        self._submodel_output_key = kwargs.get('submodel_output_key', 'predictions')
 
     def _preprocess(self, X: Any) -> Any:
         """
