@@ -17,8 +17,8 @@ class StackEnsemble(Ensemble):
         h1st model receives a dictionary and returns a dictionary. users can set the key of these
         dictionaries with the following keyword arguments.
 
-        **submodel_input_key (str): the default value of submodel_input_key is 'X' \n
-        **submodel_output_key (str): the default value of submodel_output_key is 'predictions'
+            **submodel_input_key (str): the default value of submodel_input_key is 'X' \n
+            **submodel_output_key (str): the default value of submodel_output_key is 'predictions'
         """
         super().__init__(ensembler, sub_models)
         self._submodel_input_key = kwargs.get('submodel_input_key', 'X')
