@@ -1,10 +1,11 @@
 import numpy as np
 import lime.lime_tabular as lt
 
+
 class LIMEModelExplainer:
-    def __init__(self, decision, model, data):
-        self._model = model
-        self._data = data
+    def __init__(self, decision, describable_dict):
+        self._model = describable_dict['base_model']
+        self._data = describable_dict['data']
         self.feature_names = list(self._data["train_df"].columns)
         self.decision_input = decision[0]
         self._lime_explainer()

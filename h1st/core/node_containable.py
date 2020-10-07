@@ -25,11 +25,11 @@ class NodeContainable:
         """
     def __init__(self):
         self._node = None
-        
+
     @property
     def node(self) -> 'Node':
         if not self._node:
-            from h1st.core.graph import Graph 
+            from h1st.core.graph import Graph
 
             g = Graph()
             g.start()
@@ -70,19 +70,23 @@ class NodeContainable:
         """
         func = getattr(self, command)
         if not func:
-            raise GraphException(f'class {self.__class__.__name__} must implement method "{command}')
+            raise GraphException(
+                f'class {self.__class__.__name__} must implement method "{command}'
+            )
 
         result = func(inputs)
         if not isinstance(result, dict):
-            raise GraphException(f'output of {self.__class__.__name__} must be a dict')
+            raise GraphException(
+                f'output of {self.__class__.__name__} must be a dict')
 
         return result
 
-    def validate_node_output(self, input_data: dict=None, schema=None) -> SchemaValidationResult:
+    def validate_node_output(self, input_data: dict = None,
+                             schema=None) -> SchemaValidationResult:
         """
         Subclass will implement this function to verify its output schema
 
         :param inputs: subclass will use this input data to call a specific function to get the result
         :schema: the schema to verify if the result conforming with
-        """        
+        """
         return SchemaValidator().validate(input_data, schema)

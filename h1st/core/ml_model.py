@@ -3,7 +3,6 @@ from h1st.core.model import Model
 
 
 class MLModel(Model):
-
     @property
     def base_model(self) -> Any:
         return getattr(self, "__base_model", None)

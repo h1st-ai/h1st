@@ -10,8 +10,10 @@ class Explainable:
     an `Explainable` `Model` should be able to provide a detailed explanation of a specific decision
     it made at some specified time or on a given set of inputs in the past.
     """
-
-    def explain(self, decision=None, constituent=Constituency.ANY, aspect=Aspect.ANY):
+    def explain(self,
+                decision=None,
+                constituent=Constituency.ANY,
+                aspect=Aspect.ANY):
         """
         Returns an explanation for a decision made by the Model based on `Who's asking` and `why`.
             Parameters:
@@ -22,10 +24,8 @@ class Explainable:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
         explainer = Explainer(self, decision)
-        if not all(hasattr(self, attr) for attr in ["_native_model", "prepared_data"]):
-            raise AttributeError("Attributes _native_model or prepared_data do not exist.")
+
         explainer.lime_explainer = LIMEModelExplainer(
-            decision, self._native_model, self.prepared_data
-        )
+            decision, self.get_base_model__prepared_data())
         explainer.generate_report(decision, constituent, aspect)
         return explainer

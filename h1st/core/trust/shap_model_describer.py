@@ -1,9 +1,10 @@
 import shap
 
+
 class SHAPModelDescriber:
-    def __init__(self, model, data):
-        self._model = model
-        self.data = data
+    def __init__(self, describable_dict):
+        self._model = describable_dict['base_model']
+        self.data = describable_dict['data']
         self._get_shap_describer()
         self._get_shap_values()
         # self._plot_shap_describer()
@@ -16,5 +17,4 @@ class SHAPModelDescriber:
 
     def _get_shap_values(self):
         self.shap_values = self.shap_describer.shap_values(
-            self.data["train_df"], check_additivity=False
-        )
+            self.data["train_df"], check_additivity=False)
