@@ -1,4 +1,4 @@
 from h1st.core.ensemble.ensemble import Ensemble
 from h1st.core.ensemble.stack_ensemble import StackEnsemble
-from h1st.core.ensemble.stack_ensemble_classifier import StackEnsembleClassifier
-from h1st.core.ensemble.stack_ensemble_randomforest_classifier import RandomForestStackEnsembleClassifier
+from h1st.core.ensemble.classifier_stack_ensemble import ClassifierStackEnsemble
+from h1st.core.ensemble.randomforest_classifier_stack_ensemble import RandomForestClassifierStackEnsemble

@@ -4,9 +4,9 @@ from sklearn.ensemble import RandomForestClassifier
 
 from h1st.core.model import Model
 from h1st.core.exception import ModelException
-from h1st.core.ensemble import StackEnsembleClassifier
+from h1st.core.ensemble import ClassifierStackEnsemble
 
-class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
+class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):
     """
     A ready to use StackEnsemble for classifier with ensembler is a sklearn's MultiOutputClassifier using RandomForestClassifier
 
@@ -23,7 +23,7 @@ class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
                 return {'predictions': }
 
     .. code-block:: python
-        :caption: RandomForestStackEnsembleClassifier usage Example
+        :caption: RandomForestClassifierStackEnsemble usage Example
 
         class Model2(h1.Model):
                 def predict(self, data):
@@ -31,7 +31,7 @@ class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
                     ...
                     return {'predictions': }
 
-        class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
+        class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):
             def __init__(self):
                 super().__init__([
                     Model1().load('version_of_model_1'),
@@ -47,26 +47,27 @@ class RandomForestStackEnsembleClassifier(StackEnsembleClassifier):
                 return prepared_data
 
         m1 = Model1()
-        loaded_data = m1.load_data()
-        prepared_data = m1.prep(loaded_data)
-        m1.train(prepared_data)
-        m1.evaluate(prepared_data)
+
+        m1.load_prep_train_eval()
+        ## Equivalent to
+        # loaded_data = m1.load_data()
+        # prepared_data = m1.prep(loaded_data)
+        # m1.train(prepared_data)
+        # m1.evaluate(prepared_data)
+
+        print(m1.metrics)
         m1.persist('version_of_model_1')
 
         m2 = Model2()
-        loaded_data = m2.load_data()
-        prepared_data = m2.prep(loaded_data)
-        m2.train(prepared_data)
-        m2.evaluate(prepared_data)
+        m2.load_prep_train_eval()
+        print(m2.metrics)
         m2.persist('version_of_model_2')
 
-        ensemble = RandomForestStackEnsembleClassifier(
+        ensemble = RandomForestClassifierStackEnsemble(
             [Model1().load('version_of_model_1'),
              Model2().load('version_of_model_2')])
-        loaded_data = ensemble.load_data()
-        prepared_data = ensemble.prep(loaded_data)
-        ensemble.train(prepared_data)
-        ensemble.evaluate(prepared_data)
+        ensemble.load_prep_train_eval()
+        print(ensemble.metrics)
         ensemble.persist('version_of_model_ensemble')
         ensemble.predict(...)
     """

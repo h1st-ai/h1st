@@ -17,12 +17,12 @@ class StackEnsemble(Ensemble):
         h1st model receives a dictionary and returns a dictionary. users can set the key of these
         dictionaries with the following keyword arguments.
 
-            **submodel_input_key (str): the default value of submodel_input_key is 'X' \n
-            **submodel_output_key (str): the default value of submodel_output_key is 'predictions'
+            **submodel_predict_input_key (str): the default value of submodel_input_key is 'X' \n
+            **submodel_predict_output_key (str): the default value of submodel_output_key is 'predictions'
         """
         super().__init__(ensembler, sub_models)
-        self._submodel_input_key = kwargs.get('submodel_input_key', 'X')
-        self._submodel_output_key = kwargs.get('submodel_output_key', 'predictions')
+        self._submodel_predict_input_key = kwargs.get('submodel_predict_input_key', 'X')
+        self._submodel_predict_output_key = kwargs.get('submodel_predict_output_key', 'predictions')
 
     def _preprocess(self, X: Any) -> Any:
         """
@@ -32,7 +32,7 @@ class StackEnsemble(Ensemble):
 
         # Feed input_data to each sub-model and get predictions
         predictions = [
-            m.predict({self._submodel_input_key: X})[self._submodel_output_key]
+            m.predict({self._submodel_predict_input_key: X})[self._submodel_predict_output_key]
             for m in self._sub_models
         ]
 

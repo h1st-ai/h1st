@@ -6,7 +6,7 @@ from h1st.core.rule_based_model import RuleBasedModel
 from h1st.core.node import Action, Decision, NoOp
 from h1st.core.exception import GraphException
 from h1st.core.node_containable import NodeContainable
-from h1st.core.ensemble import RandomForestStackEnsembleClassifier
+from h1st.core.ensemble import RandomForestClassifierStackEnsemble
 from h1st.core.trust.explainable import Explainable
 from h1st.core.trust.describable import Describable
 from h1st.core.trust.trustable import Trustable

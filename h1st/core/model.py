@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, NoReturn
 from h1st.schema import SchemaValidator
 from h1st.model_repository import ModelRepository
 from h1st.core.node_containable import NodeContainable
@@ -113,13 +113,24 @@ class Model(NodeContainable, Trustable):
 
         return self
 
-    def evaluate(self, data: dict) -> dict:
+    def evaluate(self, prepared_data: dict) -> NoReturn:
         """
-        Implement logic to evaluate the model using the loaded data
+        Implement logic to evaluate the model using the prepared_data
+        This function will calculate model metrics and store it into self.metrics
 
         :param data: loaded data
         """
 
+    def load_prep_train_eval(self) -> NoReturn:
+        """
+        Run a cycle of modeling process which calls the following function in order:
+        load_data -> prep -> train -> evaluate
+        """
+        loaded_data = self.load_data()
+        prepared_data = self.prep(loaded_data)
+        self.train(prepared_data)
+        self.evaluate(prepared_data)
+        
     def predict(self, input_data: dict) -> dict:
         """
         Implement logic to generate prediction from data
