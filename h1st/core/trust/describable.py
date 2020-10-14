@@ -80,7 +80,7 @@ class Describable:
         """
         describer = Describer(self)
         describer.shap_describer = SHAPModelDescriber(
-            self.__model_artifacts['_build_base_model'],
+            self.__model_artifacts['base_model'],
             self.__model_artifacts['prep'])
         # describer.generate_report(constituency, aspect)
         return describer
