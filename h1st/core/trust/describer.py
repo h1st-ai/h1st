@@ -6,7 +6,6 @@ class Describer:
     is indicating bias in its decision making, she may asks for details such as `when was the model trained',
     `by whom' and 'on what data was the model trained'
     """
-
     def __init__(self, model):
         self._data_description(model)
         self._model_description(model)
@@ -16,9 +15,9 @@ class Describer:
         return self._describer
 
     @shap_describer.setter
-    def shap_describer(self, value):   
+    def shap_describer(self, value):
         self._describer = value
-        
+
     def _data_description(self, model):
         self.model = model
         _dict = {}
@@ -34,7 +33,7 @@ class Describer:
 
     def _model_description(self, model):
         _dict = {}
-        _native_model = model._native_model
+        _native_model = model._base_model
         _dict["model_name"] = str(type(_native_model).__name__)
         _dict["model_params"] = _native_model.get_params()
         _dict["model_metrics"] = model.metrics

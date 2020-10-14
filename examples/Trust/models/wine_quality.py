@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 import h1st as h1
 audit = h1.Auditable()
-collect = h1.Describable()
+# collect = h1.Describable()
 
 
 class WineQuality(h1.MLModel):
@@ -16,13 +16,13 @@ class WineQuality(h1.MLModel):
              The task is to determine the `Quality` of the wine based on 11 physicochemical tests as input."
 
         self.label_column = "Quality"
-        self._native_model = self._get_native_model()
+        self._base_model = self._build_base_model()
         self.metrics = None
         self.features = None
         self.test_size = 0.2
         self.prepared_data = None
 
-    @audit
+    # @audit
     def load_data(self):
         path = os.path.dirname(__file__)
         filename = os.path.join(path, "../data/wine_quality.csv")
@@ -36,7 +36,8 @@ class WineQuality(h1.MLModel):
     #     plt.title("Wine Quality Rating Output Labels Distribution")
     #     plt.show()
 
-    @audit
+    # @audit
+    @h1.Describable
     def prep(self, loaded_data):
         """
         Prepare data for modelling
@@ -56,35 +57,30 @@ class WineQuality(h1.MLModel):
         }
         return self.prepared_data
 
-    @audit
+    # @audit
+    @h1.Describable
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data[
             "train_labels"]
-        self._native_model.fit(X_train, Y_train)
+        self._base_model.fit(X_train, Y_train)
 
     def _mean_absolute_percentage_error(self, y_true, y_pred):
         y_true, y_pred = np.array(y_true), np.array(y_pred)
         return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
-    @audit
+    # @audit
     def evaluate(self, data):
         X_test, y_true = data["test_df"], data["test_labels"]
-        y_pred = self._native_model.predict(X_test)
+        y_pred = self._base_model.predict(X_test)
         self.metrics = {
             "mape": self._mean_absolute_percentage_error(y_true, y_pred)
         }
         return self.metrics
 
-    def _get_native_model(self):
+    def _build_base_model(self):
         return RandomForestRegressor(max_depth=6,
                                      random_state=0,
                                      n_estimators=10)
-
-    def get_base_model__prepared_data(self):
-        return {'data': self.prepared_data, "base_model": self._native_model}
-
-    # def describe(self):
-    #     super().describe({'prepared_date':self.prepared_data})
 
 
 if __name__ == "__main__":
@@ -97,5 +93,5 @@ if __name__ == "__main__":
     m.train(prepared_data)
     m.evaluate(prepared_data)
 
-    describer = m.describe()
+    # describer = m.describe()
     # print(m.audit_trail)

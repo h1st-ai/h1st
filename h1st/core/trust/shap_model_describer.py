@@ -2,9 +2,9 @@ import shap
 
 
 class SHAPModelDescriber:
-    def __init__(self, describable_dict):
-        self._model = describable_dict['base_model']
-        self.data = describable_dict['data']
+    def __init__(self, base_model, data):
+        self._model = base_model[1]
+        self.data = data[1]
         self._get_shap_describer()
         self._get_shap_values()
         # self._plot_shap_describer()

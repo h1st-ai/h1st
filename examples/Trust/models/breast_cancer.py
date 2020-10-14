@@ -35,43 +35,43 @@ class BreastCancer(h1.MLModel):
     # def explore_data(self, data):
     #     pass
 
-    # def prep(self, data):
-    #     """
-    #     Prepare data for modelling
-    #     :param loaded_data: data return from load_data method
-    #     :returns: dictionary contains train data and validation data
-    #     """
-    #     self.features = [c for c in data.columns if c != "benign"]
-    #     target = "benign"
-    #     X = data[self.features]
-    #     scaler = MinMaxScaler()
-    #     X = scaler.fit_transform(X.values)
-    #     X = pd.DataFrame(data=X, columns=self.features)
-    #     Y = data[target]
-    #     X_train, X_test, Y_train, Y_test = train_test_split(X,
-    #                                                         Y,
-    #                                                         test_size=0.2)
-    #     self.prepared_data = {
-    #         "train_df": X_train,
-    #         "val_df": X_test,
-    #         "train_labels": Y_train,
-    #         "val_labels": Y_test,
-    #     }
-    #     return self.prepared_data
+    def prep(self, data):
+        """
+        Prepare data for modelling
+        :param loaded_data: data return from load_data method
+        :returns: dictionary contains train data and validation data
+        """
+        self.features = [c for c in data.columns if c != "benign"]
+        target = "benign"
+        X = data[self.features]
+        scaler = MinMaxScaler()
+        X = scaler.fit_transform(X.values)
+        X = pd.DataFrame(data=X, columns=self.features)
+        Y = data[target]
+        X_train, X_test, Y_train, Y_test = train_test_split(X,
+                                                            Y,
+                                                            test_size=0.2)
+        self.prepared_data = {
+            "train_df": X_train,
+            "val_df": X_test,
+            "train_labels": Y_train,
+            "val_labels": Y_test,
+        }
+        return self.prepared_data
 
-    # def train(self, prepared_data):
-    #     X_train, Y_train = prepared_data["train_df"], prepared_data[
-    #         "train_labels"]
-    #     self._native_model.fit(X_train, Y_train)
+    def train(self, prepared_data):
+        X_train, Y_train = prepared_data["train_df"], prepared_data[
+            "train_labels"]
+        self._native_model.fit(X_train, Y_train)
 
-    # def evaluate(self, data):
-    #     X_test, Y_test = data["val_df"], data["val_labels"]
-    #     Y_pred = self._native_model.predict(X_test)
-    #     self.metrics = {
-    #         "mae": sklearn.metrics.mean_absolute_error(Y_test, Y_pred),
-    #         "auc": roc_auc_score(Y_test, Y_pred),
-    #     }
-    #     return self.metrics
+    def evaluate(self, data):
+        X_test, Y_test = data["val_df"], data["val_labels"]
+        Y_pred = self._native_model.predict(X_test)
+        self.metrics = {
+            "mae": sklearn.metrics.mean_absolute_error(Y_test, Y_pred),
+            "auc": roc_auc_score(Y_test, Y_pred),
+        }
+        return self.metrics
 
 
 if __name__ == "__main__":

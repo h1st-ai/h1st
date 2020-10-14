@@ -1,4 +1,6 @@
+from collections import defaultdict
 import weakref
+from inspect import signature
 from .shap_model_describer import SHAPModelDescriber
 from .enums import Constituency, Aspect
 from .describer import Describer
@@ -14,37 +16,48 @@ class Describable:
     """
     _instances = set()
 
-    def __init__(self):
-        self._instances.add(weakref.ref(self))
+    def __get__(self, instance, owner):
+        self.model_instance = instance
+        return self.__call__
 
-    def __call__(self, function):
-        def wrapped_function(*args):
-            self.data = args[0]
-            for obj in self.getinstances():
-                print(self)
-                # if self._is_described(obj):
-                #     print(function.__name__)
-            # print(" Prepped Data ", self)
-            # for obj in self.getinstances():
-            #     print(obj)
-            #     print(type(obj).__name__)
-            return function(*args)
+    def __init__(self, function):
+        self.model_function = function
 
-        return wrapped_function
+    def __call__(self, *args, **kwargs):
+        if isinstance(self.model_instance, Describable):
+            return self.model_instance._collect_model_artifacts(
+                self, *args, **kwargs)
 
-    @classmethod
-    def getinstances(cls):
-        dead = set()
-        for ref in cls._instances:
-            obj = ref()
-            if obj is not None:
-                yield obj
-            else:
-                dead.add(ref)
-        cls._instances -= dead
+    def _collect_model_artifacts(self, Describable, *args, **kwargs):
+        model_function_output = Describable.model_function(
+            Describable.model_instance, *args, **kwargs)
+        if not hasattr(Describable.model_instance,
+                       '_Describable__model_artifacts'):
+            Describable.model_instance.__model_artifacts = defaultdict(dict)
 
-    def _is_described(self, obj):
-        return str(type(obj).__name__) != 'Describable'
+        def collect(
+                model_instance,
+                model_function,
+                model_function_output,
+                *args,
+        ):
+            model_functions = {
+                "prep": Describable._collect_prep,
+                "train": Describable._collect_train,
+            }
+            return model_functions[model_function](
+                model_instance,
+                model_function,
+                model_function_output,
+                *args,
+            )
+
+        # Describable.instance.__model_artifacts[str(
+        #     Describable.function.__name__)] = [args, function_output]
+        # print(Describable.function.__name__)
+        collect(self, Describable.model_function.__name__,
+                model_function_output, *args)
+        return model_function_output
 
     @property
     def description(self):
@@ -53,9 +66,6 @@ class Describable:
     @description.setter
     def description(self, value):
         setattr(self, "__description", value)
-
-    # def get_describabile_information(self):
-    #     pass
 
     def describe(self, constituency=Constituency.ANY, aspect=Aspect.ANY):
         """
@@ -70,6 +80,24 @@ class Describable:
         """
         describer = Describer(self)
         describer.shap_describer = SHAPModelDescriber(
-            self.get_base_model__prepared_data())
+            self.__model_artifacts['_build_base_model'],
+            self.__model_artifacts['prep'])
         # describer.generate_report(constituency, aspect)
         return describer
+
+    def _collect_prep(self, model_instance, model_function,
+                      model_function_output, *args):
+        model_instance.__model_artifacts[str(model_function)] = {
+            "function_input": args,
+            "function_output": model_function_output
+        }
+        print("prep completed")
+
+    def _collect_train(self, model_instance, model_function,
+                       model_function_output, *args):
+        model_instance.__model_artifacts[str(model_function)] = {
+            "base_model": model_instance._base_model,
+            "function_input": args,
+            "function_output": model_function_output
+        }
+        print("train completed")
