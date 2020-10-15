@@ -41,11 +41,6 @@ class CliTestCase(TestCase):
             )
 
             subprocess.check_call(
-                ["python", "auto_cyber_modeling.py"],
-                cwd=tmpdir + '/AutoCyber',
-            )
-
-            subprocess.check_call(
                 ["python", "-m", "models.model2"],
                 cwd=tmpdir + '/AutoCyber'
             )
