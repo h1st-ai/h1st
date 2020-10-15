@@ -173,7 +173,7 @@ def create_datasets(SENSORS, train_files, val_files, batch_size=32, num_steps=12
     return train_ds, val_ds
 
 
-class BlstmInjectionMsgClassifier(h1.Model):
+class BlstmInjectionMsgClassifier(h1.MLModel):
     def __init__(self):
         self.sensors = ['CarSpeed', 'SteeringAngle','YawRate','Gx','Gy']
         self.base_model = create_model(rnn_size=128, lr=1e-3, clip_norm=10., n_sensors=len(self.sensors), compile=False)

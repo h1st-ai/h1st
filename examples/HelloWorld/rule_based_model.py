@@ -5,7 +5,7 @@ It doesn't need any data or training, and hence has only a predict() function.
 
 import h1st as h1
 
-class RuleBasedModel(h1.Model):
+class RuleBasedModel(h1.RuleBasedModel):
     """
     Simple rule-based model that "predicts" if a given value is an even number
     """

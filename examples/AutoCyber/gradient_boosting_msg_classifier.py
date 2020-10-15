@@ -6,7 +6,7 @@ import util
 
 FEATURES = config.SENSORS + ["%s_TimeDiff" % s for s in config.SENSORS]
 
-class GradientBoostingMsgClassifierModel(h1.Model):
+class GradientBoostingMsgClassifierModel(h1.MLModel):
     def load_data(self, num_files=None):
         return util.load_data(num_files, shuffle=False)
 
