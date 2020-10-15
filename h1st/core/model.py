@@ -21,17 +21,11 @@ class Model(NodeContainable, Trustable):
            :caption: Model Persistence and Loading Example
 
            import h1st as h1
-           from sklearn.datasets import load_iris
-           from sklearn.linear_model import LogisticRegression
 
            class MyModel(h1.Model):
-               def __init__(self):
-                   super().__init__()
-                   self.model = LogisticRegression(random_state=0)
-
                def train(self, prepared_data):
                    X, y = prepared_data['X'], prepared_data['y']
-                   self.model.fit(X, y)
+                   ...
 
            my_model = MyModel()
            X, y = load_iris(return_X_y=True)
@@ -45,6 +39,7 @@ class Model(NodeContainable, Trustable):
            my_model_2.load('1st_version')
     """
 
+    ## TODO: Need a better naming and the definition of the property
     @property
     def stats(self):
         return getattr(self, '__stats__', None)

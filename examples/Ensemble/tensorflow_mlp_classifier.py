@@ -17,9 +17,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class TensorflowMLPClassifier(h1.Model):
+class TensorflowMLPClassifier(h1.MLModel):
     def __init__(self):    
-        self.model = self.build_tf_architecture(units=16, num_class=config.NUM_CLASS)
+        self.base_model = self.build_tf_architecture(units=16, num_class=config.NUM_CLASS)
 
     def build_tf_architecture(self, units, num_class):
         inputs = tf.keras.Input(shape=(len(config.DATA_FEATURES)))
@@ -41,11 +41,11 @@ class TensorflowMLPClassifier(h1.Model):
         y_train = prepared_data['y_train']
         self.stats = RobustScaler(quantile_range=(5.0, 95.0), with_centering=False).fit(X_train)
         X_train = self.stats.transform(X_train)
-        self.model.compile(
+        self.base_model.compile(
             optimizer=tf.optimizers.Adam(learning_rate=0.01, clipnorm=1.),
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
             metrics=["accuracy"])
-        self.model.fit(X_train, y_train, epochs=50, batch_size=1024, verbose=0)
+        self.base_model.fit(X_train, y_train, epochs=50, batch_size=1024, verbose=0)
 
     def evaluate(self, prepared_data):
         X_test = prepared_data['X_test']
@@ -58,6 +58,6 @@ class TensorflowMLPClassifier(h1.Model):
     def predict(self, input_data):
         X = input_data['X']
         X = self.stats.transform(X)
-        predictions = np.argmax(self.model.predict(X), axis=-1)
+        predictions = np.argmax(self.base_model.predict(X), axis=-1)
         predictions = np.reshape(predictions, [len(predictions), -1])
         return {'predictions': predictions}

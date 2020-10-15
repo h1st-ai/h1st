@@ -12,10 +12,10 @@ from sklearn.preprocessing import OneHotEncoder
 from Forecasting import config
 
 
-class ForecastModel(h1.Model):
+class ForecastModel(h1.MLModel):
     def __init__(self):
         super().__init__()
-        self.model = None
+        self.base_model = None
         self.feature_cols = ['Open', 'Promo', 'StateHoliday', 'SchoolHoliday', 
                             'DayOfWeek', 'DayOfMonth', 'Month',
                             'StoreType', 'Assortment', 'CompetitionDistance', 
@@ -99,15 +99,15 @@ class ForecastModel(h1.Model):
             remainder="passthrough")
         
         transformer.fit(train_df[self.feature_cols])
-        model = Pipeline([('transform', transformer), 
+        model = Pipeline([('transform', transformer),
                           ('model', RandomForestRegressor(max_depth=10, n_estimators=200))])
 
         model.fit(train_df, sales)
-        self.model = model
+        self.base_model = model
 
     def evaluate(self, prepared_data):
         val_df = prepared_data['val_df']
-        y_pred = self.model.predict(val_df[self.feature_cols])
+        y_pred = self.base_model.predict(val_df[self.feature_cols])
         y_true = val_df['Sales']
         self.metrics = {'mae': sklearn.metrics.mean_absolute_error(y_true, y_pred),
                         }
@@ -125,6 +125,6 @@ class ForecastModel(h1.Model):
         input_data["Month"] = input_data.Date.dt.month
 
         input_data = input_data[self.feature_cols]
-        result = self.model.predict(input_data)
+        result = self.base_model.predict(input_data)
         
         return result

@@ -7,7 +7,7 @@ import examples.Ensemble.config as config
 from examples.Ensemble.sklearn_smv_classifier import SklearnSVMClassifier
 from examples.Ensemble.tensorflow_mlp_classifier import TensorflowMLPClassifier
 
-class RandomForestStackEnsembleClassifier(h1.RandomForestStackEnsembleClassifier):
+class RandomForestClassifierStackEnsemble(h1.RandomForestClassifierStackEnsemble):
     def load_data(self,):
         df = pd.read_excel(config.DATA_PATH, header=1)
         return df
@@ -26,7 +26,7 @@ class RandomForestStackEnsembleClassifier(h1.RandomForestStackEnsembleClassifier
             'y_test': y_test
         }
 
-class RandomForestStackEnsembleClassifierTestCase(TestCase):
+class RandomForestClassifierStackEnsembleTestCase(TestCase):
     def test_ensemble(self):
         m1 = SklearnSVMClassifier()
         data = m1.load_data()
@@ -44,7 +44,7 @@ class RandomForestStackEnsembleClassifierTestCase(TestCase):
         m2.persist('m2')
         self.assertIn('accuracy', m2.metrics)
 
-        ensemble = RandomForestStackEnsembleClassifier([
+        ensemble = RandomForestClassifierStackEnsemble([
             SklearnSVMClassifier().load('m1'),
             TensorflowMLPClassifier().load('m2')
         ])

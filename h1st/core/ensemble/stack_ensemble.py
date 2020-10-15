@@ -58,7 +58,7 @@ class StackEnsemble(Ensemble):
         self.stats = scaler.fit(X_train)
         X_train = self.stats.transform(X_train)
 
-        self.model.fit(X_train, y_train)
+        self.base_model.fit(X_train, y_train)
 
     def predict(self, data: Dict) -> Dict:
         """
@@ -75,4 +75,4 @@ class StackEnsemble(Ensemble):
 
         X = self._preprocess(data['X'])
         X = self.stats.transform(X)
-        return {'predictions': self.model.predict(X)}
+        return {'predictions': self.base_model.predict(X)}

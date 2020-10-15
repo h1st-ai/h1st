@@ -1,5 +1,6 @@
 import glob
 import random
+import os
 
 import s3fs
 import tensorflow as tf 
@@ -175,8 +176,8 @@ def create_datasets(SENSORS, train_files, val_files, batch_size=32, num_steps=12
 class BlstmInjectionMsgClassifier(h1.Model):
     def __init__(self):
         self.sensors = ['CarSpeed', 'SteeringAngle','YawRate','Gx','Gy']
-        self.model = create_model(rnn_size=128, lr=1e-3, clip_norm=10., n_sensors=len(self.sensors), compile=False)
-        self.model.build(input_shape=[None, None, len(self.sensors)*2+1])
+        self.base_model = create_model(rnn_size=128, lr=1e-3, clip_norm=10., n_sensors=len(self.sensors), compile=False)
+        self.base_model.build(input_shape=[None, None, len(self.sensors)*2+1])
 
     def load_data(self, num_files=None, shuffle=True):
         return util.load_data(num_files=num_files, shuffle=shuffle)
@@ -201,7 +202,7 @@ class BlstmInjectionMsgClassifier(h1.Model):
     def train(self, prepared_data, **extra_kwargs):
         # Implement your train method
         train_ds, val_ds = prepared_data
-        self.model = create_model(rnn_size=128, lr=1e-3, clip_norm=10., n_sensors=len(self.sensors), compile=True)
+        self.base_model = create_model(rnn_size=128, lr=1e-3, clip_norm=10., n_sensors=len(self.sensors), compile=True)
         callbacks = [
             # tf.keras.callbacks.CSVLogger('blstm_classif_log.csv', append=True, separator=';'),            
             tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=1e-5, patience=10, verbose=1),
@@ -212,14 +213,14 @@ class BlstmInjectionMsgClassifier(h1.Model):
             # tf.keras.callbacks.TensorBoard(log_dir='logs/blstm_classif', update_freq=100),
         ]
 
-        try:
-            os.system("mkdir %s" % car_model)
-            os.system("mkdir %s/checkpoints" % car_model)
-        except:
-            pass
+        # try:
+        #     os.system("mkdir %s" % car_model)
+        #     os.system("mkdir %s/checkpoints" % car_model)
+        # except:
+        #     pass
         kwargs = {"epochs": 100}
         kwargs.update(extra_kwargs)
-        history = self.model.fit(train_ds, validation_data=val_ds,  callbacks=callbacks, verbose=1, **kwargs)
+        history = self.base_model.fit(train_ds, validation_data=val_ds,  callbacks=callbacks, verbose=1, **kwargs)
         self.history = history
         return self
 

@@ -16,9 +16,9 @@ from examples.Ensemble.utils import prepare_train_test_data
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class SklearnSVMClassifier(h1.Model):
+class SklearnSVMClassifier(h1.MLModel):
     def __init__(self):
-        self.model = svm.SVC()
+        self.base_model = svm.SVC()
     
     def load_data(self):
         df = pd.read_excel(config.DATA_PATH, header=1)
@@ -38,7 +38,7 @@ class SklearnSVMClassifier(h1.Model):
         y_train = prepared_data['y_train']
         self.stats = RobustScaler(quantile_range=(5.0, 95.0), with_centering=False).fit(X_train)
         X_train = self.stats.transform(X_train)
-        self.model.fit(X_train, y_train)
+        self.base_model.fit(X_train, y_train)
 
     def evaluate(self, prepared_data):
         X_test = prepared_data['X_test']
@@ -50,7 +50,7 @@ class SklearnSVMClassifier(h1.Model):
     def predict(self, input_data):
         X = input_data['X']
         X = self.stats.transform(X)
-        predictions = self.model.predict(X)
+        predictions = self.base_model.predict(X)
         predictions = np.reshape(predictions, [len(predictions), -1])
         return {'predictions': predictions}
 

@@ -9,9 +9,9 @@ import h1st as h1
 
 class MLModel(h1.MLModel):
     def __init__(self):
+        # H1st can automatically save/load this "self.base_model" property if it's a SKlearn or tf.keras.Model
         # This is the native SKLearn model
-        # H1st can automatically save/load this "self.model" property if it's a SKlearn or tf.keras.Model
-        self.model = svm.SVC(gamma=0.001, C=100.)
+        self.base_model = svm.SVC(gamma=0.001, C=100.)
 
     def get_data(self):
         digits = datasets.load_digits()
@@ -35,7 +35,7 @@ class MLModel(h1.MLModel):
         }
 
     def train(self, prepared_data):
-        self.model.fit(prepared_data["train_x"], prepared_data["train_y"])
+        self.base_model.fit(prepared_data["train_x"], prepared_data["train_y"])
 
     def evaluate(self, data):
         pred_y = self.predict({"x": data["test_x"]})
@@ -47,7 +47,7 @@ class MLModel(h1.MLModel):
         """
         We expect an array of input data rows in the "x" field of the input_data dict
         """
-        return self.model.predict(input_data["x"])
+        return self.base_model.predict(input_data["x"])
 
 if __name__ == "__main__":
     h1.init(MODEL_REPO_PATH=".models")

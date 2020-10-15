@@ -23,7 +23,7 @@ class ClassifierStackEnsemble(StackEnsemble):
         :param prepared_data: a dictionary {'X_test': ..., 'y_test': ...}
         :param metrics: list of metrics to return and to persist later by the model.
             Default value = ['confusion_matrix', 'precision', 'recall', 'f1', 'support', 'accuracy']
-        
+
         """
         def add_metric(name, value):
             if name in metrics:
