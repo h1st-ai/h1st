@@ -9,7 +9,7 @@ import numpy as np
 import h1st as h1
 
 import config
-import util
+import utils
 
 
 def create_model(rnn_size=128, lr=1e-3, clip_norm=10., n_sensors=5, classif=True, multilabel=False, compile=True):
@@ -180,7 +180,7 @@ class BlstmInjectionMsgClassifier(h1.MLModel):
         self.base_model.build(input_shape=[None, None, len(self.sensors)*2+1])
 
     def load_data(self, num_files=None, shuffle=True):
-        return util.load_data(num_files=num_files, shuffle=shuffle)
+        return utils.load_data(num_files=num_files, shuffle=shuffle)
 
     def prep(self, data):
         # Implement code to prepapre your data here

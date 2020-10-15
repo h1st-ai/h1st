@@ -2,20 +2,20 @@ import h1st as h1
 import pandas as pd
 
 import config
-import util
+import utils
 
 FEATURES = config.SENSORS + ["%s_TimeDiff" % s for s in config.SENSORS]
 
 class GradientBoostingMsgClassifierModel(h1.MLModel):
     def load_data(self, num_files=None):
-        return util.load_data(num_files, shuffle=False)
+        return utils.load_data(num_files, shuffle=False)
 
     def prep(self, data):
         def concat_processed_files(files):
             dfs = []
             for f in files:
                 z = pd.read_parquet(f)
-                z = util.compute_timediff_fillna(z, dropna_subset=FEATURES)
+                z = utils.compute_timediff_fillna(z, dropna_subset=FEATURES)
                 dfs.append(z)
             df2 = pd.concat(dfs)
             return df2
@@ -52,7 +52,7 @@ class GradientBoostingMsgClassifierModel(h1.MLModel):
     
     def predict(self, data):
         df = data["df"].copy()
-        df = util.compute_timediff_fillna(df)
+        df = utils.compute_timediff_fillna(df)
         df['MsgIsAttack'] = 0
         df['WindowInAttack'] = 0
         for event_result in data["event_detection_results"]:
