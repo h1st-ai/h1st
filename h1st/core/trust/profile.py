@@ -2,16 +2,17 @@ class Profile:
     """
     A Profile explores bias in a dataset w.r.t. a protected_attribute (e.g. race, gender,
     disability). It stratifies the data into the classes found under the protected_attribute
-    feature. It then identifies differences between the strata and their output distributions. TODO:
-    If given a specific protected_class, it will stratify the data into two sets, protected and
+    feature. It then identifies differences between the strata and their output distributions.
+    TODO: If given a specific protected_class, it will stratify the data into two sets, protected and
     non-protected.
     """
 
     def __init__(self, data, target, protected_attribute):
         """
-        Parameters: data: DataFrame with features as column names. target: Array of labels of the
-            dataset. protected_attribute: The feature of the data that is to be protected from
-            discrimination. This column is assumed to be categorical.
+        Parameters:
+            data: DataFrame with features as column names.
+            target: Array of labels of the dataset. protected_attribute: The feature of the data
+            that is to be protected from discrimination. This column is assumed to be categorical.
         """
         self.data = data
         self.target = target
