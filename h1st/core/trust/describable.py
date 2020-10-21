@@ -1,4 +1,5 @@
 from collections import defaultdict
+import logging
 import weakref
 from inspect import signature
 from .shap_model_describer import SHAPModelDescriber
@@ -14,8 +15,6 @@ class Describable:
     a `Describable` `Model` should be able to report the data that was used to train it, provide an
     importance-ranked list of its input features on a global basis, etc.
     """
-    _instances = set()
-
     def __get__(self, instance, owner):
         self.model_instance = instance
         return self.__call__
@@ -25,15 +24,18 @@ class Describable:
 
     def __call__(self, *args, **kwargs):
         if isinstance(self.model_instance, Describable):
-            return self.model_instance._collect_model_artifacts(
+            return self.model_instance._collect_model_describe_artifacts(
                 self, *args, **kwargs)
 
-    def _collect_model_artifacts(self, Describable, *args, **kwargs):
-        model_function_output = Describable.model_function(
-            Describable.model_instance, *args, **kwargs)
-        if not hasattr(Describable.model_instance,
-                       '_Describable__model_artifacts'):
-            Describable.model_instance.__model_artifacts = defaultdict(dict)
+    def _collect_model_describe_artifacts(self, describable_decorator, *args,
+                                          **kwargs):
+        model_function_output = describable_decorator.model_function(
+            describable_decorator.model_instance, *args, **kwargs)
+
+        if not hasattr(describable_decorator.model_instance,
+                       '_Describable__model_describe_artifacts'):
+            describable_decorator.model_instance.__model_describe_artifacts = defaultdict(
+                dict)
 
         def collect(
                 model_instance,
@@ -42,8 +44,8 @@ class Describable:
                 *args,
         ):
             model_functions = {
-                "prep": Describable._collect_prep,
-                "train": Describable._collect_train,
+                "prep": describable_decorator._collect_prep_artifacts,
+                "train": describable_decorator._collect_train_artifacts,
             }
             return model_functions[model_function](
                 model_instance,
@@ -55,7 +57,7 @@ class Describable:
         # Describable.instance.__model_artifacts[str(
         #     Describable.function.__name__)] = [args, function_output]
         # print(Describable.function.__name__)
-        collect(self, Describable.model_function.__name__,
+        collect(self, describable_decorator.model_function.__name__,
                 model_function_output, *args)
         return model_function_output
 
@@ -78,26 +80,37 @@ class Describable:
             Returns:
                 out : Description of Model's behavior and properties
         """
-        describer = Describer(self)
-        describer.shap_describer = SHAPModelDescriber(
-            self.__model_artifacts['base_model'],
-            self.__model_artifacts['prep'])
+        self.__model_describe_artifacts[
+            'shap_model_describer'] = SHAPModelDescriber(
+                self.__model_describe_artifacts['train']['base_model'],
+                self.__model_describe_artifacts['prep']['function_output']
+                ['train_df'])
         # describer.generate_report(constituency, aspect)
-        return describer
+        return self.__model_describe_artifacts
 
-    def _collect_prep(self, model_instance, model_function,
-                      model_function_output, *args):
-        model_instance.__model_artifacts[str(model_function)] = {
+    def _collect_prep_artifacts(self, model_instance, model_function,
+                                model_function_output, *args):
+        model_instance.__model_describe_artifacts[model_function] = {
             "function_input": args,
-            "function_output": model_function_output
+            "function_output": model_function_output,
+            ## Move line below to dataset_key rather than model_function
+            "dataset_name": model_instance.dataset_name,
+            "dataset_description": model_instance.dataset_description,
+            "label_column": model_instance.label_column,
+            "features": list(model_function_output["train_df"].columns),
+            "dataset_shape": model_function_output["train_df"].shape,
+            "dataset_statistics": model_function_output["train_df"].describe()
         }
-        print("prep completed")
+        logging.info("prep completed")
 
-    def _collect_train(self, model_instance, model_function,
-                       model_function_output, *args):
-        model_instance.__model_artifacts[str(model_function)] = {
+    def _collect_train_artifacts(self, model_instance, model_function,
+                                 model_function_output, *args):
+        model_instance.__model_describe_artifacts[model_function] = {
             "base_model": model_instance._base_model,
             "function_input": args,
-            "function_output": model_function_output
+            "function_output": model_function_output,
+            "base_model_name": type(model_instance._base_model).__name__,
+            "base_model_params": model_instance._base_model.get_params(),
+            "model_metrics": model_instance.metrics
         }
-        print("train completed")
+        logging.info("train completed")

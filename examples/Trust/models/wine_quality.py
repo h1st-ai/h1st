@@ -92,6 +92,6 @@ if __name__ == "__main__":
 
     m.train(prepared_data)
     m.evaluate(prepared_data)
+    describer = m.describe()
 
-    # describer = m.describe()
     # print(m.audit_trail)
