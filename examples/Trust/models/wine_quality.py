@@ -14,7 +14,7 @@ class WineQuality(h1.MLModel):
         self.dataset_description = "The dataset is related to red variants of the Portuguese `Vinho Verde` wine.\
              The task is to determine the `Quality` of the wine based on 11 physicochemical tests as input."
         self.label_column = "Quality"
-        self._native_model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
+        self.base_model = RandomForestRegressor(max_depth=6, random_state=0, n_estimators=10)
         self.metrics = None
         self.features = None
         self.test_size = 0.2
@@ -54,7 +54,7 @@ class WineQuality(h1.MLModel):
 
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data["train_labels"]
-        self._native_model.fit(X_train, Y_train)
+        self.base_model.fit(X_train, Y_train)
 
     def _mean_absolute_percentage_error(self, y_true, y_pred):
         y_true, y_pred = np.array(y_true), np.array(y_pred)
@@ -62,7 +62,7 @@ class WineQuality(h1.MLModel):
 
     def evaluate(self, data):
         X_test, y_true = data["test_df"], data["test_labels"]
-        y_pred = self._native_model.predict(X_test)
+        y_pred = self.base_model.predict(X_test)
         self.metrics = {
             "mape": self._mean_absolute_percentage_error(y_true, y_pred)
         }

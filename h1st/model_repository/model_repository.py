@@ -78,34 +78,43 @@ class ModelSerDe:
         :param model: H1ST Model
         :param path: path to save models to
         """
+        from h1st.core import MLModel
+
         meta_info = {}
 
-        if hasattr(model, 'metrics'):
+        if model.metrics:
             logger.info('Saving metrics property...')
             meta_info['metrics'] = self.METRICS_PATH
             self._serialize_dict(model.metrics, path, self.METRICS_PATH)
 
-        if hasattr(model, 'stats'):
+        if model.stats is not None:
             logger.info('Saving stats property...')
             meta_info['stats'] = self.STATS_PATH
             self._serialize_dict(model.stats, path, self.STATS_PATH)
 
-        if hasattr(model, 'model'):
-            logger.info('Saving model property...')
-            if type(model.model) == list:
-                meta_info['models'] = []
-                for i, model in enumerate(model.model):
-                    model_type, model_path = self._serialize_single_model(model, path, 'model_%d' % i)
-                    meta_info['models'].append({'model_type': model_type, 'model_path': model_path})
-            elif type(model.model) == dict:
-                meta_info['models'] = {}
-                for k, model in model.model.items():
-                    model_type, model_path = self._serialize_single_model(model, path, 'model_%s' % k)
-                    meta_info['models'][k] = {'model_type': model_type, 'model_path': model_path}
+        if isinstance(model, MLModel):
+            if model.base_model:
+                logger.info('Saving model property...')
+                if type(model.base_model) == list:
+                    meta_info['models'] = []
+                    for i, model in enumerate(model.base_model):
+                        model_type, model_path = self._serialize_single_model(model, path, 'model_%d' % i)
+                        meta_info['models'].append({'model_type': model_type, 'model_path': model_path})
+                elif type(model.base_model) == dict:
+                    meta_info['models'] = {}
+                    for k, model in model.base_model.items():
+                        model_type, model_path = self._serialize_single_model(model, path, 'model_%s' % k)
+                        meta_info['models'][k] = {'model_type': model_type, 'model_path': model_path}
+                else:
+                    # this is a single model
+                    model_type, model_path = self._serialize_single_model(model.base_model, path)
+                    meta_info['models'] = [{'model_type': model_type, 'model_path': model_path}]
             else:
-                # this is a single model
-                model_type, model_path = self._serialize_single_model(model.model, path)
-                meta_info['models'] = [{'model_type': model_type, 'model_path': model_path}]
+                logger.error('.base_model was not assigned.')
+
+        elif hasattr(model, 'base_model'):
+            logger.warning('Your .base_model will not be persisted. If you want to persist your .base_model, \
+                            must inherit from h1st.MLModel instead of h1st.Model.')
 
         if len(meta_info) == 0:
             logger.info('Model persistence currently supports only stats, model and metrics properties.')
@@ -133,7 +142,7 @@ class ModelSerDe:
 
         if 'models' in meta_info.keys():
             model_infos = meta_info['models']
-            org_model = getattr(model, 'model', None)  # original model object from Model class
+            org_model = model.base_model  # original model object from Model class
             if type(model_infos) == list:
                 if len(model_infos) == 1:
                     # Single model
@@ -141,24 +150,24 @@ class ModelSerDe:
                     # print(model_info)
                     model_type = model_info['model_type']
                     model_path = model_info['model_path']
-                    model.model = self._deserialize_single_model(org_model, path, model_type, model_path)
+                    model.base_model = self._deserialize_single_model(org_model, path, model_type, model_path)
                 else:
                     # A list of models
-                    model.model = []
+                    model.base_model = []
                     org_model = org_model or [None for _ in range(len(model_infos))]
                     for i, model_info in enumerate(model_infos):
                         model_type = model_info['model_type']
                         model_path = model_info['model_path']
-                        model.model.append(self._deserialize_single_model(org_model[i], path, model_type, model_path))
+                        model.base_model.append(self._deserialize_single_model(org_model[i], path, model_type, model_path))
 
             elif type(model_infos) == dict:
                 # A dict of models
-                model.model = {}
+                model.base_model = {}
                 org_model = org_model or {k: None for k in model_infos.keys()}
                 for model_name, model_info in model_infos.items():
                     model_type = model_info['model_type']
                     model_path = model_info['model_path']
-                    model.model[model_name] = self._deserialize_single_model(org_model[model_name], path, model_type, model_path)
+                    model.base_model[model_name] = self._deserialize_single_model(org_model[model_name], path, model_type, model_path)
             else:
                 raise ValueError('Not a valid H1ST Model METAINFO file!')
 
@@ -324,13 +333,18 @@ class ModelRepository:
             repo_path = None
             if ref is not None:
                 # root module
-                root_module_name = ref.__class__.__module__.split('.')[0]
+                root_module_name = ''
+                
+                # find the first folder containing config.py to get MODEL_REPO_PATH
+                for sub in ref.__class__.__module__.split('.'):
+                    root_module_name = sub if not root_module_name else root_module_name + '.' + sub
 
-                try:
-                    module = importlib.import_module(root_module_name + ".config")
-                    repo_path = getattr(module, 'MODEL_REPO_PATH', None)
-                except ModuleNotFoundError:
-                    repo_path = None
+                    try:
+                        module = importlib.import_module(root_module_name + ".config")
+                        repo_path = getattr(module, 'MODEL_REPO_PATH', None)
+                        break
+                    except ModuleNotFoundError:
+                        repo_path = None
 
             # in the new structure, the config file may be at root folder
             if not repo_path:

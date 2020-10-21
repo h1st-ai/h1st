@@ -1,14 +1,14 @@
 import h1st as h1
 
 import config
-import util
+import utils
 from msg_freq_event_detector import MsgFreqEventDetectorModel
 from gradient_boosting_msg_classifier import GradientBoostingMsgClassifierModel
 
 
 class WindowGenerator(h1.Action):
     def call(self, command, inputs):
-        window_starts = [w for w in util.gen_windows(inputs['df'], window_size=config.WINDOW_SIZE, step_size=config.WINDOW_SIZE)]
+        window_starts = [w for w in utils.gen_windows(inputs['df'], window_size=config.WINDOW_SIZE, step_size=config.WINDOW_SIZE)]
         return {'window_starts': window_starts}
 
 class NoOp(h1.Action):

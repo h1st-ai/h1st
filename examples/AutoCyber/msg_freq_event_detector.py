@@ -2,11 +2,11 @@ import pandas as pd
 import h1st as h1
 
 import config
-import util
+import utils
 
 class MsgFreqEventDetectorModel(h1.Model):
     def load_data(self, num_files=None):
-        return util.load_data(num_files, shuffle=False)
+        return utils.load_data(num_files, shuffle=False)
     
     def train(self, prepared_data):
         files = prepared_data["normal_files"]
@@ -16,7 +16,7 @@ class MsgFreqEventDetectorModel(h1.Model):
             df = pd.read_parquet(f)
             counts = defaultdict(list)
             
-            for window_start in util.gen_windows(df, window_size=config.WINDOW_SIZE, step_size=config.WINDOW_SIZE):
+            for window_start in utils.gen_windows(df, window_size=config.WINDOW_SIZE, step_size=config.WINDOW_SIZE):
                 w_df = df[(df.Timestamp >= window_start) & (df.Timestamp < window_start + config.WINDOW_SIZE)]
                 for sensor in config.SENSORS:
                     counts[sensor].append(len(w_df.dropna(subset=[sensor])))
