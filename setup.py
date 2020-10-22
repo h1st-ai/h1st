@@ -6,7 +6,7 @@ from setuptools.command.install import install
 
 def __read_requirement(type=None):
     filename = 'h1st/requirements%s.txt' % (".%s" % type if type else "")
-    with open(filename) as f:
+    with open(filename, encoding='utf8') as f:
         return f.readlines()
 
 
@@ -14,7 +14,7 @@ def __read_version():
     return '2020.8'
 
 
-with open(os.path.join(os.path.dirname(__file__), '.',  'README.md'), 'r') as f:
+with open(os.path.join(os.path.dirname(__file__), '.', 'README.md'), 'r', encoding='utf8') as f:
     long_description = f.read()
 
 
