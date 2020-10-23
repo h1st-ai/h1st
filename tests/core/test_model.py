@@ -181,7 +181,7 @@ class ModelRepositoryTestCase(TestCase):
             def __init__(self):
                 super().__init__()
                 self.model = LogisticRegression(random_state=0)
-            
+
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
                 self.model.fit(X, y)

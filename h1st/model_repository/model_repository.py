@@ -203,14 +203,16 @@ class ModelRepository:
         version = version or str(ulid.new())
 
         try:
+            # serialize a model to a temporary folder and then clean up later
             tmpdir = tempfile.mkdtemp()
-            with tempfile.NamedTemporaryFile() as f:
+            serialized_dir = os.path.join(tmpdir, 'serialized')
+            tar_file = os.path.join(tmpdir, 'model.tar')
+            os.makedirs(serialized_dir)
 
-                self._serder.serialize(model, tmpdir)
-                _tar_create(f.name, tmpdir)
-                f.flush()
-                f.seek(0)
+            self._serder.serialize(model, serialized_dir)
+            _tar_create(tar_file, serialized_dir)
 
+            with open(tar_file, mode='rb') as f:
                 self._storage.set_bytes(
                     self._get_key(model, version),
                     f.read(),
@@ -242,16 +244,18 @@ class ModelRepository:
 
         try:
             tmpdir = tempfile.mkdtemp()
-            with tempfile.NamedTemporaryFile(mode="wb") as f:
+            serialized_dir = os.path.join(tmpdir, 'serialized')
+            tar_file = os.path.join(tmpdir, 'model.tar')
+            os.makedirs(serialized_dir)
+
+            with open(tar_file, 'wb') as f:
                 f.write(self._storage.get_bytes(
                     self._get_key(model, version)
                 ))
-                f.flush()
-                f.seek(0)
 
-                _tar_extract(f.name, tmpdir)
-                self._serder.deserialize(model, tmpdir)
-                model.version = version
+            _tar_extract(tar_file, serialized_dir)
+            self._serder.deserialize(model, serialized_dir)
+            model.version = version
         finally:
             # We get error from Tensorflow telling that it could not find the folder
             # Unsuccessful TensorSliceReader constructor: Failed to get matching files on 
