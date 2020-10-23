@@ -40,6 +40,6 @@ class TestContext(TestCase):
             self.assertEqual(str(p), discover_h1st_project(model_dir)[1])
             self.assertEqual(str(p), discover_h1st_project(nb_dir)[1])
         finally:
-            dir_util.remove_tree(tmp_name)
             os.chdir(cwd)
+            dir_util.remove_tree(tmp_name)
             sys.path = syspath
