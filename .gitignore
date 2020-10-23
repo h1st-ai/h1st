@@ -149,4 +149,5 @@ Digraph.gv*
 
 flake8.txt
 data
-.models
+.models/
+examples/RayTune/

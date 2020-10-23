@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, NoReturn
 from h1st.schema import SchemaValidator
 from h1st.model_repository import ModelRepository
 from h1st.core.node_containable import NodeContainable
@@ -21,17 +21,11 @@ class Model(NodeContainable, Trustable):
            :caption: Model Persistence and Loading Example
 
            import h1st as h1
-           from sklearn.datasets import load_iris
-           from sklearn.linear_model import LogisticRegression
 
            class MyModel(h1.Model):
-               def __init__(self):
-                   super().__init__()
-                   self.model = LogisticRegression(random_state=0)
-
                def train(self, prepared_data):
                    X, y = prepared_data['X'], prepared_data['y']
-                   self.model.fit(X, y)
+                   ...
 
            my_model = MyModel()
            X, y = load_iris(return_X_y=True)
@@ -44,6 +38,25 @@ class Model(NodeContainable, Trustable):
            my_model_2 = MyModel()
            my_model_2.load('1st_version')
     """
+
+    ## TODO: Need a better naming and the definition of the property
+    @property
+    def stats(self):
+        return getattr(self, '__stats__', None)
+
+    @stats.setter
+    def stats(self, value) -> dict:
+        setattr(self, '__stats__', value)
+
+    @property
+    def metrics(self):
+        if not hasattr(self, '__metrics__'):
+            setattr(self, '__metrics__', {})
+        return getattr(self, '__metrics__')
+
+    @metrics.setter
+    def metrics(self, value) -> dict:
+        setattr(self, '__metrics__', value)
 
     def load_data(self) -> dict:
         """
@@ -95,13 +108,24 @@ class Model(NodeContainable, Trustable):
 
         return self
 
-    def evaluate(self, data: dict) -> dict:
+    def evaluate(self, prepared_data: dict) -> NoReturn:
         """
-        Implement logic to evaluate the model using the loaded data
+        Implement logic to evaluate the model using the prepared_data
+        This function will calculate model metrics and store it into self.metrics
 
         :param data: loaded data
         """
 
+    def load_prep_train_eval(self) -> NoReturn:
+        """
+        Run a cycle of modeling process which calls the following function in order:
+        load_data -> prep -> train -> evaluate
+        """
+        loaded_data = self.load_data()
+        prepared_data = self.prep(loaded_data)
+        self.train(prepared_data)
+        self.evaluate(prepared_data)
+        
     def predict(self, input_data: dict) -> dict:
         """
         Implement logic to generate prediction from data

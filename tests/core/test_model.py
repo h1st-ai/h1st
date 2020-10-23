@@ -1,5 +1,5 @@
 from unittest import TestCase, skip
-from h1st import Model, RuleBasedModel
+from h1st import Model, MLModel, RuleBasedModel
 from h1st.model_repository import ModelRepository, ModelSerDe
 from h1st.model_repository.storage.local import LocalStorage
 import tempfile
@@ -13,12 +13,12 @@ import tensorflow as tf
 class MySkLearnEstimator(BaseEstimator, ClassifierMixin):
     def __init__(self):
         self.model = LogisticRegression()
+
     def fit(self, X, y):
         self.model.fit(X, y)
 
     def predict(self, X):
         return self.model.predict(X)
-
 
 class ModelSerDeTestCase(TestCase):
     def assert_models(self, model_class, model_type, model_path, collection='none'):
@@ -30,7 +30,7 @@ class ModelSerDeTestCase(TestCase):
 
         model = model_class()
         model.train(prepared_data)
-        print(model.model)
+        print(model.base_model)
         model_2 = model_class()
         model_serde = ModelSerDe()
         with tempfile.TemporaryDirectory() as path:
@@ -62,66 +62,66 @@ class ModelSerDeTestCase(TestCase):
             model_serde.deserialize(model_2, path)
             
             if collection == 'list':
-                assert model_type == model_serde._get_model_type(model_2.model[0])
-                assert model_2.model[0].predict(X).shape[0] == y.shape[0]
+                assert model_type == model_serde._get_model_type(model_2.base_model[0])
+                assert model_2.base_model[0].predict(X).shape[0] == y.shape[0]
             elif collection == 'dict':
-                assert model_type == model_serde._get_model_type(model_2.model['Iris'])
-                assert model_2.model['Iris'].predict(X).shape[0] == y.shape[0]
+                assert model_type == model_serde._get_model_type(model_2.base_model['Iris'])
+                assert model_2.base_model['Iris'].predict(X).shape[0] == y.shape[0]
             else:
-                assert model_type == model_serde._get_model_type(model_2.model)
-                assert model_2.model.predict(X).shape[0] == y.shape[0]
+                assert model_type == model_serde._get_model_type(model_2.base_model)
+                assert model_2.base_model.predict(X).shape[0] == y.shape[0]
 
     def test_serialize_sklearn_model(self):
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
-                self.model = LogisticRegression(random_state=0)
+                self.base_model = LogisticRegression(random_state=0)
             
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
-                self.model.fit(X, y)
+                self.base_model.fit(X, y)
 
         self.assert_models(MyModel, 'sklearn', 'model.joblib')
 
     def test_serialize_custom_sklearn_model(self):
 
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
-                self.model = MySkLearnEstimator()
+                self.base_model = MySkLearnEstimator()
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
-                self.model.fit(X, y)
+                self.base_model.fit(X, y)
 
         self.assert_models(MyModel, 'sklearn', 'model.joblib')
 
     def test_serialize_list_sklearn_model(self):
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
             
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
-                self.model = [LogisticRegression(random_state=0).fit(X, y), LogisticRegression(random_state=0).fit(X, y)]
+                self.base_model = [LogisticRegression(random_state=0).fit(X, y), LogisticRegression(random_state=0).fit(X, y)]
 
         self.assert_models(MyModel, 'sklearn', 'model_0.joblib', 'list')
 
     def test_serialize_dict_sklearn_model(self):
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
             
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
-                self.model = {'Iris': LogisticRegression(random_state=0).fit(X, y)}
+                self.base_model = {'Iris': LogisticRegression(random_state=0).fit(X, y)}
 
         self.assert_models(MyModel, 'sklearn', 'model_Iris.joblib', 'dict')
 
     def test_serialize_tensorflow_model(self):
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
-                self.model = tf.keras.Sequential([
+                self.base_model = tf.keras.Sequential([
                                                 tf.keras.layers.Dense(8, input_dim=4, activation='relu'),
                                                 tf.keras.layers.Dense(1, activation='softmax')
                                                 ])
@@ -129,14 +129,14 @@ class ModelSerDeTestCase(TestCase):
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
                 
-                self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                self.model.fit(X, y, verbose=2, batch_size=5, epochs=20)
+                self.base_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+                self.base_model.fit(X, y, verbose=2, batch_size=5, epochs=20)
 
         self.assert_models(MyModel, 'tensorflow-keras', 'model')
 
     @skip('skip tf test')
     def test_serialize_list_tensorflow_model(self):
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
                 model = tf.keras.Sequential([
@@ -144,11 +144,11 @@ class ModelSerDeTestCase(TestCase):
                                                 tf.keras.layers.Dense(1, activation='softmax')
                                                 ])
 
-                self.model = [model, model]
+                self.base_model = [model, model]
             
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
-                for model in self.model:
+                for model in self.base_model:
                     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
                     model.fit(X, y, verbose=2, batch_size=5, epochs=20)
 
@@ -156,7 +156,7 @@ class ModelSerDeTestCase(TestCase):
         self.assert_models(MyModel, 'tensorflow-keras', 'model_0', 'list')
 
     def test_serialize_dict_tensorflow_model(self):
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
                 model = tf.keras.Sequential([
@@ -164,27 +164,26 @@ class ModelSerDeTestCase(TestCase):
                                                 tf.keras.layers.Dense(1, activation='softmax')
                                                 ])
                 
-                self.model = {'Iris': model}
+                self.base_model = {'Iris': model}
             
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
                 
-                self.model['Iris'].compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                self.model['Iris'].fit(X, y, verbose=2, batch_size=5, epochs=20)
+                self.base_model['Iris'].compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+                self.base_model['Iris'].fit(X, y, verbose=2, batch_size=5, epochs=20)
 
         self.assert_models(MyModel, 'tensorflow-keras', 'model_Iris', 'dict')
 
 
 class ModelRepositoryTestCase(TestCase):
     def test_serialize_sklearn_model(self):
-        class MyModel(Model):
+        class MyModel(MLModel):
             def __init__(self):
                 super().__init__()
-                self.model = LogisticRegression(random_state=0)
-
+                self.base_model = LogisticRegression(random_state=0)
             def train(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
-                self.model.fit(X, y)
+                self.base_model.fit(X, y)
 
 
         X, y = load_iris(return_X_y=True)
@@ -199,7 +198,7 @@ class ModelRepositoryTestCase(TestCase):
             model_2 = MyModel()
             mm.load(model=model_2, version=version)
 
-            assert 'sklearn' in str(type(model_2.model))
+            assert 'sklearn' in str(type(model_2.base_model))
 
 
 class ModelStatsSerDeTestCase(TestCase):
@@ -233,7 +232,6 @@ class ModelStatsSerDeTestCase(TestCase):
 
                 import joblib
                 assert 'CarSpeed' in joblib.load('%s/%s' % (path, 'stats.joblib')).keys()
-                
 
                 model_serde.deserialize(model_2, path)
                 assert 'CarSpeed' in model_2.stats
