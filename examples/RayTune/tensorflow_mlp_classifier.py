@@ -30,7 +30,7 @@ class TensorflowMLPClassifier(h1.MLModel):
         }
     }
 
-    def __init__(self, lr, units, n_layer, epochs=20):
+    def __init__(self, lr: float, units: int, n_layer, epochs=20):
         self.lr = lr
         self.units = units
         self.n_layer = n_layer

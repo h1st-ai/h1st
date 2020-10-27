@@ -3,6 +3,7 @@ import importlib
 import pathlib
 import inspect
 import re
+import inspect
 import sys
 import logging
 
@@ -28,15 +29,41 @@ def _discover_module(data):
                 if value.__module__:
                     fullname = f"{value.__module__}.{fullname}"
 
-                hyperparameter_def = getattr(value, 'hyperparameter', {})
+                sign = (inspect.signature(value))
+                params = []
+                for v in sign.parameters.values():
+                    if v.annotation == str:
+                        type_ = 'str'
+                    elif v.annotation == int:
+                        type_ = 'int'
+                    elif v.annotation == float:
+                        type_ = 'float'
+                    else:
+                        type_ = None
+
+                    param = {
+                        'name': v.name,
+                        'default': v.default if v.default != inspect.Parameter.empty else None,
+                        # to be filled by UI later
+                        'type': type_,
+                        'min': None,
+                        'max': None,
+                        'choice': [],
+                    }
+
+                    params.append(param)
 
                 result[fullname] = {
                     'id': fullname,
                     'name': value.__name__,
-                    'tunable': hyperparameter_def.get('target_metrics') is not None,
+                    'tunable': len(params) > 0,
+                    'last_modified': os.path.getmtime(filename),
                     'filename': filename,
-                    'hyperparameters': hyperparameter_def.get('tuning_param', {}),
-                    'target_metrics': hyperparameter_def.get('target_metrics', {}),
+                    'hyperparameters': params,
+                    # to be fillled by UI
+                    'seleced_metric': None,
+                    'options': [],
+                    'advanced_options': [],
                 }
     except ImportError:
         logger.exception(f'Unable to import module {module_name}')
@@ -50,8 +77,11 @@ class ModelExplorer:
     """
     Utility class to discover model class in a project
     """
+    def __init__(self, cwd=None):
+        self.cwd = cwd
+
     def discover_models(self):
-        project_root, _ = discover_h1st_project()
+        project_root, _ = discover_h1st_project(self.cwd)
         if not project_root:
             project_root = os.getcwd()
 
