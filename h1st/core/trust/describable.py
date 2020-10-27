@@ -24,22 +24,21 @@ class Describable:
 
     def __call__(self, *args, **kwargs):
         if isinstance(self.model_instance, Describable):
-            return self.model_instance._collect_model_describe_artifacts(
+            return self.model_instance._collect_describe_artifacts(
                 self, *args, **kwargs)
 
-    def _collect_model_describe_artifacts(self, describable_decorator, *args,
-                                          **kwargs):
+    def _collect_describe_artifacts(self, describable_decorator, *args,
+                                    **kwargs):
         model_function_output = describable_decorator.model_function(
             describable_decorator.model_instance, *args, **kwargs)
-
+        # change __model_describe_artifacts to __describe_artifacts
         if not hasattr(describable_decorator.model_instance,
-                       '_Describable__model_describe_artifacts'):
-            describable_decorator.model_instance.__model_describe_artifacts = defaultdict(
-                dict)
+                       '_Describable__describe_artifacts'):
+            describable_decorator.model_instance.__describe_artifacts = {}
 
         def collect(
                 model_instance,
-                model_function,
+                model_function_name,
                 model_function_output,
                 *args,
         ):
@@ -47,16 +46,13 @@ class Describable:
                 "prep": describable_decorator._collect_prep_artifacts,
                 "train": describable_decorator._collect_train_artifacts,
             }
-            return model_functions[model_function](
+            return model_functions[model_function_name](
                 model_instance,
-                model_function,
+                model_function_name,
                 model_function_output,
                 *args,
             )
 
-        # Describable.instance.__model_artifacts[str(
-        #     Describable.function.__name__)] = [args, function_output]
-        # print(Describable.function.__name__)
         collect(self, describable_decorator.model_function.__name__,
                 model_function_output, *args)
         return model_function_output
@@ -69,28 +65,30 @@ class Describable:
     def description(self, value):
         setattr(self, "__description", value)
 
-    def describe(self, constituency=Constituency.ANY, aspect=Aspect.ANY):
+    def describe(self,
+                 dataset_key=None,
+                 constituency=Constituency.ANY,
+                 aspect=Aspect.ANY):
         """
         Returns a description of the model's behavior and properties based on `Who's asking` for `what`.
 
             Parameters:
+                dataset_key : The Dataset key in prepared data that maps to the dataset to be described
                 constituent : Constituency: The Constituency asking for the explanation `Who`
                 aspect : The Aspect of the question. `What`
 
             Returns:
                 out : Description of Model's behavior and properties
         """
-        self.__model_describe_artifacts[
-            'shap_model_describer'] = SHAPModelDescriber(
-                self.__model_describe_artifacts['train']['base_model'],
-                self.__model_describe_artifacts['prep']['function_output']
-                ['train_df'])
+        self.__describe_artifacts['shap_model_describer'] = SHAPModelDescriber(
+            self.__describe_artifacts['train']['base_model'],
+            self.__describe_artifacts['prep']['function_output'][dataset_key])
         # describer.generate_report(constituency, aspect)
-        return self.__model_describe_artifacts
+        return self.__describe_artifacts
 
-    def _collect_prep_artifacts(self, model_instance, model_function,
+    def _collect_prep_artifacts(self, model_instance, model_function_name,
                                 model_function_output, *args):
-        model_instance.__model_describe_artifacts[model_function] = {
+        model_instance.__describe_artifacts[model_function_name] = {
             "function_input": args,
             "function_output": model_function_output,
             ## Move line below to dataset_key rather than model_function
@@ -103,9 +101,9 @@ class Describable:
         }
         logging.info("prep completed")
 
-    def _collect_train_artifacts(self, model_instance, model_function,
+    def _collect_train_artifacts(self, model_instance, model_function_name,
                                  model_function_output, *args):
-        model_instance.__model_describe_artifacts[model_function] = {
+        model_instance.__describe_artifacts[model_function_name] = {
             "base_model": model_instance._base_model,
             "function_input": args,
             "function_output": model_function_output,

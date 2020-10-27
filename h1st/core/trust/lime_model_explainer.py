@@ -1,30 +1,33 @@
 import numpy as np
 import lime.lime_tabular as lt
+from h1st.core.trust.explainer import Explainer
 
 
-class LIMEModelExplainer:
-    def __init__(self, decision, describable_dict):
-        self._model = describable_dict['base_model']
-        self._data = describable_dict['data']
-        self.feature_names = list(self._data["train_df"].columns)
-        self.decision_input = decision[0]
-        self._lime_explainer()
-        self._explain_decision()
+class LIMEModelExplainer(Explainer):
+    def __init__(self, decision_input, model, train_data, mode="regression"):
+        self._explainer_mode = mode
+        self._feature_names = list(train_data.columns)
+        self.decision_explainer(decision_input, model, train_data)
+
         # self._plot_lime_explanation()
+
+    def decision_explainer(self, decision_input, model, train_data):
+        self._lime_explainer(train_data)
+        self._explain_decision(decision_input, model)
 
     def _plot_lime_explanation(self):
         self.explanation.show_in_notebook(show_table=True, show_all=False)
 
-    def _explain_decision(self):
-        self.explanation = self.explainer.explain_instance(
-            self.decision_input,
-            self._model.predict,
+    def _explain_decision(self, decision_input, model):
+        self._explanation = self._explainer.explain_instance(
+            decision_input,
+            model.predict,
         )
 
-    def _lime_explainer(self):
-        self.explainer = lt.LimeTabularExplainer(
-            np.array(self._data["train_df"]),
-            feature_names=self.feature_names,
+    def _lime_explainer(self, train_data):
+        self._explainer = lt.LimeTabularExplainer(
+            np.array(train_data),
+            feature_names=self._feature_names,
             verbose=False,
-            mode="regression",
+            mode=self._explainer_mode,
         )

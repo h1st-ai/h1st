@@ -13,19 +13,10 @@ class Explainer:
         return self._explainer
 
     @lime_explainer.setter
-    def lime_explainer(self, value):   
+    def lime_explainer(self, value):
         self._explainer = value
 
-    def _decision_description(self, decision, model):
-        _dict = {}
-        _native_model = model._native_model
-        _dict["model_name"] = str(type(_native_model).__name__)        
-        _dict["data_set_name"] = model.dataset_name
-        _dict["data_set_description"] = model.dataset_description
-        _dict["label_column"] = model.label_column
-        _dict["decision_input"] = decision[0]
-        _dict["decision"] = decision[1]
-        self.decision_describer = _dict
-
-    def generate_report(self, decision, constituency, aspect):
-        pass
+    def decision_explainer(self, decision_input, model, train_data) -> None:
+        """
+        Implement logic to describe model output
+        """

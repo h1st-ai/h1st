@@ -37,7 +37,8 @@ class WineQuality(h1.MLModel):
     #     plt.show()
 
     # @audit
-    @h1.Describable
+    # @h1.Describable
+    @h1.Explainable
     def prep(self, loaded_data):
         """
         Prepare data for modelling
@@ -49,16 +50,16 @@ class WineQuality(h1.MLModel):
         self.features = list(X.columns)
         X_train, X_test, Y_train, Y_test = train_test_split(
             X, Y, test_size=self.test_size)
-        self.prepared_data = {
+        return {
             "train_df": X_train,
             "test_df": X_test,
             "train_labels": Y_train,
             "test_labels": Y_test,
         }
-        return self.prepared_data
 
     # @audit
-    @h1.Describable
+    @h1.Explainable
+    # @h1.Describable
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data[
             "train_labels"]
@@ -92,6 +93,6 @@ if __name__ == "__main__":
 
     m.train(prepared_data)
     m.evaluate(prepared_data)
-    describer = m.describe()
+    # describer = m.describe(dataset_key='train_df')
 
     # print(m.audit_trail)

@@ -1,4 +1,3 @@
-# Better to make describer a separate interface and techniques like shap will inherit from describer
 # Similarly for explainer and lime explainer
 class Describer:
     """
@@ -16,7 +15,7 @@ class Describer:
     def shap_describer(self, value):
         self._describer = value
 
-    def model_describer(self, model, prepared_data: dict) -> None:
+    def model_describer(self, model, data_to_describe) -> None:
         """
         Implement logic to describe model output
         """

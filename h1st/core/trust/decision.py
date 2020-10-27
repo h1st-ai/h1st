@@ -7,6 +7,7 @@ class Decision:
     and `tell me how does the model make decisions`
     """
 
+    ## Rename functions to start with verb
     def data_description(self, data):
         pass
 
