@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 class TensorflowMLPClassifier(h1.MLModel):
-    
 #     hyperparameter = {
 #         'tuning_param': {
 #             'lr': float, # 0.01 ~ 0.1
