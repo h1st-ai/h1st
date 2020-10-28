@@ -19,16 +19,16 @@ logger = logging.getLogger(__name__)
 
 class TensorflowMLPClassifier(h1.MLModel):
     
-    hyperparameter = {
-        'tuning_param': {
-            'lr': float, # 0.01 ~ 0.1
-            'units': int, # 4 ~ 16
-            'n_layer': int
-        },
-        'target_metrics': {
-            'accuracy': 'minimize'
-        }
-    }
+#     hyperparameter = {
+#         'tuning_param': {
+#             'lr': float, # 0.01 ~ 0.1
+#             'units': int, # 4 ~ 16
+#             'n_layer': int
+#         },
+#         'target_metrics': {
+#             'accuracy': 'minimize'
+#         }
+#     }
 
     def __init__(self, lr, units, n_layer, epochs=20):
         self.lr = lr
