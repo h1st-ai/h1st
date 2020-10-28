@@ -95,4 +95,10 @@ if __name__ == "__main__":
     m.evaluate(prepared_data)
     # describer = m.describe(dataset_key='train_df')
 
-    # print(m.audit_trail)
+    # print(describer)
+
+    idx = 4
+    decision = prepared_data["train_df"].iloc[idx], prepared_data[
+        "train_labels"].iloc[idx]
+    explainer = m.explain(dataset_key="train_df", decision=decision)
+    print(explainer)

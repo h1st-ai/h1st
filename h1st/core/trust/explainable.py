@@ -70,18 +70,10 @@ class Explainable:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
 
-        self.__explain_artifacts['shap_model_describer'] = LIMEModelExplainer(
+        self.__explain_artifacts['lime_model_describer'] = LIMEModelExplainer(
             decision[0], self.__explain_artifacts['train']['base_model'],
             self.__explain_artifacts['prep']['function_output'][dataset_key])
-        # describer.generate_report(constituency, aspect)
         return self.__explain_artifacts
-
-        # explainer = Explainer(self, decision)
-
-        # explainer.lime_explainer = LIMEModelExplainer(
-        #     decision, self.get_base_model__prepared_data())
-        # # explainer.generate_report(decision, constituent, aspect)
-        # return explainer
 
     def _collect_prep_artifacts(self, model_instance, model_function_name,
                                 model_function_output, *args):
