@@ -3,7 +3,6 @@ import importlib
 import pathlib
 import inspect
 import re
-import inspect
 import sys
 import logging
 
@@ -61,7 +60,7 @@ def _discover_module(data):
                     'filename': filename,
                     'hyperparameters': params,
                     # to be fillled by UI
-                    'seleced_metric': None,
+                    'selected_metric': None,
                     'options': [],
                     'advanced_options': [],
                 }
