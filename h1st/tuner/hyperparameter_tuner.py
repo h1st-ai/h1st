@@ -1,8 +1,10 @@
 import json
 import os    
 
+import h1st
+
 import ConfigSpace as CS
-from filelock import FileLock 
+from filelock import FileLock
 from ray import tune
 from ray.tune.schedulers import AsyncHyperBandScheduler
 from ray.tune.schedulers.hb_bohb import HyperBandForBOHB
@@ -12,30 +14,30 @@ from ray.tune.suggest.bohb import TuneBOHB
 
 class HyperParameterTuner:
     def run(
-        self, 
-        model_class, 
-        parameters, 
-        target_metrics, 
-        options, 
+        self,
+        model_class,
+        parameters,
+        target_metrics,
+        options,
         search_algorithm="BOHB",
         name="experiment_1"):
 
-        h1st_model_trainable = self.create_h1st_model_trainable(model_class, parameters)    
+        h1st_model_trainable = self.create_h1st_model_trainable(model_class, parameters)
         config_space = self.get_config_space(parameters, search_algorithm)
         metric_mode = self.get_metric_n_mode(target_metrics)
         algo, scheduler = self.get_search_algorithm(
-            search_algorithm, config_space, metric_mode, options["max_concurrent"])
-        
-        analysis= tune.run(
+            search_algorithm, config_space, metric_mode, options.get('max_concurrent', 4))
+
+        analysis = tune.run(
             h1st_model_trainable,
-            config=config_space if search_algorithm=="BO" else None,
+            config=config_space if search_algorithm == "BO" else None,
             metric=metric_mode[0],
             mode=metric_mode[1],
             search_alg=algo,
             scheduler=scheduler,
-            stop=options["stopping_criteria"],
+            stop=options.get('stopping_criteria', {'training_iteration': 5}),
             verbose=1,
-            num_samples=options["num_samples"],
+            num_samples=options.get('num_samples', 20),
             name=name,
         )
         stats = analysis.stats()
@@ -91,9 +93,9 @@ class HyperParameterTuner:
     def get_config_space_bo(self, parameters):
         config_space = {}
         for param in parameters:
-            if (param["min"] is not None) and (param["max"] is not None):
+            if (param.get('min') is not None) and (param.get('max') is not None):
                 config_space[param["name"]] = tune.uniform(param["min"], param["max"])
-            elif len(param["choice"]) != 0:
+            elif len(param.get('choice', [])) != 0:
                 raise Exception("bayesian optimization doesn't support categorical input in", param)
             else:
                 raise Exception("value of", param, "was not provided")
@@ -110,15 +112,17 @@ class HyperParameterTuner:
     def get_config_space_bohb(self, parameters):
         config_space = CS.ConfigurationSpace()
         for param in parameters:
-            if (param["min"] is not None) and (param["type"] == "float"):
+            type_ = param.get('type')
+
+            if (param.get('min') is not None) and (type_ == "float"):
                 config_space.add_hyperparameter(
                     CS.UniformFloatHyperparameter(
                         param["name"], lower=param["min"], upper=param["max"]))
-            elif (param["min"] is not None) and (param["type"] == "int"):
+            elif (param.get('min') is not None) and (type_ == "int"):
                 config_space.add_hyperparameter(
                     CS.UniformIntegerHyperparameter(
                         param["name"], lower=param["min"], upper=param["max"]))
-            elif len(param["choice"]) != 0:
+            elif len(param.get('choice', [])) != 0:
                 config_space.add_hyperparameter(
                     CS.CategoricalHyperparameter(param["name"], choices=param["choice"]))
             else:
@@ -126,8 +130,10 @@ class HyperParameterTuner:
         return config_space
 
     def create_h1st_model_trainable(self, model_class, parameters):
-        class H1stModelTrainable(tune.Trainable):    
+        class H1stModelTrainable(tune.Trainable):
             def setup(self, config):
+                h1st.init()
+
                 self.config = config
                 self.hyperparameter = parameters
                 self.timestep = 0
@@ -152,8 +158,8 @@ class HyperParameterTuner:
                     os.makedirs(DATA_LOCK_DIR)
                 with FileLock(os.path.expanduser(lock_file)):
                     data = self.h1_ml_model.load_data()
-                self.prepared_data = self.h1_ml_model.prep(data)  
-                
+                self.prepared_data = self.h1_ml_model.prep(data)
+
             def step(self):
                 self.timestep += 1
                 self.h1_ml_model.train(self.prepared_data)

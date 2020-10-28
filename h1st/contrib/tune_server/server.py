@@ -1,9 +1,9 @@
 import os
 from typing import Optional
 
-from pydantic import BaseSettings, BaseModel
-from h1st.model_repository.explorer import ModelExplorer
 from fastapi import FastAPI
+from pydantic import BaseSettings
+from h1st.model_repository.explorer import ModelExplorer
 
 
 class Settings(BaseSettings):
