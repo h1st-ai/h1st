@@ -17,12 +17,12 @@ class BreastCancer(h1.MLModel):
              of a breast mass."
 
         self.label_column = "benign"
-        self._native_model = RandomForestClassifier(n_estimators=100)
+        self.base_model = self._build_base_model()
         self.metrics = None
         self.features = None
         self.prepared_data = None
 
-    @h1.Auditable()
+    @h1.Explainable
     def load_data(self):
         path = os.path.dirname(__file__)
         filename = os.path.join(path, "../data/breast_cancer.csv")
@@ -34,7 +34,7 @@ class BreastCancer(h1.MLModel):
 
     # def explore_data(self, data):
     #     pass
-
+    @h1.Explainable
     def prep(self, data):
         """
         Prepare data for modelling
@@ -59,25 +59,39 @@ class BreastCancer(h1.MLModel):
         }
         return self.prepared_data
 
+    @h1.Explainable
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data[
             "train_labels"]
-        self._native_model.fit(X_train, Y_train)
+        self.base_model.fit(X_train, Y_train)
 
+    @h1.Explainable
     def evaluate(self, data):
         X_test, Y_test = data["val_df"], data["val_labels"]
-        Y_pred = self._native_model.predict(X_test)
+        Y_pred = self.base_model.predict(X_test)
         self.metrics = {
             "mae": sklearn.metrics.mean_absolute_error(Y_test, Y_pred),
             "auc": roc_auc_score(Y_test, Y_pred),
         }
         return self.metrics
 
+    def _build_base_model(self):
+        return RandomForestClassifier(max_depth=6,
+                                      random_state=0,
+                                      n_estimators=20)
+
 
 if __name__ == "__main__":
     m = BreastCancer()
     dataset = m.load_data()
-    # prepared_data = m.prep(dataset)
-    # m.train(prepared_data)
+    prepared_data = m.prep(dataset)
+    m.train(prepared_data)
+    m.evaluate((prepared_data))
     # describer = m.describe()
     # print(describer)
+
+    idx = 4
+    decision = prepared_data["train_df"].iloc[idx], prepared_data[
+        "train_labels"].iloc[idx]
+    explaination = m.explain(dataset_key="train_df", decision=decision)
+    print(explaination['BreastCancer'])

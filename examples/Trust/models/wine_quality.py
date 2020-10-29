@@ -9,14 +9,14 @@ audit = h1.Auditable()
 
 
 class WineQuality(h1.MLModel):
-    def __init__(self, func=None):
-        super().__init__(func)
+    def __init__(self):
+        super().__init__()
         self.dataset_name = "WineQuality"
         self.dataset_description = "The dataset is related to red variants of the Portuguese `Vinho Verde` wine.\
              The task is to determine the `Quality` of the wine based on 11 physicochemical tests as input."
 
         self.label_column = "Quality"
-        self._base_model = self._build_base_model()
+        self.base_model = self._build_base_model()
         self.metrics = None
         self.features = None
         self.test_size = 0.2
@@ -64,7 +64,7 @@ class WineQuality(h1.MLModel):
     def train(self, prepared_data):
         X_train, Y_train = prepared_data["train_df"], prepared_data[
             "train_labels"]
-        self._base_model.fit(X_train, Y_train)
+        self.base_model.fit(X_train, Y_train)
 
     def _mean_absolute_percentage_error(self, y_true, y_pred):
         y_true, y_pred = np.array(y_true), np.array(y_pred)
@@ -74,7 +74,7 @@ class WineQuality(h1.MLModel):
     @h1.Explainable
     def evaluate(self, data):
         X_test, y_true = data["test_df"], data["test_labels"]
-        y_pred = self._base_model.predict(X_test)
+        y_pred = self.base_model.predict(X_test)
         self.metrics = {
             "mape": self._mean_absolute_percentage_error(y_true, y_pred)
         }
@@ -87,7 +87,7 @@ class WineQuality(h1.MLModel):
 
 
 if __name__ == "__main__":
-    m = WineQuality("audit")
+    m = WineQuality()
 
     dataset = m.load_data()
 
@@ -100,8 +100,7 @@ if __name__ == "__main__":
     # print(describer)
 
     idx = 4
-
     decision = prepared_data["train_df"].iloc[idx], prepared_data[
         "train_labels"].iloc[idx]
-    explainer = m.explain(dataset_key="train_df", decision=decision)
-    print(explainer['decision'])
+    explaination = m.explain(dataset_key="train_df", decision=decision)
+    print(explaination['WineQuality'])

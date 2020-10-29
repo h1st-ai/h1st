@@ -91,10 +91,10 @@ class Explainable:
 
     def _collect_model_artifacts(self, model_instance, model_function_output):
         model_instance.__explain_artifacts[model_instance.model_name] = {
-            "base_model": model_instance._base_model,
-            "base_model_name": type(model_instance._base_model).__name__,
-            "base_model_params": model_instance._base_model.get_params(),
-            "base_model_metrics": model_instance.metrics
+            "base_model": model_instance.base_model,
+            "base_model_name": type(model_instance.base_model).__name__,
+            "base_model_params": model_instance.base_model.get_params(),
+            "base_model_metrics": model_function_output
         }
 
     def _collect_dataset_artifacts(self, model_instance,
