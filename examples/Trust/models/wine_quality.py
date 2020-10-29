@@ -104,4 +104,4 @@ if __name__ == "__main__":
     decision = prepared_data["train_df"].iloc[idx], prepared_data[
         "train_labels"].iloc[idx]
     explainer = m.explain(dataset_key="train_df", decision=decision)
-    # print(explainer['train']["model_metrics"])
+    print(explainer['decision'])

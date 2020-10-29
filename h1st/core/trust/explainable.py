@@ -13,6 +13,7 @@ class Explainable:
     """
     def __get__(self, instance, owner):
         self.model_instance = instance
+        self.model_instance.model_name = type(self.model_instance).__name__
         return self.__call__
 
     def __init__(self, function):
@@ -43,7 +44,7 @@ class Explainable:
                 explainable_decorator._collect_load_data_artifacts,
                 "prep": explainable_decorator._collect_prep_artifacts,
                 "train": explainable_decorator._collect_train_artifacts,
-                "evaluate": explainable_decorator._collect_evaluate_artifacts
+                "evaluate": explainable_decorator._collect_evaluate_artifacts,
             }
             return model_functions[model_function_name](
                 model_instance,
@@ -73,9 +74,12 @@ class Explainable:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
 
-        self.__explain_artifacts['lime_model_explainer'] = LIMEModelExplainer(
+        # self.__explain_artifacts['model_explainer']
+        self._collect_decision_artifacts(decision)
+        self.__explain_artifacts['model_explainer'] = LIMEModelExplainer(
             decision[0],
-            self.__explain_artifacts[self.dataset_name]['base_model'],
+            self.__explain_artifacts[self.model_name]
+            ['base_model'],  # to make explicit dataset_name & model_name are the same
             self.__explain_artifacts['prep']['function_output'][dataset_key])
         # self._generate_decision_report(dataset_key, decision, constituent,
         #                                aspect)
@@ -86,7 +90,7 @@ class Explainable:
         pass
 
     def _collect_model_artifacts(self, model_instance, model_function_output):
-        model_instance.__explain_artifacts[model_instance.dataset_name] = {
+        model_instance.__explain_artifacts[model_instance.model_name] = {
             "base_model": model_instance._base_model,
             "base_model_name": type(model_instance._base_model).__name__,
             "base_model_params": model_instance._base_model.get_params(),
@@ -109,7 +113,6 @@ class Explainable:
 
     def _collect_load_data_artifacts(self, model_instance, model_function_name,
                                      model_function_output, *args):
-        print(model_function_output)
         model_instance.__explain_artifacts[model_function_name] = {
             "function_input": args,
             "function_output": model_function_output
@@ -140,3 +143,9 @@ class Explainable:
             "function_output": model_function_output
         }
         self._collect_model_artifacts(model_instance, model_function_output)
+
+    def _collect_decision_artifacts(self, decision):
+        self.__explain_artifacts["decision"] = {
+            "function_input": decision[0],
+            "function_output": decision[1]
+        }
