@@ -12,19 +12,19 @@ class LIMEModelExplainer(Explainer):
         # self._plot_lime_explanation()
 
     def decision_explainer(self, decision_input, model, train_data):
-        self._lime_explainer(train_data)
-        self._explain_decision(decision_input, model)
+        self._get_lime_explainer(train_data)
+        self._get_explanation(decision_input, model)
 
-    def _plot_lime_explanation(self):
-        self.explanation.show_in_notebook(show_table=True, show_all=False)
+    # def _plot_lime_explanation(self):
+    #     self._explanation.show_in_notebook(show_table=True, show_all=False)
 
-    def _explain_decision(self, decision_input, model):
+    def _get_explanation(self, decision_input, model):
         self._explanation = self._explainer.explain_instance(
             decision_input,
             model.predict,
         )
 
-    def _lime_explainer(self, train_data):
+    def _get_lime_explainer(self, train_data):
         self._explainer = lt.LimeTabularExplainer(
             np.array(train_data),
             feature_names=self._feature_names,

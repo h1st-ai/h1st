@@ -20,15 +20,16 @@ class WineQuality(h1.MLModel):
         self.metrics = None
         self.features = None
         self.test_size = 0.2
-        self.prepared_data = None
 
     # @audit
+    @h1.Explainable
     def load_data(self):
         path = os.path.dirname(__file__)
         filename = os.path.join(path, "../data/wine_quality.csv")
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         # self.load_data.input_data = df
+
         return df.reset_index(drop=True)
 
     # def explore_data(self, data):
@@ -70,6 +71,7 @@ class WineQuality(h1.MLModel):
         return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
     # @audit
+    @h1.Explainable
     def evaluate(self, data):
         X_test, y_true = data["test_df"], data["test_labels"]
         y_pred = self._base_model.predict(X_test)
@@ -98,7 +100,8 @@ if __name__ == "__main__":
     # print(describer)
 
     idx = 4
+
     decision = prepared_data["train_df"].iloc[idx], prepared_data[
         "train_labels"].iloc[idx]
     explainer = m.explain(dataset_key="train_df", decision=decision)
-    print(explainer)
+    # print(explainer['train']["model_metrics"])

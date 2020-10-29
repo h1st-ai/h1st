@@ -39,8 +39,11 @@ class Explainable:
                 *args,
         ):
             model_functions = {
+                "load_data":
+                explainable_decorator._collect_load_data_artifacts,
                 "prep": explainable_decorator._collect_prep_artifacts,
                 "train": explainable_decorator._collect_train_artifacts,
+                "evaluate": explainable_decorator._collect_evaluate_artifacts
             }
             return model_functions[model_function_name](
                 model_instance,
@@ -70,46 +73,70 @@ class Explainable:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
 
-        self.__explain_artifacts['lime_model_describer'] = LIMEModelExplainer(
-            decision[0], self.__explain_artifacts['train']['base_model'],
+        self.__explain_artifacts['lime_model_explainer'] = LIMEModelExplainer(
+            decision[0],
+            self.__explain_artifacts[self.dataset_name]['base_model'],
             self.__explain_artifacts['prep']['function_output'][dataset_key])
+        # self._generate_decision_report(dataset_key, decision, constituent,
+        #                                aspect)
         return self.__explain_artifacts
+
+    def _generate_decision_report(self, dataset_key, decision, constituent,
+                                  aspect):
+        pass
+
+    def _collect_model_artifacts(self, model_instance, model_function_output):
+        model_instance.__explain_artifacts[model_instance.dataset_name] = {
+            "base_model": model_instance._base_model,
+            "base_model_name": type(model_instance._base_model).__name__,
+            "base_model_params": model_instance._base_model.get_params(),
+            "base_model_metrics": model_instance.metrics
+        }
+
+    def _collect_dataset_artifacts(self, model_instance,
+                                   model_function_output):
+        model_instance.__explain_artifacts["dataset"] = {
+            "name":
+            model_instance.dataset_name,
+            "description":
+            model_instance.dataset_description,
+            "label_column":
+            model_instance.label_column,
+            "feature_columns":
+            set(list(model_function_output.columns)) -
+            set(model_instance.label_column)
+        }
+
+    def _collect_load_data_artifacts(self, model_instance, model_function_name,
+                                     model_function_output, *args):
+        print(model_function_output)
+        model_instance.__explain_artifacts[model_function_name] = {
+            "function_input": args,
+            "function_output": model_function_output
+        }
+        self._collect_dataset_artifacts(model_instance, model_function_output)
 
     def _collect_prep_artifacts(self, model_instance, model_function_name,
                                 model_function_output, *args):
         print(model_function_name)
         model_instance.__explain_artifacts[model_function_name] = {
             "function_input": args,
-            "function_output": model_function_output,
-            ## Move line below to dataset_key rather than model_function
-            "dataset_name": model_instance.dataset_name,
-            "dataset_description": model_instance.dataset_description,
-            "label_column": model_instance.label_column,
-            "features": list(model_function_output["train_df"].columns),
-            "dataset_shape": model_function_output["train_df"].shape,
-            "dataset_statistics": model_function_output["train_df"].describe()
+            "function_output": model_function_output
         }
         logging.info("prep completed")
 
     def _collect_train_artifacts(self, model_instance, model_function_name,
                                  model_function_output, *args):
         model_instance.__explain_artifacts[model_function_name] = {
-            "base_model": model_instance._base_model,
             "function_input": args,
-            "function_output": model_function_output,
-            "base_model_name": type(model_instance._base_model).__name__,
-            "base_model_params": model_instance._base_model.get_params(),
-            "model_metrics": model_instance.metrics
+            "function_output": model_function_output
         }
         logging.info("train completed")
 
-    # def _decision_description(self, decision, model):
-    #     _dict = {}
-    #     _native_model = model._native_model
-    #     _dict["model_name"] = str(type(_native_model).__name__)
-    #     _dict["data_set_name"] = model.dataset_name
-    #     _dict["data_set_description"] = model.dataset_description
-    #     _dict["label_column"] = model.label_column
-    #     _dict["decision_input"] = decision[0]
-    #     _dict["decision"] = decision[1]
-    #     self.decision_describer = _dict
+    def _collect_evaluate_artifacts(self, model_instance, model_function_name,
+                                    model_function_output, *args):
+        model_instance.__explain_artifacts[model_function_name] = {
+            "function_input": args,
+            "function_output": model_function_output
+        }
+        self._collect_model_artifacts(model_instance, model_function_output)
