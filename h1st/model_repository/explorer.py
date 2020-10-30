@@ -61,8 +61,7 @@ def _discover_module(data):
                     'hyperparameters': params,
                     # to be fillled by UI
                     'selected_metric': None,
-                    'options': [],
-                    'advanced_options': [],
+                    'options': {},
                 }
     except ImportError:
         logger.exception(f'Unable to import module {module_name}')
