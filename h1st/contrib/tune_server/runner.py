@@ -30,10 +30,12 @@ class TuneConfig(BaseModel):
 class TuneRun(BaseModel):
     id: str = ""
     model_class: str = ""
+    config: TuneConfig = None
     status: str = ""
     error: str = ""
     traceback: str = ""
     created_at: datetime.datetime = None
+    finished_at: datetime.datetime = None
 
 
 class TuneRunner:
@@ -90,21 +92,25 @@ class TuneRunner:
 
         return result
 
-    def get_run(self, model_class, run_id) -> TuneRun:
+    def get_run(self, model_class, run_id, detail=False) -> TuneRun:
         storage = self.storage
         tune_namespace = f"tune::{model_class}::{run_id}::"
 
         run = TuneRun(
             id=run_id,
             model_class=model_class,
-            created_at=ulid.parse(run_id).timestamp().datetime
+            created_at=ulid.parse(run_id).timestamp().datetime,
         )
 
+        if detail:
+            run.config = storage.get_obj(f"{tune_namespace}config")
+
         try:
-            status = storage.get_obj(f"{tune_namespace}::result")
+            status = storage.get_obj(f"{tune_namespace}result")
             run.status = status['status']
             run.error = status.get('error')
             run.traceback = status.get('traceback')
+            run.finished_at = status.get('finished_at')
         except KeyError:
             # TODO: check pid
             run.status = "running"
@@ -175,7 +181,6 @@ if __name__ == "__main__":
         tune_config = TuneConfig(**json.load(f))
 
     runner = TuneRunner()
-    # print(runner.list_runs(tune_config.model_class, -5))
 
     run_id, _ = runner.run(tune_config)
     print(run_id)
