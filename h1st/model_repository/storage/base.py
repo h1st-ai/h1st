@@ -29,3 +29,9 @@ class Storage(ABC):
     @abstractmethod
     def delete(self, name: str) -> Any:
         ...
+
+    def delete_namespace(self, namespace: str):
+        raise NotImplementedError()
+
+    def list_keys(self, namespace: str) -> list:
+        raise NotImplementedError()

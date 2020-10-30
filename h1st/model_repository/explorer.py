@@ -26,7 +26,7 @@ def _discover_module(data):
                 fullname = value.__name__
 
                 if value.__module__:
-                    fullname = f"{value.__module__}:{fullname}"
+                    fullname = f"{value.__module__}.{fullname}"
 
                 sign = (inspect.signature(value))
                 params = []
