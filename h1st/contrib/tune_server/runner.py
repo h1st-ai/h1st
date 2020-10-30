@@ -67,7 +67,7 @@ class TuneRunner:
             if process:
                 process.terminate()
 
-            storage.set_obj(tune_namespace + "result", {
+            storage.set_obj(tune_namespace + "status", {
                 "status": "error",
                 "error": str(ex),
                 "traceback": traceback.format_exc(),
@@ -106,7 +106,7 @@ class TuneRunner:
             run.config = storage.get_obj(f"{tune_namespace}config")
 
         try:
-            status = storage.get_obj(f"{tune_namespace}result")
+            status = storage.get_obj(f"{tune_namespace}status")
             run.status = status['status']
             run.error = status.get('error')
             run.traceback = status.get('traceback')
@@ -116,6 +116,11 @@ class TuneRunner:
             run.status = "running"
 
         return run
+
+    def get_analysis_result(self, model_class, run_id):
+        storage = self.storage
+        tune_namespace = f"tune::{model_class}::{run_id}::"
+        return storage.get_obj(tune_namespace + "result")
 
     def wait(self, model_class, run_id):
         storage = self.storage
@@ -157,16 +162,15 @@ def _run(config_dict, tune_namespace):
         model_class = getattr(module, class_name)
 
         tuner = HyperParameterTuner()
-        result = tuner.run(model_class, config.parameters, config.target_metric, config.options)
+        analysis = tuner.run(model_class, config.parameters, config.target_metric, config.options)
 
-        # TODO: save result
-
-        storage.set_obj(tune_namespace + "result", {
+        storage.set_obj(tune_namespace + "result", analysis.results)
+        storage.set_obj(tune_namespace + "status", {
             "status": "success",
             "finished_at": datetime.datetime.now(),
         })
     except Exception as ex:
-        storage.set_obj(tune_namespace + "result", {
+        storage.set_obj(tune_namespace + "status", {
             "status": "error",
             "error": str(ex),
             "traceback": traceback.format_exc(),

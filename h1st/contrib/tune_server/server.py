@@ -1,6 +1,7 @@
 import os
 
 from fastapi import FastAPI, Body, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseSettings
 from h1st.model_repository.explorer import ModelExplorer
 
@@ -8,11 +9,22 @@ from .runner import TuneConfig, TuneRunner
 
 class Settings(BaseSettings):
     project_root: str = os.getcwd()
+    allowed_cors_origins: str = ""
 
 
 settings = Settings()
 app = FastAPI()
 
+
+if settings.allowed_cors_origins:
+    origins = settings.allowed_cors_origins.split(",")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 @app.get("/api")
 def info():
@@ -47,7 +59,7 @@ def get_tune(run_id: str, model_class: str) -> dict:
     item = tuner.get_run(model_class, run_id, True)
     return {
         "item": item,
-        "trials": [],
+        "result": tuner.get_analysis_result(model_class, run_id),
     }
 
 @app.post('/api/tune/start')
