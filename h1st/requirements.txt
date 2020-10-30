@@ -11,6 +11,7 @@ ConfigSpace <= 0.4.16
 hpbandster <= 0.7.4
 bayesian-optimization <= 1.2.0  # for BO
 six >= 1.13.0
+tabulate
 
 # tune helper server
 pydantic == 1.7
