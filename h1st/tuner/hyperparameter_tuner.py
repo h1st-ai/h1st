@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os    
 
@@ -43,6 +44,11 @@ class HyperParameterTuner:
         stats = analysis.stats()
         secs = stats["timestamp"] - stats["start_time"]
         print(f"took {secs:7.2f} seconds ({secs/3600.0:3.0f} hours {(secs/60.0)%60:2.2f} minutes)")
+
+        cols = ['model_version', metric_mode[0], 'training_iteration'] \
+               + [f'config/{param["name"]}' for param in parameters]
+        analysis = analysis.dataframe()[cols].sort_values(
+            metric_mode[0], ascending=False if metric_mode[1]=='max' else True)
         return analysis
 
     def get_metric_n_mode(self, target_metrics):
@@ -93,40 +99,39 @@ class HyperParameterTuner:
     def get_config_space_bo(self, parameters):
         config_space = {}
         for param in parameters:
-            if (param.get('min') is not None) and (param.get('max') is not None):
-                config_space[param["name"]] = tune.uniform(param["min"], param["max"])
-            elif len(param.get('choice', [])) != 0:
-                raise Exception("bayesian optimization doesn't support categorical input in", param)
+            name_ = param.get('name')
+            min_ = param.get('min')
+            max_ = param.get('max')
+            choice_ = param.get('choice', [])            
+            if (min_ is not None) and (max_ is not None):
+                config_space[name_] = tune.uniform(min_, max_)
+            elif len(choice_) != 0:
+                raise Exception("bayesian optimization doesn't support categorical input in", name_)
             else:
                 raise Exception("value of", param, "was not provided")
-        # space = {
-        #     "lr": tune.uniform(0.005, 0.05),
-        #     "units": tune.uniform(1, 64),
-        #     # "epochs": tune.uniform(4, 50),    
-        #     "n_layer": tune.quniform(1, 8, 1.0),    
-        # #     "units": tune.randint(1, 64),
-        # #     "n_layer": tune.randint(1, 8)            
-        # }
         return config_space
 
     def get_config_space_bohb(self, parameters):
         config_space = CS.ConfigurationSpace()
         for param in parameters:
+            name_ = param.get('name')
             type_ = param.get('type')
-
-            if (param.get('min') is not None) and (type_ == "float"):
+            min_ = param.get('min')
+            max_ = param.get('max')
+            choice_ = param.get('choice', [])
+            if (min_ is not None) and (type_ == "float"):
                 config_space.add_hyperparameter(
                     CS.UniformFloatHyperparameter(
-                        param["name"], lower=param["min"], upper=param["max"]))
-            elif (param.get('min') is not None) and (type_ == "int"):
+                        name_, lower=min_, upper=max_))
+            elif (min_ is not None) and (type_ == "int"):
                 config_space.add_hyperparameter(
                     CS.UniformIntegerHyperparameter(
-                        param["name"], lower=param["min"], upper=param["max"]))
-            elif len(param.get('choice', [])) != 0:
+                        name_, lower=min_, upper=max_))
+            elif len(choice_) != 0:
                 config_space.add_hyperparameter(
-                    CS.CategoricalHyperparameter(param["name"], choices=param["choice"]))
+                    CS.CategoricalHyperparameter(name_, choices=choice_))
             else:
-                raise Exception("value of", param["name"], "was not provided.")
+                raise Exception("value of", name_, "was not provided.")
         return config_space
 
     def create_h1st_model_trainable(self, model_class, parameters):
@@ -165,8 +170,9 @@ class HyperParameterTuner:
                 self.h1_ml_model.train(self.prepared_data)
                 self.h1_ml_model.evaluate(self.prepared_data)
                 acc = self.h1_ml_model.metrics["accuracy"]
-                self.h1_ml_model.persist(str(self.timestep) + str())
-                return {"mean_accuracy": acc}
+                model_version = f'{"|".join([f"{k[:4]}={v}" for k, v in self.kwargs.items()])}_{datetime.now().strftime("%H%M%S")}'
+                self.h1_ml_model.persist(model_version)
+                return {"mean_accuracy": acc, "model_version": model_version}
 
             def save_checkpoint(self, checkpoint_dir):
                 path = os.path.join(checkpoint_dir, "checkpoint")
