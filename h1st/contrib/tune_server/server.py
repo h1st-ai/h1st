@@ -14,7 +14,7 @@ settings = Settings()
 app = FastAPI()
 
 
-@app.get("/api")
+@app.get("/api/info")
 def info():
     return settings.dict()
 
