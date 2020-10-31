@@ -12,4 +12,4 @@ Start a tune
 Get all tune experiments for a model class
 
 `GET /api/tune/{id}?model_class=xxx`
-Query specific details about an experiment. This returns all the trails and metrics.
+Query specific details about an experiment. This returns all the trials and metrics.
