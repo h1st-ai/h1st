@@ -170,7 +170,7 @@ class HyperParameterTuner:
                 self.h1_ml_model.train(self.prepared_data)
                 self.h1_ml_model.evaluate(self.prepared_data)
                 acc = self.h1_ml_model.metrics["accuracy"]
-                model_version = f'{"|".join([f"{k[:4]}={v}" for k, v in self.kwargs.items()])}_{datetime.now().strftime("%H%M%S")}'
+                model_version = f'{"|".join([f"{k[:3]}={v}" for k, v in self.kwargs.items()])}|{self.timestep}{datetime.now().strftime("%S%f")}'
                 self.h1_ml_model.persist(model_version)
                 return {"mean_accuracy": acc, "model_version": model_version}
 
