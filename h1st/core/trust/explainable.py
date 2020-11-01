@@ -1,5 +1,6 @@
 import logging
 import matplotlib.pyplot as plt
+import seaborn as sns
 from collections import defaultdict
 from .lime_model_explainer import LIMEModelExplainer
 from .enums import Constituency, Aspect
@@ -175,17 +176,14 @@ class Explainable:
 
         print('\n    {}   '.format(tmp_factors))
 
-        print(
-            '\n******* Factors that had a Positive Effect on the Decision  *******'
-        )
+        print('\n******* Factors that contributed to the Decision  *******')
 
         for k, v in self.__explain_artifacts['model_explainer'].positive.items(
         ):
             print('\n   {} contributed {}%'.format(k, v[0]))
 
         print(
-            '\n******* Factors that had a Negative Effect on the Decision  *******'
-        )
+            '\n******* Factors that contributed against the Decision  *******')
 
         label_column, data = self._get_label_column_data(dataset_key)
 
@@ -202,11 +200,13 @@ class Explainable:
                     self._compute_dist(data, k, v[1], label_column,
                                        decision[1])))
 
-                for unique_val in unique_vals:
-                    print(
-                        ' A total of {}% of decisions were favorable!'.format(
-                            self._compute_dist(data, k, unique_val,
-                                               label_column, decision[1])))
+                g = sns.catplot(x=k,
+                                y=label_column,
+                                data=data,
+                                kind="bar",
+                                height=3,
+                                aspect=.7)
+                plt.plot()
 
                 # percentage = abs(
                 #     ((data[data[k] == v[1]].shape[0]) / data.shape[0]) * 100)
@@ -221,4 +221,13 @@ class Explainable:
                 # print(unique_vals, current_val)
 
             else:
-                pass
+                quantiles_bucket = {"botton 25 percentile":[0.0, 0.25],\
+                    "between 25 & 50 percentile":[0.25, 0.50],\
+                        "between 50 & 75 percentile":[0.50, 0.75],\
+                            "above 75 percentile":[0.75, 1]}
+                for qk, sv in zip(quantiles_bucket.keys(), v[2][1]):
+
+                    if (v[1] <= sv):
+                        print(v[1], v[2][1])
+                        print('\n `{}` : `{}`'.format(k, qk))
+                        break

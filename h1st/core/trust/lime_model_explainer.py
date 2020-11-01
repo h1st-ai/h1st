@@ -8,7 +8,7 @@ class LIMEModelExplainer(Explainer):
         self._explainer_mode = mode
         self._feature_names = list(train_data.columns)
         self.decision_explainer(decision_input, model, train_data)
-        # self._plot_lime_explanation()
+        self._plot_lime_explanation()
 
     def decision_explainer(self, decision_input, model, train_data):
         self._get_lime_explainer(train_data)
