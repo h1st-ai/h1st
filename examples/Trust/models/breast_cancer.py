@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import sklearn
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import roc_auc_score
@@ -9,7 +10,7 @@ import h1st as h1
 
 
 class BreastCancer(h1.MLModel):
-    def __init__(self, is_audit=False):
+    def __init__(self):
         super().__init__()
         self.dataset_name = "Wisconsin Breast Cancer Dataset"
         self.dataset_description = "The dataset contains 30 features\
@@ -18,9 +19,6 @@ class BreastCancer(h1.MLModel):
 
         self.label_column = "benign"
         self.base_model = self._build_base_model()
-        self.metrics = None
-        self.features = None
-        self.prepared_data = None
 
     @h1.Explainable
     def load_data(self):
@@ -29,7 +27,9 @@ class BreastCancer(h1.MLModel):
         df = pd.read_csv(filename)
         df["benign"] = (df.diagnosis == "M").astype(int)
         df.drop(["id", "diagnosis"], axis=1, inplace=True)
-        print(df.head())
+        for old_name in df.columns:
+            df = df.rename(columns={old_name: old_name.replace(" ", "_")},
+                           inplace=False)
         return df.reset_index(drop=True)
 
     # def explore_data(self, data):
@@ -51,13 +51,12 @@ class BreastCancer(h1.MLModel):
         X_train, X_test, Y_train, Y_test = train_test_split(X,
                                                             Y,
                                                             test_size=0.2)
-        self.prepared_data = {
+        return {
             "train_df": X_train,
-            "val_df": X_test,
+            "test_df": X_test,
             "train_labels": Y_train,
-            "val_labels": Y_test,
+            "test_labels": Y_test,
         }
-        return self.prepared_data
 
     @h1.Explainable
     def train(self, prepared_data):
@@ -67,31 +66,21 @@ class BreastCancer(h1.MLModel):
 
     @h1.Explainable
     def evaluate(self, data):
-        X_test, Y_test = data["val_df"], data["val_labels"]
+        X_test, Y_test = data["test_df"], data["test_labels"]
         Y_pred = self.base_model.predict(X_test)
-        self.metrics = {
+        return {
             "mae": sklearn.metrics.mean_absolute_error(Y_test, Y_pred),
             "auc": roc_auc_score(Y_test, Y_pred),
         }
-        return self.metrics
+
+    def predict(self, input_data):
+        """
+        :params data: data for prediction
+        :returns: prediction result as a dictionary
+        """
+        return self.base_model.predict(np.expand_dims(input_data, axis=0))[0]
 
     def _build_base_model(self):
         return RandomForestClassifier(max_depth=6,
                                       random_state=0,
                                       n_estimators=20)
-
-
-if __name__ == "__main__":
-    m = BreastCancer()
-    dataset = m.load_data()
-    prepared_data = m.prep(dataset)
-    m.train(prepared_data)
-    m.evaluate((prepared_data))
-    # describer = m.describe()
-    # print(describer)
-
-    idx = 4
-    decision = prepared_data["train_df"].iloc[idx], prepared_data[
-        "train_labels"].iloc[idx]
-    explaination = m.explain(dataset_key="train_df", decision=decision)
-    print(explaination['BreastCancer'])

@@ -1,4 +1,6 @@
 import logging
+import matplotlib.pyplot as plt
+from collections import defaultdict
 from .lime_model_explainer import LIMEModelExplainer
 from .enums import Constituency, Aspect
 from .explainer import Explainer
@@ -28,7 +30,6 @@ class Explainable:
                                    **kwargs):
         model_function_output = explainable_decorator.model_function(
             explainable_decorator.model_instance, *args, **kwargs)
-        # change __model_describe_artifacts to __describe_artifacts
         if not hasattr(explainable_decorator.model_instance,
                        '_Explainable__explain_artifacts'):
             explainable_decorator.model_instance.__explain_artifacts = {}
@@ -73,21 +74,14 @@ class Explainable:
             Returns:
                 out : Specific decision explanation (e.g., SHAP or LIME)
         """
-
-        # self.__explain_artifacts['model_explainer']
         self._collect_decision_artifacts(decision)
         self.__explain_artifacts['model_explainer'] = LIMEModelExplainer(
             decision[0],
             self.__explain_artifacts[self.model_name]
             ['base_model'],  # to make explicit dataset_name & model_name are the same
             self.__explain_artifacts['prep']['function_output'][dataset_key])
-        # self._generate_decision_report(dataset_key, decision, constituent,
-        #                                aspect)
+        self._generate_decision_report(dataset_key, decision)
         return self.__explain_artifacts
-
-    def _generate_decision_report(self, dataset_key, decision, constituent,
-                                  aspect):
-        pass
 
     def _collect_model_artifacts(self, model_instance, model_function_output):
         model_instance.__explain_artifacts[model_instance.model_name] = {
@@ -121,7 +115,7 @@ class Explainable:
 
     def _collect_prep_artifacts(self, model_instance, model_function_name,
                                 model_function_output, *args):
-        print(model_function_name)
+
         model_instance.__explain_artifacts[model_function_name] = {
             "function_input": args,
             "function_output": model_function_output
@@ -149,3 +143,82 @@ class Explainable:
             "function_input": decision[0],
             "function_output": decision[1]
         }
+
+    def _get_label_column_data(self, dataset_key):
+        label_column = self.__explain_artifacts["dataset"]["label_column"]
+        data = self.__explain_artifacts['load_data']['function_output']
+        return label_column, data
+
+    def _generate_categorical_stats(self):
+        pass
+
+    def _compute_dist(self, data, factor, factor_val, label, pred):
+        strata = data[(data[factor] == factor_val)][label]
+        _pred = sum([1 for s in strata if s == pred])
+        _all_sum = strata.shape[0]
+        return '%.2f' % ((_pred / (_pred + _all_sum)) * 100)
+
+    def _generate_decision_report(self, dataset_key, decision):
+        dataset_name = self.__explain_artifacts["dataset"]["name"]
+        print("******* {} decision {} *******".format(dataset_name,
+                                                      decision[1]))
+        print('\n******* Factors considered when making the Decision *******')
+
+        tmp_factors = [
+            k for k in
+            self.__explain_artifacts['model_explainer'].positive.keys()
+        ]
+        tmp_factors.extend([
+            k for k in
+            self.__explain_artifacts['model_explainer'].negative.keys()
+        ])
+
+        print('\n    {}   '.format(tmp_factors))
+
+        print(
+            '\n******* Factors that had a Positive Effect on the Decision  *******'
+        )
+
+        for k, v in self.__explain_artifacts['model_explainer'].positive.items(
+        ):
+            print('\n   {} contributed {}%'.format(k, v[0]))
+
+        print(
+            '\n******* Factors that had a Negative Effect on the Decision  *******'
+        )
+
+        label_column, data = self._get_label_column_data(dataset_key)
+
+        for k, v in self.__explain_artifacts['model_explainer'].negative.items(
+        ):
+            print('\n   `{}` contributed {}%'.format(k, v[0]))
+            current_val = set([int(v[1])])
+            if v[2][0] == 'categorical':
+                unique_vals = set([int(uv)
+                                   for uv in data[k].unique()]) - current_val
+                print('\n Decision Factor `{}` had value `{}`'.format(k, v[1]))
+
+                print(' A total of {}% of decisions were favorable!'.format(
+                    self._compute_dist(data, k, v[1], label_column,
+                                       decision[1])))
+
+                for unique_val in unique_vals:
+                    print(
+                        ' A total of {}% of decisions were favorable!'.format(
+                            self._compute_dist(data, k, unique_val,
+                                               label_column, decision[1])))
+
+                # percentage = abs(
+                #     ((data[data[k] == v[1]].shape[0]) / data.shape[0]) * 100)
+                # plt.subplots(len(current_val),)
+                # _tmp = plt.hist(data[(data[k] == v[1])][label_column], bins=5)
+                # plt.show()
+
+                # for uv in unique_vals:
+                #     print(uv)
+                #     print(data[data[k] == uv].head(1))
+                # print(v[1])
+                # print(unique_vals, current_val)
+
+            else:
+                pass

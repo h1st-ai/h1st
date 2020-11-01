@@ -17,8 +17,6 @@ class WineQuality(h1.MLModel):
 
         self.label_column = "Quality"
         self.base_model = self._build_base_model()
-        self.metrics = None
-        self.features = None
         self.test_size = 0.2
 
     # @audit
@@ -28,8 +26,9 @@ class WineQuality(h1.MLModel):
         filename = os.path.join(path, "../data/wine_quality.csv")
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
-        # self.load_data.input_data = df
-
+        for old_name in df.columns:
+            df = df.rename(columns={old_name: old_name.replace(" ", "_")},
+                           inplace=False)
         return df.reset_index(drop=True)
 
     # def explore_data(self, data):
@@ -48,7 +47,6 @@ class WineQuality(h1.MLModel):
         """
         X = loaded_data.drop("quality", axis=1)
         Y = loaded_data["quality"]
-        self.features = list(X.columns)
         X_train, X_test, Y_train, Y_test = train_test_split(
             X, Y, test_size=self.test_size)
         return {
@@ -75,32 +73,16 @@ class WineQuality(h1.MLModel):
     def evaluate(self, data):
         X_test, y_true = data["test_df"], data["test_labels"]
         y_pred = self.base_model.predict(X_test)
-        self.metrics = {
-            "mape": self._mean_absolute_percentage_error(y_true, y_pred)
-        }
-        return self.metrics
+        return {"mape": self._mean_absolute_percentage_error(y_true, y_pred)}
+
+    def predict(self, input_data):
+        """
+        :params data: data for prediction
+        :returns: prediction result as a dictionary
+        """
+        return self.base_model.predict(np.expand_dims(input_data, axis=0))[0]
 
     def _build_base_model(self):
         return RandomForestRegressor(max_depth=6,
                                      random_state=0,
                                      n_estimators=10)
-
-
-if __name__ == "__main__":
-    m = WineQuality()
-
-    dataset = m.load_data()
-
-    prepared_data = m.prep(dataset)
-
-    m.train(prepared_data)
-    m.evaluate(prepared_data)
-    # describer = m.describe(dataset_key='train_df')
-
-    # print(describer)
-
-    idx = 4
-    decision = prepared_data["train_df"].iloc[idx], prepared_data[
-        "train_labels"].iloc[idx]
-    explaination = m.explain(dataset_key="train_df", decision=decision)
-    print(explaination['WineQuality'])
