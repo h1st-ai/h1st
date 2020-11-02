@@ -1,11 +1,10 @@
 from datetime import datetime
 import json
-import os    
-
-import h1st
+import os
 
 import ConfigSpace as CS
 from filelock import FileLock
+import ray
 from ray import tune
 from ray.tune.schedulers import AsyncHyperBandScheduler
 from ray.tune.schedulers.hb_bohb import HyperBandForBOHB
@@ -13,62 +12,71 @@ from ray.tune.suggest import ConcurrencyLimiter
 from ray.tune.suggest.bayesopt import BayesOptSearch
 from ray.tune.suggest.bohb import TuneBOHB
 
+import h1st
+
 class HyperParameterTuner:
     def run(
         self,
         model_class,
         parameters,
-        target_metrics,
+        target_metric,
         options,
         search_algorithm="BOHB",
         name="experiment_1"):
 
-        h1st_model_trainable = self.create_h1st_model_trainable(model_class, parameters)
+        ray.init(ignore_reinit_error=True)
+
+        h1st_model_trainable = self.create_h1st_model_trainable(model_class, parameters, target_metric)
         config_space = self.get_config_space(parameters, search_algorithm)
-        metric_mode = self.get_metric_n_mode(target_metrics)
+        mode = self.get_mode(target_metric)
         algo, scheduler = self.get_search_algorithm(
-            search_algorithm, config_space, metric_mode, options.get('max_concurrent', 4))
+            # TODO - max_concurrent
+            # 1. Default should be the number of cpu
+            # 2. cannot be bigger than num_samples
+            search_algorithm, config_space, target_metric, mode, options.get('max_concurrent', 4))
 
         analysis = tune.run(
             h1st_model_trainable,
             config=config_space if search_algorithm == "BO" else None,
-            metric=metric_mode[0],
-            mode=metric_mode[1],
+            metric=target_metric,
+            mode=mode,
             search_alg=algo,
             scheduler=scheduler,
-            stop=options.get('stopping_criteria', {'training_iteration': 5}),
+            stop=options.get('stopping_criteria', {'training_iteration': 10}),
             verbose=1,
             num_samples=options.get('num_samples', 20),
             name=name,
         )
+        ray.shutdown()
         stats = analysis.stats()
         secs = stats["timestamp"] - stats["start_time"]
         print(f"took {secs:7.2f} seconds ({secs/3600.0:3.0f} hours {(secs/60.0)%60:2.2f} minutes)")
+        print("best config: ", analysis.get_best_config(metric=target_metric, mode=mode))
 
-        cols = ['model_version', metric_mode[0], 'training_iteration'] \
+        cols = ['model_version', target_metric, 'training_iteration'] \
                + [f'config/{param["name"]}' for param in parameters]
         analysis = analysis.dataframe()[cols].sort_values(
-            metric_mode[0], ascending=False if metric_mode[1]=='max' else True)
+            target_metric, ascending=False if mode=='max' else True)
         return analysis
 
-    def get_metric_n_mode(self, target_metrics):
-        metric_mode = (None, None)
-        if target_metrics == "accuracy":
-            metric_mode = ("mean_accuracy", "max")
-        elif target_metrics == "loss":
-            metric_mode = ("mean_loss", "min")
+    def get_mode(self, target_metric):
+        mode = None
+        if target_metric == "accuracy":
+            mode = "max"
+        elif target_metric == "loss":
+            mode = "min"
         else:
-            raise Exception(target_metrics, "is not a supported metric")
-        return metric_mode
+            raise Exception(target_metric, "is not a supported metric")
+        return mode
 
     # def get_scheduler(self, scheduler):
     #     scheduler = AsyncHyperBandScheduler()
     #     return scheduler
 
     def get_search_algorithm(
-        self, search_algorithm, config_space, metric_mode, max_concurrent):
+        self, search_algorithm, config_space, metric, mode, max_concurrent):
         if search_algorithm == "BO":
-            algo = BayesOptSearch(   
+            algo = BayesOptSearch(
                 utility_kwargs={
                 "kind": "ucb",
                 "kappa": 2.5,
@@ -77,7 +85,7 @@ class HyperParameterTuner:
             algo = ConcurrencyLimiter(algo, max_concurrent=max_concurrent)
             scheduler = AsyncHyperBandScheduler()
         elif search_algorithm == "BOHB":
-            experiment_metrics = dict(metric=metric_mode[0], mode=metric_mode[1])
+            experiment_metrics = dict(metric=metric, mode=mode)
             algo = TuneBOHB(
                 config_space, max_concurrent=max_concurrent, **experiment_metrics)
             scheduler = HyperBandForBOHB(
@@ -106,9 +114,9 @@ class HyperParameterTuner:
             if (min_ is not None) and (max_ is not None):
                 config_space[name_] = tune.uniform(min_, max_)
             elif len(choice_) != 0:
-                raise Exception("bayesian optimization doesn't support categorical input in", name_)
+                raise ValueError("bayesian optimization doesn't support categorical input in", name_)
             else:
-                raise Exception("value of", param, "was not provided")
+                raise ValueError("value of", param, "was not provided")
         return config_space
 
     def get_config_space_bohb(self, parameters):
@@ -131,10 +139,10 @@ class HyperParameterTuner:
                 config_space.add_hyperparameter(
                     CS.CategoricalHyperparameter(name_, choices=choice_))
             else:
-                raise Exception("value of", name_, "was not provided.")
+                raise ValueError("value of", name_, "was not provided.")
         return config_space
 
-    def create_h1st_model_trainable(self, model_class, parameters):
+    def create_h1st_model_trainable(self, model_class, parameters, target_metric):
         class H1stModelTrainable(tune.Trainable):
             def setup(self, config):
                 h1st.init()
@@ -169,10 +177,11 @@ class HyperParameterTuner:
                 self.timestep += 1
                 self.h1_ml_model.train(self.prepared_data)
                 self.h1_ml_model.evaluate(self.prepared_data)
-                acc = self.h1_ml_model.metrics["accuracy"]
-                model_version = f'{"|".join([f"{k[:3]}={v}" for k, v in self.kwargs.items()])}|{self.timestep}{datetime.now().strftime("%S%f")}'
+                metrics = self.h1_ml_model.metrics[target_metric]
+                # model_version = f'{"|".join([f"{k[:3]}={v}" for k, v in self.kwargs.items()])}|{self.timestep}{ datetime.now().strftime("%S%f")}'
+                model_version = f'{"|".join([f"{k[:3]}={v}" for k, v in self.kwargs.items()])}|{target_metric[:4]}={metrics:.4f}'
                 self.h1_ml_model.persist(model_version)
-                return {"mean_accuracy": acc, "model_version": model_version}
+                return {target_metric: metrics, "model_version": model_version}
 
             def save_checkpoint(self, checkpoint_dir):
                 path = os.path.join(checkpoint_dir, "checkpoint")
