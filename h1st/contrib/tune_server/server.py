@@ -35,9 +35,13 @@ def info():
 def get_models() -> dict:
     explorer = ModelExplorer(settings.project_root)
     models = explorer.discover_models()
+
+    # TODO: fill with last config
+
     return {
         "items": list(models.values())
     }
+
 
 @app.get("/api/tune")
 def list_tune(model_class: str) -> dict:
@@ -57,9 +61,15 @@ def get_tune(run_id: str, model_class: str) -> dict:
 
     tuner = TuneRunner()
     item = tuner.get_run(model_class, run_id, True)
+
+    if item.status == "success":
+        result = tuner.get_analysis_result(model_class, run_id)
+    else:
+        result = None
+
     return {
         "item": item,
-        "result": tuner.get_analysis_result(model_class, run_id),
+        "result": result,
     }
 
 @app.post('/api/tune/start')
