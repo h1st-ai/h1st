@@ -28,8 +28,7 @@ class TensorflowMLPClassifier(h1.MLModel):
 #             'accuracy': 'minimize'
 #         }
 #     }
-
-    def __init__(self, lr: float, units: int, n_layer, epochs=20):
+    def __init__(self, lr: float, units: int, n_layer: int, epochs: int = 20):
         self.lr = lr
         self.units = units
         self.n_layer = n_layer

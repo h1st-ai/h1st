@@ -24,7 +24,7 @@ class HyperParameterTuner:
         target_metric,
         options,
         search_algorithm="BOHB",
-        name="experiment_1",
+        name="my_experiment",
         verbose=1):
 
         ray.init(ignore_reinit_error=True)
@@ -38,6 +38,7 @@ class HyperParameterTuner:
             # 2. cannot be bigger than num_samples
             search_algorithm, config_space, target_metric, mode, options.get('max_concurrent', 4))
         print("search_algorithm:", search_algorithm)
+        num_samples = 1 if search_algorithm == "GRID" else options.get('num_samples', 20)
         analysis = tune.run(
             h1st_model_trainable,
             config=config_space2,
@@ -45,9 +46,9 @@ class HyperParameterTuner:
             mode=mode,
             search_alg=algo,
             scheduler=scheduler,
-            stop=options.get('stopping_criteria', {'training_iteration': 10}),
+            stop=options.get('stopping_criteria', {'training_iteration': 5}),
             verbose=verbose,
-            num_samples=options.get('num_samples', 20),
+            num_samples=num_samples,
             name=name,
         )
         ray.shutdown()
@@ -55,8 +56,9 @@ class HyperParameterTuner:
         secs = stats["timestamp"] - stats["start_time"]
         print(f"took {secs:7.2f} seconds ({secs/3600.0:3.0f} hours {(secs/60.0)%60:2.2f} minutes)")
         print("best config: ", analysis.get_best_config(metric=target_metric, mode=mode))
-        cols = ['model_version', target_metric, 'training_iteration'] \
-               + [f'config/{param["name"]}' for param in parameters]
+        cols = ['model_version', target_metric] \
+               + [f'config/{param["name"]}' for param in parameters] \
+               + ['training_iteration']
         analysis = analysis.dataframe()[cols].sort_values(
             target_metric, ascending=mode=='min')
         analysis.rename(
@@ -75,10 +77,6 @@ class HyperParameterTuner:
         else:
             raise Exception(target_metric, "is not a supported metric")
         return mode
-
-    # def get_scheduler(self, scheduler):
-    #     scheduler = AsyncHyperBandScheduler()
-    #     return scheduler
 
     def get_search_algorithm(
         self, search_algorithm, config_space, metric, mode, max_concurrent):
@@ -104,6 +102,9 @@ class HyperParameterTuner:
                 time_attr='training_iteration',
                 perturbation_interval=2,  # Every N time_attr units, "perturb" the parameters.
                 hyperparam_mutations=config_space)
+        elif search_algorithm == "GRID" or search_algorithm == "RANDOM":
+            algo = None
+            scheduler = None
         else:
             raise Exception(search_algorithm, "is not available yet")
         return algo, scheduler
@@ -120,18 +121,20 @@ class HyperParameterTuner:
             config_space2 = {}
             for param in parameters:
                 config_space2[param["name"]] = param["min"] if param["min"] is not None else param["choice"][0]
+        elif search_algorithm == "GRID":
+            config_space = self.get_config_space_grid(parameters)
+            config_space2 = config_space
+        elif search_algorithm == "RANDOM":
+            config_space = self.get_config_space_random(parameters)
+            config_space2 = config_space
         else:
-            raise Exception(search_algorithm, "is not available yet")            
+            raise Exception(search_algorithm, "is not available yet")
         return config_space, config_space2
 
     def get_config_space_pbt(self, parameters):
         config_space = {}
         for param in parameters:
-            name_ = param.get('name')
-            type_ = param.get('type')
-            min_ = param.get('min')
-            max_ = param.get('max')
-            choice_ = param.get('choice', [])
+            name_, type_, min_, max_, choice_ = self.get_values_from_dict(param)
             if (min_ is not None) and (type_ == "float"):
                 config_space[name_] = lambda: random.uniform(min_, max_)
             elif (min_ is not None) and (type_ == "int"):
@@ -145,26 +148,19 @@ class HyperParameterTuner:
     def get_config_space_bo(self, parameters):
         config_space = {}
         for param in parameters:
-            name_ = param.get('name')
-            min_ = param.get('min')
-            max_ = param.get('max')
-            choice_ = param.get('choice', [])
+            name_, type_, min_, max_, choice_ = self.get_values_from_dict(param)
             if (min_ is not None) and (max_ is not None):
                 config_space[name_] = tune.uniform(min_, max_)
             elif len(choice_) != 0:
-                raise ValueError("bayesian optimization doesn't support categorical input in", name_)
+                raise ValueError(name_, ": bayesian optimization doesn't support categorical input in")
             else:
-                raise ValueError("value of", param, "was not provided")
+                raise ValueError("value of", name_, "was not provided")
         return config_space
 
     def get_config_space_bohb(self, parameters):
         config_space = CS.ConfigurationSpace()
         for param in parameters:
-            name_ = param.get('name')
-            type_ = param.get('type')
-            min_ = param.get('min')
-            max_ = param.get('max')
-            choice_ = param.get('choice', [])
+            name_, type_, min_, max_, choice_ = self.get_values_from_dict(param)
             if (min_ is not None) and (type_ == "float"):
                 config_space.add_hyperparameter(
                     CS.UniformFloatHyperparameter(
@@ -179,6 +175,43 @@ class HyperParameterTuner:
             else:
                 raise ValueError("value of", name_, "was not provided.")
         return config_space
+
+    def get_config_space_grid(self, parameters):
+        config_space = {}
+        for param in parameters:
+            name_, _, min_, max_, choice_ = self.get_values_from_dict(param)
+            if len(choice_) != 0:
+                config_space[name_] = tune.grid_search(choice_)
+            elif (min_ is not None) or (max_ is not None):
+                raise ValueError(f"{name_}: grid search does not support range input")
+            else:
+                raise ValueError(f"value of {name_} was not provided")
+        return config_space
+
+    def get_config_space_random(self, parameters):
+        config_space = {}
+        for param in parameters:
+            name_, type_, min_, max_, choice_ = self.get_values_from_dict(param)
+            if (min_ is not None) and (max_ is not None):
+                if type_ == "float":
+                    config_space[name_] = tune.uniform(min_, max_)
+                elif type_ == "int":
+                    config_space[name_] = tune.randint(min_, max_)
+                else:
+                    raise TypeError(name_, ": range input cannot be string type")
+            elif len(choice_) != 0:
+                config_space[name_] = tune.choice(choice_)
+            else:
+                raise ValueError(f"value of {name_} was not provided")
+        return config_space
+
+    def get_values_from_dict(self, param):
+        name_ = param.get('name')
+        type_ = param.get('type')
+        min_ = param.get('min')
+        max_ = param.get('max')
+        choice_ = param.get('choice', [])
+        return (name_, type_, min_, max_, choice_)
 
     def create_h1st_model_trainable(self, model_class, parameters, target_metric):
         class H1stModelTrainable(tune.Trainable):
