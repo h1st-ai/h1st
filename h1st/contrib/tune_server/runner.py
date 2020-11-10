@@ -5,17 +5,15 @@ import importlib
 import multiprocessing
 import traceback
 import datetime
-from typing import List
+from typing import List, Optional
 
 import ulid
-import ray
-import h1st
 import psutil
-
-from h1st.model_repository import ModelRepository
-from h1st.model_repository.storage import create_storage
-from h1st.tuner import HyperParameterTuner
 from pydantic import BaseModel
+
+import h1st
+from h1st.model_repository import ModelRepository
+from h1st.tuner import HyperParameterTuner
 
 
 class TuneConfig(BaseModel):
@@ -31,6 +29,7 @@ class TuneRun(BaseModel):
     id: str = ""
     model_class: str = ""
     config: TuneConfig = None
+    best_result: dict = {}
     status: str = ""
     error: str = ""
     traceback: str = ""
@@ -45,7 +44,10 @@ class TuneRunner:
     def run(self, config: TuneConfig):
         storage = self.storage
         run_id = str(ulid.new())
-        tune_namespace = f"tune::{config.model_class}::{run_id}::"
+        tune_namespace = f"tune::runs::{run_id}::"
+
+        # remember default value
+        # storage.set_obj(f"tune::runs::default::config", config.dict())
 
         config.id = run_id
 
@@ -57,6 +59,11 @@ class TuneRunner:
         ])
 
         try:
+            storage.set_obj(tune_namespace + "status", {
+                "status": "running",
+                "model_class": config.model_class,
+            })
+
             process.daemon = True
             process.start()
 
@@ -69,15 +76,19 @@ class TuneRunner:
 
             storage.set_obj(tune_namespace + "status", {
                 "status": "error",
+                "model_class": config.model_class,
                 "error": str(ex),
                 "traceback": traceback.format_exc(),
-            })
+            }) 
 
-    def list_runs(self, model_class, offset=None, limit=None) -> List[TuneRun]:
+    def list_runs(self, offset=None, limit=None) -> List[TuneRun]:
+        """
+        Return runs by order descending time order
+        """
         storage = self.storage
-        tune_namespace = f"tune::{model_class}"
+        tune_namespace = "tune::runs"
 
-        keys = storage.list_keys(tune_namespace)
+        keys = storage.list_keys(tune_namespace)[::-1]
 
         if offset is not None:
             keys = keys[offset:]
@@ -87,44 +98,51 @@ class TuneRunner:
 
         result = []
         for k in keys:
-            run = self.get_run(model_class, k)
+            run = self.get_run(k)
             result.append(run)
 
         return result
 
-    def get_run(self, model_class, run_id, detail=False) -> TuneRun:
+    def get_default_config(self, model_class) -> TuneConfig:
+        try:
+            tune_namespace = f"tune::default::{model_class}"
+            result = self.storage.get(tune_namespace)
+            result = TuneConfig(**result)
+        except KeyError:
+            result = None
+
+        return result
+
+    def get_run(self, run_id, detail=False) -> TuneRun:
         storage = self.storage
-        tune_namespace = f"tune::{model_class}::{run_id}::"
+        tune_namespace = f"tune::runs::{run_id}::"
 
         run = TuneRun(
             id=run_id,
-            model_class=model_class,
             created_at=ulid.parse(run_id).timestamp().datetime,
         )
 
         if detail:
             run.config = storage.get_obj(f"{tune_namespace}config")
 
-        try:
-            status = storage.get_obj(f"{tune_namespace}status")
-            run.status = status['status']
-            run.error = status.get('error')
-            run.traceback = status.get('traceback')
-            run.finished_at = status.get('finished_at')
-        except KeyError:
-            # TODO: check pid
-            run.status = "running"
+        status = storage.get_obj(f"{tune_namespace}status")
+        run.status = status['status']
+        run.model_class = status.get('model_class')
+        run.error = status.get('error')
+        run.traceback = status.get('traceback')
+        run.finished_at = status.get('finished_at')
+        run.best_result = status.get('best_result')
 
         return run
 
-    def get_analysis_result(self, model_class, run_id):
+    def get_analysis_result(self, run_id):
         storage = self.storage
-        tune_namespace = f"tune::{model_class}::{run_id}::"
+        tune_namespace = f"tune::runs::{run_id}::"
         return storage.get_obj(tune_namespace + "result")
 
-    def wait(self, model_class, run_id):
+    def wait(self, run_id):
         storage = self.storage
-        tune_namespace = f"tune::{model_class}::{run_id}::"
+        tune_namespace = f"tune::runs::{run_id}::"
 
         pid = storage.get_obj(tune_namespace + "pid")
         process = psutil.Process(pid)
@@ -164,14 +182,19 @@ def _run(config_dict, tune_namespace):
         tuner = HyperParameterTuner()
         analysis = tuner.run(model_class, config.parameters, config.target_metric, config.options)
 
-        storage.set_obj(tune_namespace + "result", analysis.results)
+        records = analysis.to_dict('records')
+
+        storage.set_obj(tune_namespace + "result", records)
         storage.set_obj(tune_namespace + "status", {
             "status": "success",
+            "model_class": config.model_class,
             "finished_at": datetime.datetime.now(),
+            "best_result": records[0],
         })
     except Exception as ex:
         storage.set_obj(tune_namespace + "status", {
             "status": "error",
+            "model_class": config.model_class,
             "error": str(ex),
             "traceback": traceback.format_exc(),
             "finished_at": datetime.datetime.now(),
@@ -188,4 +211,4 @@ if __name__ == "__main__":
 
     run_id, _ = runner.run(tune_config)
     print(run_id)
-    runner.wait(tune_config.model_class, run_id)
+    runner.wait(run_id)

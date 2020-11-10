@@ -1,5 +1,7 @@
 import os
 
+from typing import Optional
+
 from fastapi import FastAPI, Body, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseSettings
@@ -26,6 +28,7 @@ if settings.allowed_cors_origins:
         allow_headers=["*"],
     )
 
+
 @app.get("/api")
 def info():
     return settings.dict()
@@ -44,26 +47,20 @@ def get_models() -> dict:
 
 
 @app.get("/api/tune")
-def list_tune(model_class: str) -> dict:
-    if not model_class:
-        raise HTTPException(status_code=400)
-
+def list_tune() -> dict:
     tuner = TuneRunner()
     return {
-        "items": [i.dict() for i in tuner.list_runs(model_class)]
+        "items": [i.dict() for i in tuner.list_runs()]
     }
 
 
 @app.get("/api/tune/{run_id}")
-def get_tune(run_id: str, model_class: str) -> dict:
-    if not model_class:
-        raise HTTPException(status_code=400)
-
+def get_tune(run_id: str) -> dict:
     tuner = TuneRunner()
-    item = tuner.get_run(model_class, run_id, True)
+    item = tuner.get_run(run_id, True)
 
     if item.status == "success":
-        result = tuner.get_analysis_result(model_class, run_id)
+        result = tuner.get_analysis_result(run_id)
     else:
         result = None
 
