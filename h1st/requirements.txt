@@ -13,9 +13,6 @@ bayesian-optimization <= 1.2.0  # for BO
 six >= 1.13.0
 tabulate
 
-# tune helper server
-pydantic == 1.7
-fastapi == 0.61.1
 psutil
 
 Click >= 7.1.1
