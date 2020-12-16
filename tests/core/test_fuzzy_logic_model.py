@@ -51,6 +51,9 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
             if_=vars['sensor2']['normal'], 
             then_=vars['problem1']['no'])   
 
+    def predict(self, input_data): 
+        return self.get_fuzzy_output(input_data)
+
 
 class FuzzyLogicModelTestCase(TestCase):
     def test_fuzzy_logic_model(self):
