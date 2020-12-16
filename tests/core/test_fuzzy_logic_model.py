@@ -2,13 +2,10 @@ import math
 from unittest import TestCase, skip
 
 import numpy as np
-import pandas as pd
-
 
 import h1st as h1
-from fuzzy_logic_model import FuzzyLogicModel
 
-class MyFuzzyLogicModel(FuzzyLogicModel):
+class MyFuzzyLogicModel(h1.FuzzyLogicModel):
     def add_variables(self):
         """
         Add fuzzy variables with membership functions
