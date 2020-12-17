@@ -1,6 +1,5 @@
 import math
 from unittest import TestCase, skip
-from typing import Any, NoReturn
 
 import numpy as np
 
@@ -12,25 +11,25 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
         Add fuzzy variables with membership functions
         """
         self.add_variable(
-            range_=np.arange(0, 10, 0.5), 
-            name='sensor1', 
+            range_=np.arange(0, 10, 0.5),
+            name='sensor1',
             membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                       ('abnormal', 'triangle', [8, 15, 15])], 
-            var_type='antecedent'
+                       ('abnormal', 'triangle', [8, 15, 15])],
+            type_='antecedent'
         )
         self.add_variable(
-            range_=np.arange(0, 10, 0.5), 
-            name='sensor2', 
+            range_=np.arange(0, 10, 0.5),
+            name='sensor2',
             membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                       ('abnormal', 'triangle', [8, 15, 15])], 
-            var_type='antecedent'
+                       ('abnormal', 'triangle', [8, 15, 15])],
+            type_='antecedent'
         )        
         self.add_variable(
-            range_=np.arange(0, 10, 0.5), 
-            name='problem1', 
+            range_=np.arange(0, 10, 0.5),
+            name='problem1',
             membership_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
-                       ('yes', 'trapezoid', [4, 6, 10, 10])], 
-            var_type='consequent'
+                       ('yes', 'trapezoid', [4, 6, 10, 10])],
+            type_='consequent'
         )
 
     def add_rules(self):
