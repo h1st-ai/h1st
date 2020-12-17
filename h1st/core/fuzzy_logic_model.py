@@ -1,14 +1,29 @@
+import logging
+from typing import Any, NoReturn
+
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
+from skfuzzy.control.term import Term
 
 from h1st.core.rule_based_model import RuleBasedModel
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class FuzzyLogicModel(RuleBasedModel):
+    """
+    This FuzzyLogicModel is one kind of rule-based model. You can encode your
+    rules in a fuzzy way using variables with membership functions.
+    Add variables and use those variables when defining rules.
+
+
+    """
     def __init__(self):
-        self.classes = []
+        self.consequents = []
         self.rules = {}
         self.variables = {}
-        self.mem_funcs = {
+        self.membership_funcs = {
             'triangle': fuzz.trimf,
             'trapezoid': fuzz.trapmf,
             'gaussian': fuzz.gaussmf,
@@ -17,90 +32,133 @@ class FuzzyLogicModel(RuleBasedModel):
         self.add_rules()
         self.build()
 
-    def add_variables(self):
+    def add_variables(self) -> NoReturn:
         """
-        Add fuzzy variables with membership functions
+        Add all of your variables with add_variable function.
 
-        Example: 
-        self.add_variable(
-            range_=np.arange(0, 10, 0.5), 
-            name='sensor1', 
-            mem_funcs=[('normal', 'gaussian', [3, 3.3]),
-                       ('abnormal', 'triangle', [8, 15, 15])], 
-            var_type='antecedent'
-        )
-        self.add_variable(
-            range_=np.arange(0, 10, 0.5), 
-            name='problem1', 
-            mem_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
-                       ('yes', 'trapezoid', [4, 6, 10, 10])], 
-            var_type='consequent'
-        )        
-        """        
-        pass
+        .. code-block:: python
+            :caption: example
 
-    def add_rules(self):
+            self.add_variable(
+                range_=np.arange(0, 10, 0.5),
+                name='sensor1',
+                membership_funcs=[('normal', 'gaussian', [3, 3.3]),
+                        ('abnormal', 'triangle', [8, 15, 15])],
+                var_type='antecedent'
+            )
+            self.add_variable(
+                range_=np.arange(0, 10, 0.5),
+                name='problem1',
+                membership_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
+                        ('yes', 'trapezoid', [4, 6, 10, 10])],
+                var_type='consequent'
+            )
         """
-        Add fuzzy rules here. Place antecedent type variables in 'if' statement 
-        and place consequent type varibles in 'then' statement.
 
-        Example:
-        self.add_rule(
-            'rule1', 
-            if_=self.variables['sensor1']['abnormal'], 
-            then_=self.variables['problem1']['yes'])
-        self.add_rule(
-            'rule2', 
-            if_=self.variables['sensor1']['normal'], 
-            then_=self.variables['problem1']['no'])            
-        """   
-        pass
+    def add_rules(self) -> NoReturn:
+        """
+        Add all of your rules with the add_rule function.
 
-    def build(self):
+        .. code-block:: python
+            :caption: example
+
+            self.add_rule(
+                'rule1',
+                if_=self.variables['sensor1']['abnormal'],
+                then_=self.variables['problem1']['yes'])
+            self.add_rule(
+                'rule2',
+                if_=self.variables['sensor1']['normal'],
+                then_=self.variables['problem1']['no'])
+        """
+
+    def build(self) -> NoReturn:
         ctrl_system = ctrl.ControlSystem(list(self.rules.values()))
         self.css = ctrl.ControlSystemSimulation(ctrl_system)
 
-    def add_rule(self, name, if_, then_):
+    def add_rule(self, name, if_: Term, then_: Term) -> NoReturn:
+        """
+        Add a fuzzy rule. Place antecedent type variables in 'if' statement
+        and place consequent type varibles in 'then' statement.
+
+        .. code-block:: python
+            :caption: example
+
+            self.add_rule(
+                'rule1',
+                if_=self.variables['sensor1']['abnormal'],
+                then_=self.variables['problem1']['yes'])
+        """
         rule = ctrl.Rule(if_, then_)
         self.rules[name] = rule
 
-    def remove_rule(self, name):
-        del self.rules[name]
+    def remove_rule(self, name: str) -> NoReturn:
+        if name in self.rules:
+            del self.rules[name]
 
-    def add_variable(self, range_, name, mem_funcs, var_type):
-        if var_type == 'antecedent':
+    def add_variable(self, range_: list, name: str, membership_funcs: list(tuple), type_: str) -> NoReturn:
+        """
+        Add a variable with their type and membership functions.
+
+        :param range_: the range of variable
+        :param name: the name of variable
+        :param membership_funcs: this is the list of tuple(membership_func_name, membership_func_type, membership_func_range)
+            There are three different kinds of membership_func_type that are supported and their membership_func_range should follow the following formats.
+            gaussian: [mean, sigma]
+            triangle: [a, b, c] where a <= b <= c
+            trapezoid: [a, b, c, d] where a <= b <= c <= d
+        :param type_: the varilable type should be either consequent or antecedent
+
+        .. code-block:: python
+            :caption: example
+
+            self.add_variable(
+                range_=np.arange(0, 10, 0.5),
+                name='service_quality',
+                membership_funcs=[('Bad', 'gaussian', [2, 1]),
+                                  ('Decent', 'triangle', [3, 5, 7]),
+                                  ('Great', 'trapezoid', [6, 8, 10, 10])],
+                var_type='antecedent'
+            )
+        """
+        if type_ == 'antecedent':
             variable = ctrl.Antecedent(range_, name)
-        elif var_type == 'consequent':
+        elif type_ == 'consequent':
             variable = ctrl.Consequent(range_, name)
-            if name not in self.classes:
-                self.classes.append(name)
+            if name not in self.consequents:
+                self.consequents.append(name)
         else:
-            print(f'{var_type} is not supported type')
+            logger.warning(f'{type_} is not supported type')
             return None
-        for mem_name, mem_func_type, mem_range in mem_funcs:
+
+        for mem_name, mem_func_type, mem_range in membership_funcs:
             if mem_func_type != 'gaussian':
-                variable[mem_name] = self.mem_funcs[mem_func_type](
+                variable[mem_name] = self.membership_funcs[mem_func_type](
                     variable.universe, mem_range)
             else:
-                variable[mem_name] = self.mem_funcs[mem_func_type](
+                variable[mem_name] = self.membership_funcs[mem_func_type](
                     variable.universe, mem_range[0], mem_range[1])
-            
+
         self.variables[name] = variable
 
-    def remove_variable(self, name):
-        del self.variables[name]    
-
-    def visualize_variable(self, name):
+    def remove_variable(self, name: str) -> NoReturn:
         if name in self.variables:
-            self.variables[name].view()
-        else:
-            print(f"{name} not found")
+            del self.variables[name]
 
-    def get_fuzzy_output(self, input_data: dict):
+    def visualize(self, variable_name: str) -> NoReturn:
+        if variable_name in self.variables:
+            self.variables[variable_name].view()
+        else:
+            logger.warning(f"{variable_name} not found")
+
+    def predict(self, input_data: dict) -> dict:
         for key, value in input_data.items():
             self.css.input[key] = value
+
         self.css.compute()
-        classification = {}
-        for cls in self.classes:
-            classification[cls] = round(self.css.output[cls], 5)
-        return classification
+
+        outputs = {}
+        for cls in self.consequents:
+            outputs[cls] = round(self.css.output[cls], 5)
+
+        return outputs

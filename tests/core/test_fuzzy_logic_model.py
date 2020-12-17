@@ -1,5 +1,6 @@
 import math
 from unittest import TestCase, skip
+from typing import Any, NoReturn
 
 import numpy as np
 
@@ -13,28 +14,28 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
         self.add_variable(
             range_=np.arange(0, 10, 0.5), 
             name='sensor1', 
-            mem_funcs=[('normal', 'gaussian', [3, 3.3]),
+            membership_funcs=[('normal', 'gaussian', [3, 3.3]),
                        ('abnormal', 'triangle', [8, 15, 15])], 
             var_type='antecedent'
         )
         self.add_variable(
             range_=np.arange(0, 10, 0.5), 
             name='sensor2', 
-            mem_funcs=[('normal', 'gaussian', [3, 3.3]),
+            membership_funcs=[('normal', 'gaussian', [3, 3.3]),
                        ('abnormal', 'triangle', [8, 15, 15])], 
             var_type='antecedent'
         )        
         self.add_variable(
             range_=np.arange(0, 10, 0.5), 
             name='problem1', 
-            mem_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
+            membership_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
                        ('yes', 'trapezoid', [4, 6, 10, 10])], 
             var_type='consequent'
         )
 
     def add_rules(self):
         """
-        Add fuzzy rules here. Place antecedent type variables in 'if' statement 
+        Add fuzzy rules here. Place antecedent type variables in 'if' statement
         and place consequent type varibles in 'then' statement.
         """
         vars = self.variables
@@ -44,15 +45,12 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
             then_=vars['problem1']['yes'])
         self.add_rule(
             'rule2', 
-            if_=vars['sensor1']['normal'], 
+            if_=vars['sensor1']['normal'],
             then_=vars['problem1']['no'])
         self.add_rule(
-            'rule2', 
-            if_=vars['sensor2']['normal'], 
-            then_=vars['problem1']['no'])   
-
-    def predict(self, input_data): 
-        return self.get_fuzzy_output(input_data)
+            'rule2',
+            if_=vars['sensor2']['normal'],
+            then_=vars['problem1']['no'])
 
 
 class FuzzyLogicModelTestCase(TestCase):
@@ -63,7 +61,6 @@ class FuzzyLogicModelTestCase(TestCase):
             'sensor2': 10
         }
         prediction = my_fuzzy_logic_model.predict(sensor_input)
-        print(prediction)
         assert prediction['problem1'] < 5
 
         sensor_input = {
@@ -71,7 +68,6 @@ class FuzzyLogicModelTestCase(TestCase):
             'sensor2': 15
         }
         prediction = my_fuzzy_logic_model.predict(sensor_input)
-        print(prediction)
         assert prediction['problem1'] < 5        
 
         sensor_input = {
@@ -79,7 +75,6 @@ class FuzzyLogicModelTestCase(TestCase):
             'sensor2': 5
         }
         prediction = my_fuzzy_logic_model.predict(sensor_input)
-        print(prediction)
         assert prediction['problem1'] < 5
 
         sensor_input = {
@@ -87,5 +82,15 @@ class FuzzyLogicModelTestCase(TestCase):
             'sensor2': 15
         }
         prediction = my_fuzzy_logic_model.predict(sensor_input)
-        print(prediction)
-        assert prediction['problem1'] > 5        
+        assert prediction['problem1'] > 5
+
+    # def test_save_load(self):
+    #     my_fuzzy_logic_model = MyFuzzyLogicModel()
+    #     my_fuzzy_logic_model.persist('test_model')
+    #     my_fuzzy_logic_model.load('test_model')
+    #     sensor_input = {
+    #         'sensor1': 10,
+    #         'sensor2': 15
+    #     }
+    #     prediction = my_fuzzy_logic_model.predict(sensor_input)
+    #     assert prediction['problem1'] > 5
