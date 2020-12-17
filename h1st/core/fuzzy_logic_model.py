@@ -23,7 +23,7 @@ class FuzzyLogicModel(RuleBasedModel):
         self.consequents = []
         self.rules = {}
         self.variables = {}
-        self.membership_funcs = {
+        self.membership = {
             'triangle': fuzz.trimf,
             'trapezoid': fuzz.trapmf,
             'gaussian': fuzz.gaussmf,
@@ -44,14 +44,14 @@ class FuzzyLogicModel(RuleBasedModel):
                 name='sensor1',
                 membership_funcs=[('normal', 'gaussian', [3, 3.3]),
                         ('abnormal', 'triangle', [8, 15, 15])],
-                var_type='antecedent'
+                type_='antecedent'
             )
             self.add_variable(
                 range_=np.arange(0, 10, 0.5),
                 name='problem1',
                 membership_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
                         ('yes', 'trapezoid', [4, 6, 10, 10])],
-                var_type='consequent'
+                type_='consequent'
             )
         """
 
@@ -94,9 +94,9 @@ class FuzzyLogicModel(RuleBasedModel):
 
     def remove_rule(self, name: str) -> NoReturn:
         if name in self.rules:
-            del self.rules[name]
+            del self.rules[name]           
 
-    def add_variable(self, range_: list, name: str, membership_funcs: list(tuple), type_: str) -> NoReturn:
+    def add_variable(self, range_: list, name: str, membership_funcs: list, type_: str) -> NoReturn:
         """
         Add a variable with their type and membership functions.
 
@@ -118,9 +118,10 @@ class FuzzyLogicModel(RuleBasedModel):
                 membership_funcs=[('Bad', 'gaussian', [2, 1]),
                                   ('Decent', 'triangle', [3, 5, 7]),
                                   ('Great', 'trapezoid', [6, 8, 10, 10])],
-                var_type='antecedent'
+                type_='antecedent'
             )
         """
+        
         if type_ == 'antecedent':
             variable = ctrl.Antecedent(range_, name)
         elif type_ == 'consequent':
@@ -130,14 +131,14 @@ class FuzzyLogicModel(RuleBasedModel):
         else:
             logger.warning(f'{type_} is not supported type')
             return None
-
-        for mem_name, mem_func_type, mem_range in membership_funcs:
+        
+        for mem_func_name, mem_func_type, mem_func_range in membership_funcs:
             if mem_func_type != 'gaussian':
-                variable[mem_name] = self.membership_funcs[mem_func_type](
-                    variable.universe, mem_range)
+                variable[mem_func_name] = self.membership[mem_func_type](
+                    variable.universe, mem_func_range)
             else:
-                variable[mem_name] = self.membership_funcs[mem_func_type](
-                    variable.universe, mem_range[0], mem_range[1])
+                variable[mem_func_name] = self.membership[mem_func_type](
+                    variable.universe, mem_func_range[0], mem_func_range[1])
 
         self.variables[name] = variable
 

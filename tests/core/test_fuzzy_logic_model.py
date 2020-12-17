@@ -14,21 +14,21 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
             range_=np.arange(0, 10, 0.5),
             name='sensor1',
             membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                       ('abnormal', 'triangle', [8, 15, 15])],
+                              ('abnormal', 'triangle', [8, 15, 15])],
             type_='antecedent'
         )
         self.add_variable(
             range_=np.arange(0, 10, 0.5),
             name='sensor2',
             membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                       ('abnormal', 'triangle', [8, 15, 15])],
+                              ('abnormal', 'triangle', [8, 15, 15])],
             type_='antecedent'
         )        
         self.add_variable(
             range_=np.arange(0, 10, 0.5),
             name='problem1',
             membership_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
-                       ('yes', 'trapezoid', [4, 6, 10, 10])],
+                              ('yes', 'trapezoid', [4, 6, 10, 10])],
             type_='consequent'
         )
 
@@ -39,11 +39,11 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
         """
         vars = self.variables
         self.add_rule(
-            'rule1', 
+            'rule1',
             if_=vars['sensor1']['abnormal'] & vars['sensor2']['abnormal'], 
             then_=vars['problem1']['yes'])
         self.add_rule(
-            'rule2', 
+            'rule2',
             if_=vars['sensor1']['normal'],
             then_=vars['problem1']['no'])
         self.add_rule(
