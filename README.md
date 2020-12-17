@@ -1,7 +1,3 @@
-#### [Get a FREE premium T-shirt](https://bit.ly/free-tshirt-for-h1st) and celebrate the launch of H1st AI! :tada:
-<img src="https://h1st-static.s3.amazonaws.com/H1st-logo.png" alt="H1st" width="100"/>
-
-
 ## Join the Human-First AI revolution
 _“We humans have .. insight that can then be mixed with powerful AI .. to help move society forward. Second, we also have to build trust directly into our technology .. And third, all of the technology we build must be inclusive and respectful to everyone.”_
 <br/>— Satya Nadella, Microsoft CEO
