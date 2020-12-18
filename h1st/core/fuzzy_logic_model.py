@@ -131,7 +131,7 @@ class FuzzyLogicModel(RuleBasedModel):
         else:
             logger.warning(f'{type_} is not supported type')
             return None
-        
+
         for mem_func_name, mem_func_type, mem_func_range in membership_funcs:
             if mem_func_type != 'gaussian':
                 variable[mem_func_name] = self.membership[mem_func_type](

@@ -113,7 +113,7 @@ class ModelSerDe:
             else:
                 logger.error('.base_model was not assigned.')
 
-        elif ~isinstance(model, RuleBasedModel):
+        elif not isinstance(model, RuleBasedModel):
             pass
         elif hasattr(model, 'base_model'):            
             logger.warning('Your .base_model will not be persisted. If you want to persist your .base_model, \
