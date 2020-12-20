@@ -11,7 +11,7 @@ def __read_requirement(type=None):
 
 
 def __read_version():
-    return '2020.8'
+    return '2020.12'
 
 
 with open(os.path.join(os.path.dirname(__file__), '.', 'README.md'), 'r', encoding='utf8') as f:
