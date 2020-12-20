@@ -23,6 +23,7 @@ setup(
     version=__read_version(),
     author='Arimo',
     author_email='admin@arimo.com',
+    namespace_packages=['h1st'],
     packages=find_namespace_packages(include=['h1st.*']),
     include_package_data=True,
     zip_safe=False,
