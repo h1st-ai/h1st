@@ -1,6 +1,5 @@
 import os
-
-from setuptools import setup, find_packages
+from setuptools import find_namespace_packages, setup
 from setuptools.command.install import install
 
 
@@ -24,7 +23,7 @@ setup(
     version=__read_version(),
     author='Arimo',
     author_email='admin@arimo.com',
-    packages=find_packages(exclude=("tests", "*.pyc")),
+    packages=find_namespace_packages(include=['h1st.*']),
     include_package_data=True,
     zip_safe=False,
     url='https://h1st.ai',
