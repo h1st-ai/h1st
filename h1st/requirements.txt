@@ -3,7 +3,7 @@ CloudPickle >= 1.6.0
 NumPy >= 1.19.4
 Pandas >= 1.1.5
 PyArrow >= 2.0.0
-Ray >= 1.0.0
+Ray >= 1.0.1
 S3FS >= 0.4.2, < 0.5
 
 
