@@ -29,15 +29,33 @@ class StackEnsemble(Ensemble):
         Predicts all sub models then merge input raw data with predictions for ensembler's training or prediction
         :param X: raw input data
         """
+        if isinstance(X, list):
+            predictions = []
+            for x in X:
+                pred_temp = []
+                for m in self._sub_models:
+                    pred = m.predict({self._submodel_predict_input_key: x})
+                    if self._submodel_predict_output_key not in pred:
+                        pred[self._submodel_predict_output_key] = np.ones((1,3))
+                    pred_temp.append(pred[self._submodel_predict_output_key])
+                predictions.append(np.hstack(pred_temp))
+            return np.vstack(predictions)
+        else:
+            pred_temp = []
+            for m in self._sub_models:
+                pred = m.predict({self._submodel_predict_input_key: X})
+                if self._submodel_predict_output_key not in pred:
+                    pred[self._submodel_predict_output_key] = np.ones((1,3))
+                pred_temp.append(pred[self._submodel_predict_output_key])
+            return np.hstack(pred_temp)
+        # # Feed input_data to each sub-model and get predictions
+        # predictions = [
+        #     m.predict({self._submodel_predict_input_key: X})[self._submodel_predict_output_key]
+        #     for m in self._sub_models
+        # ]
 
-        # Feed input_data to each sub-model and get predictions
-        predictions = [
-            m.predict({self._submodel_predict_input_key: X})[self._submodel_predict_output_key]
-            for m in self._sub_models
-        ]
-
-        # Combine raw_data and predictions
-        return np.hstack([X] + predictions)
+        # # Combine raw_data and predictions
+        # return np.hstack(predictions)
 
     def train(self, prepared_data: Dict):
         """
@@ -52,7 +70,6 @@ class StackEnsemble(Ensemble):
             }
         """
         X_train, y_train = (prepared_data['X_train'], prepared_data['y_train'])
-
         X_train = self._preprocess(X_train)
         scaler = RobustScaler(quantile_range=(5.0, 95.0), with_centering=False)
         self.stats = scaler.fit(X_train)

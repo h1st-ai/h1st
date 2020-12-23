@@ -3,7 +3,7 @@ CloudPickle >= 1.6.0
 NumPy >= 1.19.4
 Pandas >= 1.1.5
 PyArrow >= 2.0.0
-Ray >= 1.0.1
+Ray[tune] >= 1.0.1
 S3FS >= 0.4.2, < 0.5
 
 
@@ -13,9 +13,14 @@ GraphViz >= 0.15
 
 # MACHINE LEARNING
 SciKit-Learn >= 0.23.2
-
 LIME >= 0.2.0.1
 SHAP >= 0.37.0
+
+# HYPER-PARAMETER TUNING
+ConfigSpace <= 0.4.16
+Hpbandster <= 0.7.4
+Bayesian-Optimization <= 1.2.0   # for BO
+Tabulate
 
 
 # FUZZY LOGIC
@@ -26,6 +31,7 @@ Scikit-Fuzzy >= 0.4.2
 IPython >= 7.19.0
 IPython-GenUtils >= 0.2.0
 
+
 # CLOUD
 # AWS
 Boto3 >= 1.16.40
@@ -34,4 +40,6 @@ Boto3 >= 1.16.40
 # Other
 Click >= 7.1.2
 Colored >= 1.4.2
+PSUtil
+Six >= 1.13.0
 ULID-Py >= 1.1.0

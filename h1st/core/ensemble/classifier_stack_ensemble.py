@@ -33,7 +33,7 @@ class ClassifierStackEnsemble(StackEnsemble):
             metrics = ['confusion_matrix', 'precision', 'recall', 'f1', 'support', 'accuracy']
 
         X_test, y_test = prepared_data['X_test'], prepared_data['y_test']
-        y_pred = self.predict({'X': X_test})['predictions']     
+        y_pred = self.predict({'X': X_test})['predictions']
         
         precision, recall, f1, support = precision_recall_fscore_support(y_test, y_pred)
 

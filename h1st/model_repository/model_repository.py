@@ -336,7 +336,7 @@ class ModelRepository:
         :param ref: target model
         :returns: Model repository instance
         """
-        if not hasattr(cls, 'MODEL_REPO'):
+        if not hasattr(cls, 'MODEL_REPO'):   # global ModelRepository.MODEL_REPO
             repo_path = None
             if ref is not None:
                 # root module

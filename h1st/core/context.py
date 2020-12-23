@@ -39,7 +39,8 @@ def discover_h1st_project(cwd=None) -> tuple:
 
     while cur != cur.parent:
         # detect the root of the H1ST project structure
-        if (cur / "config.py").exists() and (cur / "graph.py").exists():
+        # some project does not have graph.py yet, so we only look for config file for now
+        if (cur / "config.py").exists():
             last_is_module = True
             module_path = str(cur)
         elif last_is_module:
