@@ -79,6 +79,7 @@ class ModelSerDe:
         :param path: path to save models to
         """
         from h1st.core import MLModel
+        from h1st.core.rule_based_model import RuleBasedModel
 
         meta_info = {}
 
@@ -112,7 +113,9 @@ class ModelSerDe:
             else:
                 logger.error('.base_model was not assigned.')
 
-        elif hasattr(model, 'base_model'):
+        elif not isinstance(model, RuleBasedModel):
+            pass
+        elif hasattr(model, 'base_model'):            
             logger.warning('Your .base_model will not be persisted. If you want to persist your .base_model, \
                             must inherit from h1st.MLModel instead of h1st.Model.')
 
