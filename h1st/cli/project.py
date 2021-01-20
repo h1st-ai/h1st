@@ -192,7 +192,7 @@ def _render_init_graph_class(prefix, model_package):
 
 
 def _render_init_service_class(prefix, model_package):
-    return _render_template("graph", {
+    return _render_template("service", {
         "SERVICE_CLASS": f"{prefix}Service",
         "GRAPH_CLASS": f"{prefix}Graph",
         "MODEL_PACKAGE": model_package
