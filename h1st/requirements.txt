@@ -1,30 +1,30 @@
 # DATA MANAGEMENT & PROCESSING
 CloudPickle >= 1.6.0
-NumPy >= 1.19.4
-Pandas >= 1.1.5
+NumPy >= 1.19.5
+Pandas >= 1.2.1
 PyArrow >= 2.0.0
-Ray[tune] >= 1.0.1
+Ray[tune] >= 1.1.0
 S3FS >= 0.4.2, < 0.5
 
 
 # GRAPH PROCESSING
-GraphViz >= 0.15
+GraphViz >= 0.16
 
 
 # MACHINE LEARNING
-SciKit-Learn >= 0.23.2
+SciKit-Learn >= 0.24.1
 LIME >= 0.2.0.1
-SHAP >= 0.37.0
+SHAP >= 0.38.1
 
 # HYPER-PARAMETER TUNING
-ConfigSpace <= 0.4.16
-Hpbandster <= 0.7.4
-Bayesian-Optimization <= 1.2.0   # for BO
-Tabulate
+ConfigSpace >= 0.4.17
+Hpbandster >= 0.7.4
+Bayesian-Optimization >= 1.2.0   # for BO
+Tabulate >= 0.8.7
 
 
 # FUZZY LOGIC
-Scikit-Fuzzy >= 0.4.2
+SciKit-Fuzzy >= 0.4.2
 
 
 # IPython
@@ -34,12 +34,12 @@ IPython-GenUtils >= 0.2.0
 
 # CLOUD
 # AWS
-Boto3 >= 1.16.40
+Boto3 >= 1.16.57
 
 
 # Other
 Click >= 7.1.2
 Colored >= 1.4.2
-PSUtil
-Six >= 1.13.0
+PSUtil >= 5.8.0
+Six >= 1.15.0
 ULID-Py >= 1.1.0
