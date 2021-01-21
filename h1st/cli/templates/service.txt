@@ -17,8 +17,7 @@ class $$SERVICE_CLASS$$:
             # transform output
 
             return output
-        except Exception as ex:
+        except:
             return {
-                "success": False,
-                "message": ex
+                "success": False
             }
