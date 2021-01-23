@@ -218,7 +218,7 @@ class Action(Node):
     .. code-block:: python
         :caption: Add nodes for yes/no branch of a conditional node
 
-        import h1st as h1
+        import h1st.core as h1
 
         class MyGraph(h1.Graph)
             def __init__(self):
@@ -253,7 +253,7 @@ class Decision(Action):
     .. code-block:: python
         :caption: Graph with conditional node
 
-        import h1st as h1
+        import h1st.core as h1
 
         class MyGraph(h1.Graph)
             def __init__(self):
@@ -272,7 +272,7 @@ class Decision(Action):
     .. code-block:: python
         :caption: Graph with conditional node using custom result_field and decision_field
 
-        import h1st as h1
+        import h1st.core as h1
 
         class Model1(h1.Model):
             def predict(data):

@@ -3,7 +3,7 @@ The following is a boilerplate code that is provided by workbench.
 Please fill in each function with your own code.
 """
 
-import h1st as h1
+import h1st.core as h1
 import config
 
 class $$MODEL_CLASS$$(h1.MLModel):

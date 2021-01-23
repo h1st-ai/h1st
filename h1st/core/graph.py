@@ -70,7 +70,7 @@ class Graph(NodeContainable, Trustable):
         .. code-block:: python
             :caption: Cyber Security example to handle injection and replacement attacks
 
-            import h1st as h1
+            import h1st.core as h1
             from h1st import NodeContainable, Decision
 
             class MyGraph(h1.Graph):
@@ -128,7 +128,7 @@ class Graph(NodeContainable, Trustable):
         .. code-block:: python
             :caption: Example graph for Cyber Security and how to execute the graph
 
-            import h1st as h1
+            import h1st.core as h1
             from h1st import NodeContainable, Decision
 
             class MyGraph(h1.Graph):

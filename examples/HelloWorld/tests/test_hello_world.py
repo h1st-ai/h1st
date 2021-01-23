@@ -1,5 +1,5 @@
 import unittest
-import h1st as h1
+import h1st.core as h1
 
 from HelloWorld.rule_based_model import RuleBasedModel
 from HelloWorld.ml_model import MLModel
