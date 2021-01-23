@@ -41,5 +41,6 @@ Boto3 >= 1.16.57
 Click >= 7.1.2
 Colored >= 1.4.2
 PSUtil >= 5.8.0
+PyYAML >= 5.4.1
 Six >= 1.15.0
 ULID-Py >= 1.1.0
