@@ -1,0 +1,23 @@
+from $$MODEL_PACKAGE$$ import $$GRAPH_CLASS$$
+
+class $$SERVICE_CLASS$$:
+    def __init__(self):
+        self.graph = $$GRAPH_CLASS$$()
+
+    def __call__(self, request):
+        try:
+            payload = request.args.to_dict()
+
+            data = {k: json.loads(v) for k, v in payload.items()}
+
+            # transform input_data
+
+            output = self.graph.predict(data)
+
+            # transform output
+
+            return output
+        except:
+            return {
+                "success": False
+            }
