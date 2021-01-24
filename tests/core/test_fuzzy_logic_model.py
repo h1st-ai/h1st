@@ -3,7 +3,7 @@ from unittest import TestCase, skip
 
 import numpy as np
 
-import h1st as h1
+import h1st.core as h1
 
 class MyFuzzyLogicModel(h1.FuzzyLogicModel):
     def add_variables(self):

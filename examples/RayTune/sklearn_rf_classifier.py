@@ -9,7 +9,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
-import h1st as h1
+import h1st.core as h1
 from examples.Ensemble import config
 from examples.Ensemble.utils import prepare_train_test_data
 
