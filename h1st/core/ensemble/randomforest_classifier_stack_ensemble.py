@@ -74,7 +74,8 @@ class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):
 
     def __init__(self, sub_models: List[Model], **kwargs):
         super().__init__(
-            MultiOutputClassifier(RandomForestClassifier(n_jobs=-1, max_depth=4, random_state=42)),
+            # MultiOutputClassifier(RandomForestClassifier(n_jobs=-1, max_depth=4, random_state=42)),
+            RandomForestClassifier(n_jobs=-1, max_depth=4, random_state=42),
             sub_models,
             **kwargs
         )

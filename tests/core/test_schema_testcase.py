@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import patch
-from h1st import Graph, Action, Model
+from h1st.core import Graph, Action, Model
 from h1st.schema.testing import setup_schema_tests
 
 

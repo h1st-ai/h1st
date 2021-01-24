@@ -4,7 +4,7 @@ We demonstrate here how to wrap a ScikitLearn model within an h1.Model
 """
 
 from sklearn import svm, datasets, metrics
-import h1st as h1
+import h1st.core as h1
 
 
 class MLModel(h1.MLModel):

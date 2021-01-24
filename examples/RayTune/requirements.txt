@@ -1,0 +1,9 @@
+seaborn
+xlrd
+
+# for BOHB
+ConfigSpace
+hpbandster
+
+# for BO
+bayesian-optimization

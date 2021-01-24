@@ -1,6 +1,8 @@
 import os
+import pathlib
 from typing import Any, NoReturn
 import cloudpickle
+from distutils import dir_util
 from h1st.model_repository.storage.base import Storage
 
 
@@ -79,7 +81,25 @@ class LocalStorage(Storage):
         if os.path.exists(key):
             os.remove(key)
 
+    def list_keys(self, namespace="") -> list:
+        key = namespace.replace("/", "_").replace("..", "__").replace("::", "/")
+        if key:
+            path = self.storage_path + "/" + key
+        else:
+            path = self.storage_path
+
+        return list(sorted([p.name for p in pathlib.Path(path).glob('*')]))
+
+    def delete_namespace(self, namespace):
+        if not namespace:
+            return
+
+        key = namespace.replace("/", "_").replace("..", "__").replace("::", "/")
+        path = pathlib.Path(os.path.join(self.storage_path, key))
+        if path.exists() and path.is_dir():
+            dir_util.remove_tree(str(path))
+
     def _to_key(self, key):
         # TODO: make sure it is a safe name
-        key = key.replace("..", "__").replace("::", "/")
+        key = key.replace("/", "_").replace("..", "__").replace("::", "/")
         return f"{self.storage_path}/{key}"

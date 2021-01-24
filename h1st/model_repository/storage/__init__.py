@@ -16,3 +16,14 @@ read and write raw bytes or python objects It currently supports local disk and 
 
 from h1st.model_repository.storage.local import LocalStorage
 from h1st.model_repository.storage.s3 import S3Storage
+
+
+def create_storage(storage):
+    if isinstance(storage, str) and "s3://" in storage:
+        storage = storage.replace("s3://", "").strip("/") + "/"
+        bucket, prefix = storage.split("/", 1)
+        storage = S3Storage(bucket, prefix.strip("/"))
+    elif isinstance(storage, str):  # local folder
+        storage = LocalStorage(storage)
+
+    return storage

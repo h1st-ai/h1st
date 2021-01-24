@@ -2,7 +2,7 @@ import math
 import pandas as pd
 from unittest import TestCase, skip
 from sklearn.model_selection import train_test_split
-import h1st as h1
+import h1st.core as h1
 import examples.Ensemble.config as config
 from examples.Ensemble.sklearn_smv_classifier import SklearnSVMClassifier
 from examples.Ensemble.tensorflow_mlp_classifier import TensorflowMLPClassifier
