@@ -19,17 +19,12 @@ SHAP >= 0.38.1
 # HYPER-PARAMETER TUNING
 ConfigSpace >= 0.4.17
 Hpbandster >= 0.7.4
-Bayesian-Optimization >= 1.2.0   # for BO
+Bayesian-Optimization >= 1.2.0
 Tabulate >= 0.8.7
 
 
 # FUZZY LOGIC
 SciKit-Fuzzy >= 0.4.2
-
-
-# # IPython
-# IPython >= 7.19.0
-# IPython-GenUtils >= 0.2.0
 
 
 # CLOUD
