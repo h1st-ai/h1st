@@ -35,12 +35,12 @@ class StackEnsemble(Ensemble):
         else:
             return self._get_submodels_prediction(X)
 
-    def _get_submodel_prediction(self, X: Any) -> Any:
+    def _get_submodels_prediction(self, X: Any) -> Any:
         preds = []
         for m in self._sub_models:
             pred = m.predict({self._submodel_predict_input_key: X})
             output_key = pred.get(self._submodel_predict_output_key)
-            if output_key:
+            if output_key is not None:
                 preds.append(output_key)
         return np.hstack(preds)
 

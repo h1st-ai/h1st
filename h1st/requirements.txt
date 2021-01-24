@@ -3,7 +3,7 @@ CloudPickle >= 1.6.0
 NumPy >= 1.19.5
 Pandas >= 1.2.1
 PyArrow >= 2.0.0
-# Ray[tune] >= 1.1.0
+Ray[tune] >= 1.1.0
 S3FS >= 0.4.2, < 0.5
 
 
@@ -27,9 +27,9 @@ Tabulate >= 0.8.7
 SciKit-Fuzzy >= 0.4.2
 
 
-# IPython
-IPython >= 7.19.0
-IPython-GenUtils >= 0.2.0
+# # IPython
+# IPython >= 7.19.0
+# IPython-GenUtils >= 0.2.0
 
 
 # CLOUD
