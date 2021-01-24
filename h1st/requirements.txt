@@ -39,3 +39,7 @@ PSUtil >= 5.8.0
 PyYAML >= 5.4.1
 Six >= 1.15.0
 ULID-Py >= 1.1.0
+
+# required by shap
+ipython==7.16.1
+ipython-genutils==0.2.0
