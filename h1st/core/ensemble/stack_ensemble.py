@@ -30,32 +30,19 @@ class StackEnsemble(Ensemble):
         :param X: raw input data
         """
         if isinstance(X, list):
-            predictions = []
-            for x in X:
-                pred_temp = []
-                for m in self._sub_models:
-                    pred = m.predict({self._submodel_predict_input_key: x})
-                    if self._submodel_predict_output_key not in pred:
-                        pred[self._submodel_predict_output_key] = np.ones((1,3))
-                    pred_temp.append(pred[self._submodel_predict_output_key])
-                predictions.append(np.hstack(pred_temp))
+            predictions = [self._get_submodels_prediction(x) for x in X]
             return np.vstack(predictions)
         else:
-            pred_temp = []
-            for m in self._sub_models:
-                pred = m.predict({self._submodel_predict_input_key: X})
-                if self._submodel_predict_output_key not in pred:
-                    pred[self._submodel_predict_output_key] = np.ones((1,3))
-                pred_temp.append(pred[self._submodel_predict_output_key])
-            return np.hstack(pred_temp)
-        # # Feed input_data to each sub-model and get predictions
-        # predictions = [
-        #     m.predict({self._submodel_predict_input_key: X})[self._submodel_predict_output_key]
-        #     for m in self._sub_models
-        # ]
+            return self._get_submodels_prediction(X)
 
-        # # Combine raw_data and predictions
-        # return np.hstack(predictions)
+    def _get_submodels_prediction(self, X: Any) -> Any:
+        preds = []
+        for m in self._sub_models:
+            pred = m.predict({self._submodel_predict_input_key: X})
+            output_key = pred.get(self._submodel_predict_output_key)
+            if output_key is not None:
+                preds.append(output_key)
+        return np.hstack(preds)
 
     def train(self, prepared_data: Dict):
         """
