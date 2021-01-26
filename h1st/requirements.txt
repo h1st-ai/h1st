@@ -15,9 +15,9 @@ GraphViz >= 0.16
 SciKit-Learn >= 0.24.1
 LIME >= 0.2.0.1
 SHAP >= 0.38.1; python_version < '3.9'
-iPython >= 7.19.0
+iPython == 7.16.1
     # required by SHAP
-iPython-GenUtils >= 0.2.0
+iPython-GenUtils == 0.2.0
     # required by SHAP
 
 # HYPER-PARAMETER TUNING
