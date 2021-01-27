@@ -33,7 +33,7 @@ SciKit-Fuzzy >= 0.4.2
 
 # CLOUD
 # AWS
-Boto3 >= 1.16.59
+Boto3 >= 1.16.60
 
 
 # Other
