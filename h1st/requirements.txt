@@ -3,7 +3,7 @@ CloudPickle >= 1.6.0
 NumPy >= 1.19.5
 Pandas >= 1.2.1
 PyArrow >= 3.0.0
-Ray[tune] >= 1.1.0; python_version < '3.9'
+Ray[tune] >= 1.1.0; (python_version < '3.9') and (platform_machine != 'armv7l')
 S3FS >= 0.4.2, < 0.5
 
 
