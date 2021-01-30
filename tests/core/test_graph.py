@@ -1,7 +1,7 @@
 import math
 from unittest import TestCase, skip
 from h1st.core import NodeContainable, Decision
-import h1st as h1
+import h1st.core as h1
 
 class GraphTestCase(TestCase):
     def test_execution(self):

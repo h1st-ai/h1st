@@ -16,7 +16,7 @@ class MLModel(Model):
         .. code-block:: python
            :caption: Model Persistence and Loading Example
 
-           import h1st as h1
+           import h1st.core as h1
            from sklearn.datasets import load_iris
            from sklearn.linear_model import LogisticRegression
 

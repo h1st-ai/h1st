@@ -29,15 +29,20 @@ class StackEnsemble(Ensemble):
         Predicts all sub models then merge input raw data with predictions for ensembler's training or prediction
         :param X: raw input data
         """
+        if isinstance(X, list):
+            predictions = [self._get_submodels_prediction(x) for x in X]
+            return np.vstack(predictions)
+        else:
+            return self._get_submodels_prediction(X)
 
-        # Feed input_data to each sub-model and get predictions
-        predictions = [
-            m.predict({self._submodel_predict_input_key: X})[self._submodel_predict_output_key]
-            for m in self._sub_models
-        ]
-
-        # Combine raw_data and predictions
-        return np.hstack([X] + predictions)
+    def _get_submodels_prediction(self, X: Any) -> Any:
+        preds = []
+        for m in self._sub_models:
+            pred = m.predict({self._submodel_predict_input_key: X})
+            output_key = pred.get(self._submodel_predict_output_key)
+            if output_key is not None:
+                preds.append(output_key)
+        return np.hstack(preds)
 
     def train(self, prepared_data: Dict):
         """
@@ -52,7 +57,6 @@ class StackEnsemble(Ensemble):
             }
         """
         X_train, y_train = (prepared_data['X_train'], prepared_data['y_train'])
-
         X_train = self._preprocess(X_train)
         scaler = RobustScaler(quantile_range=(5.0, 95.0), with_centering=False)
         self.stats = scaler.fit(X_train)

@@ -1,7 +1,7 @@
 import pandas as pd
 from unittest import TestCase, skip
 from h1st.core import Graph, Decision, Action, NodeContainable, GraphException
-import h1st as h1
+import h1st.core as h1
 
 
 class DummyAction(h1.NodeContainable):

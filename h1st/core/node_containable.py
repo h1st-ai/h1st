@@ -10,7 +10,7 @@ class NodeContainable:
     .. code-block:: python
             :caption: Example of using NodeContainable
 
-            import h1st as h1
+            import h1st.core as h1
 
             class GenerateWindowEvents(h1.NodeContainable):
                 def call(self, command, inputs):
@@ -47,7 +47,7 @@ class NodeContainable:
         Will be invoked by a node when executing a graph.
 
         Subclass of NodeContainable may override the call() function:
-            import h1st as h1
+            import h1st.core as h1
 
             class MyClass(h1.NodeContainable)
                 def call(self, command, inputs):

@@ -44,7 +44,6 @@ class S3Storage(Storage):
         except FileNotFoundError as ex:
             raise KeyError(name) from ex
 
-
     def set_obj(self, name: str, value: Any) -> NoReturn:
         """
         Set key value to a python object

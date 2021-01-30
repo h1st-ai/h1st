@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler
-from sklearn import svm
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 import h1st.core as h1
@@ -16,9 +16,14 @@ from examples.Ensemble.utils import prepare_train_test_data
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class SklearnSVMClassifier(h1.MLModel):
-    def __init__(self):
-        self.base_model = svm.SVC()
+class SklearnRFClassifier(h1.MLModel):
+    def __init__(self, n_estimators, max_depth, criterion, min_samples_split):
+        self.base_model = RandomForestClassifier(
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            criterion=criterion,
+            min_samples_split=min_samples_split
+        )
     
     def load_data(self):
         df = pd.read_excel(config.DATA_PATH, header=1)

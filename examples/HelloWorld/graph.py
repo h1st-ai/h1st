@@ -3,7 +3,7 @@ This is an example of a very simple graph which prints hello for each even numbe
 using a conditional RuleBasedModel node and a HelloPrinter h1.Action.
 """
 
-import h1st as h1
+import h1st.core as h1
 from rule_based_model import RuleBasedModel
 
 class HelloPrinter(h1.Action):
