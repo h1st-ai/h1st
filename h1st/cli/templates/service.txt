@@ -1,4 +1,6 @@
-from $$MODEL_PACKAGE$$ import $$GRAPH_CLASS$$
+import json
+
+from $$GRAPH_PACKAGE$$ import $$GRAPH_CLASS$$
 
 class $$SERVICE_CLASS$$:
     def __init__(self):
