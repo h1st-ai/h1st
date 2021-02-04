@@ -1,6 +1,6 @@
 # DATA MANAGEMENT & PROCESSING
 CloudPickle >= 1.6.0
-NumPy >= 1.19.5
+NumPy >= 1.20.0
 Pandas >= 1.2.1
 PyArrow >= 3.0.0
 Ray[tune] >= 1.1.0; (python_version < '3.9') and (platform_machine != 'armv7l')
@@ -33,7 +33,7 @@ SciKit-Fuzzy >= 0.4.2
 
 # CLOUD
 # AWS
-Boto3 >= 1.16.60
+Boto3 >= 1.17.1
 
 
 # Other
