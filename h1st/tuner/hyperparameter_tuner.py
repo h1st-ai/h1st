@@ -16,6 +16,7 @@ from ray.tune.suggest.bayesopt import BayesOptSearch
 from ray.tune.suggest.bohb import TuneBOHB
 from ray.tune.schedulers import PopulationBasedTraining
 
+import h1st
 from h1st.core import MLModel
 
 logging.basicConfig(level=logging.INFO)
