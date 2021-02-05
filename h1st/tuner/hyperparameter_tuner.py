@@ -16,7 +16,7 @@ from ray.tune.suggest.bayesopt import BayesOptSearch
 from ray.tune.suggest.bohb import TuneBOHB
 from ray.tune.schedulers import PopulationBasedTraining
 
-import h1st
+from h1st.core import MLModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class HyperParameterTuner:
     def run(
         self,
-        model_class: typing.Type[h1st.MLModel],
+        model_class: typing.Type[MLModel],
         parameters: list,
         target_metric: str,
         options: dict,
