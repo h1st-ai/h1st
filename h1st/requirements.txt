@@ -1,9 +1,9 @@
 # DATA MANAGEMENT & PROCESSING
 CloudPickle >= 1.6.0
-NumPy >= 1.20.0
-Pandas >= 1.2.1
+NumPy >= 1.20.1
+Pandas >= 1.2.2
 PyArrow >= 3.0.0
-Ray[tune] >= 1.1.0; (python_version < '3.9') and (platform_machine != 'armv7l')
+Ray[tune] >= 1.2.0; (python_version < '3.9') and (platform_machine != 'armv7l')
 S3FS >= 0.4.2, < 0.5
 
 
