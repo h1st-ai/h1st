@@ -1,7 +1,7 @@
 # DATA MANAGEMENT & PROCESSING
 CloudPickle >= 1.6.0
-NumPy >= 1.20.1
-Pandas >= 1.2.2
+NumPy >= 1.20.2
+Pandas >= 1.2.3
 PyArrow >= 3.0.0
 Ray[tune] >= 1.2.0; (python_version < '3.9') and (platform_machine != 'armv7l')
 S3FS >= 0.4.2, < 0.5
@@ -14,10 +14,10 @@ GraphViz >= 0.16
 # MACHINE LEARNING
 SciKit-Learn >= 0.24.1
 LIME >= 0.2.0.1
-SHAP >= 0.38.1; python_version < '3.9'
-iPython == 7.16.1
+SHAP >= 0.39.0; python_version < '3.9'
+iPython
     # required by SHAP
-iPython-GenUtils == 0.2.0
+iPython-GenUtils
     # required by SHAP
 
 # HYPER-PARAMETER TUNING
@@ -33,7 +33,7 @@ SciKit-Fuzzy >= 0.4.2
 
 # CLOUD
 # AWS
-Boto3 >= 1.16, < 1.17
+Boto3
 
 
 # Other
