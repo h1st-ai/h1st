@@ -12,6 +12,7 @@ GraphViz >= 0.16
 
 
 # MACHINE LEARNING
+Auto-SKLearn >= 0.12.5
 SciKit-Learn >= 0.24.1
 LIME >= 0.2.0.1
 SHAP >= 0.39.0; python_version < '3.9'
