@@ -43,5 +43,4 @@ Colored >= 1.4.2
 PSUtil >= 5.8.0
 PyYAML
     # version range not specified to avoid conflict with AWSCLI
-Six
 ULID-Py >= 1.1.0
