@@ -1,7 +1,7 @@
 {
-    "PACKAGE": "H1ST",
-    "AUTHOR": "Arimo LLC",
-    "DESCRIPTION": "Human-First AI (H1ST)",
-    "VERSION": "0.0.0.dev0",
-    "URL": "https://arimo.com"
-  }
+  "PACKAGE": "H1st",
+  "AUTHOR": "Human-First AI (H1st)",
+  "DESCRIPTION": "Human-First AI (H1st)",
+  "VERSION": "2021.03",
+  "URL": "H1st.ai"
+}
