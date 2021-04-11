@@ -1,0 +1,4 @@
+Coverage >= 5.5
+Nose2 >= 0.10.0
+Tensorflow >= 2.4.1
+XlRd >= 2.0.1
