@@ -13,9 +13,9 @@ before_install:
   - chmod +x ./cc-test-reporter
 
 install:
-  - pip install --no-cache --upgrade pip
-  - pip install --no-cache -r h1st/requirements.txt
-  - pip install --no-cache -r h1st/requirements.dev.txt
+  - pip install --upgrade pip
+  - pip install -r h1st/requirements.txt
+  - pip install -r h1st/requirements.dev.txt
 
 before_script:
   - ./cc-test-reporter before-build
