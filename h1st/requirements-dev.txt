@@ -1,0 +1,7 @@
+Coverage >= 5.5
+# NBFormat >= 5.1.3
+Nose2 >= 0.10.0
+# PyLint >= 2.7.4
+Tensorflow >= 2.4.0
+# Seaborn >= 0.11.1
+# XlRd >= 2.0.1
