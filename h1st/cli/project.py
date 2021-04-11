@@ -112,13 +112,15 @@ def new_project(project_name, base_path):
         with open(graph_file, "w") as f:
             f.write(_render_init_graph_class(class_prefix, model_package))
 
+        graph_package = f"{project_name_snake_case}_graph"
+
         service_file = tmppath / f'{project_name_snake_case}_service.py'
         with open(service_file, "w") as f:
-            f.write(_render_init_service_class(class_prefix, model_package))
+            f.write(_render_init_service_class(class_prefix, graph_package))
 
         with open(test_folder / "test_schema.py", "w") as f:
             f.write(_render_template('schema_testcase', {
-                'GRAPH_PACKAGE': f'{project_name_snake_case}_graph',
+                'GRAPH_PACKAGE': graph_package,
                 'GRAPH_CLASS': f'{class_prefix}Graph'
             }))
 
@@ -191,11 +193,11 @@ def _render_init_graph_class(prefix, model_package):
     })
 
 
-def _render_init_service_class(prefix, model_package):
+def _render_init_service_class(prefix, graph_package):
     return _render_template("service", {
         "SERVICE_CLASS": f"{prefix}Service",
         "GRAPH_CLASS": f"{prefix}Graph",
-        "MODEL_PACKAGE": model_package
+        "GRAPH_PACKAGE": graph_package
     })
 
 
