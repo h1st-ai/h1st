@@ -1,10 +1,8 @@
 # DATA MANAGEMENT & PROCESSING
-CloudPickle >= 1.6.0
 NumPy >= 1.20.2
 Pandas >= 1.2.3
 PyArrow >= 3.0.0
 Ray[tune] >= 1.2.0; (python_version < '3.9') and (platform_machine != 'armv7l')
-S3FS >= 0.4.2, < 0.5
 
 
 # GRAPH PROCESSING
@@ -16,10 +14,6 @@ Auto-SKLearn >= 0.12.5
 SciKit-Learn >= 0.24.1
 LIME >= 0.2.0.1
 SHAP >= 0.39.0
-iPython
-    # required by SHAP
-iPython-GenUtils
-    # required by SHAP
 
 # HYPER-PARAMETER TUNING
 Bayesian-Optimization >= 1.2.0
@@ -32,10 +26,18 @@ Tabulate >= 0.8.9
 SciKit-Fuzzy >= 0.4.2
 
 
-# Other
-Click >= 7.1.2
-Colored >= 1.4.2
-PSUtil >= 5.8.0
+# MODEL REPOSITORY
+CloudPickle >= 1.6.0
 PyYAML
     # version range not specified to avoid conflict with AWSCLI
+S3FS >= 0.6.0
 ULID-Py >= 1.1.0
+
+
+# CLI
+Click >= 7.1.2
+Colored >= 1.4.2
+
+
+# OTHER
+PSUtil >= 5.8.0
