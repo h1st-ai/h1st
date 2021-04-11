@@ -16,10 +16,6 @@ Auto-SKLearn >= 0.12.5
 SciKit-Learn >= 0.24.1
 LIME >= 0.2.0.1
 SHAP >= 0.39.0
-iPython
-    # required by SHAP
-iPython-GenUtils
-    # required by SHAP
 
 # HYPER-PARAMETER TUNING
 Bayesian-Optimization >= 1.2.0
@@ -30,12 +26,3 @@ Tabulate >= 0.8.9
 
 # FUZZY LOGIC
 SciKit-Fuzzy >= 0.4.2
-
-
-# Other
-Click >= 7.1.2
-Colored >= 1.4.2
-PSUtil >= 5.8.0
-PyYAML
-    # version range not specified to avoid conflict with AWSCLI
-ULID-Py >= 1.1.0
