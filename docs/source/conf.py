@@ -32,8 +32,8 @@ _metadata = json.load(
 
 # -- Project information -----------------------------------------------------
 
-project = 'Human First AI (H1ST)'
-author = _metadata['AUTHOR']
+project = 'Human-First AI (H1ST)'
+author = "H1st AI"
 copyright = f'{date.today().year}, {author}'
 
 # The full version, including alpha/beta/rc tags
