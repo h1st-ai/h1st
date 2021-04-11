@@ -9,7 +9,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 
-import h1st as h1
+import h1st.core as h1
 from examples.RayTune import config
 from examples.RayTune.utils import prepare_train_test_data
 

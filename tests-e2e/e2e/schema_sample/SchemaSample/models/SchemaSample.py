@@ -1,4 +1,4 @@
-import h1st as h1
+import h1st.core as h1
 
 class SchemaSampleModel(h1.Model):
     def get_data(self):

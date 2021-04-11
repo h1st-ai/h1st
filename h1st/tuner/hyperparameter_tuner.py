@@ -3,6 +3,7 @@ import os
 import psutil
 import random
 import typing
+import logging
 
 import ConfigSpace as CS
 from filelock import FileLock
@@ -16,11 +17,15 @@ from ray.tune.suggest.bohb import TuneBOHB
 from ray.tune.schedulers import PopulationBasedTraining
 
 import h1st
+from h1st.core import MLModel
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class HyperParameterTuner:
     def run(
         self,
-        model_class: typing.Type[h1st.MLModel],
+        model_class: typing.Type[MLModel],
         parameters: list,
         target_metric: str,
         options: dict,
@@ -84,8 +89,8 @@ class HyperParameterTuner:
             axis='columns',
             inplace=True
         )
-        print(f"{search_algorithm}: {df_analysis.shape[0]} Trials took {secs:7.2f} seconds ({secs/3600.0:3.0f} hours {(secs/60.0)%60:2.2f} minutes)")
-        print("best config: ", analysis.get_best_config(metric=target_metric, mode=mode))
+        logger.info(f"{search_algorithm}: {df_analysis.shape[0]} Trials took {secs:7.2f} seconds ({secs/3600.0:3.0f} hours {(secs/60.0)%60:2.2f} minutes)")
+        logger.info(f"best config: {analysis.get_best_config(metric=target_metric, mode=mode)}")
         return df_analysis
 
     def _get_mode(self, target_metric):

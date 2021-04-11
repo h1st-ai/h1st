@@ -1,6 +1,5 @@
 import os
-
-from setuptools import setup, find_packages
+from setuptools import find_namespace_packages, setup
 from setuptools.command.install import install
 
 
@@ -11,7 +10,7 @@ def __read_requirement(type=None):
 
 
 def __read_version():
-    return '2020.8'
+    return '2020.12'
 
 
 with open(os.path.join(os.path.dirname(__file__), '.', 'README.md'), 'r', encoding='utf8') as f:
@@ -24,7 +23,8 @@ setup(
     version=__read_version(),
     author='Arimo',
     author_email='admin@arimo.com',
-    packages=find_packages(exclude=("tests", "*.pyc")),
+    namespace_packages=['h1st'],
+    packages=find_namespace_packages(include=['h1st.*']),
     include_package_data=True,
     zip_safe=False,
     url='https://h1st.ai',

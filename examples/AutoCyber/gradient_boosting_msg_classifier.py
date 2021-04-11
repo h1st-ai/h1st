@@ -1,4 +1,4 @@
-import h1st as h1
+import h1st.core as h1
 import pandas as pd
 
 import config

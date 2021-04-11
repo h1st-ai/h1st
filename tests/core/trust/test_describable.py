@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score, f1_score
 import matplotlib.pyplot as plt
 import sklearn
 
-import h1st as h1
+import h1st.core as h1
 import unittest
 
 class TestModelDescribable(h1.MLModel):

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from h1st import Graph, Decision, Action, Model
+from h1st.core import Graph, Decision, Action, Model
 
 
 class GraphVizTestCase(TestCase):

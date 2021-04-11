@@ -20,7 +20,7 @@ class Model(NodeContainable, Trustable):
         .. code-block:: python
            :caption: Model Persistence and Loading Example
 
-           import h1st as h1
+           import h1st.core as h1
 
            class MyModel(h1.Model):
                def train(self, prepared_data):
