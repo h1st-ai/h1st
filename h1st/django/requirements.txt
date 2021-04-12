@@ -1,7 +1,3 @@
-# HUMAN-FIRST AI
-H1st >= 2020.12
-
-
 # DJANGO
 Django >= 3.1.8, < 3.2
 

@@ -1,42 +1,52 @@
-import os
+import json
+from pathlib import Path
 from setuptools import find_namespace_packages, setup
-from setuptools.command.install import install
 
 
-def __read_requirement(type=None):
-    filename = 'h1st/requirements%s.txt' % (".%s" % type if type else "")
-    with open(filename, encoding='utf8') as f:
-        return f.readlines()
+H1ST_PACKAGE_NAME = 'h1st'
 
 
-def __read_version():
-    return '2021.03'
+current_dir_path = Path(__file__).parent
 
+metadata = json.load(open(current_dir_path /
+                          H1ST_PACKAGE_NAME /
+                          'metadata.json'))
 
-with open(os.path.join(os.path.dirname(__file__), '.', 'README.md'), 'r', encoding='utf8') as f:
+with open(current_dir_path / 'README.md', encoding='utf8') as f:
     long_description = f.read()
+
+with open(current_dir_path / 'requirements.txt') as f:
+    requirements = f.readlines()
+
+with open(current_dir_path / 'django' / 'requirements.txt') as f:
+    django_requirements = f.readlines()
 
 
 setup(
-    cmdclass={'install': install},
-    name='h1st',
-    version=__read_version(),
-    author='Arimo',
-    author_email='admin@arimo.com',
-    namespace_packages=['h1st'],
-    packages=find_namespace_packages(include=['h1st.*']),
-    include_package_data=True,
-    zip_safe=False,
-    url='https://h1st.ai',
-    license='Apache 2.0',
-    description='Human-First AI (H1ST)',
+    name=metadata['PACKAGE'],
+    version=metadata['VERSION'],
+    description=metadata['DESCRIPTION'],
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=__read_requirement(),
-    python_requires='>= 3',
+    author=metadata['AUTHOR'],
+    url=metadata['URL'],
+    download_url=metadata['DOWNLOAD_URL'],
+    packages=find_namespace_packages(include=[f'{H1ST_PACKAGE_NAME}.*']),
+    scripts=['h1st/django/util/cli/h1st',
+             'h1st/django/util/cli/aws-eb/h1st-aws',
+             'h1st/django/util/cli/clone-template/h1st-clone',
+             'h1st/django/util/cli/clone-template/h1st-templates'],
+    classifiers=metadata['CLASSIFIERS'],
+    license='Apache 2.0',
+    keywords=metadata['KEYWORDS'],
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=requirements,
     entry_points="""
     [console_scripts]
     h1=h1st.cli:main
     """,
-    extras_require={}
+    extras_require=dict(django=django_requirements),
+    python_requires='>= 3.7',
+    namespace_packages=[H1ST_PACKAGE_NAME]
 )

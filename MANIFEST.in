@@ -5,4 +5,6 @@ include h1st/cli/templates/*.txt
 
 exclude tests/**/*
 
-recursive-exclude *.pyc
+graft h1st/django/util/cli
+
+recursive-exclude **/*.pyc
