@@ -132,15 +132,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.DS_store
-
-# IntelliJ IDEA / PyCharm
-.idea/
-*.iml
 
 # Visual Studio Code
 .vscode/
 *.code-workspace
+
 
 # local scratchpad
 /scratch
@@ -150,3 +146,7 @@ Digraph.gv*
 flake8.txt
 data
 .models/
+
+
+# misc/other
+.DS_Store
