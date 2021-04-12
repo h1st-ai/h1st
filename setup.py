@@ -15,10 +15,12 @@ metadata = json.load(open(current_dir_path /
 with open(current_dir_path / 'README.md', encoding='utf8') as f:
     long_description = f.read()
 
-with open(current_dir_path / 'requirements.txt') as f:
+with open(current_dir_path / H1ST_PACKAGE_NAME /
+          'requirements.txt') as f:
     requirements = f.readlines()
 
-with open(current_dir_path / 'django' / 'requirements.txt') as f:
+with open(current_dir_path / H1ST_PACKAGE_NAME /
+          'django' / 'requirements.txt') as f:
     django_requirements = f.readlines()
 
 
