@@ -1,0 +1,364 @@
+#!/usr/bin/env python3
+
+
+import argparse
+import os
+from pathlib import Path
+from ruamel import yaml
+import shutil
+
+from h1st.django.util.cli import run_command_with_config_file, __path__
+
+
+_EB_EXTENSIONS_DIR_NAME = '.ebextensions'
+_EB_IGNORE_FILE_NAME = '.ebignore'
+_PLATFORM_DIR_NAME = '.platform'
+
+
+PARSER = \
+    argparse.ArgumentParser(
+        prog=None,
+            # The name of the program (default: sys.argv[0])
+        usage=None,
+            # The string describing the program usage
+            # (default: generated from arguments added to parser)
+        description='%(prog)s: Human-First AI AWS Elastic Beanstalk >>>',
+            # Text to display before the argument help (default: none)
+        epilog='^^^ %(prog)s: Human-First AI AWS Elastic Beanstalk\n',
+            # Text to display after the argument help (default: none)
+        parents=[],
+            # A list of ArgumentParser objects
+            # whose arguments should also be included
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            # A class for customizing the help output
+        prefix_chars='-',
+            # The set of characters that prefix optional arguments
+            # (default: '-')
+        fromfile_prefix_chars='@',
+            # The set of characters that prefix files
+            # from which additional arguments should be read (default: None)
+        argument_default=None,
+            # The global default value for arguments (default: None)
+        conflict_handler='error',
+            # The strategy for resolving conflicting optionals
+            # (usually unnecessary)
+            # (other choice: 'resolve')
+        add_help=True,
+            # Add a -h/--help option to the parser (default: True)
+        allow_abbrev=True
+            # Allows long options to be abbreviated
+            # if the abbreviation is unambiguous. (default: True)
+    )
+
+
+# AWS Elastic Beanstalk Command Sub-Parsers
+aws_eb_cmd_sub_parsers = \
+    PARSER.add_subparsers(
+        title='AWS ELASTIC BEANSTALK SUB-COMMAND',
+            # title for the sub-parser group in help output;
+            # by default 'subcommands' if description is provided,
+            # otherwise uses title for positional arguments
+        description='AWS Elastic Beanstalk Sub-Command',
+            # description for the sub-parser group in help output,
+            # by default None
+        prog=None,
+            # usage information that will be displayed with sub-command help,
+            # by default the name of the program and
+            # any positional arguments before the subparser argument
+        parser_class=argparse.ArgumentParser,
+            # class which will be used to create sub-parser instances,
+            # by default the class of the current parser (e.g. ArgumentParser)
+        # action=None,
+            # the basic type of action to be taken when this argument
+            # is encountered at the command line
+        dest='aws_eb_cmd',
+            # name of the attribute under which sub-command name
+            # will be stored; by default None and no value is stored
+        help='AWS Elastic Beanstalk Sub-Command',
+            # help for sub-parser group in help output, by default None
+        metavar=None
+            # string presenting available sub-commands in help;
+            # by default it is None and presents
+            # sub-commands in form {cmd1, cmd2, ..}
+    )
+
+
+# AWS Elastic Beanstalk Init Command
+aws_eb_init_parser = \
+    aws_eb_cmd_sub_parsers.add_parser(
+        name='init',
+        prog=None,
+            # The name of the program (default: sys.argv[0])
+        usage=None,
+            # The string describing the program usage
+            # (default: generated from arguments added to parser)
+        description='%(prog)s: CLI for Human-First AI AWS EB Init >>>',
+            # Text to display before the argument help (default: none)
+        epilog='^^^ %(prog)s: CLI for Human-First AI AWS EB Init\n',
+            # Text to display after the argument help (default: none)
+        parents=[],
+            # A list of ArgumentParser objects whose arguments
+            # should also be included
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            # A class for customizing the help output
+        prefix_chars='-',
+            # The set of characters that prefix optional arguments
+            # (default: '-')
+        fromfile_prefix_chars='@',
+            # The set of characters that prefix files
+            # from which additional arguments should be read (default: None)
+        argument_default=argparse.SUPPRESS,
+            # The global default value for arguments (default: None)
+        conflict_handler='error',
+            # The strategy for resolving conflicting optionals
+            # (usually unnecessary)
+            # (other choice: 'resolve')
+        add_help=True,
+            # Add a -h/--help option to the parser (default: True)
+        allow_abbrev=True
+            # Allows long options to be abbreviated
+            # if the abbreviation is unambiguous. (default: True)
+    )
+
+
+# AWS Elastic Beanstalk Deploy Command
+aws_eb_deploy_parser = \
+    aws_eb_cmd_sub_parsers.add_parser(
+        name='deploy',
+        prog=None,
+            # The name of the program (default: sys.argv[0])
+        usage=None,
+            # The string describing the program usage
+            # (default: generated from arguments added to parser)
+        description='%(prog)s: CLI for Human-First AI AWS EB Deploy >>>',
+            # Text to display before the argument help (default: none)
+        epilog='^^^ %(prog)s: CLI for Human-First AI AWS EB Deploy\n',
+            # Text to display after the argument help (default: none)
+        parents=[],
+            # A list of ArgumentParser objects
+            # whose arguments should also be included
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            # A class for customizing the help output
+        prefix_chars='-',
+            # The set of characters that prefix optional arguments
+            # (default: '-')
+        fromfile_prefix_chars='@',
+            # The set of characters that prefix files
+            # from which additional arguments should be read (default: None)
+        argument_default=argparse.SUPPRESS,
+            # The global default value for arguments (default: None)
+        conflict_handler='error',
+            # The strategy for resolving conflicting optionals
+            # (usually unnecessary)
+            # (other choice: 'resolve')
+        add_help=True,
+            # Add a -h/--help option to the parser (default: True)
+        allow_abbrev=True
+            # Allows long options to be abbreviated
+            # if the abbreviation is unambiguous. (default: True)
+    )
+
+aws_eb_deploy_parser.add_argument(
+    'h1st_django_config_file_path',
+        # name or flags - Either a name or a list of option strings,
+        # e.g. foo or -f, --foo.
+    action='store',
+        # The basic type of action to be taken
+        # when this argument is encountered at the command line.
+        # choices: 'store', 'store_const'/'store_true'/'store_false',
+        # 'append'/'append_const', 'count', 'help', 'version'
+    nargs=None,
+        # The number of command-line arguments that should be consumed.
+    const=None,
+        # A constant value required by some action and nargs selections.
+    default=argparse.SUPPRESS,
+        # The value produced if the argument is absent from the command line.
+    type=str,
+        # The type to which the command-line argument should be converted.
+    choices=None,
+        # A container of the allowable values for the argument.
+    # required=True,
+        # Whether or not the command-line option may be omitted
+        # (optionals only).
+    help='Path to H1st Django Config File',
+        # A brief description of what the argument does.
+    metavar='H1ST_DJANGO_CONFIG_FILE_PATH',
+        # A name for the argument in usage messages.
+    # dest=None
+        # The name of the attribute to be added to the object
+        # returned by parse_args().
+        # *** DISABLED: ValueError: dest supplied twice for positional argument
+)
+
+aws_eb_deploy_parser.add_argument(
+    'aws_eb_env_name',
+        # name or flags - Either a name or a list of option strings,
+        # e.g. foo or -f, --foo.
+    action='store',
+        # The basic type of action to be taken
+        # when this argument is encountered at the command line.
+        # choices: 'store', 'store_const'/'store_true'/'store_false',
+        # 'append'/'append_const', 'count', 'help', 'version'
+    nargs='?',
+        # The number of command-line arguments that should be consumed.
+    const=None,
+        # A constant value required by some action and nargs selections.
+    default=None,
+        # The value produced if the argument is absent from the command line.
+    type=str,
+        # The type to which the command-line argument should be converted.
+    choices=None,
+        # A container of the allowable values for the argument.
+    # required=True,
+        # Whether or not the command-line option may be omitted
+        # (optionals only).
+    help='AWS Elastic Beanstalk Environment Name (if not default)',
+        # A brief description of what the argument does.
+    metavar='AWS_EB_ENV_NAME',
+        # A name for the argument in usage messages.
+    # dest=None
+        # The name of the attribute to be added to the object
+        # returned by parse_args().
+)
+
+aws_eb_deploy_parser.add_argument(
+    '--asgi',
+        # name or flags
+        # Either a name or a list of option strings, e.g. foo or -f, --foo.
+    action='store',
+        # The basic type of action to be taken when
+        # this argument is encountered at the command line.
+        # choices: 'store', 'store_const'/'store_true'/'store_false',
+        # 'append'/'append_const', 'count', 'help', 'version'
+    nargs='?',
+        # The number of command-line arguments that should be consumed.
+    # const=None,
+        # A constant value required by some action and nargs selections.
+    default=None,
+        # The value produced if the argument is absent from the command line.
+    type=str,
+        # The type to which the command-line argument should be converted.
+    choices=['daphne', 'hypercorn', 'uvicorn'],
+        # A container of the allowable values for the argument.
+    required=False,
+        # Whether or not the command-line option may be omitted
+        # (optionals only).
+    help='ASGI Server',
+        # A brief description of what the argument does.
+    # metavar=None,
+        # A name for the argument in usage messages.
+    dest='asgi'
+        # The name of the attribute to be added to the object
+        # returned by parse_args().
+)
+
+aws_eb_deploy_parser.add_argument(
+    '--create',
+        # name or flags
+        # Either a name or a list of option strings, e.g. foo or -f, --foo.
+    action='store_true',
+        # The basic type of action to be taken when
+        # this argument is encountered at the command line.
+        # choices: 'store', 'store_const'/'store_true'/'store_false',
+        # 'append'/'append_const', 'count', 'help', 'version'
+    # nargs=None,
+        # The number of command-line arguments that should be consumed.
+    # const=None,
+        # A constant value required by some action and nargs selections.
+    default=False,
+        # The value produced if the argument is absent from the command line.
+    # type=None,
+        # The type to which the command-line argument should be converted.
+    # choices=None,
+        # A container of the allowable values for the argument.
+    required=False,
+        # Whether or not the command-line option may be omitted
+        # (optionals only).
+    help='whether to create a new AWS Elastic Beanstalk Environment',
+        # A brief description of what the argument does.
+    # metavar=None,
+        # A name for the argument in usage messages.
+    dest='create'
+        # The name of the attribute to be added to the object
+        # returned by parse_args().
+)
+
+
+args = PARSER.parse_args()
+
+if args.aws_eb_cmd == 'init':
+    os.system('eb init')
+
+elif args.aws_eb_cmd == 'deploy':
+    configs = yaml.safe_load(stream=open(args.h1st_django_config_file_path))
+    aws_configs = configs['aws']
+    profile = aws_configs.get('profile', 'default')
+    region = aws_configs['region']
+    vpc = aws_configs['vpc']
+    subnets = aws_configs['subnets']
+    instance_type = aws_configs['instance-type']
+    assert region and vpc and subnets
+
+    _aws_eb_cli_util_dir_path = Path(__path__[0]) / 'aws-eb'
+
+    assert not os.path.exists(path=_EB_EXTENSIONS_DIR_NAME)
+    shutil.copytree(
+        src=_aws_eb_cli_util_dir_path / _EB_EXTENSIONS_DIR_NAME,
+        dst=_EB_EXTENSIONS_DIR_NAME,
+        symlinks=False,
+        ignore=None,
+        ignore_dangling_symlinks=False,
+        dirs_exist_ok=False)
+    assert os.path.isdir(_EB_EXTENSIONS_DIR_NAME)
+
+    _eb_ignore_exists = os.path.exists(path=_EB_IGNORE_FILE_NAME)
+
+    if _eb_ignore_exists:
+        assert os.path.isfile(_EB_IGNORE_FILE_NAME)
+
+    else:
+        shutil.copyfile(
+            src=_aws_eb_cli_util_dir_path / _EB_IGNORE_FILE_NAME,
+            dst=_EB_IGNORE_FILE_NAME)
+        assert os.path.isfile(_EB_IGNORE_FILE_NAME)
+
+    assert not os.path.exists(path=_PLATFORM_DIR_NAME)
+    shutil.copytree(
+        src=_aws_eb_cli_util_dir_path / _PLATFORM_DIR_NAME,
+        dst=_PLATFORM_DIR_NAME,
+        symlinks=False,
+        ignore=None,
+        ignore_dangling_symlinks=False,
+        dirs_exist_ok=False)
+    assert os.path.isdir(_PLATFORM_DIR_NAME)
+
+    run_command_with_config_file(
+        command=('eb ' +
+                 ((f'create --region {region} --vpc.id {vpc}'
+                   f' --vpc.dbsubnets {subnets} --vpc.ec2subnets {subnets}'
+                   f' --vpc.elbsubnets {subnets} --vpc.elbpublic'
+                   ' --vpc.publicip'
+                   f' --instance_type {instance_type}')
+                  if args.create
+                  else 'deploy') +
+                 (f' --profile {profile}'
+                  f" {args.aws_eb_env_name if args.aws_eb_env_name else ''}")),
+        h1st_django_config_file_path=args.h1st_django_config_file_path,
+        copy_standard_files=True,
+        asgi=args.asgi)
+
+    shutil.rmtree(
+        path=_EB_EXTENSIONS_DIR_NAME,
+        ignore_errors=False,
+        onerror=None)
+    assert not os.path.exists(path=_EB_EXTENSIONS_DIR_NAME)
+
+    if not _eb_ignore_exists:
+        os.remove(_EB_IGNORE_FILE_NAME)
+        assert not os.path.exists(path=_EB_IGNORE_FILE_NAME)
+
+    shutil.rmtree(
+        path=_PLATFORM_DIR_NAME,
+        ignore_errors=False,
+        onerror=None)
+    assert not os.path.exists(path=_PLATFORM_DIR_NAME)

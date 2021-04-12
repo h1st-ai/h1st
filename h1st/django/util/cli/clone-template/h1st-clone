@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+
+
+import argparse
+from git.repo.base import Repo
+import os
+import shutil
+from tempfile import mkdtemp
+
+
+GITHUB_REPO_URL = 'https://github.com/h1st-ai/H1st-AI-App-Templates'
+
+
+PARSER = \
+    argparse.ArgumentParser(
+        prog=None,
+            # The name of the program (default: sys.argv[0])
+        usage=None,
+            # The string describing the program usage
+            # (default: generated from arguments added to parser)
+        description='%(prog)s: Human-First AI: CLI for Cloning from Template >>>',
+            # Text to display before the argument help (default: none)
+        epilog='^^^ %(prog)s: Human-First AI: CLI for Cloning from Template\n',
+            # Text to display after the argument help (default: none)
+        parents=[],
+            # A list of ArgumentParser objects
+            # whose arguments should also be included
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            # A class for customizing the help output
+        prefix_chars='-',
+            # The set of characters that prefix optional arguments
+            # (default: '-')
+        fromfile_prefix_chars='@',
+            # The set of characters that prefix files
+            # from which additional arguments should be read (default: None)
+        argument_default=None,
+            # The global default value for arguments (default: None)
+        conflict_handler='error',
+            # The strategy for resolving conflicting optionals
+            # (usually unnecessary)
+            # (other choice: 'resolve')
+        add_help=True,
+            # Add a -h/--help option to the parser (default: True)
+        allow_abbrev=True
+            # Allows long options to be abbreviated
+            # if the abbreviation is unambiguous. (default: True)
+    )
+
+# Command
+PARSER.add_argument(
+    'template_name',
+        # name or flags - Either a name or a list of option strings,
+        # e.g. foo or -f, --foo.
+    action='store',
+        # The basic type of action to be taken
+        # when this argument is encountered at the command line.
+        # choices: 'store', 'store_const'/'store_true'/'store_false',
+        # 'append'/'append_const', 'count', 'help', 'version'
+    nargs=None,
+        # The number of command-line arguments that should be consumed.
+    const=None,
+        # A constant value required by some action and nargs selections.
+    default=argparse.SUPPRESS,
+        # The value produced if the argument is absent from the command line.
+    type=str,
+        # The type to which the command-line argument should be converted.
+    choices=None,
+        # A container of the allowable values for the argument.
+    # required=True,
+        # Whether or not the command-line option may be omitted
+        # (optionals only).
+    help='Name of Template to Clone',
+        # A brief description of what the argument does.
+    metavar='TEMPLATE_NAME',
+        # A name for the argument in usage messages.
+    # dest=None
+        # The name of the attribute to be added to the object
+        # returned by parse_args().
+        # *** DISABLED: ValueError: dest supplied twice for positional argument
+)
+
+PARSER.add_argument(
+    'dest_dir_path',
+        # name or flags - Either a name or a list of option strings,
+        # e.g. foo or -f, --foo.
+    action='store',
+        # The basic type of action to be taken
+        # when this argument is encountered at the command line.
+        # choices: 'store', 'store_const'/'store_true'/'store_false',
+        # 'append'/'append_const', 'count', 'help', 'version'
+    nargs='?',
+        # The number of command-line arguments that should be consumed.
+    const=None,
+        # A constant value required by some action and nargs selections.
+    default='.',
+        # The value produced if the argument is absent from the command line.
+    type=str,
+        # The type to which the command-line argument should be converted.
+    choices=None,
+        # A container of the allowable values for the argument.
+    # required=False,
+        # Whether or not the command-line option may be omitted
+        # (optionals only).
+    help='Directory Path to Clone to',
+        # A brief description of what the argument does.
+    metavar='DESTINATION_DIRECTORY_PATH',
+        # A name for the argument in usage messages.
+    # dest=None
+        # The name of the attribute to be added to the object
+        # returned by parse_args().
+        # *** DISABLED: ValueError: dest supplied twice for positional argument
+)
+
+
+args = PARSER.parse_args()
+
+
+tmp_dir_path = mkdtemp()
+
+Repo.clone_from(
+    url=GITHUB_REPO_URL,
+    to_path=tmp_dir_path,
+    progress=None,
+    env=None,
+    multi_options=None)
+
+os.system(
+    'rsync -r --copy-links --safe-links '
+    f'{tmp_dir_path}/{args.template_name}/ {args.dest_dir_path}')
+
+shutil.rmtree(
+    path=tmp_dir_path,
+    ignore_errors=False,
+    onerror=None)
+assert not os.path.exists(path=tmp_dir_path)

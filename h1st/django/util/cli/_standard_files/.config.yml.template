@@ -1,0 +1,15 @@
+db:
+  engine: ~
+  name: ~
+  host: ~
+  user: ~
+  password: ~
+
+aws:
+  profile: default
+  key: ~
+  secret: ~
+  region: ~
+  vpc: ~
+  subnets: ~
+  instance-type: ~

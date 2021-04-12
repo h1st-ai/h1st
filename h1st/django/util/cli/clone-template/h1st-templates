@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+
+from git.repo.base import Repo
+import os
+import shutil
+from tempfile import mkdtemp
+
+
+GITHUB_REPO_URL = 'https://github.com/h1st-ai/H1st-AI-App-Templates'
+
+
+tmp_dir_path = mkdtemp()
+
+Repo.clone_from(
+    url=GITHUB_REPO_URL,
+    to_path=tmp_dir_path,
+    progress=None,
+    env=None,
+    multi_options=None)
+
+print('H1st AI App Templates:')
+for i in os.scandir(path=tmp_dir_path):
+    if (not i.name.startswith('.')) and i.is_dir():
+        print(f'  - {i.name}')
+
+shutil.rmtree(
+    path=tmp_dir_path,
+    ignore_errors=False,
+    onerror=None)
+assert not os.path.exists(path=tmp_dir_path)

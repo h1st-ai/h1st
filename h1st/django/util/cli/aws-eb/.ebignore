@@ -1,0 +1,7 @@
+# this file is needed for deploying uncommitted files:
+# https://docs.amazonaws.cn/en_us/elasticbeanstalk/latest/dg/eb3-deploy.html
+
+# Python
+.mypy_cache/
+__pycache__/
+*.pyc

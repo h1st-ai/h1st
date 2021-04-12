@@ -144,7 +144,6 @@ Digraph.gv*
 .pytype
 
 flake8.txt
-data
 .models/
 
 
