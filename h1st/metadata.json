@@ -3,8 +3,14 @@
   "VERSION": "2021.04",
   "DESCRIPTION": "Human-First AI (H1st)",
   "AUTHOR": "Human-First AI (H1st)",
+
   "URL": "H1st.ai",
   "DOWNLOAD_URL": "https://GitHub.com/H1st-AI/H1st/archive/main.zip",
+
   "CLASSIFIERS": [],
-  "KEYWORDS": []
+
+  "KEYWORDS": [
+    "Artificial Intelligence",
+    "AI"
+  ]
 }
