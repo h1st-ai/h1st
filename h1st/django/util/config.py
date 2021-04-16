@@ -55,12 +55,7 @@ def parse_config_file(path=None):
         return config
 
     else:
-        # return blank config per template
-        return yaml.safe_load(
-                stream=open(Path(__file__).parent /
-                            'cli' /
-                            '_standard_files' /
-                            f'{_H1ST_DJANGO_CONFIG_FILE_NAME}.template'))
+        raise FileNotFoundError(f'*** CONFIG FILE {path} NOT FOUND ***')
 
 
 def config_app(

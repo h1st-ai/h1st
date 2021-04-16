@@ -5,7 +5,7 @@ Django >= 3.1.8, < 3.2
 Django-Polymorphic >= 3.0.0
 
 # Django Admin Themes
-Django-Grappelli >= 2.14.3
+Django-Grappelli >= 2.14.4
 Django-Jazzmin >= 2.4.5
 
 # Django-AutoComplete-Light & related
@@ -62,7 +62,7 @@ JobLib >= 1.0.1
 
 # OTHER
 GitPython >= 3.1.14
-Ruamel.YAML >= 0.17.2
+Ruamel.YAML >= 0.17.4
 Tqdm >= 4.60.0
 
 

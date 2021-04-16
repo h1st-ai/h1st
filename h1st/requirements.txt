@@ -1,6 +1,6 @@
 # DATA MANAGEMENT & PROCESSING
 NumPy >= 1.20.2
-Pandas >= 1.2.3
+Pandas >= 1.2.4
 PyArrow >= 3.0.0
 Ray[tune] >= 1.2.0; (python_version < '3.9') and (platform_machine != 'armv7l')
 
