@@ -31,7 +31,7 @@ CloudPickle >= 1.6.0
 PyYAML
     # version range not specified to avoid conflict with AWSCLI
 S3FS >= 2021.4.0
-FSSpec >= 0.9.0
+FSSpec >= 2021.4.0
     # required by S3FS
 ULID-Py >= 1.1.0
 
