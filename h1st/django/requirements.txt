@@ -5,8 +5,8 @@ Django >= 3.1.8, < 3.2
 Django-Polymorphic >= 3.0.0
 
 # Django Admin Themes
-Django-Grappelli >= 2.14.4
-Django-Jazzmin >= 2.4.5
+Django-Grappelli >= 2.15.1
+Django-Jazzmin >= 2.4.6
 
 # Django-AutoComplete-Light & related
 Django-AutoComplete-Light >= 3.8.2
@@ -14,7 +14,7 @@ Django-Generic-M2M >= 0.3.1
 Django-GM2M >= 1.1.1
 Django-QuerySetSequence >= 0.14
 Django-Tagging >= 0.5.0
-Django-Taggit >= 1.3.0
+Django-Taggit >= 1.4.0
 
 # Django REST Framework
 DjangoRESTFramework >= 3.12.4
@@ -33,7 +33,7 @@ Django-Model-Query-Graphs >= 0.0.5
 Django-Silk >= 4.1.0
 
 # Django Extensions & Utilities
-Django-Extensions >= 3.1.2
+Django-Extensions >= 3.1.3
 Django-Model-Utils >= 4.1.1
 Django-Storages >= 1.11.1
 
