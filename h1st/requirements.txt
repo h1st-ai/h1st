@@ -30,8 +30,9 @@ SciKit-Fuzzy >= 0.4.2
 CloudPickle >= 1.6.0
 PyYAML
     # version range not specified to avoid conflict with AWSCLI
-S3FS >= 2021.4.0
-FSSpec >= 2021.4.0
+S3FS >= 0.4, < 0.5
+    # S3FS >= 0.5 has async-related bugs
+# FSSpec >= 2021.4.0
     # required by S3FS
 ULID-Py >= 1.1.0
 
