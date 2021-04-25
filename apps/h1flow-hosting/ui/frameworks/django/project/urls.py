@@ -1,4 +1,5 @@
-from ui.url_map import URL_MAP
+# H1st customizations
+from ui.h1flow_urls import H1FLOW_URL_MAP
 from django.urls import path
 
 def make_url_patterns(input):
@@ -9,5 +10,5 @@ def make_url_patterns(input):
 
     return urls
 
-urlpatterns = make_url_patterns(URL_MAP)
+urlpatterns = make_url_patterns(H1FLOW_URL_MAP)
 
