@@ -1,3 +1,13 @@
-from ui.steps import url_patterns
+from ui.steps import URL_MAP
 
-urlpatterns = url_patterns
+def make_url_patterns(input):
+    urls = []
+
+    for uri, klass in input.items():
+        urls.append(path(uri, klass().handle_request))
+
+    return urls
+
+urlpatterns = make_url_patterns(URL_MAP)
+
+
