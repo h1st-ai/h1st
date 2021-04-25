@@ -1,5 +1,7 @@
-from h1 import H1FlowManager, H1FlowExecutor, H1Flow, H1StepWithUI, H1WebUI
+# from h1 import H1FlowManager, H1FlowExecutor, H1Flow, H1StepWithUI, H1WebUI
+from abc import abstractclassmethod, ABC
 from django.http import HttpResponse
+from django.urls import path
 
 '''
 UC2: Execute Model
@@ -13,7 +15,38 @@ UC2: Execute Model
 
 '''
 
-__template = """
+class HasWebUI(ABC):
+    def handle_request(self, req):
+
+        if (req.method == 'GET'):
+            return self.handle_get(req)
+        
+        return self.handle_post(req)
+    
+    def handle_post(self, req):
+        pass
+
+    def handle_get(self, req):
+        pass
+
+class Home(HasWebUI):
+    def handle_get(self, req):
+        __template = """
+            <html>
+            <head>
+                <title>Image Classification</title>
+            </head>
+            <body>
+            List of models
+            </body>
+            </html>
+            """
+
+        return HttpResponse(__template)
+
+class Upload(HasWebUI):
+    def handle_get(self, req):
+        __template = """
             <html>
             <head>
                 <title>Image Classification</title>
@@ -29,8 +62,11 @@ __template = """
             </html>
             """
 
-# class UC2_Execute_Model(H1Step, HasWebUi):
-class UC2_Execute_Model:
+        return HttpResponse(__template)
+
+
+# class Execute_Model(H1Step, HasWebUi):
+class Execute(HasWebUI):
 
     # def __init__():
     #     self.template = """
@@ -52,10 +88,21 @@ class UC2_Execute_Model:
     #
     # HasWebUi implementation
     #
-    @staticmethod
-    def render():
+    def handle_get(self, req):
         # model_params = ModelManager.get_model_params(request.query_string['id'])
         # return ... # call django render with template and parameters
+
+        __template = """
+            <html>
+            <head>
+                <title>Image Classification</title>
+            </head>
+            <body>
+            Result: 1
+            </body>
+            </html>
+            """
+
         return HttpResponse(__template)
 
     # @post('/execute_model')
@@ -69,3 +116,25 @@ class UC2_Execute_Model:
     #
     def execute(self, model_id, inputs, user_id):
         pass
+
+
+"""myproject URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+url_patterns = [
+    path('', Home().handle_request, name='home'),
+    path('upload/', Upload().handle_request, name='upload'),
+    path('execute/', Execute().handle_request, name='execute')
+]
