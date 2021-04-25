@@ -1,4 +1,4 @@
-from ui.steps import URL_MAP
+from ui.url_map import URL_MAP
 from django.urls import path
 
 def make_url_patterns(input):
@@ -10,5 +10,4 @@ def make_url_patterns(input):
     return urls
 
 urlpatterns = make_url_patterns(URL_MAP)
-
 
