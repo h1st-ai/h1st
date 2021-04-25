@@ -1,4 +1,5 @@
 from h1 import H1FlowManager, H1FlowExecutor, H1Flow, H1StepWithUI, H1WebUI
+from django.http import HttpResponse
 
 '''
 UC2: Execute Model
@@ -12,41 +13,59 @@ UC2: Execute Model
 
 '''
 
-class UC2_Execute_Model(H1Step, HasWebUi):
+__template = """
+            <html>
+            <head>
+                <title>Image Classification</title>
+            </head>
+            <body>
+            Upload An Image
+            <form method=POST enctype=multipart/form-data action="{{ url_for('upload') }}">
+                <input type=file name=image>
+                <input type="submit">
+            </form>
+            Classification Result: {{data.class}}
+            </body>
+            </html>
+            """
 
-    def __init__():
-        self.template = """
-                        <html>
-                        <head>
-                            <title>Image Classification</title>
-                        </head>
-                        <body>
-                        Upload An Image
-                        <form method=POST enctype=multipart/form-data action="{{ url_for('upload') }}">
-                            <input type=file name=image>
-                            <input type="submit">
-                        </form>
-                        Classification Result: {{data.class}}
-                        </body>
-                        </html>
-                        """
+# class UC2_Execute_Model(H1Step, HasWebUi):
+class UC2_Execute_Model:
+
+    # def __init__():
+    #     self.template = """
+    #                     <html>
+    #                     <head>
+    #                         <title>Image Classification</title>
+    #                     </head>
+    #                     <body>
+    #                     Upload An Image
+    #                     <form method=POST enctype=multipart/form-data action="{{ url_for('upload') }}">
+    #                         <input type=file name=image>
+    #                         <input type="submit">
+    #                     </form>
+    #                     Classification Result: {{data.class}}
+    #                     </body>
+    #                     </html>
+    #                     """
 
     #
     # HasWebUi implementation
     #
-    def render(self, request):
-        model_params = ModelManager.get_model_params(request.query_string['id'])
-        return ... # call django render with template and parameters
- 
+    @staticmethod
+    def render():
+        # model_params = ModelManager.get_model_params(request.query_string['id'])
+        # return ... # call django render with template and parameters
+        return HttpResponse(__template)
 
-    @post('/execute_model')
-    def handle_post(self, request, body):
-        model_params = ModelManager.get_model_params(body.model_id)
-        result = self.execute(body.model_id, body.model_inputs, request.user_id)
-        render_response(result, model_params.output_type)
+    # @post('/execute_model')
+    # def handle_post(self, request, body):
+    #     model_params = ModelManager.get_model_params(body.model_id)
+    #     result = self.execute(body.model_id, body.model_inputs, request.user_id)
+    #     render_response(result, model_params.output_type)
 
     #
     # H1Step implementation
     #
-    def execute(model_id, inputs, user_id):
-
+    def execute(self, model_id, inputs, user_id):
+        pass
