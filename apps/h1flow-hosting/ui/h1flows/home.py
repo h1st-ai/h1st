@@ -1,4 +1,4 @@
-from .mock_framework import H1StepWithWebUI
+from h1st.core.step import H1StepWithWebUI
 
 
 class Home(H1StepWithWebUI):

@@ -1,5 +1,4 @@
-from .mock_framework import H1StepWithWebUI
-
+from h1st.core.step import H1StepWithWebUI
 
 class Upload(H1StepWithWebUI):
     def get_response(self, req, isPost):

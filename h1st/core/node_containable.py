@@ -1,7 +1,7 @@
 from typing import Dict
 from h1st.core.exception import GraphException
-from h1st.schema.schema_validator import SchemaValidator
-from h1st.schema.schema_validation_result import SchemaValidationResult
+# from h1st.schema.schema_validator import SchemaValidator
+# from h1st.schema.schema_validation_result import SchemaValidationResult
 
 
 class NodeContainable:
@@ -78,11 +78,11 @@ class NodeContainable:
 
         return result
 
-    def validate_node_output(self, input_data: dict=None, schema=None) -> SchemaValidationResult:
-        """
-        Subclass will implement this function to verify its output schema
+    # def validate_node_output(self, input_data: dict=None, schema=None) -> SchemaValidationResult:
+    #     """
+    #     Subclass will implement this function to verify its output schema
 
-        :param inputs: subclass will use this input data to call a specific function to get the result
-        :schema: the schema to verify if the result conforming with
-        """        
-        return SchemaValidator().validate(input_data, schema)
+    #     :param inputs: subclass will use this input data to call a specific function to get the result
+    #     :schema: the schema to verify if the result conforming with
+    #     """        
+    #     return SchemaValidator().validate(input_data, schema)

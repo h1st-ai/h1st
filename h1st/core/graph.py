@@ -6,7 +6,7 @@ from h1st.core.node import Node, Action
 from h1st.core.node_containable import NodeContainable
 from h1st.core.exception import GraphException
 from h1st.core.viz import DotGraphVisualizer
-from h1st.core.trust.trustable import Trustable
+from h1st.trust.trustable import Trustable
 
 
 class Graph(NodeContainable, Trustable):
