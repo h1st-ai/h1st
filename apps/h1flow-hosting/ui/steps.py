@@ -1,7 +1,7 @@
 # from h1 import H1FlowManager, H1FlowExecutor, H1Flow, H1StepWithUI, H1WebUI
 from abc import abstractclassmethod, ABC
 from django.http import HttpResponse
-from django.urls import path
+
 
 '''
 UC2: Execute Model
@@ -29,7 +29,15 @@ class HasWebUI(ABC):
     def handle_get(self, req):
         pass
 
-class Home(HasWebUI):
+class H1Step():
+    def __init__(self):
+        pass
+
+class H1StepWithWebUI(H1Step, HasWebUI):
+    def __init__(self):
+        pass
+
+class Home(H1StepWithWebUI):
     def handle_get(self, req):
         __template = """
             <html>
@@ -44,7 +52,7 @@ class Home(HasWebUI):
 
         return HttpResponse(__template)
 
-class Upload(HasWebUI):
+class Upload(H1StepWithWebUI):
     def handle_get(self, req):
         __template = """
             <html>
@@ -66,7 +74,7 @@ class Upload(HasWebUI):
 
 
 # class Execute_Model(H1Step, HasWebUi):
-class Execute(HasWebUI):
+class Execute(H1StepWithWebUI):
 
     # def __init__():
     #     self.template = """
