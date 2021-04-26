@@ -1,5 +1,3 @@
-from django.http import HttpResponse
-
 class HasWebUI():
     def handle_request(self, req):
         if (req.method == 'GET'):
@@ -8,10 +6,7 @@ class HasWebUI():
             return self.handle_post(req)
     
     def handle_post(self, req):
-        return HttpResponse(self.get_response(req, True))
+        raise NotImplementedError('Please implement post method handler')
 
     def handle_get(self, req):
-        return HttpResponse(self.get_response(req, False))
-
-    def get_response(self, req, isPost=False):
-        raise NotImplementedError('Please implement this method')
+        raise NotImplementedError('Please implement get method handler')
