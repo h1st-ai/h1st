@@ -4,6 +4,12 @@ import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { PlusIcon } from "@heroicons/react/solid";
 
 import ModelList from "./components/ModelList";
+import UploadModelForm from "./features/upload_model/Upload";
+import { useAppSelector, useAppDispatch } from "./app/hooks";
+import {
+  toggleUploadState,
+  selectShowModalState,
+} from "./features/upload_model/uploadSlice";
 
 const navigation = ["Dashboard"];
 const profile = ["Your Profile", "Settings", "Sign out"];
@@ -13,6 +19,8 @@ function classNames(...classes: any) {
 }
 
 export default function App(props: any) {
+  const showUploadModal = useAppSelector(selectShowModalState);
+  const dispatch = useAppDispatch();
   return (
     <div>
       <Disclosure as="nav" className="bg-gray-800">
@@ -194,6 +202,7 @@ export default function App(props: any) {
           <button
             type="button"
             className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            onClick={() => dispatch(toggleUploadState())}
           >
             <PlusIcon className="-ml-1 mr-3 h-5 w-5" aria-hidden="true" />
             New Model
@@ -204,7 +213,8 @@ export default function App(props: any) {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {/* Replace with your content */}
           <div className="px-4 py-6 sm:px-0">
-            <ModelList />
+            {!showUploadModal && <ModelList />}
+            {showUploadModal && <UploadModelForm />}
           </div>
           {/* /End replace */}
         </div>
