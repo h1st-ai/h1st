@@ -1,6 +1,8 @@
 import React, { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { PlusIcon } from "@heroicons/react/solid";
+
 import ModelList from "./components/ModelList";
 
 const navigation = ["Dashboard"];
@@ -187,8 +189,15 @@ export default function App(props: any) {
       </Disclosure>
 
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Your models</h1>
+          <button
+            type="button"
+            className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <PlusIcon className="-ml-1 mr-3 h-5 w-5" aria-hidden="true" />
+            New Model
+          </button>
         </div>
       </header>
       <main>
