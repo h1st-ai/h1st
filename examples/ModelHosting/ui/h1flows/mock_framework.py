@@ -4,17 +4,29 @@ class HasWebUI():
     def handle_request(self, req):
         if (req.method == 'GET'):
             return self.handle_get(req)
-        else:
+        elif (req.method == 'POST'):
             return self.handle_post(req)
+        elif (req.method == 'PUT'):
+            return self.handle_post(req)
+        elif (req.method == 'DELETE'):
+            return self.handle_post(req)
+        else:
+            return self.handle_default(req)
+    
+    def handle_get(self, req):
+        raise NotImplementedError('Method not supported')
     
     def handle_post(self, req):
-        return HttpResponse(self.get_response(req, True))
+        raise NotImplementedError('Method not supported')
+        
+    def handle_put(self, req):
+        raise NotImplementedError('Method not supported')
 
-    def handle_get(self, req):
-        return HttpResponse(self.get_response(req, False))
-
-    def get_response(self, req, isPost=False):
-        return 'Please override get_response()'
+    def handle_delete(self, req):
+        raise NotImplementedError('Method not supported')
+    
+    def handle_default(self, req):
+        raise NotImplementedError('Method not supported')
 
 
 class H1Step():
@@ -24,7 +36,6 @@ class H1Step():
 class H1StepWithWebUI(H1Step, HasWebUI):
     def __init__(self):
         pass
-
 
 class HasCreatReactApp(H1Step, HasWebUI): 
     def __init__(self, path):
