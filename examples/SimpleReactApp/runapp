@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# H1st customizations are in:
+#   frameworks/django/project/__init__.py:	_set_project_root()
+#   frameworks/django/project/urls.py:		import web_urls.py and rest_urls.py
+#
+
+if [ -f ui/frameworks/django/manage.py -a -f ui/web_urls.py ] ; then
+	( cd ui/frameworks/django && python manage.py runserver )
+fi
+
+#if [ -f ui/frameworks/react/app -a -f ui/rest_urls.py ] ; then 
+#	( cd ui/frameworks/react/app && npm start ) &
+##fi
