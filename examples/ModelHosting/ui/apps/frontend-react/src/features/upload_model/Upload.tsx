@@ -7,28 +7,21 @@ import {
   setModels,
   addModel,
 } from "./uploadSlice";
-import styles from "./Counter.module.css";
-/*
-  This example requires Tailwind CSS v2.0+ 
-  
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ]
-  }
-  ```
-*/
+import { useDropzone } from "react-dropzone";
+
 export default function UploadForm() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [modelName, setModelName] = useState("");
   const [modelDescription, setModelDescription] = useState("");
-  // fileRef.current.files[0]
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+
+  const files = acceptedFiles.map((file) => (
+    // @ts-ignore
+    <li key={file.path}>
+      {/* @ts-ignore */}
+      {file.path} - {file.size} bytes
+    </li>
+  ));
 
   return (
     <div className="space-y-8 divide-y divide-gray-200">
@@ -92,7 +85,12 @@ export default function UploadForm() {
               >
                 Model file
               </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div
+                {...getRootProps({
+                  className:
+                    "dropzone mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md",
+                })}
+              >
                 <div className="space-y-1 text-center">
                   <svg
                     className="mx-auto h-12 w-12 text-gray-400"
@@ -120,6 +118,7 @@ export default function UploadForm() {
                         type="file"
                         ref={fileRef}
                         className="sr-only"
+                        {...getInputProps()}
                       />
                     </label>
                     <p className="pl-1">or drag and drop</p>
