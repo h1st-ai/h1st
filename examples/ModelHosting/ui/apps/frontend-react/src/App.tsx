@@ -22,7 +22,7 @@ export default function App(props: any) {
   const showUploadModal = useAppSelector(selectShowModalState);
   const dispatch = useAppDispatch();
   return (
-    <div>
+    <div className="min-h-screen">
       <Disclosure as="nav" className="bg-gray-800">
         {({ open }) => (
           <>
@@ -43,7 +43,7 @@ export default function App(props: any) {
                           <Fragment key={item}>
                             {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                             <a
-                              href="#"
+                              href="#123"
                               className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
                             >
                               {item}
@@ -52,7 +52,7 @@ export default function App(props: any) {
                         ) : (
                           <a
                             key={item}
-                            href="#"
+                            href="#5"
                             className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                           >
                             {item}
@@ -101,7 +101,7 @@ export default function App(props: any) {
                                 <Menu.Item key={item}>
                                   {({ active }) => (
                                     <a
-                                      href="#"
+                                      href="#test"
                                       className={classNames(
                                         active ? "bg-gray-100" : "",
                                         "block px-4 py-2 text-sm text-gray-700"
@@ -140,7 +140,7 @@ export default function App(props: any) {
                     <Fragment key={item}>
                       {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
                       <a
-                        href="#"
+                        href="#123"
                         className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
                       >
                         {item}
@@ -149,7 +149,7 @@ export default function App(props: any) {
                   ) : (
                     <a
                       key={item}
-                      href="#"
+                      href="#123"
                       className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
                     >
                       {item}
@@ -183,7 +183,7 @@ export default function App(props: any) {
                   {profile.map((item) => (
                     <a
                       key={item}
-                      href="#"
+                      href="#444"
                       className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                     >
                       {item}
@@ -209,10 +209,10 @@ export default function App(props: any) {
           </button>
         </div>
       </header>
-      <main>
+      <main className="bg-gray-100">
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {/* Replace with your content */}
-          <div className="px-4 py-6 sm:px-0">
+          <div className="px-4 sm:px-0">
             {!showUploadModal && <ModelList />}
             {showUploadModal && <UploadModelForm />}
           </div>
