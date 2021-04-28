@@ -18,12 +18,10 @@ class TensorFlowModelExecutor(ModelExecutor):
 
         # image input
         if input_type == 'image':
-            # Download the image
-            dl_request = requests.get(input_data, stream=True)
-            dl_request.raise_for_status()
             
             # Compose a JSON Predict request (send JPEG image in base64).
-            jpeg_bytes = base64.b64encode(dl_request.content).decode('utf-8')
+            jpeg_bytes = base64.b64encode(input_data).decode('utf-8')
+            print('jpeg_bytes', jpeg_bytes)
             predict_request = '{"instances" : [{"b64": "%s"}]}' % jpeg_bytes
 
             # Send request
@@ -32,12 +30,13 @@ class TensorFlowModelExecutor(ModelExecutor):
             prediction = response.json()['predictions'][0]
             return prediction['classes']
         
-        # text input
-        predict_request = '{"inputs" : {"review": ["%s"]}}' % input_data
-        response = requests.post(server_url, data=predict_request)
-        response.raise_for_status()
-        prediction = response.json()['outputs']['prediction'][0][0]
-        return prediction
+        elif input_type=='text':
+            # text input
+            predict_request = '{"inputs" : ["%s"]}' % input_data
+            response = requests.post(server_url, data=predict_request)
+            response.raise_for_status()
+            prediction = response.json()['outputs']['prediction']
+            return prediction
 
 
 class PyTorchModelExecutor(ModelExecutor):

@@ -1,25 +1,50 @@
 from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
-class HasWebUI():
-    def handle_request(self, req):
+class HasUI():
+    def __init__(self):
+        pass
+
+class HasWebUI(HasUI):
+    def __init__(self):
+        pass
+
+    @classmethod
+    def handle_request(cls, req):
         if (req.method == 'GET'):
-            return self.handle_get(req)
+            return cls.handle_get(req)
         else:
-            return self.handle_post(req)
+            return cls.handle_post(req)
     
-    def handle_post(self, req):
-        return HttpResponse(self.get_response(req, True))
+    @classmethod
+    def handle_post(cls, req):
+        return HttpResponse(cls.get_response(req, True))
 
-    def handle_get(self, req):
-        return HttpResponse(self.get_response(req, False))
+    @classmethod
+    def handle_get(cls, req):
+        return HttpResponse(cls.get_response(req, False))
 
-    def get_response(self, req, isPost=False):
+    @classmethod
+    def get_response(cls, req, isPost=False):
         return 'Please override get_response()'
+
+
+class HasRestUI(HasUI):
+    @classmethod
+    @api_view(['GET','POST'])
+    def handle_request(req):
+        return Response("DEFAULT REST RESPONSE")
+
 
 class H1Step():
     def __init__(self):
         pass
 
 class H1StepWithWebUI(H1Step, HasWebUI):
+    def __init__(self):
+        pass
+
+class H1StepWithRestUI(H1Step, HasRestUI):
     def __init__(self):
         pass

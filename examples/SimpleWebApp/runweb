@@ -6,7 +6,7 @@
 #   frameworks/django/project/urls.py
 #
 
-python ui/frameworks/django/manage.py runserver
-
 # start TensorFlow server
-docker run -t --rm -p 8501:8501 --name serving -v "$(pwd)/models/:/models/" tensorflow/serving  --model_config_file=/models/models.config --model_config_file_poll_wait_seconds=60
+docker run -d -t --rm -p 8501:8501 --name serving -v "$(pwd)/models/:/models/" tensorflow/serving --model_config_file=/models/models.config --model_config_file_poll_wait_seconds=60
+
+python ui/frameworks/django/manage.py runserver
