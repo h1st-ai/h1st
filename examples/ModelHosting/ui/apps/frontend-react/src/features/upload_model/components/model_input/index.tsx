@@ -1,7 +1,14 @@
 import React from "react";
 import { XIcon } from "@heroicons/react/solid";
+// import { removeModelInput } from "features/upload_model/uploadSlice";
+import { useAppDispatch } from "app/hooks"; // "../../../../app/hooks";
 
-export default function ModelInput() {
+export interface ModelInputProps {
+  index: number;
+}
+
+export default function ModelInput({ index }: ModelInputProps) {
+  const dispatch = useAppDispatch;
   return (
     <div>
       <div className="mt-1 relative rounded-md shadow-sm">
@@ -25,8 +32,13 @@ export default function ModelInput() {
             <option>Image</option>
           </select>
         </div>
-        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-          <XIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <button
+            className="h-5 w-5"
+            // onClick={() => dispatch(removeModelInput(index))}
+          >
+            <XIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          </button>
         </div>
       </div>
     </div>

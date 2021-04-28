@@ -1,23 +1,25 @@
 import React, { useState, useRef } from "react";
 import klass from "classnames";
-import { QuestionMarkCircleIcon } from "@heroicons/react/solid";
+
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
-  toggleUploadState,
-  setStatus,
-  setModels,
-  addModel,
+  addModelInput,
+  selectApplication,
+  updateApplicationName,
+  updateApplicationDescription,
 } from "./uploadSlice";
 import { useDropzone } from "react-dropzone";
-import ModelInput from "./input";
-import ModelOutput from "./output";
+import ModelInput from "./components/model_input";
+import ModelOutput from "./components/model_output";
+import { useSelector } from "react-redux";
 
 export default function UploadForm() {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [modelName, setModelName] = useState("");
-  const [modelDescription, setModelDescription] = useState("");
+
   const [submitted, setSubmitted] = useState(false);
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+  const applicationInfo = useSelector(selectApplication);
+  const dispatch = useAppDispatch();
 
   const files = acceptedFiles.map((file) => (
     // @ts-ignore
@@ -27,9 +29,27 @@ export default function UploadForm() {
     </li>
   ));
 
+  const updateAppName = (value: string) => {
+    dispatch(updateApplicationName(value));
+  };
+
+  const updateAppDescription = (value: string) => {
+    dispatch(updateApplicationDescription(value));
+  };
+
+  const addNewModelInput = () => {
+    dispatch(addModelInput({ type: "string", name: "" }));
+  };
+
   const submit = () => {
     setSubmitted(true);
   };
+
+  const modelInputs = applicationInfo.input.map((input, index) => (
+    <li>
+      <ModelInput index={index} />
+    </li>
+  ));
 
   return (
     <div className="py-6 px-8 shadow rounded bg-white">
@@ -132,13 +152,13 @@ export default function UploadForm() {
                     name="username"
                     id="username"
                     autoComplete="username"
-                    value={modelName}
-                    onChange={(e) => setModelName(e.target.value)}
+                    value={applicationInfo.name}
+                    onChange={(e) => updateAppName(e.target.value)}
                     className={klass(
                       "flex-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full min-w-0 rounded sm:text-sm border-gray-300",
                       {
                         "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500":
-                          submitted && !modelName,
+                          submitted && !applicationInfo.name,
                       }
                     )}
                   />
@@ -158,8 +178,8 @@ export default function UploadForm() {
                     id="description"
                     name="description"
                     rows={3}
-                    value={modelDescription}
-                    onChange={(e) => setModelDescription(e.target.value)}
+                    value={applicationInfo.description}
+                    onChange={(e) => updateAppDescription(e.target.value)}
                     className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                     defaultValue={""}
                   />
@@ -180,11 +200,21 @@ export default function UploadForm() {
                       /> */}
                     </p>
 
-                    <ul className="mt-6 sm:mr-6">
-                      <li>
-                        <ModelInput />
-                      </li>
-                    </ul>
+                    {modelInputs.length > 0 && (
+                      <ul className="mt-6 sm:mr-6">{modelInputs}</ul>
+                    )}
+
+                    {modelInputs.length === 0 && (
+                      <div className="rounded-tl-md rounded-tr-md rounded-bl-md rounded-br-md text-center text-gray-900 py-5 bg-gray-100 mr-6 mt-6 round">
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={addNewModelInput}
+                        >
+                          Add input
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -209,7 +239,7 @@ export default function UploadForm() {
             <button
               type="button"
               className="mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              disabled={!modelName || !fileRef}
+              disabled={!applicationInfo.name || !fileRef}
             >
               Save
             </button>
