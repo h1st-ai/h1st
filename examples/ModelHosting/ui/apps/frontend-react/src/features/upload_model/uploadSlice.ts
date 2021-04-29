@@ -17,8 +17,9 @@ export interface UploadState {
 }
 
 export interface AIModelInput {
-  type: "string" | "image";
+  type: string;
   name: string;
+  id: string;
 }
 export interface AIModel {
   id: string;
@@ -29,9 +30,14 @@ export interface AIModel {
   creator: string;
 }
 
-export interface AIModelChangePayload {
+export interface AIModelInputTypeChangePayload {
   index: number;
-  input: AIModelInput;
+  type: string;
+}
+
+export interface AIModelInputNameChangePayload {
+  index: number;
+  name: string;
 }
 
 const initialState: UploadState = {
@@ -83,11 +89,22 @@ export const uploadSlice = createSlice({
       state.application.input.push(action.payload);
     },
     removeModelInput: (state, action: PayloadAction<number>) => {
+      console.log(action.payload);
       state.application.input.splice(action.payload, 1);
     },
-    updateModelInput: (state, action: PayloadAction<AIModelChangePayload>) => {
-      const { index, input } = action.payload;
-      state.application.input[index] = input;
+    updateModelInputType: (
+      state,
+      action: PayloadAction<AIModelInputTypeChangePayload>
+    ) => {
+      const { index, type } = action.payload;
+      state.application.input[index].type = type;
+    },
+    updateModelInputName: (
+      state,
+      action: PayloadAction<AIModelInputNameChangePayload>
+    ) => {
+      const { index, name } = action.payload;
+      state.application.input[index].name = name;
     },
   },
 });
@@ -101,7 +118,8 @@ export const {
   updateApplicationDescription,
   addModelInput,
   removeModelInput,
-  updateModelInput,
+  updateModelInputName,
+  updateModelInputType,
 } = uploadSlice.actions;
 
 // The function below is called a selector and allows us to select a value from

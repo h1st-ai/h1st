@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
 import klass from "classnames";
+import { v4 } from "uuid";
 
-import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { useAppSelector, useAppDispatch } from "app/hooks";
 import {
   addModelInput,
   selectApplication,
@@ -9,8 +10,8 @@ import {
   updateApplicationDescription,
 } from "./uploadSlice";
 import { useDropzone } from "react-dropzone";
-import ModelInput from "./components/model_input";
-import ModelOutput from "./components/model_output";
+import ModelInput from "features/upload_model/components/model_input";
+import ModelOutput from "features/upload_model/components/model_output";
 import { useSelector } from "react-redux";
 
 export default function UploadForm() {
@@ -38,7 +39,7 @@ export default function UploadForm() {
   };
 
   const addNewModelInput = () => {
-    dispatch(addModelInput({ type: "string", name: "" }));
+    dispatch(addModelInput({ type: "string", name: "", id: v4() }));
   };
 
   const submit = () => {
@@ -47,7 +48,12 @@ export default function UploadForm() {
 
   const modelInputs = applicationInfo.input.map((input, index) => (
     <li>
-      <ModelInput index={index} />
+      <ModelInput
+        key={input.id}
+        id={input.id}
+        name={input.name}
+        index={index}
+      />
     </li>
   ));
 
@@ -181,7 +187,6 @@ export default function UploadForm() {
                     value={applicationInfo.description}
                     onChange={(e) => updateAppDescription(e.target.value)}
                     className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    defaultValue={""}
                   />
                 </div>
               </div>
@@ -193,7 +198,10 @@ export default function UploadForm() {
                       Application Input
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                      Please provide your model parameters name and type below.
+                      Please provide your model parameters name and type below.{" "}
+                      <a href="#add" onClick={addNewModelInput}>
+                        Add
+                      </a>
                       {/* <QuestionMarkCircleIcon
                         className="h-5 w-5 text-gray-400"
                         aria-hidden="true"

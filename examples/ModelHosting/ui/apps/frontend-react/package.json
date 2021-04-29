@@ -22,7 +22,8 @@
     "react-redux": "^7.2.0",
     "react-scripts": "4.0.3",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
-    "typescript": "~4.1.5"
+    "typescript": "~4.1.5",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "craco start",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@craco/craco": "^6.1.1",
     "@tailwindcss/postcss7-compat": "^2.1.2",
+    "@types/uuid": "^8.3.0",
     "autoprefixer": "^9",
     "postcss": "^7"
   }
