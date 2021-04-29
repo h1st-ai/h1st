@@ -153,3 +153,4 @@ data
 
 
 node_modules
+examples/ModelHosting/uploaded/**
