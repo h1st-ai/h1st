@@ -12,20 +12,30 @@ import {
 import { useDropzone } from "react-dropzone";
 import ModelInput from "features/upload_model/components/model_input";
 import ModelOutput from "features/upload_model/components/model_output";
-import UploadService from "features/service.upload";
+import UploadService from "features/upload_model/service.upload";
+
+const axios = require("axios").default;
 
 export default function UploadForm() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [submitted, setSubmitted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
-  const onDrop = useCallback((acceptedFiles) => {
-    UploadService.upload(acceptedFiles[0], (event) => {
+  const onDrop = useCallback(async (acceptedFiles) => {
+    const result = await UploadService.upload(acceptedFiles[0], (event) => {
       const prog = Math.round((100 * event.loaded) / event.total);
       console.log(prog);
       setProgress(prog);
     });
+
+    if (result.data.status === "OK") {
+      // set the uploaded file here
+      setUploadedFile(result.data.id);
+    }
+
+    console.log("upload result", result);
   }, []);
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -54,7 +64,21 @@ export default function UploadForm() {
     dispatch(addModelInput({ type: "string", name: "", id: v4() }));
   };
 
-  const submit = () => {
+  const submit = async () => {
+    const { name, description, input: rawInput, output } = applicationInfo;
+
+    const input = JSON.stringify(rawInput.filter((i) => i.name.trim() !== ""));
+
+    const response = await axios.post("/upload/", {
+      name,
+      description,
+      input,
+      output: "REST",
+      uploadedFile,
+    });
+
+    console.log(response);
+
     setSubmitted(true);
   };
 
@@ -249,7 +273,8 @@ export default function UploadForm() {
             <button
               type="button"
               className="mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              disabled={!applicationInfo.name || !fileRef}
+              disabled={!applicationInfo.name || !fileRef || !uploadedFile}
+              onClick={submit}
             >
               Save
             </button>

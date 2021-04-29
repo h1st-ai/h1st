@@ -17,6 +17,7 @@ class AIModel(models.Model):
     # Metadata
     class Meta:
         ordering = ['-created_at']
+        explicit_app_label = "app"
 
     # Methods
     def get_absolute_url(self):
