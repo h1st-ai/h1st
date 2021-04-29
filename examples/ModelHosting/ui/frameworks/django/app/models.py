@@ -6,8 +6,11 @@ class AIModel(models.Model):
 
     # Fields
     name = models.CharField(max_length=20, help_text='Enter Model Name')
-    path = models.FileField(upload_to='/temp/uploads/')
-    creator = models.CharField(max_length=20, help_text='Enter Model Name')
+    description = models.CharField(max_length=255, help_text='Enter Model Description')
+    model_input = models.CharField(max_length=255, help_text='Input in Json form')
+    model_output = models.CharField(max_length=255, help_text='Output in Json form')
+    file_name = models.CharField(max_length=200)
+    creator = models.CharField(max_length=20, help_text='Creator')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

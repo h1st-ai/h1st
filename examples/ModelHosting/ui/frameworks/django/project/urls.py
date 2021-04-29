@@ -3,9 +3,7 @@ from ui.h1flow_urls import H1FLOW_URLS
 from django.urls import path, include
 
 def make_url_patterns(input):
-    urls = [
-        path('api-auth/', include('rest_framework.urls'))
-    ]
+    urls = []
 
     for uri, klass in input.items():
         urls.append(path(uri, klass().handle_request))

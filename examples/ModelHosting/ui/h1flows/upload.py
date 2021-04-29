@@ -13,31 +13,18 @@ class Upload(H1StepWithWebUI):
     def handle_post(self, req):
         file = req.FILES['file']
         
+        # if there is a file, upload. Otherwise, check for form input
         if file is None:
             return HttpResponseBadRequest({
                 "status": "Bad request"
             })
+        else:
+            file_id = self.handle_uploaded_file(file)
 
-        file_id = self.handle_uploaded_file(file)
-
-        return JsonResponse({
-            "status": "OK",
-            "id": file_id
-        }) 
-
-        # try:
-        #     print(file)
-        #     self.handle_uploaded_file(file)
-
-        #     return JsonResponse({
-        #         "status": "OK",
-        #         "id": ""
-        #     }) 
-        # except:
-        #     return HttpResponseServerError({
-        #         "status": "Server error",
-        #         "message": ex
-        #     })
+            return JsonResponse({
+                "status": "OK",
+                "id": file_id
+            }) 
 
     def handle_uploaded_file(self, f):
         file_id = str(uuid.uuid4())
@@ -45,7 +32,8 @@ class Upload(H1StepWithWebUI):
 
         print("Saving " + ext)
         
-        with open("uploaded/" + file_id + ext, 'wb+') as destination:
+        # start with <id>.uploaded.<ext>. After unzipping, remove uploaded
+        with open("uploaded/" + file_id + ".uploaded" + ext, 'wb+') as destination:
             for chunk in f.chunks():
                 destination.write(chunk)
 
