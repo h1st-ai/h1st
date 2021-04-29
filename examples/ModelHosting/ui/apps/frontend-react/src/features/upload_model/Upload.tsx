@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import klass from "classnames";
 import { v4 } from "uuid";
 
@@ -12,14 +12,26 @@ import {
 import { useDropzone } from "react-dropzone";
 import ModelInput from "features/upload_model/components/model_input";
 import ModelOutput from "features/upload_model/components/model_output";
-import { useSelector } from "react-redux";
+import UploadService from "features/service.upload";
 
 export default function UploadForm() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [submitted, setSubmitted] = useState(false);
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
-  const applicationInfo = useSelector(selectApplication);
+  const [progress, setProgress] = useState(0);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    UploadService.upload(acceptedFiles[0], (event) => {
+      const prog = Math.round((100 * event.loaded) / event.total);
+      console.log(prog);
+      setProgress(prog);
+    });
+  }, []);
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    onDrop,
+  });
+  const applicationInfo = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
 
   const files = acceptedFiles.map((file) => (
@@ -89,20 +101,7 @@ export default function UploadForm() {
                     >
                       <path d="M12 0l-11 6v12.131l11 5.869 11-5.869v-12.066l-11-6.065zm-1 21.2l-8-4.268v-8.702l8 4.363v8.607zm10-4.268l-8 4.268v-9.793l-8.867-4.837 7.862-4.289 9.005 4.969v9.682zm-4.408-4.338l1.64-.917-.006.623-1.64.918.006-.624zm1.653-2.165l-1.641.919-.006.624 1.641-.918.006-.625zm0-1.19l-1.641.919-.006.624 1.641-.918.006-.625zm-3.747-.781l1.645-.96-.519-.273-1.646.959.52.274zm4.208 6.33l-.486-1.865-1.641.919-.523 2.431c-.229 1.105.422 1.31 1.311.812.886-.497 1.548-1.437 1.339-2.297zm-1.335 1.684c-.411.23-.821.262-.817-.136.005-.41.422-.852.835-1.083.407-.228.81-.25.806.165-.005.398-.415.825-.824 1.054zm-4.349-10.625l-.519-.274-1.646.96.52.274 1.645-.96zm-1.559-.826l-1.646.96.523.277 1.646-.96-.523-.277zm1.992 2.885l1.644-.958-.515-.274-1.647.958.518.274zm3.001 1.744l1.646-.96-.52-.273-1.645.959.519.274zm-6.029-5.177l-1.645.96.516.274 1.647-.959-.518-.275zm1.992 2.886l1.646-.96-.52-.274-1.645.959.519.275zm3.058 1.689l1.646-.959-.518-.274-1.646.96.518.273z" />
                     </svg>
-                    {/* <svg
-                    className="mx-auto h-12 w-12 text-gray-400"
-                    stroke="currentColor"
-                    fill="none"
-                    viewBox="0 0 48 48"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg> */}
+
                     <div className="flex text-sm text-gray-600">
                       <label
                         htmlFor="file-upload"
@@ -113,13 +112,12 @@ export default function UploadForm() {
                           name="file-upload"
                           type="file"
                           ref={fileRef}
-                          // className="sr-only"
                           {...getInputProps()}
                         />
                       </label>
                     </div>
                     <p className="text-xs text-gray-500">
-                      File size limit: 10MB
+                      File size limit: 10MB {progress}
                     </p>
                     {acceptedFiles.length > 0 && (
                       <aside>
@@ -199,7 +197,11 @@ export default function UploadForm() {
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
                       Please provide your model parameters name and type below.{" "}
-                      <a href="#add" onClick={addNewModelInput}>
+                      <a
+                        className="ml-2 inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-xs rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        href="#add"
+                        onClick={addNewModelInput}
+                      >
                         Add
                       </a>
                       {/* <QuestionMarkCircleIcon
