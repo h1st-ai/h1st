@@ -1,6 +1,7 @@
 from .mock_framework import H1StepWithWebUI
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
 import os 
 import uuid
 import json
@@ -10,7 +11,26 @@ from .models import AIModel
 class Upload(H1StepWithWebUI):
     @csrf_exempt
     def handle_request(self, req):
-        return self.handle_post(req)
+        if (req.method == 'GET'):
+            return self.handle_get(req)
+        elif (req.method == 'POST'):
+            return self.handle_post(req)
+        elif (req.method == 'PUT'):
+            return self.handle_post(req)
+        elif (req.method == 'DELETE'):
+            return self.handle_post(req)
+        else:
+            return self.handle_default(req)
+
+    def handle_get(self, req):
+        user = "mocked_user"
+        models = list(AIModel.objects.filter().values())
+
+        # add paging
+        return JsonResponse({
+            'status': 'OK',
+            'result': models
+        })
     
     def handle_post(self, req):
         try:
@@ -28,32 +48,33 @@ class Upload(H1StepWithWebUI):
             model_input = data['input']
             model_output = data['output']
             file_name = data['uploadedFile']
-
-            print(name, description, model_input, model_output, file_name)
+            creator="mocked_user"
 
             m = AIModel(
                 name=name,
                 description=description,
                 model_input=model_input,
                 model_output=model_output,
-                file_name=file_name
+                file_name=file_name,
+                creator=creator
             )
 
             m.save()
 
             return JsonResponse({
                 "status": "OK",
-                "id": m.id
+                "result": {
+                    'id': m.id,
+                    'name': name,
+                    'description': description,
+                    'model_input': model_input,
+                    'model_output': model_output,
+                    'created_at': m.created_at,
+                    'updated_at': m.updated_at,
+                    'creator': 'mocked_user'
+                }
             }) 
-
-        # # if there is a file, upload. Otherwise, check for form input
-        # if file is None:
-        #     return HttpResponseBadRequest({
-        #         "status": "Bad request"
-        #     })
-        # else:
             
-
     def handle_uploaded_file(self, f):
         file_id = str(uuid.uuid4())
         ext = os.path.splitext(str(f))[1]

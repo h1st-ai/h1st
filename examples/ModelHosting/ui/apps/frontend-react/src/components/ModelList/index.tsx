@@ -1,21 +1,27 @@
-/* This example requires Tailwind CSS v2.0+ */
-const people = [
-  {
-    name: "Jane Cooper",
-    title: "Regional Paradigm Technician",
-    role: "Admin",
-    email: "jane.cooper@example.com",
-  },
-  {
-    name: "Cody Fisher",
-    title: "Product Directives Officer",
-    role: "Owner",
-    email: "cody.fisher@example.com",
-  },
-  // More people...
-];
+import React from "react";
+import { useAppSelector, useAppDispatch } from "app/hooks";
+import { selectModels, setModels } from "features/upload_model/uploadSlice";
 
-export default function Example() {
+const axios = require("axios").default;
+
+export default function ModelList() {
+  const models = useAppSelector(selectModels);
+  const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    const loadData = async function () {
+      const result = await axios.get("/upload/");
+
+      console.log(result);
+
+      if (result.status === 200 && result.data.status === "OK") {
+        dispatch(setModels(result.data.result));
+      }
+    };
+
+    loadData();
+  }, []);
+
   return (
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -34,19 +40,25 @@ export default function Example() {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Title
+                    Description
+                  </th>
+                  {/* <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Input
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Email
-                  </th>
+                    Output
+                  </th> */}
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Role
+                    Updated At
                   </th>
                   <th scope="col" className="relative px-6 py-3">
                     <span className="sr-only">Edit</span>
@@ -54,26 +66,29 @@ export default function Example() {
                 </tr>
               </thead>
               <tbody>
-                {people.map((person, personIdx) => (
+                {models.map((model, modelIdx) => (
                   <tr
-                    key={person.email}
-                    className={personIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                    key={model.id}
+                    className={modelIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {person.name}
+                      {model.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {person.title}
+                      {model.description}
+                    </td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {model.model_input}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {person.email}
-                    </td>
+                      {model.output}
+                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {person.role}
+                      {model.updated_at}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <a
-                        href="#"
+                        href="#edit"
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         Edit
