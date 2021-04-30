@@ -5,7 +5,8 @@ import os
 import uuid
 import json
 
-from ui.frameworks.django.app.models import AIModel
+# from ui.frameworks.django.app.models import AIModel
+from .models import AIModel
 class Upload(H1StepWithWebUI):
     @csrf_exempt
     def handle_request(self, req):
@@ -28,7 +29,7 @@ class Upload(H1StepWithWebUI):
             model_output = data['output']
             file_name = data['uploadedFile']
 
-            print(name, description, input, output, file_name)
+            print(name, description, model_input, model_output, file_name)
 
             m = AIModel(
                 name=name,
