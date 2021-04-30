@@ -1,0 +1,110 @@
+#!/bin/bash -
+#
+# Script to start a new H1st project with a web front-end
+# cf. https://stackoverflow.com/questions/22841764/best-practice-for-django-project-working-directory-structure
+#
+
+APPNAME=$1
+if [ "$APPNAME" = "" ] ; then
+	echo "Usage: $0 <app_name>"
+	exit 1
+fi
+
+
+TOPDIR=$PWD
+APPDIR=$TOPDIR/$APPNAME
+echo "*** Working directory: $TOPDIR"
+echo "*** Application directory: $APPDIR"
+
+
+#
+# Create initial project structure
+#
+function create_project {
+	echo "*** Creating the main project $APPNAME"
+	(cd $TOPDIR ; [ ! -d $APPNAME ] && django-admin startproject $APPNAME)
+
+	echo "*** Applying migrations"
+	(cd $APPDIR ; python manage.py migrate)
+
+	LIST="h1web h1react h1api"
+	echo "*** Creating the key project apps: $LIST"
+	for item in $LIST ; do
+		(cd $APPDIR ; [ -d $item ] || django-admin startapp $item)
+	done
+
+	UTILSDIR=$APPDIR/utils
+	RUNAPP=$UTILSDIR/h1-run-app
+	echo "*** Creating utility script: $RUNAPP"
+	[ ! -d $UTILSDIR ] && mkdir $UTILSDIR
+
+	[ ! -f $RUNAPP ] && cat << EOF > $RUNAPP
+#!/bin/bash
+cd $APPDIR
+python manage.py runserver
+EOF
+	[ -f $RUNAPP ] && chmod 755 $RUNAPP
+
+	LIST="h1flows h1models h1data"
+	echo "*** Creating H1st-specific dirs: $LIST"
+	for dir in $LIST ; do
+		([ -d $APPDIR/$dir ] || mkdir $APPDIR/$dir)
+	done
+
+	LIST="static templates tests"
+	echo "*** Creating common webapp dirs: $LIST"
+	for dir in $LIST; do
+		([ -d $APPDIR/$dir ] || mkdir $APPDIR/$dir)
+	done
+}
+
+
+#
+# Set up files like urls.py and settings.py
+#
+function setup_config_files {
+	APPS=(h1web h1react h1api)
+	URLS=("" react/ api/)
+
+	FILE=$APPDIR/$APPNAME/settings.py
+	echo "*** Configuring $FILE"
+	for app in rest_framework $APPS ; do
+		grep -v $app $FILE | perl -p -e 's/^INSTALLED_APPS =.*$/INSTALLED_APPS = [\n    "'$app'",/' > $FILE.$$
+		mv $FILE.$$ $FILE
+	done
+
+	FILE=$APPDIR/$APPNAME/urls.py
+	echo "*** Configuring $FILE"
+	for ((i = 0 ; i < ${#APPS[@]} ; i++)); do
+		APP=${APPS[$i]}
+		URL=${URLS[$i]}
+		URL2=`echo $URL | sed -e 's/\//\\\\\//'`
+
+		echo "*** Configuring $FILE for $APP"
+		perl -pi -e 's/^from django.urls import path.*$/from django.urls import path,include/' $FILE
+		grep -v $APP $FILE | perl -p -e 's/^urlpatterns =.*$/urlpatterns = [\n    path("'$URL2'", include("'$APP.urls'")),/' > $FILE.$$
+		mv $FILE.$$ $FILE
+
+		echo "****** Configuring $APPDIR/$APP/urls.py"
+		cat << EOF > $APPDIR/$APP/urls.py
+from django.urls import path
+from $APP import views
+
+urlpatterns = [
+    path("", views.default),
+]
+EOF
+
+		echo "****** Configuring $APPDIR/$APP/views.py"
+cat << EOF > $APPDIR/$APP/views.py
+from django.http import HttpResponse
+
+def default(request):
+	return HttpResponse("<HTML><BODY><CENTER><H1></H1></CENTER></BODY></HTML>")
+EOF
+	
+	done
+}
+
+create_project
+setup_config_files
