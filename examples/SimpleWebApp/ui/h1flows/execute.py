@@ -14,7 +14,7 @@ class Execute(H1StepWithWebUI):
                 if uploaded_file.size > 200 * 1024:
                     return "Sorry, we accept only images with size <= 200KB"
                 image_data = uploaded_file.read()
-                return self.execute(model_id, input_data=image_data, input_type='image', spec=spec)
+                return json.dumps(self.execute(model_id, input_data=image_data, input_type='image', spec=spec))
             
             return """
                     <h1> Image Classification </h1>
