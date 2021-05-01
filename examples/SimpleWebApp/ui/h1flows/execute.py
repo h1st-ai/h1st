@@ -6,13 +6,9 @@ import json
 
 class Execute(H1StepWithWebUI):
     def get_response(self, req, is_post, *args, **kwargs):
-        # print(req.GET)
-        # print(req.POST)
-        # print(kwargs)
-        # print(args)
         model_id = kwargs['model_id']
         spec = json.load(open('/tmp/%s.json' % model_id))
-        if model_id in ['imagenet_resnet', 'imagenet_keras_mobilenetv2']:
+        if 'imagenet' in model_id:
             if is_post:
                 uploaded_file = req.FILES['image']
                 if uploaded_file.size > 200 * 1024:

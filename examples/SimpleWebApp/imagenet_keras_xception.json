@@ -1,6 +1,6 @@
 {
   "input-format": "numpy",
-  "image-shape": [224, 224],
+  "image-shape": [299, 299],
   "input-scaling": {
     "input-min": [0, 0, 0],
     "input-max": [255, 255, 255],
