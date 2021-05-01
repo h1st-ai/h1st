@@ -29,11 +29,16 @@ class TensorFlowModelExecutor(ModelExecutor):
                 min, max = np.array(spec['input-scaling']['input-min']), np.array(spec['input-scaling']['input-max'])
                 return (input_data - min) / (max - min)
         return input_data
+    
     def post_process(output, spec):
+        ret = output.copy()
         if 'output-mapping' in spec:
             logger.debug('Perform output mapping')
-            return spec['output-mapping'][output]
-        return output
+            print(dict(zip(spec['output-mapping'], ret)))
+            ret = sorted(zip(spec['output-mapping'], ret), key=lambda x: -x[1])
+        if 'output-limit' in spec:
+            ret = ret[:spec['output-limit']]
+        return ret
     
     @staticmethod
     def execute(model_name, input_data, input_type='text', spec={}):
@@ -45,12 +50,12 @@ class TensorFlowModelExecutor(ModelExecutor):
             im = Image.open(io.BytesIO(input_data))
 
             # convert to corresponding mode if needed
-            if 'image-mode' in spec:
-                im = im.convert(spec['image-mode'])
+            if 'input-image-mode' in spec:
+                im = im.convert(spec['input-image-mode'])
 
             # resize image
-            if 'image-shape' in spec:
-                im = im.resize(spec['image-shape'])
+            if 'input-image-shape' in spec:
+                im = im.resize(spec['input-image-shape'])
 
             if input_format == 'image_bytes':
                 logger.debug('Raw Image Bytes Input')
@@ -78,10 +83,9 @@ class TensorFlowModelExecutor(ModelExecutor):
             prediction = response.json()['predictions'][0]
             logger.debug(len(prediction))
             if 'classes' in prediction:
-                # This is for Resnet50
-                prediction = prediction['classes']
-            else:
-                prediction = np.argmax(prediction)
+                # This is for Resnet with `image_bytes` input
+                prediction = prediction['probabilities']
+            
             return TensorFlowModelExecutor.post_process(prediction, spec)
         
         elif input_type=='text':
