@@ -7,7 +7,7 @@ import json
 class Execute(H1StepWithWebUI):
     def get_response(self, req, is_post, *args, **kwargs):
         model_id = kwargs['model_id']
-        spec = json.load(open('/tmp/%s.json' % model_id))
+        spec = json.load(open('io-spec/%s.json' % model_id))
         if 'imagenet' in model_id:
             if is_post:
                 uploaded_file = req.FILES['image']
