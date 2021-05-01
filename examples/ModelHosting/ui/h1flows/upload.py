@@ -106,7 +106,6 @@ class Upload(H1StepWithWebUI):
     
     def deploy_model(self, file_name, file_path):
         # check to see if the directory exist
-        
         if not os.path.exists(self.model_config_path):
             self.create_model_config()
 
@@ -116,7 +115,6 @@ class Upload(H1StepWithWebUI):
                 zipObj.extractall(path='{}/{}'.format(self.model_extract_path, file_name))
             
             # consider deleting the uploaded file at this point
-
             TensorFlowModelManager.add_new_model_config(conf_filepath="models/models.config", name=file_name, base_path="/models/{}/".format(file_name))
             return True
 
