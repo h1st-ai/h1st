@@ -115,7 +115,7 @@ class Upload(H1StepWithWebUI):
                 zipObj.extractall(path='{}/{}'.format(self.model_extract_path, file_name))
             
             # consider deleting the uploaded file at this point
-            TensorFlowModelManager.add_new_model_config(conf_filepath="models/models.config", name=file_name, base_path="/models/{}/".format(file_name))
+            TensorFlowModelManager.register_new_model(conf_filepath="model_repo/tensorflow_models/models.config", name=file_name, base_path="/models/{}/".format(file_name))
             return True
 
         except Exception as ex:

@@ -1,3 +1,5 @@
 protobuf >= 3.15.8
 tensorflow-serving-api >= 2.4.1
+torchserve
+torch-model-archiver
 zipfile36 >= 0.1.3
