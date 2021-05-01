@@ -6,6 +6,11 @@ export interface UploadState {
   showUploadForm: boolean;
   status: "idle" | "loading" | "failed";
   models: AIModel[];
+  statusMessage: {
+    title: string;
+    message: string;
+    visible: boolean;
+  };
   application: {
     name: string;
     description: string | "" | undefined;
@@ -25,6 +30,8 @@ export interface AIModel {
   id: string;
   name: string;
   description: string;
+  input: string;
+  output: string;
   created_at: string;
   updated_at: string;
   creator: string;
@@ -40,10 +47,20 @@ export interface AIModelInputNameChangePayload {
   name: string;
 }
 
+export interface StatusMessagePayload {
+  title: string;
+  message: string;
+}
+
 const initialState: UploadState = {
   showUploadForm: false,
   status: "idle",
   models: [],
+  statusMessage: {
+    title: "",
+    message: "",
+    visible: false,
+  },
   application: {
     name: "",
     description: "",
@@ -59,6 +76,26 @@ export const uploadSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    resetApplicationState: (state) => {
+      state.application = initialState.application;
+    },
+    showUploadForm: (state) => {
+      state.showUploadForm = true;
+    },
+    hideUploadForm: (state) => {
+      state.showUploadForm = false;
+    },
+    showMessage: (state, action: PayloadAction<StatusMessagePayload>) => {
+      const { title, message } = action.payload;
+      state.statusMessage.title = title;
+      state.statusMessage.message = message;
+      state.statusMessage.visible = true;
+    },
+    hideMessage: (state) => {
+      state.statusMessage.message = "";
+      state.statusMessage.title = "";
+      state.statusMessage.visible = false;
+    },
     toggleUploadState: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the Immer library,
@@ -110,16 +147,21 @@ export const uploadSlice = createSlice({
 });
 
 export const {
+  showUploadForm,
+  hideUploadForm,
   toggleUploadState,
   setStatus,
   setModels,
   addModel,
+  showMessage,
+  hideMessage,
   updateApplicationName,
   updateApplicationDescription,
   addModelInput,
   removeModelInput,
   updateModelInputName,
   updateModelInputType,
+  resetApplicationState,
 } = uploadSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
@@ -128,6 +170,11 @@ export const {
 export const selectShowModalState = (state: RootState) =>
   state.upload.showUploadForm;
 
+export const selectModels = (state: RootState) => state.upload.models;
+
 export const selectApplication = (state: RootState) => state.upload.application;
+
+export const selectStatusMessage = (state: RootState) =>
+  state.upload.statusMessage;
 
 export default uploadSlice.reducer;

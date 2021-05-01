@@ -8,6 +8,11 @@ import {
   selectApplication,
   updateApplicationName,
   updateApplicationDescription,
+  resetApplicationState,
+  hideUploadForm,
+  showMessage,
+  addModel,
+  hideMessage,
 } from "./uploadSlice";
 import { useDropzone } from "react-dropzone";
 import ModelInput from "features/upload_model/components/model_input";
@@ -64,7 +69,14 @@ export default function UploadForm() {
     dispatch(addModelInput({ type: "string", name: "", id: v4() }));
   };
 
+  const cancel = () => {
+    dispatch(resetApplicationState());
+    dispatch(hideUploadForm());
+  };
+
   const submit = async () => {
+    setSubmitted(true);
+
     const { name, description, input: rawInput, output } = applicationInfo;
 
     const input = JSON.stringify(rawInput.filter((i) => i.name.trim() !== ""));
@@ -73,13 +85,24 @@ export default function UploadForm() {
       name,
       description,
       input,
-      output: "REST",
+      output,
       uploadedFile,
     });
 
     console.log(response);
 
-    setSubmitted(true);
+    if (response.data.status === "OK") {
+      dispatch(resetApplicationState());
+      dispatch(addModel(response.data.result));
+      dispatch(hideUploadForm());
+      dispatch(
+        showMessage({
+          title: "Success",
+          message: `${name} has been queued for deployment successfully`,
+        })
+      );
+      setSubmitted(false);
+    }
   };
 
   const modelInputs = applicationInfo.input.map((input, index) => (
@@ -282,6 +305,7 @@ export default function UploadForm() {
             <button
               type="button"
               className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={cancel}
             >
               Cancel
             </button>
