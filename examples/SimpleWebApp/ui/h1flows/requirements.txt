@@ -1,3 +1,4 @@
 Django
+protobuf
 requests
 tensorflow-serving-api
