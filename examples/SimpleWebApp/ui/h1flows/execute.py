@@ -11,14 +11,13 @@ class Execute(H1StepWithWebUI):
         # print(kwargs)
         # print(args)
         model_id = kwargs['model_id']
+        spec = json.load(open('/tmp/%s.json' % model_id))
         if model_id in ['imagenet_resnet', 'imagenet_keras_mobilenetv2']:
             if is_post:
                 uploaded_file = req.FILES['image']
                 if uploaded_file.size > 200 * 1024:
                     return "Sorry, we accept only images with size <= 200KB"
                 image_data = uploaded_file.read()
-                spec = json.load(open('/tmp/%s.json' % model_id))
-                print(spec.keys())
                 return self.execute(model_id, input_data=image_data, input_type='image', spec=spec)
             
             return """
@@ -31,7 +30,7 @@ class Execute(H1StepWithWebUI):
 
         elif model_id == 'sentiment_analysis':
             if is_post:
-                return self.execute(model_id, input_data=req.POST['text'], input_type='text')
+                return self.execute(model_id, input_data=req.POST['text'], input_type='text', spec=spec)
             
             return """
                     <h1> Sentiment analysis </h1>
