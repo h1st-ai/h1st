@@ -1,15 +1,11 @@
 {
   "input-format": "numpy",
-  "image-shape": [224, 224],
-  "input-scaling": {
-    "input-min": [0, 0, 0],
-    "input-max": [255, 255, 255],
-    "target-min": [-1, -1, -1],
-    "target-max": [1, 1, 1]
-  },
+  "input-image-shape": [224, 224],
 
   "input-mapping": [
   ],
+
+  "output-limit": 3,
 
   "output-mapping": [
     "tench",

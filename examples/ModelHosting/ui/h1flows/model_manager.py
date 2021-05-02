@@ -1,10 +1,12 @@
 from google.protobuf import text_format
 from tensorflow_serving.config import model_server_config_pb2
 
+import requests
+
 
 class TensorFlowModelManager:
     @staticmethod
-    def add_new_model_config(conf_filepath, name, base_path, model_platform='tensorflow'):
+    def register_new_model(conf_filepath, name, base_path, model_platform='tensorflow'):
         with open(conf_filepath, 'r+') as f:
             config_ini = f.read()
         model_server_config = model_server_config_pb2.ModelServerConfig()
@@ -21,3 +23,10 @@ class TensorFlowModelManager:
         f = open(conf_filepath, "w+")
         f.write(model_server_config.__str__())
         f.close()
+
+
+class PyTorchModelManager:
+    @staticmethod
+    def register_new_model(name, workers=1):
+        res = requests.post("http://localhost:8081/models?url={name}.mar&initial_workers={workers}".format(name=name, workers=workers))
+        return res.json()
