@@ -243,18 +243,7 @@ export default function UploadForm() {
                       Application Input
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                      Please provide your model parameters name and type below.{" "}
-                      <a
-                        className="ml-2 inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-xs rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        href="#add"
-                        onClick={addNewModelInput}
-                      >
-                        Add
-                      </a>
-                      {/* <QuestionMarkCircleIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      /> */}
+                      Please provide your model parameters name and type below.
                     </p>
 
                     {modelInputs.length > 0 && (

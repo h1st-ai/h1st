@@ -29,6 +29,7 @@ export interface AIModelInput {
 export interface AIModel {
   id: string;
   name: string;
+  type: string;
   description: string;
   input: string;
   output: string;

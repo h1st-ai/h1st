@@ -1,10 +1,19 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class AIModel(models.Model):
     """A typical class defining a model, derived from the Model class."""
+    class ModelClass(models.TextChoices):
+        TF = 'TF', _('Tensorflow')
+        PT = 'PT', _('PyTorch')
 
     # Fields
+    type = models.CharField(
+        max_length=2,
+        choices=ModelClass.choices,
+        default=ModelClass.TF,
+    )
     name = models.CharField(max_length=20, help_text='Enter Model Name')
     description = models.CharField(max_length=255, help_text='Enter Model Description')
     model_input = models.CharField(max_length=255, help_text='Input in Json form')
