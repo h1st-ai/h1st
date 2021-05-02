@@ -43,18 +43,6 @@ export default function ModelList() {
                   >
                     Description
                   </th>
-                  {/* <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Input
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Output
-                  </th> */}
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -78,12 +66,6 @@ export default function ModelList() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {model.description}
                     </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {model.model_input}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {model.output}
-                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {model.updated_at}
                     </td>
@@ -91,6 +73,8 @@ export default function ModelList() {
                       <a
                         href={`/application/${model.id}/execute`}
                         className="w-5 h-5 text-gray-500 mr-4"
+                        target="_blank"
+                        rel="noreferrer"
                       >
                         <ExternalLinkIcon className="w-5 h-5 text-grey-100" />
                       </a>

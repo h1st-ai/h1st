@@ -39,8 +39,6 @@ export default function UploadForm() {
       // set the uploaded file here
       setUploadedFile(result.data.id);
     }
-
-    console.log("upload result", result);
   }, []);
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -77,13 +75,21 @@ export default function UploadForm() {
   const submit = async () => {
     setSubmitted(true);
 
-    const { name, description, input: rawInput, output } = applicationInfo;
+    const {
+      name,
+      description,
+      input: rawInput,
+      output: rawOutput,
+    } = applicationInfo;
 
     const input = JSON.stringify(rawInput.filter((i) => i.name.trim() !== ""));
+    const output = JSON.stringify(rawOutput);
+    const model_type = "TF";
 
     const response = await axios.post("/upload/", {
       name,
       description,
+      model_type,
       input,
       output,
       uploadedFile,
