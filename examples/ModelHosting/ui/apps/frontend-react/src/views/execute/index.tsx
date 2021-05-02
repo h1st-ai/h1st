@@ -47,7 +47,7 @@ export default function Execute(props: ExecutionProps) {
     let widget = null;
 
     if (type === "IMG_CLASSIFIER") {
-      widget = <ImageClassifierWidget />;
+      widget = <ImageClassifierWidget model={model} />;
     }
 
     return (

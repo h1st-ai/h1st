@@ -12,7 +12,6 @@ import {
   hideUploadForm,
   showMessage,
   addModel,
-  hideMessage,
 } from "./uploadSlice";
 import { useDropzone } from "react-dropzone";
 import ModelInput from "features/upload_model/components/model_input";
@@ -29,11 +28,14 @@ export default function UploadForm() {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const onDrop = useCallback(async (acceptedFiles) => {
-    const result = await UploadService.upload(acceptedFiles[0], (event) => {
-      const prog = Math.round((100 * event.loaded) / event.total);
-      console.log(prog);
-      setProgress(prog);
-    });
+    const result = await UploadService.upload(
+      { file: acceptedFiles[0] },
+      (event) => {
+        const prog = Math.round((100 * event.loaded) / event.total);
+        console.log(prog);
+        setProgress(prog);
+      }
+    );
 
     if (result.data.status === "OK") {
       // set the uploaded file here

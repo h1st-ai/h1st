@@ -8,10 +8,13 @@ const http = axios.create({
 });
 
 class UploadFilesService {
-  upload(file: File, onUploadProgress: (progressEvent: any) => void) {
+  upload(data: Object, onUploadProgress: (progressEvent: any) => void) {
     let formData = new FormData();
 
-    formData.append("file", file);
+    Object.keys(data).forEach((k) => {
+      // @ts-ignore
+      formData.append(k, data[k]);
+    });
 
     return http.post("/upload/", formData, {
       headers: {
