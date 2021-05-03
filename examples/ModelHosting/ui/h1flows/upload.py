@@ -16,8 +16,10 @@ from .models import AIModel
 
 class Upload(H1StepWithWebUI):
     def __init__(self):
-        self.model_extract_path = "models"
-        self.model_config_path = "models/models.config"
+        self.MODEL_EXT_PATH = "models"
+        self.TF_PATH = "{}/tensorflow_models".format(self.MODEL_EXT_PATH)
+        self.TF_MODEL_CONFIG = "{}/models.config".format(self.TF_PATH)
+        
 
     @csrf_exempt
     def handle_request(self, req):
@@ -59,12 +61,13 @@ class Upload(H1StepWithWebUI):
             model_input = data['input']
             model_output = data['output']
             file_name = data['uploadedFile']
+            type = data['model_type']
             creator="mocked_user"
 
             #deploy the model first
             file_path = "uploaded/" + file_name
             dir_name = file_name.split('.')[0]
-            deploy_result = self.deploy_model(dir_name, file_path)
+            deploy_result = self.deploy_model(dir_name, file_path, model_type=type)
             
             if deploy_result is False:
                 return JsonResponse({
@@ -100,30 +103,34 @@ class Upload(H1StepWithWebUI):
             }) 
 
     def create_model_config(self):
-        os.mkdir(self.model_extract_path)
-        with open(self.model_config_path, 'a') as out:
+        os.mkdir(self.MODEL_EXT_PATH)
+        os.mkdir(self.TF_PATH)
+        with open(self.TF_MODEL_CONFIG, 'a') as out:
             out.write(f'model_config_list {{}}' + '\n')
     
-    def deploy_model(self, file_name, file_path):
-        # check to see if the directory exist
-        if not os.path.exists(self.model_config_path):
-            self.create_model_config()
+    def deploy_model(self, file_name, file_path, model_type = 'TF'):
+        if model_type == 'TF' :
+            # check to see if the directory exist
+            if not os.path.exists(self.MODEL_EXT_PATH):
+                self.create_model_config()
 
-        try:
-            with ZipFile(file_path, 'r') as zipObj:
-                # Extract all the contents of zip file in current directory
-                zipObj.extractall(path='{}/{}'.format(self.model_extract_path, file_name))
-            
-            # consider deleting the uploaded file at this point
-            TensorFlowModelManager.register_new_model(conf_filepath="model_repo/tensorflow_models/models.config", name=file_name, base_path="/models/{}/".format(file_name))
-            return True
+            try:
+                with ZipFile(file_path, 'r') as zipObj:
+                    # Extract all the contents of zip file in current directory
+                    zipObj.extractall(path='{}/{}'.format(self.TF_PATH, file_name))
+                
+                # consider deleting the uploaded file at this point
+                TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=file_name, base_path="/models/{}/".format(file_name))
+                return True
 
-        except Exception as ex:
-            print(type(ex))    # the exception
-            print(ex.args)     # arguments stored in .args
-            print(ex)          # __str__ allows args to be printed directly,
+            except Exception as ex:
+                print(type(ex))    # the exception
+                print(ex.args)     # arguments stored in .args
+                print(ex)          # __str__ allows args to be printed directly,
 
-            return False
+                return False
+        
+        return True
             
     def handle_uploaded_file(self, f):
         file_id = str(uuid.uuid4())

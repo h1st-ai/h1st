@@ -16,7 +16,7 @@ export interface UploadState {
     description: string | "" | undefined;
     input: AIModelInput[];
     output: {
-      type: "rest" | "ui";
+      type: "REST" | "IMG_CLASSIFIER";
     };
   };
 }
@@ -29,6 +29,7 @@ export interface AIModelInput {
 export interface AIModel {
   id: string;
   name: string;
+  type: string;
   description: string;
   input: string;
   output: string;
@@ -66,7 +67,7 @@ const initialState: UploadState = {
     description: "",
     input: [],
     output: {
-      type: "rest",
+      type: "IMG_CLASSIFIER",
     },
   },
 };

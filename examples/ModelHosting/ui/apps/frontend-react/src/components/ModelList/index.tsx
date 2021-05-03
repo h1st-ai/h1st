@@ -1,4 +1,5 @@
 import React from "react";
+import { ExternalLinkIcon } from "@heroicons/react/solid";
 import { useAppSelector, useAppDispatch } from "app/hooks";
 import { selectModels, setModels } from "features/upload_model/uploadSlice";
 
@@ -42,18 +43,6 @@ export default function ModelList() {
                   >
                     Description
                   </th>
-                  {/* <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Input
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Output
-                  </th> */}
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -77,21 +66,17 @@ export default function ModelList() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {model.description}
                     </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {model.model_input}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {model.output}
-                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {model.updated_at}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex">
                       <a
-                        href="#edit"
-                        className="text-indigo-600 hover:text-indigo-900"
+                        href={`/application/${model.id}/execute`}
+                        className="w-5 h-5 text-gray-500 mr-4"
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        Edit
+                        <ExternalLinkIcon className="w-5 h-5 text-grey-100" />
                       </a>
                     </td>
                   </tr>

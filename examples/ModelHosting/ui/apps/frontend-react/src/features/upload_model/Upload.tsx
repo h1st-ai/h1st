@@ -12,7 +12,6 @@ import {
   hideUploadForm,
   showMessage,
   addModel,
-  hideMessage,
 } from "./uploadSlice";
 import { useDropzone } from "react-dropzone";
 import ModelInput from "features/upload_model/components/model_input";
@@ -29,18 +28,19 @@ export default function UploadForm() {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const onDrop = useCallback(async (acceptedFiles) => {
-    const result = await UploadService.upload(acceptedFiles[0], (event) => {
-      const prog = Math.round((100 * event.loaded) / event.total);
-      console.log(prog);
-      setProgress(prog);
-    });
+    const result = await UploadService.upload(
+      { file: acceptedFiles[0] },
+      (event) => {
+        const prog = Math.round((100 * event.loaded) / event.total);
+        console.log(prog);
+        setProgress(prog);
+      }
+    );
 
     if (result.data.status === "OK") {
       // set the uploaded file here
       setUploadedFile(result.data.id);
     }
-
-    console.log("upload result", result);
   }, []);
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -77,13 +77,21 @@ export default function UploadForm() {
   const submit = async () => {
     setSubmitted(true);
 
-    const { name, description, input: rawInput, output } = applicationInfo;
+    const {
+      name,
+      description,
+      input: rawInput,
+      output: rawOutput,
+    } = applicationInfo;
 
     const input = JSON.stringify(rawInput.filter((i) => i.name.trim() !== ""));
+    const output = JSON.stringify(rawOutput);
+    const model_type = "TF";
 
     const response = await axios.post("/upload/", {
       name,
       description,
+      model_type,
       input,
       output,
       uploadedFile,
@@ -243,18 +251,7 @@ export default function UploadForm() {
                       Application Input
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                      Please provide your model parameters name and type below.{" "}
-                      <a
-                        className="ml-2 inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-xs rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        href="#add"
-                        onClick={addNewModelInput}
-                      >
-                        Add
-                      </a>
-                      {/* <QuestionMarkCircleIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      /> */}
+                      Please provide your model parameters name and type below.
                     </p>
 
                     {modelInputs.length > 0 && (

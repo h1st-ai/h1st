@@ -3,9 +3,15 @@ import { RadioGroup } from "@headlessui/react";
 
 const settings = [
   {
-    name: "REST API",
-    description: "Expose your application as a REST API.",
+    name: "Image Classifier",
+    value: "IMG_CLASSIFER",
+    description: "Expose your application as an image classifier.",
   },
+  // {
+  //   name: "REST API",
+  //   value: "REST",
+  //   description: "Expose your application as a REST API.",
+  // },
   // {
   //   name: "Web Application",
   //   description: "Create an web applicaiton with user interface",
@@ -18,7 +24,7 @@ function classNames(...classes) {
 }
 
 export default function ModelOutput() {
-  const [selected, setSelected] = useState(settings[0]);
+  const [selected, setSelected] = useState(settings[0].value);
 
   return (
     <RadioGroup value={selected} onChange={setSelected}>
@@ -27,7 +33,7 @@ export default function ModelOutput() {
         {settings.map((setting, settingIdx) => (
           <RadioGroup.Option
             key={setting.name}
-            value={setting}
+            value={setting.value}
             className={({ checked }) =>
               classNames(
                 settingIdx === 0 ? "rounded-tl-md rounded-tr-md" : "",
