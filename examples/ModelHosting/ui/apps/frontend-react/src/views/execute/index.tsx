@@ -28,7 +28,7 @@ export default function Execute(props: ExecutionProps) {
           setModel({
             ...res.data.model,
             output: res.data.model.model_output,
-            intput: res.data.model.model_input,
+            input: res.data.model.model_input,
           })
         );
       }
