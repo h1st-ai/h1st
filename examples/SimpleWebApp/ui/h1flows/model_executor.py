@@ -8,7 +8,7 @@ from loguru import logger
 
 
 TENSORFLOW_SERVER = "http://localhost:8501/v1/models"
-
+PYTORCH_SERVER = "http://localhost:8080"
 
 class ModelExecutor:
     @staticmethod
@@ -32,12 +32,16 @@ class TensorFlowModelExecutor(ModelExecutor):
     
     def post_process(output, spec):
         ret = output.copy()
-        if 'output-mapping' in spec:
-            logger.debug('Perform output mapping')
-            print(dict(zip(spec['output-mapping'], ret)))
-            ret = sorted(zip(spec['output-mapping'], ret), key=lambda x: -x[1])
-        if 'output-limit' in spec:
-            ret = ret[:spec['output-limit']]
+        if len(ret) == 1:
+            # Binary classification??? how to handle this?
+            pass
+        else:
+            if 'output-mapping' in spec:
+                logger.debug('Perform output mapping')
+                print(dict(zip(spec['output-mapping'], ret)))
+                ret = sorted(zip(spec['output-mapping'], ret), key=lambda x: -x[1])
+            if 'output-limit' in spec:
+                ret = dict(ret[:spec['output-limit']])
         return ret
     
     @staticmethod
@@ -93,11 +97,17 @@ class TensorFlowModelExecutor(ModelExecutor):
             predict_request = '{"inputs" : ["%s"]}' % input_data
             response = requests.post(server_url, data=predict_request)
             response.raise_for_status()
-            prediction = response.json()['outputs']['prediction']
+            prediction = response.json()['outputs']
             return prediction
 
 
 class PyTorchModelExecutor(ModelExecutor):
     @staticmethod
-    def execute(model_name, input_data, input_type='text'):
-        pass
+    def execute(model_name, input_data, func='predictions', input_type='image', spec = {}):
+        server_url = '{host}/{func}/{model_name}'.format(host=PYTORCH_SERVER, func=func, model_name=model_name)
+        
+        data = {
+            'data': input_data
+        }
+        response = requests.post(server_url, data=data)
+        return response.json()
