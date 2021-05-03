@@ -7,7 +7,7 @@ import json
 class Execute(H1StepWithWebUI):
     def get_response(self, req, is_post, *args, **kwargs):
         model_id = kwargs['model_id']
-        # TODO: model_type and input_type should be loaded from DB instead
+        # TODO: model_type, input_type and spec should be loaded from DB instead
         tensorflow_text_models = ['sentiment_analysis', 'text_classification_keras_tfhub']
         
         pytorch_image_models = ['alexnet', 'resnet-18', 'fcn_resnet_101', 'fastrcnn']
@@ -27,6 +27,7 @@ class Execute(H1StepWithWebUI):
             spec = json.load(open('io-spec/%s.json' % model_id))
         else:
             spec = {}
+        
         if input_type == 'image':
             if is_post:
                 uploaded_file = req.FILES['image']
