@@ -8,7 +8,7 @@ class Execute(H1StepWithWebUI):
     def get_response(self, req, is_post, *args, **kwargs):
         model_id = kwargs['model_id']
         # TODO: model_type, input_type and spec should be loaded from DB instead
-        tensorflow_text_models = ['sentiment_analysis', 'text_classification_keras_tfhub']
+        tensorflow_text_models = ['sentiment_analysis', 'text_classification_keras_tfhub', 'movie_review_classifier']
         
         pytorch_image_models = ['alexnet', 'resnet-18', 'fcn_resnet_101', 'fastrcnn']
         pytorch_text_models = ['my_text_classifier']

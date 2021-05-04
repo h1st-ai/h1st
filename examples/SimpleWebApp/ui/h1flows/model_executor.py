@@ -11,7 +11,7 @@ TENSORFLOW_SERVER = "http://localhost:8501/v1/models"
 PYTORCH_SERVER = "http://localhost:8080"
 # Need to set the right number,
 # given that the complex models may need a bit time to run 
-TIMEOUT = 10 # seconds
+TIMEOUT = 100 # seconds
 
 class ModelExecutor:
     @staticmethod
