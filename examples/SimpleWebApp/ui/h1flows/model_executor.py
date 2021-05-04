@@ -9,6 +9,7 @@ from loguru import logger
 
 TENSORFLOW_SERVER = "http://localhost:8501/v1/models"
 PYTORCH_SERVER = "http://localhost:8080"
+TIMEOUT = 0.1 # seconds
 
 class ModelExecutor:
     @staticmethod
@@ -82,9 +83,9 @@ class TensorFlowModelExecutor(ModelExecutor):
                 predict_request = json.dumps(predict_request)
 
             # Send request
-            # TODO: Handle failure cases: timeout, retries
+            # TODO: Retry up to N times?
             # TODO: Check for error and return proper message
-            response = requests.post(server_url, data=predict_request)
+            response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
             response.raise_for_status()
             prediction = response.json()['predictions'][0]
             logger.debug(len(prediction))
@@ -97,9 +98,9 @@ class TensorFlowModelExecutor(ModelExecutor):
         elif input_type=='text':
             # text input
             predict_request = '{"inputs" : ["%s"]}' % input_data
-            # TODO: Handle failure cases: timeout, retries
+            # TODO: Retry up to N times?
             # TODO: Check for error and return proper message
-            response = requests.post(server_url, data=predict_request)
+            response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
             response.raise_for_status()
             prediction = response.json()['outputs']
             return prediction
@@ -114,8 +115,8 @@ class PyTorchModelExecutor(ModelExecutor):
             'data': input_data
         }
 
-        # TODO: Handle failure cases: timeout, retries
+        # TODO: Retry up to N times?
         # TODO: Check for error and return proper message
-        response = requests.post(server_url, data=data)
+        response = requests.post(server_url, data=data, timeout=TIMEOUT)
         response.raise_for_status()
         return response.json()
