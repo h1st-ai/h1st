@@ -9,7 +9,9 @@ from loguru import logger
 
 TENSORFLOW_SERVER = "http://localhost:8501/v1/models"
 PYTORCH_SERVER = "http://localhost:8080"
-TIMEOUT = 0.1 # seconds
+# Need to set the right number,
+# given that the complex models may need a bit time to run 
+TIMEOUT = 10 # seconds
 
 class ModelExecutor:
     @staticmethod
@@ -39,7 +41,7 @@ class TensorFlowModelExecutor(ModelExecutor):
         else:
             if 'output-mapping' in spec:
                 logger.debug('Perform output mapping')
-                print(dict(zip(spec['output-mapping'], ret)))
+                # print(dict(zip(spec['output-mapping'], ret)))
                 ret = sorted(zip(spec['output-mapping'], ret), key=lambda x: -x[1])
             if 'output-limit' in spec:
                 ret = dict(ret[:spec['output-limit']])
@@ -86,6 +88,7 @@ class TensorFlowModelExecutor(ModelExecutor):
             # TODO: Retry up to N times?
             # TODO: Check for error and return proper message
             response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+            logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             response.raise_for_status()
             prediction = response.json()['predictions'][0]
             logger.debug(len(prediction))
@@ -101,8 +104,12 @@ class TensorFlowModelExecutor(ModelExecutor):
             # TODO: Retry up to N times?
             # TODO: Check for error and return proper message
             response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+            logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             response.raise_for_status()
             prediction = response.json()['outputs']
+            # TODO: We must read the signature spec and extract outputs correspondingly
+            if model_name == 'sentiment_analysis':
+                prediction = prediction['prediction']
             return prediction
 
 
@@ -118,5 +125,6 @@ class PyTorchModelExecutor(ModelExecutor):
         # TODO: Retry up to N times?
         # TODO: Check for error and return proper message
         response = requests.post(server_url, data=data, timeout=TIMEOUT)
+        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
         response.raise_for_status()
         return response.json()
