@@ -82,6 +82,8 @@ class TensorFlowModelExecutor(ModelExecutor):
                 predict_request = json.dumps(predict_request)
 
             # Send request
+            # TODO: Handle failure cases: timeout, retries
+            # TODO: Check for error and return proper message
             response = requests.post(server_url, data=predict_request)
             response.raise_for_status()
             prediction = response.json()['predictions'][0]
@@ -95,6 +97,8 @@ class TensorFlowModelExecutor(ModelExecutor):
         elif input_type=='text':
             # text input
             predict_request = '{"inputs" : ["%s"]}' % input_data
+            # TODO: Handle failure cases: timeout, retries
+            # TODO: Check for error and return proper message
             response = requests.post(server_url, data=predict_request)
             response.raise_for_status()
             prediction = response.json()['outputs']
@@ -109,5 +113,9 @@ class PyTorchModelExecutor(ModelExecutor):
         data = {
             'data': input_data
         }
+
+        # TODO: Handle failure cases: timeout, retries
+        # TODO: Check for error and return proper message
         response = requests.post(server_url, data=data)
+        response.raise_for_status()
         return response.json()
