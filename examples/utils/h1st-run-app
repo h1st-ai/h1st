@@ -1,6 +1,6 @@
 #!/bin/bash -
 #
-# Script to run an H1st project with a web front-end
+# Script to run/stop an H1st project with a web front-end
 #
 
 APPNAME=$1
@@ -15,4 +15,5 @@ APPDIR=$TOPDIR/$APPNAME
 echo "*** Working directory: $TOPDIR"
 echo "*** Application directory: $APPDIR"
 
-$APPDIR/utils/h1-run-app
+BASENAME=`basename $0`
+$APPDIR/utils/$BASENAME
