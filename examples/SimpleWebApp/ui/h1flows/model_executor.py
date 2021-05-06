@@ -9,6 +9,9 @@ from loguru import logger
 
 TENSORFLOW_SERVER = "http://localhost:8501/v1/models"
 PYTORCH_SERVER = "http://localhost:8080"
+# Need to set the right number,
+# given that the complex models may need a bit time to run 
+TIMEOUT = 100 # seconds
 
 class ModelExecutor:
     @staticmethod
@@ -38,7 +41,7 @@ class TensorFlowModelExecutor(ModelExecutor):
         else:
             if 'output-mapping' in spec:
                 logger.debug('Perform output mapping')
-                print(dict(zip(spec['output-mapping'], ret)))
+                # print(dict(zip(spec['output-mapping'], ret)))
                 ret = sorted(zip(spec['output-mapping'], ret), key=lambda x: -x[1])
             if 'output-limit' in spec:
                 ret = dict(ret[:spec['output-limit']])
@@ -82,7 +85,10 @@ class TensorFlowModelExecutor(ModelExecutor):
                 predict_request = json.dumps(predict_request)
 
             # Send request
-            response = requests.post(server_url, data=predict_request)
+            # TODO: Retry up to N times?
+            # TODO: Check for error and return proper message
+            response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+            logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             response.raise_for_status()
             prediction = response.json()['predictions'][0]
             logger.debug(len(prediction))
@@ -95,9 +101,15 @@ class TensorFlowModelExecutor(ModelExecutor):
         elif input_type=='text':
             # text input
             predict_request = '{"inputs" : ["%s"]}' % input_data
-            response = requests.post(server_url, data=predict_request)
+            # TODO: Retry up to N times?
+            # TODO: Check for error and return proper message
+            response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+            logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             response.raise_for_status()
             prediction = response.json()['outputs']
+            # TODO: We must read the signature spec and extract outputs correspondingly
+            if model_name == 'sentiment_analysis':
+                prediction = prediction['prediction']
             return prediction
 
 
@@ -109,5 +121,10 @@ class PyTorchModelExecutor(ModelExecutor):
         data = {
             'data': input_data
         }
-        response = requests.post(server_url, data=data)
+
+        # TODO: Retry up to N times?
+        # TODO: Check for error and return proper message
+        response = requests.post(server_url, data=data, timeout=TIMEOUT)
+        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+        response.raise_for_status()
         return response.json()
