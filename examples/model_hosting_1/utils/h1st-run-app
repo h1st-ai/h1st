@@ -12,7 +12,8 @@ echo '*** Starting django...'
 python manage.py runserver
 
 echo '*** Starting react...'
-# ???
+cd /Users/khoama/Workspace/Aitomatic/test-django/examples/model_hosting_1/h1st-react
+yarn start
 
 echo '*** READY.'
 
