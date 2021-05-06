@@ -1,0 +1,18 @@
+#!/bin/bash
+cd /Users/khoama/Workspace/Aitomatic/test-django/examples/model_hosting_1
+
+echo '*** Stopping the app...'
+/Users/khoama/Workspace/Aitomatic/test-django/examples/model_hosting_1/utils/h1st-stop-app
+
+echo '*** Starting nginx...'
+nginx -s stop 2>/dev/null
+nginx -c /Users/khoama/Workspace/Aitomatic/test-django/examples/model_hosting_1/utils/nginx/nginx.conf
+
+echo '*** Starting django...'
+python manage.py runserver
+
+echo '*** Starting react...'
+# ???
+
+echo '*** READY.'
+
