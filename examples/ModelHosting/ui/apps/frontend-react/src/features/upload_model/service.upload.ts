@@ -8,7 +8,11 @@ const http = axios.create({
 });
 
 class UploadFilesService {
-  upload(data: Object, onUploadProgress: (progressEvent: any) => void) {
+  upload(
+    url: string,
+    data: Object,
+    onUploadProgress: (progressEvent: any) => void
+  ) {
     let formData = new FormData();
 
     Object.keys(data).forEach((k) => {
@@ -16,7 +20,7 @@ class UploadFilesService {
       formData.append(k, data[k]);
     });
 
-    return http.post("/upload/", formData, {
+    return http.post(url || "/upload/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

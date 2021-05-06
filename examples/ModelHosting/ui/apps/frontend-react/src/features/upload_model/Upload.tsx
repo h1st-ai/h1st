@@ -29,6 +29,7 @@ export default function UploadForm() {
 
   const onDrop = useCallback(async (acceptedFiles) => {
     const result = await UploadService.upload(
+      "/upload/",
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);

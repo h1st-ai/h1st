@@ -39,7 +39,7 @@ export default function ModelList() {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Description
                   </th>
@@ -63,7 +63,7 @@ export default function ModelList() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {model.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {model.description}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

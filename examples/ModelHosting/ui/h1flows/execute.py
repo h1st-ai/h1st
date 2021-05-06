@@ -1,16 +1,18 @@
 from .mock_framework import H1StepWithWebUI
 from .model_executor import TensorFlowModelExecutor
-from django import forms
+# from django import formsm
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
 from .models import AIModel
 
 class Execute(H1StepWithWebUI):
     @csrf_exempt
-    def handle_request(self, req):
+    def handle_request(self, req, *args, **kwargs):
         if (req.method == 'GET'):
             return self.handle_get(req)
         elif (req.method == 'POST'):
-            return self.handle_post(req, args, kwargs)
+            return self.handle_post(req, *args, **kwargs)
         elif (req.method == 'PUT'):
             return self.handle_post(req)
         elif (req.method == 'DELETE'):
@@ -19,20 +21,17 @@ class Execute(H1StepWithWebUI):
             return self.handle_default(req)
 
     def handle_post(self, req, *args, **kwargs):
-        # print(req.GET)
-        # print(req.POST)
-        print(kwargs)
-        print(args)
-
         model_id = kwargs['model_id']
+        model = AIModel.objects.get(id=model_id)
 
-        model = AIModel.objects.get(pk=model_id)
-
+        print("This is model")
         print(model)
+
+        # result = self.execute(model_id, input_data=req.FILES['image'].read(), input_type='image')
 
         return JsonResponse({
             'status': 'OK',
-            'code': 'test'
+            'code': model_to_dict(model)
         })
 
         # if model_id == 'image_classification':
