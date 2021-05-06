@@ -1,0 +1,18 @@
+#!/bin/bash
+cd /Users/ctn/src/h1st-ai/h1st/examples/REACT
+
+echo '*** Stopping the app...'
+/Users/ctn/src/h1st-ai/h1st/examples/REACT/utils/h1st-stop-app
+
+echo '*** Starting nginx...'
+nginx -s stop 2>/dev/null
+nginx -c /Users/ctn/src/h1st-ai/h1st/examples/REACT/utils/nginx/nginx.conf
+
+echo '*** Starting django...'
+python manage.py runserver
+
+echo '*** Starting react...'
+# ???
+
+echo '*** READY.'
+
