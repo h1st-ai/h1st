@@ -1,6 +1,10 @@
 from .mock_framework import H1StepWithWebUI
-from .model_executor import TensorFlowModelExecutor, PyTorchModelExecutor
+from .model_step import H1ModelStep
+from .model_executor import ModelExecutor
+from .model_manager import ModelManager
+
 from django import forms
+
 import numpy as np
 import json
 
@@ -34,7 +38,7 @@ class Execute(H1StepWithWebUI):
                 if uploaded_file.size > 200 * 1024:
                     return "Sorry, we accept only images with size <= 200KB"
                 image_data = uploaded_file.read()
-                return json.dumps(self.execute(model_id, model_type, input_data=image_data, input_type='image', spec=spec))
+                return json.dumps(self.execute(model_id, input_data=image_data, input_type='image', spec=spec))
             
             return """
                     <h1> Image Classification </h1>
@@ -46,7 +50,7 @@ class Execute(H1StepWithWebUI):
 
         elif input_type == 'text':
             if is_post:
-                return self.execute(model_id, model_type, input_data=req.POST['text'], input_type='text', spec=spec)
+                return self.execute(model_id, input_data=req.POST['text'], input_type='text', spec=spec)
             
             return """
                     <h1> Sentiment analysis </h1>
@@ -57,11 +61,7 @@ class Execute(H1StepWithWebUI):
                     </form>
                     """ % (model_id)
 
-    def execute(self, model_id, model_type, input_data, input_type, spec):
-        if model_type == 'pytorch':
-            # PyTorch models
-            return PyTorchModelExecutor.execute(model_id, input_data, input_type=input_type, spec=spec)
-        elif model_type == 'tensorflow':
-            return TensorFlowModelExecutor.execute(model_id, input_data, input_type=input_type, spec=spec)
-
-        raise NotImplementedError('Currently, only Tensorflow 2.x and PyTorch models are supported')
+    def execute(self, model_id, input_data, input_type, spec):
+        model_info = ModelManager.get_model_config(model_id)
+        step = H1ModelStep(model_id, model_info.model_platform, model_info.model_path)
+        return ModelExecutor.execute(step, input_data, input_type, spec)

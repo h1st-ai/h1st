@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# start TensorFlow server
+docker run -d -t --rm -p 8501:8501 --name tf_serving -v "$(pwd)/model_repo/tensorflow_models/:/models/" tensorflow/serving --model_config_file=/models/models.config --model_config_file_poll_wait_seconds=6
+
+# start Pytorch server
+docker run -d -t --rm -p 8080:8080 -p 8081:8081 --name pt_serving -v $(pwd)/model_repo/pytorch_models:/home/model-server/model-store pytorch/torchserve:latest
+
+# start Django
+python ui/frameworks/django/manage.py runserver

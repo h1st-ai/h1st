@@ -1,10 +1,13 @@
-import base64
-import requests
-import io
+from .model_step import H1ModelStep
+
 from PIL import Image
-import numpy as np
-import json
 from loguru import logger
+
+import base64
+import io
+import json
+import numpy as np
+import requests
 
 
 TENSORFLOW_SERVER = "http://localhost:8501/v1/models"
@@ -15,24 +18,29 @@ TIMEOUT = 100 # seconds
 
 class ModelExecutor:
     @staticmethod
-    def execute(model_name, input_data, input_type='text'):
-        raise NotImplementedError
+    def execute(model_step: H1ModelStep, input_data, input_type, spec={}):
+        if model_step.model_platform == 'tensorflow':
+            return TensorFlowModelExecutor.execute(model_step.model_id, input_data, input_type=input_type, spec=spec)
+        if model_step.model_platform == 'pytorch':
+            return PyTorchModelExecutor.execute(model_step.model_id, input_data, input_type=input_type, spec=spec)
+        return NotImplementedError
 
 
-class TensorFlowModelExecutor(ModelExecutor):
+class TensorFlowModelExecutor:
     @staticmethod
     def pre_process(input_data, spec):
         if 'input-scaling' in spec:
-            if 'input-mean' in spec['input-scaling'] and 'input-std' in spect['input-scaling']:
+            if 'input-mean' in spec['input-scaling'] and 'input-std' in spec['input-scaling']:
                 logger.debug('Perform normalization')
                 mean, std = np.array(spec['input-scaling']['input-mean']), np.array(spec['input-scaling']['input-std'])
                 return (input_data - mean) / std
             elif 'input-min' in spec['input-scaling'] and 'input-max' in spec['input-scaling']:
                 logger.debug('Perform min-max scaling')
-                min, max = np.array(spec['input-scaling']['input-min']), np.array(spec['input-scaling']['input-max'])
-                return (input_data - min) / (max - min)
+                min_, max_ = np.array(spec['input-scaling']['input-min']), np.array(spec['input-scaling']['input-max'])
+                return (input_data - min_) / (max_ - min_)
         return input_data
     
+    @staticmethod
     def post_process(output, spec):
         ret = output.copy()
         if len(ret) == 1:
@@ -113,18 +121,21 @@ class TensorFlowModelExecutor(ModelExecutor):
             return prediction
 
 
-class PyTorchModelExecutor(ModelExecutor):
+class PyTorchModelExecutor:
     @staticmethod
-    def execute(model_name, input_data, func='predictions', input_type='image', spec = {}):
+    def execute(model_name, input_data, func='predictions', input_type='image', spec={}):
         server_url = '{host}/{func}/{model_name}'.format(host=PYTORCH_SERVER, func=func, model_name=model_name)
         
-        data = {
-            'data': input_data
-        }
+        if input_type == 'image':
+            data = {
+                'data': input_data
+            }
 
-        # TODO: Retry up to N times?
-        # TODO: Check for error and return proper message
-        response = requests.post(server_url, data=data, timeout=TIMEOUT)
-        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
-        response.raise_for_status()
-        return response.json()
+            # TODO: Retry up to N times?
+            # TODO: Check for error and return proper message
+            response = requests.post(server_url, data=data, timeout=TIMEOUT)
+            logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+            response.raise_for_status()
+            return response.json()
+
+        raise NotImplementedError
