@@ -144,20 +144,18 @@ class Upload(APIView):
 
             try:
                 with ZipFile(file_path, 'r') as Z:
-                    destination = '{}/{}'.format(self.TF_PATH, file_name)
+                    # destination = '{}/{}'.format(self.TF_PATH, file_name)
 
-                    for elem in Z.namelist() :
-                        Z.extract(elem, destination)
+                    # for elem in Z.namelist() :
+                    #     Z.extract(elem, destination)
                     # Extract all the contents of zip file in current directory
-                    # zipObj.extractall(path='{}/{}'.format(self.TF_PATH, file_name))
+                    zipObj.extractall(path='{}/{}'.format(self.TF_PATH, file_name))
                 
                 # consider deleting the uploaded file at this point
                 TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=file_name, base_path="/models/{}/".format(file_name))
                 
                 # read model.io.json
                 config_data = self.handle_modelio_json(path='{}/{}/{}'.format(self.TF_PATH, file_name, self.TF_MODEL_IO_FILE))
-
-                print("config data", config_data)
 
                 return True, config_data
 

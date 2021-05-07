@@ -19,7 +19,7 @@ export default function Execute(props: ExecutionProps) {
 
   React.useEffect(() => {
     const loadData = async function () {
-      const res = await axios.get(`/app/${id}`);
+      const res = await axios.get(`/api/app/${id}`);
 
       console.log(res);
 
