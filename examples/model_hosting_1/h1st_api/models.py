@@ -21,6 +21,7 @@ class AIModel(models.Model):
     input = models.JSONField()
     output = models.JSONField()
     config = models.JSONField()
+    model_id = models.CharField(max_length=200, default="")
     file_name = models.CharField(max_length=200)
     creator = models.CharField(max_length=20, help_text='Creator')
     created_at = models.DateTimeField(auto_now_add=True)

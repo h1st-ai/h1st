@@ -71,7 +71,7 @@ export default function ModelList() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex">
                       <a
-                        href={`/application/${model.id}/execute`}
+                        href={`/application/${model.model_id}/execute`}
                         className="w-5 h-5 text-gray-500 mr-4"
                         target="_blank"
                         rel="noreferrer"

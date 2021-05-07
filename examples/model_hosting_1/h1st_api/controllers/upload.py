@@ -21,7 +21,7 @@ class Upload(APIView):
     def __init__(self):
         super().__init__()
         self.UPLOAD_PATH = "uploaded"
-        self.MODEL_EXT_PATH = "models"
+        self.MODEL_EXT_PATH = "model_repo"
         self.TF_PATH = "{}/tensorflow_models".format(self.MODEL_EXT_PATH)
         self.TF_MODEL_CONFIG = "{}/models.config".format(self.TF_PATH)
         self.TF_MODEL_IO_FILE = "model-io.json"
@@ -103,6 +103,7 @@ class Upload(APIView):
 
             #save to database
             m = AIModel(
+                model_id=dir_name,
                 name=name,
                 type=type,
                 description=description,
@@ -120,6 +121,7 @@ class Upload(APIView):
                 "status": "OK",
                 "result": {
                     'id': m.id,
+                    'model_id':dir_name,
                     'name': name,
                     'description': description,
                     'input': model_input,
@@ -149,7 +151,7 @@ class Upload(APIView):
                     # for elem in Z.namelist() :
                     #     Z.extract(elem, destination)
                     # Extract all the contents of zip file in current directory
-                    zipObj.extractall(path='{}/{}'.format(self.TF_PATH, file_name))
+                    Z.extractall(path='{}/{}'.format(self.TF_PATH, file_name))
                 
                 # consider deleting the uploaded file at this point
                 TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=file_name, base_path="/models/{}/".format(file_name))
