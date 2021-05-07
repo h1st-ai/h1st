@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { selectModel, setModel } from "features/execute/executionSlice";
-import { selectModels } from "features/upload_model/uploadSlice";
+// import { selectModels } from "features/upload_model/uploadSlice";
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 
 import ImageClassifierWidget from "features/execute/widgets/image-classifier";
 
@@ -17,9 +18,21 @@ export default function Execute(props: ExecutionProps) {
   const dispatch = useAppDispatch();
   const model = useAppSelector(selectModel);
 
+  const {
+    getAccessTokenSilently,
+    loginWithPopup,
+    getAccessTokenWithPopup,
+  } = useAuth0();
+
   React.useEffect(() => {
     const loadData = async function () {
-      const res = await axios.get(`/api/app/${id}`);
+      const access_token = await getAccessTokenSilently();
+
+      const res = await axios.get(`/api/app/${id}`, {
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      });
 
       console.log(res);
 

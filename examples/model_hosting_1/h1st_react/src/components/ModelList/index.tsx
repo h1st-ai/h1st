@@ -2,6 +2,7 @@ import React from "react";
 import { ExternalLinkIcon } from "@heroicons/react/solid";
 import { useAppSelector, useAppDispatch } from "app/hooks";
 import { selectModels, setModels } from "features/upload_model/uploadSlice";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const axios = require("axios").default;
 
@@ -9,9 +10,16 @@ export default function ModelList() {
   const models = useAppSelector(selectModels);
   const dispatch = useAppDispatch();
 
+  const { getAccessTokenSilently } = useAuth0();
+
   React.useEffect(() => {
     const loadData = async function () {
-      const result = await axios.get("api/upload/");
+      const token = await getAccessTokenSilently();
+      const result = await axios.get("api/upload/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log(result);
 

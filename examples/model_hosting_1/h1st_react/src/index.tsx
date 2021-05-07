@@ -12,6 +12,7 @@ ReactDOM.render(
     <Auth0Provider
       domain="aitomatic.us.auth0.com"
       clientId="RlwK2ZrhU2HL9Qx91uIZ6v9WKrsxfV96"
+      audience="https://model-hosting.aitomatic.com/api"
       redirectUri={window.location.origin}
     >
       <Provider store={store}>

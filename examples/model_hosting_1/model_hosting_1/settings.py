@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,10 +48,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -71,16 +71,19 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-        'auth0authorization.utils.jwt_get_username_from_payload_handler',
+        'h1st_api.utils.jwt_get_username_from_payload_handler',
     'JWT_DECODE_HANDLER':
-        'auth0authorization.utils.jwt_decode_token',
+        'h1st_api.utils.jwt_decode_token',
     'JWT_ALGORITHM': 'RS256',
-    'JWT_AUDIENCE': 'https://aitomatic.us.auth0.com/api/v2/',
-    'JWT_ISSUER': 'https://aitomatic.us.auth0.com/',
+    'JWT_AUDIENCE': os.getenv('AUTH0_API', 'https://model-hosting.aitomatic.com/api'),
+    'JWT_ISSUER': 'https://{}/'.format(os.getenv('AUTH0_DOMAIN', 'aitomatic.us.auth0.com')),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
+
+
 ROOT_URLCONF = 'model_hosting_1.urls'
+
 
 TEMPLATES = [
     {

@@ -1,5 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+# from rest_framework.decorators import api_view, permission_classes
+# from rest_framework.permissions import AllowAny
 
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.views.decorators.csrf import csrf_exempt
@@ -17,6 +19,8 @@ from h1st_api.models import ModelClass
 # from ui.frameworks.django.app.models import AIModel
 from h1st_api.models import AIModel
 
+
+# @permission_classes([AllowAny])
 class Upload(APIView):
     def __init__(self):
         super().__init__()
@@ -38,7 +42,7 @@ class Upload(APIView):
     #         return self.handle_post(req)
     #     else:
     #         return self.handle_default(req)
-
+    
     def get(self, request, format=None):
         """
         Return a list of applications for the current user

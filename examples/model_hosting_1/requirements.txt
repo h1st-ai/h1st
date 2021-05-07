@@ -1,10 +1,10 @@
 Django
 protobuf
-requests
 loguru
 tensorflow-serving-api
 cryptography~=2.8
+djangorestframework
 django-cors-headers
-drf-jwt
-pyjwt
-
+drf-jwt~=1.13.3
+pyjwt~=1.7.1
+requests~=2.22.0
