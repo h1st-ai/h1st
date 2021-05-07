@@ -57,6 +57,7 @@ class TensorFlowModelExecutor:
     
     @staticmethod
     def execute(model_name, input_data, input_type='text', spec={}):
+        print("input data", input_data)
         server_url = '{host}/{model_name}:predict'.format(host=TENSORFLOW_SERVER, model_name=model_name)
 
         # image input

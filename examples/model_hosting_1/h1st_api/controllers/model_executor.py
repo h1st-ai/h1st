@@ -29,6 +29,7 @@ class ModelExecutor:
 class TensorFlowModelExecutor:
     @staticmethod
     def pre_process(input_data, spec):
+        print("preprocess", input_data.shape)
         if 'input-scaling' in spec:
             if 'input-mean' in spec['input-scaling'] and 'input-std' in spec['input-scaling']:
                 logger.debug('Perform normalization')
@@ -65,7 +66,7 @@ class TensorFlowModelExecutor:
                 input_format = spec['input-format']
             except KeyError:
                 input_format = "numpy"
-                
+
             im = Image.open(io.BytesIO(input_data))
 
             # convert to corresponding mode if needed

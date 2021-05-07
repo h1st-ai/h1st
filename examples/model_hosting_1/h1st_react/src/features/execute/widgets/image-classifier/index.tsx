@@ -10,6 +10,7 @@ export interface ImageClassiferWidgetProps {
 
 export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   const [progress, setProgress] = useState(0);
+  const [result, setResult] = useState([]);
   const [previewSrc, setPreviewSrc] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const previewImgEl = useRef(null);
@@ -49,7 +50,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   // }
 
   const submit = async () => {
-    const result = await UploadService.upload(
+    const res = await UploadService.upload(
       `/api/app/${model.model_id}/execute/img_classifer/`,
       { file: acceptedFiles[0], model_id: model.model_id },
       (event) => {
@@ -59,13 +60,13 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
       }
     );
 
-    console.log(result);
+    console.log(res);
 
-    // if (result.data.status === "OK") {
-    //   console.log(result);
-    //   // set the uploaded file here
-    //   // setUploadedFile(result.data.id);
-    // }
+    if (res.data.status === "OK") {
+      setResult(res.data.result.slice(0, 3));
+      // set the uploaded file here
+      // setUploadedFile(result.data.id);
+    }
   };
 
   return (
@@ -89,7 +90,22 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                   alt="input"
                 />
               </div>
-              <div></div>
+              <div>
+                {result.length > 0 && (
+                  <div>
+                    <h3>Results</h3>
+                    <ul>
+                      {result.map((r) => {
+                        return (
+                          <div>
+                            {r[0]} {Number(r[1] * 100).toFixed(2)}%
+                          </div>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

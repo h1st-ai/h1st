@@ -3,3 +3,8 @@ protobuf
 requests
 loguru
 tensorflow-serving-api
+cryptography~=2.8
+django-cors-headers
+drf-jwt
+pyjwt
+

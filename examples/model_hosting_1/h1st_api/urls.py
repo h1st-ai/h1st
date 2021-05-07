@@ -2,7 +2,6 @@ from django.urls import path
 from h1st_api import views
 from h1st_api.controllers.upload import Upload
 from h1st_api.controllers.application import Application
-from h1st_api.controllers.execution import Execution
 
 urlpatterns = [
     path('', views.default),
