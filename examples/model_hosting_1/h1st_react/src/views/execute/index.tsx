@@ -27,8 +27,6 @@ export default function Execute(props: ExecutionProps) {
         dispatch(
           setModel({
             ...res.data.model,
-            output: res.data.model.model_output,
-            input: res.data.model.model_input,
           })
         );
       }
@@ -43,10 +41,10 @@ export default function Execute(props: ExecutionProps) {
 
   // @ts-ignore
   if (model) {
-    const { type } = JSON.parse(model.output);
+    const { type } = model.output;
     let widget = null;
 
-    if (type === "IMG_CLASSIFIER") {
+    if (type == "IMG_CLASSIFIER") {
       widget = <ImageClassifierWidget model={model} />;
     }
 

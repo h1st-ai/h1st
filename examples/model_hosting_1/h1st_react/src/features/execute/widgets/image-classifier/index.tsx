@@ -38,20 +38,20 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
     return null;
   }
 
-  const { name, type } = JSON.parse(model.input)[0];
+  // const { name, type } = JSON.parse(model.input)[0];
   // console.log(JSON.parse(intput));
 
   // const name = "input";
   // const type = "image";
 
-  if (!name || !type) {
-    return <p>Invalid input</p>;
-  }
+  // if (!name || !type) {
+  //   return <p>Invalid input</p>;
+  // }
 
   const submit = async () => {
     const result = await UploadService.upload(
-      `/execute/${model.id}`,
-      { [name]: acceptedFiles[0], model_id: model.id },
+      `/api/app/${model.id}/execute/img_classifer/`,
+      { file: acceptedFiles[0], model_id: model.id },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
         console.log(prog);
@@ -128,7 +128,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                       </label>
                     </div>
                     <p className="text-xs text-gray-500">
-                      File size limit: 600MB
+                      File size limit: 10MB
                     </p>
                     {acceptedFiles.length > 0 && (
                       <aside>

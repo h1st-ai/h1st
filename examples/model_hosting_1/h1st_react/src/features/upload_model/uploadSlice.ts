@@ -31,8 +31,11 @@ export interface AIModel {
   name: string;
   type: string;
   description: string;
-  input: string;
-  output: string;
+  config: any;
+  input: any;
+  output: {
+    type: string;
+  };
   created_at: string;
   updated_at: string;
   creator: string;
