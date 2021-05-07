@@ -4,6 +4,25 @@ from tensorflow_serving.config import model_server_config_pb2
 import requests
 
 
+class ModelConfig:
+    def __init__(self, model_id, model_platform, model_path):
+        self.model_id = model_id
+        self.model_platform = model_platform
+        self.model_path = model_path
+
+
+class ModelManager:
+    @staticmethod
+    def get_model_config(model_id):
+        model_type = 'tensorflow'
+        model_path = ''
+        return ModelConfig(model_id, model_type, model_path)
+
+    @staticmethod
+    def update_model_config(model_id, model_platform, model_path):
+        if model_platform == 'tensorflow':
+            TensorFlowModelManager.register_new_model('models.config', model_id, model_path)
+
 class TensorFlowModelManager:
     @staticmethod
     def register_new_model(conf_filepath, name, base_path, model_platform='tensorflow'):

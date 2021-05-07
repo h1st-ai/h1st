@@ -33,6 +33,7 @@ export interface AIModel {
   description: string;
   config: any;
   input: any;
+  model_id: string;
   output: {
     type: string;
   };

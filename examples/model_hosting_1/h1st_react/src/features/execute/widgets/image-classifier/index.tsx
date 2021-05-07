@@ -50,8 +50,8 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
 
   const submit = async () => {
     const result = await UploadService.upload(
-      `/api/app/${model.id}/execute/img_classifer/`,
-      { file: acceptedFiles[0], model_id: model.id },
+      `/api/app/${model.model_id}/execute/img_classifer/`,
+      { file: acceptedFiles[0], model_id: model.model_id },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
         console.log(prog);

@@ -11,6 +11,7 @@ from .model_manager import TensorFlowModelManager
 from h1st_api.models import AIModel
 
 from h1st_api.controllers.mocked.model_step import H1ModelStep
+from .model_executor import ModelExecutor
 
 class Execution(APIView):
     def post(self, request, model_id, model_type):
