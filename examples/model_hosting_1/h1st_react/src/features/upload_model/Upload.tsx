@@ -29,7 +29,7 @@ export default function UploadForm() {
 
   const onDrop = useCallback(async (acceptedFiles) => {
     const result = await UploadService.upload(
-      "/upload/",
+      "/api/upload/",
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
@@ -78,21 +78,15 @@ export default function UploadForm() {
   const submit = async () => {
     setSubmitted(true);
 
-    const {
+    const { name, description, input: rawInput, output } = applicationInfo;
+
+    const input = rawInput.filter((i) => i.name.trim() !== "");
+    const type = "TF";
+
+    const response = await axios.post("/api/upload/", {
       name,
       description,
-      input: rawInput,
-      output: rawOutput,
-    } = applicationInfo;
-
-    const input = JSON.stringify(rawInput.filter((i) => i.name.trim() !== ""));
-    const output = JSON.stringify(rawOutput);
-    const model_type = "TF";
-
-    const response = await axios.post("/upload/", {
-      name,
-      description,
-      model_type,
+      type,
       input,
       output,
       uploadedFile,
@@ -246,7 +240,8 @@ export default function UploadForm() {
               </div>
 
               <div className="sm:col-span-6">
-                <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
+                <ModelOutput />
+                {/* <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="lg:border-r-2">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">
                       Application Input
@@ -283,7 +278,7 @@ export default function UploadForm() {
                       <ModelOutput />
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

@@ -5,8 +5,16 @@ const settings = [
   {
     name: "Image Classifier",
     value: "IMG_CLASSIFER",
+    enabled: true,
     description: "Expose your application as an image classifier.",
   },
+  {
+    name: "NLP",
+    value: "NLP_CLASSIFER",
+    enabled: false,
+    description: "coming soon.",
+  },
+
   // {
   //   name: "REST API",
   //   value: "REST",
@@ -32,10 +40,13 @@ export default function ModelOutput() {
       <div className="bg-white rounded-md -space-y-px">
         {settings.map((setting, settingIdx) => (
           <RadioGroup.Option
+            // @ts-ignore
+            disabled={!setting.enabled}
             key={setting.name}
             value={setting.value}
             className={({ checked }) =>
               classNames(
+                setting.enabled ? "" : "pointer-events-none",
                 settingIdx === 0 ? "rounded-tl-md rounded-tr-md" : "",
                 settingIdx === settings.length - 1
                   ? "rounded-bl-md rounded-br-md"
@@ -43,7 +54,8 @@ export default function ModelOutput() {
                 checked
                   ? "bg-indigo-50 border-indigo-200 z-10"
                   : "border-gray-200",
-                "relative border p-4 flex cursor-pointer focus:outline-none"
+                "relative border p-4 flex cursor-pointer focus:outline-none",
+                "disabled:opacity-50"
               )
             }
           >

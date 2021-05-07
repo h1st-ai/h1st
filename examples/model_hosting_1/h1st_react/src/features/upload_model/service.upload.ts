@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: "http://localhost:8888",
+  // baseURL: "/",
   headers: {
     "Content-type": "application/json",
   },
@@ -20,7 +20,7 @@ class UploadFilesService {
       formData.append(k, data[k]);
     });
 
-    return http.post(url || "/upload/", formData, {
+    return http.post(url || "/api/upload/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

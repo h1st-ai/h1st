@@ -155,3 +155,4 @@ data
 
 node_modules
 examples/ModelHosting/uploaded/**
+/examples/model_hosting_1/uploaded

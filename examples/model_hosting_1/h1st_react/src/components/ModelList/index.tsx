@@ -11,7 +11,7 @@ export default function ModelList() {
 
   React.useEffect(() => {
     const loadData = async function () {
-      const result = await axios.get("/upload/");
+      const result = await axios.get("api/upload/");
 
       console.log(result);
 

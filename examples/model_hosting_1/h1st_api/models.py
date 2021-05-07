@@ -1,12 +1,14 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+
+class ModelClass(models.TextChoices):
+    TF = 'TF', _('Tensorflow')
+    PT = 'PT', _('PyTorch')
+
 # Create your models here.
 class AIModel(models.Model):
-    """A typical class defining a model, derived from the Model class."""
-    class ModelClass(models.TextChoices):
-        TF = 'TF', _('Tensorflow')
-        PT = 'PT', _('PyTorch')
+    
 
     # Fields
     type = models.CharField(

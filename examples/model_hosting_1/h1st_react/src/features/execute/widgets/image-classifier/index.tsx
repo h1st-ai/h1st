@@ -128,7 +128,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                       </label>
                     </div>
                     <p className="text-xs text-gray-500">
-                      File size limit: 10MB {progress}
+                      File size limit: 600MB
                     </p>
                     {acceptedFiles.length > 0 && (
                       <aside>
