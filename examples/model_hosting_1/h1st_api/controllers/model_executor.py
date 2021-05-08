@@ -4,14 +4,15 @@ from PIL import Image
 from loguru import logger
 
 import base64
+import os
 import io
 import json
 import numpy as np
 import requests
 
 
-TENSORFLOW_SERVER = "http://localhost:8501/v1/models"
-PYTORCH_SERVER = "http://localhost:8080"
+TENSORFLOW_SERVER = os.getenv("TENSORFLOW_SERVER", "http://localhost:8501/v1/models")
+PYTORCH_SERVER = os.getenv("PYTORCH_SERVER", "http://localhost:8080")
 # Need to set the right number,
 # given that the complex models may need a bit time to run 
 TIMEOUT = 100 # seconds
