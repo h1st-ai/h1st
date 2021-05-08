@@ -1,7 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-# from rest_framework.decorators import api_view, permission_classes
-# from rest_framework.permissions import AllowAny
+
 
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.views.decorators.csrf import csrf_exempt
@@ -16,11 +15,7 @@ from zipfile import ZipFile
 from .model_manager import TensorFlowModelManager
 from h1st_api.models import ModelClass
 
-# from ui.frameworks.django.app.models import AIModel
 from h1st_api.models import AIModel
-
-
-# @permission_classes([AllowAny])
 class Upload(APIView):
     def __init__(self):
         super().__init__()
@@ -47,30 +42,12 @@ class Upload(APIView):
         """
         Return a list of applications for the current user
         """
-        user = "mocked_user"
-        models = list(AIModel.objects.filter().values())
+        models = list(AIModel.objects.filter(creator=request.user).only('id', 'name', 'description', 'type', 'creator').values())
 
-        # add paging
-        # return JsonResponse({
-        #     'status': 'OK',
-        #     'result': models
-        # })
-
-        # usernames = [user.username for user in User.objects.all()]
         return Response({
             'status': 'OK',
             'result': models
         })
-
-    # def handle_get(self, req):
-    #     user = "mocked_user"
-    #     models = list(AIModel.objects.filter().values())
-
-    #     # add paging
-    #     return JsonResponse({
-    #         'status': 'OK',
-    #         'result': models
-    #     })
     
     def post(self, request, format=None):
         try:
@@ -91,7 +68,7 @@ class Upload(APIView):
             model_output = data['output']
             file_name = data['uploadedFile']
             type = data['type']
-            creator="mocked_user"
+            creator=request.user
 
             if type == ModelClass.TF:
                 #deploy the model first

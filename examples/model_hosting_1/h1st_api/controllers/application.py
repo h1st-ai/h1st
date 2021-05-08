@@ -7,18 +7,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.forms.models import model_to_dict
 
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+
 from h1st_api.models import AIModel
 
 from h1st_api.controllers.mocked.model_step import H1ModelStep
 from .model_executor import ModelExecutor
 from .model_manager import ModelManager
 
+@permission_classes([AllowAny])
 class Application(APIView):
 
     def get(self, request, model_id):
-        # model_id = kwargs.get('model_id')
-        print(model_id)
-
         model = AIModel.objects.get(model_id=model_id);
 
         return Response({

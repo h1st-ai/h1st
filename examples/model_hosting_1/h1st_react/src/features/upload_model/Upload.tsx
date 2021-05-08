@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import klass from "classnames";
 import { v4 } from "uuid";
 
+import { useAuth0 } from "@auth0/auth0-react";
 import { useAppSelector, useAppDispatch } from "app/hooks";
 import {
   addModelInput,
@@ -21,6 +22,7 @@ import UploadService from "features/upload_model/service.upload";
 const axios = require("axios").default;
 
 export default function UploadForm() {
+  const { getAccessTokenSilently } = useAuth0();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [submitted, setSubmitted] = useState(false);
@@ -28,6 +30,7 @@ export default function UploadForm() {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const onDrop = useCallback(async (acceptedFiles) => {
+    const token = await getAccessTokenSilently();
     const result = await UploadService.upload(
       "/api/upload/",
       { file: acceptedFiles[0] },
@@ -35,7 +38,8 @@ export default function UploadForm() {
         const prog = Math.round((100 * event.loaded) / event.total);
         console.log(prog);
         setProgress(prog);
-      }
+      },
+      token
     );
 
     if (result.data.status === "OK") {
@@ -78,19 +82,28 @@ export default function UploadForm() {
   const submit = async () => {
     setSubmitted(true);
 
+    const token = await getAccessTokenSilently();
     const { name, description, input: rawInput, output } = applicationInfo;
 
     const input = rawInput.filter((i) => i.name.trim() !== "");
     const type = "TF";
 
-    const response = await axios.post("/api/upload/", {
-      name,
-      description,
-      type,
-      input,
-      output,
-      uploadedFile,
-    });
+    const response = await axios.post(
+      "/api/upload/",
+      {
+        name,
+        description,
+        type,
+        input,
+        output,
+        uploadedFile,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     console.log(response);
 

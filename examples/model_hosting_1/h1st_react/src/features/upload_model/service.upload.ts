@@ -11,7 +11,8 @@ class UploadFilesService {
   upload(
     url: string,
     data: Object,
-    onUploadProgress: (progressEvent: any) => void
+    onUploadProgress: (progressEvent: any) => void,
+    token: string
   ) {
     let formData = new FormData();
 
@@ -23,6 +24,7 @@ class UploadFilesService {
     return http.post(url || "/api/upload/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
       },
       onUploadProgress,
     });

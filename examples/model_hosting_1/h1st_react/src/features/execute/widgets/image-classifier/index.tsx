@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { AIModel } from "features/upload_model/uploadSlice";
 import UploadService from "features/upload_model/service.upload";
-
+import { useAuth0 } from "@auth0/auth0-react";
 import { useDropzone } from "react-dropzone";
 
 export interface ImageClassiferWidgetProps {
@@ -14,6 +14,8 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   const [previewSrc, setPreviewSrc] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const previewImgEl = useRef(null);
+
+  const { getAccessTokenSilently } = useAuth0();
 
   const onDrop = useCallback((acceptedFiles) => {
     var reader = new FileReader();
@@ -50,6 +52,8 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   // }
 
   const submit = async () => {
+    const token = await getAccessTokenSilently();
+
     const res = await UploadService.upload(
       `/api/app/${model.model_id}/execute/img_classifer/`,
       { file: acceptedFiles[0], model_id: model.model_id },
@@ -57,10 +61,9 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
         const prog = Math.round((100 * event.loaded) / event.total);
         console.log(prog);
         setProgress(prog);
-      }
+      },
+      token
     );
-
-    console.log(res);
 
     if (res.data.status === "OK") {
       setResult(res.data.result.slice(0, 3));
