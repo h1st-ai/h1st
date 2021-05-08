@@ -1,0 +1,294 @@
+#!/bin/bash -
+#
+# Script to start a new H1st project with a web front-end
+# cf. https://stackoverflow.com/questions/22841764/best-practice-for-django-project-working-directory-structure
+#
+
+#
+# Initialization
+#
+function initialize {
+    CMD=`basename $0`		# utils/h1st-create-{web,react,rest}app
+    CMDDIR=`dirname $0`		# root utils/ directory
+    ISWEBAPP=false
+    ISREACTAPP=false
+    ISRESTAPP=false
+    case $CMD in
+	h1st-create-webapp)
+	    ISWEBAPP=true
+	    APPLIST=(h1st_web)
+	    APPURLS=("")
+	    ;;
+
+	h1st-create-reactapp)
+	    ISREACTAPP=true
+	    APPLIST=(h1st_react h1st_api)
+	    APPURLS=("" api/)
+	    ;;
+
+	h1st-create-restapp)
+	    ISRESTAPP=true
+	    APPLIST=(h1st_api)
+	    APPURLS=("")
+	    ;;
+
+	*)
+	    echo "Unsupported command: $CMD"
+	    exit 1
+	    ;;
+    esac
+
+    APPNAME=$1
+    if [ "$APPNAME" = "" ] ; then
+	    echo "Usage: $0 <app_name>"
+	    exit 1
+    fi
+
+
+    TOPDIR=$PWD
+    APPDIR=$TOPDIR/$APPNAME
+    echo "*** Working directory: $TOPDIR"
+    echo "*** Application directory: $APPDIR"
+}
+
+
+#
+# Template to run a top-level app
+#
+function echo_run_app {
+    echo "\
+#!/bin/bash
+cd $1
+
+echo '*** Stopping the app...'
+$1/utils/h1st-stop-app
+
+echo '*** Starting nginx...'
+nginx -s stop 2>/dev/null
+nginx -c $1/utils/nginx/nginx.conf
+
+echo '*** Starting django...'
+python manage.py runserver
+
+echo '*** Starting react...'
+# ???
+
+echo '*** READY.'
+"
+}
+
+
+#
+# Template to stop a top-level app
+#
+function echo_stop_app {
+    echo "\
+#!/bin/bash
+cd $1
+
+echo '*** Stopping django...'
+pkill -f manage.py
+
+echo '*** Stopping react...'
+pkill -f react-scripts
+
+echo '*** Stopping nginx...'
+nginx -s stop 2>/dev/null
+
+echo '*** READY.'
+"
+}
+
+
+#
+# App-specific urls.py template
+#
+function echo_app_urls_py {
+    echo "\
+from django.urls import path
+from $1 import views
+
+urlpatterns = [
+    path('', views.default),
+]
+"
+}
+
+
+#
+# views.py template for a web app
+#
+function echo_h1st_web_views_py {
+    echo "\
+from django.http import HttpResponse
+
+def default(request):
+    text = '<HTML><BODY><CENTER><H1>Congratulations! This is your Human-First AI Web App!</H1></CENTER></BODY></HTML>'
+    return HttpResponse(text)
+"
+}
+
+
+#
+# views.py template for a REST app
+#
+function echo_h1st_api_views_py {
+    echo "\
+from django.http import HttpResponse
+
+def default(request):
+    text = '<HTML><BODY><CENTER><H1>Congratulations! This is your Human-First REST API!</H1></CENTER></BODY></HTML>'
+    return HttpResponse(text)
+"
+}
+
+
+#
+# views.py template for a React app
+#
+function echo_h1st_react_views_py {
+    echo "\
+from django.http import HttpResponse
+
+def default(request):
+    text = '<HTML><BODY><CENTER><H1>Congratulations! This is your Human-First React App!</H1></CENTER></BODY></HTML>'
+    return HttpResponse(text)
+"
+}
+
+
+#
+# Create initial project structure
+#
+function create_project {
+    echo "*** Creating the main project $APPNAME"
+    (cd $TOPDIR ; [ ! -d $APPNAME ] && django-admin startproject $APPNAME)
+
+    echo "*** Applying migrations"
+    (cd $APPDIR ; python manage.py migrate)
+
+    echo "*** Creating the key project apps: ${APPLIST[@]}"
+    for item in ${APPLIST[@]} ; do
+	pushd $APPDIR
+
+	if [ -d $item ] ; then continue ; fi
+
+#	if [ $item == "h1st_reactssss" ]  ; then
+#	    django-admin startapp $item
+#	    echo npx create-react-app $item
+#	else
+#	    django-admin startapp $item
+#	fi
+	django-admin startapp $item
+
+	popd
+    done
+
+    UTILSDIR=$APPDIR/utils
+    [ ! -d $UTILSDIR ] && mkdir $UTILSDIR
+
+    RUNAPP=$UTILSDIR/h1st-run-app
+    echo "*** Creating utility script: $RUNAPP"
+    [ ! -f $RUNAPP ] && echo_run_app $APPDIR > $RUNAPP && chmod 755 $RUNAPP
+
+    STOPAPP=$UTILSDIR/h1st-stop-app
+    echo "*** Creating utility script: $STOPAPP"
+    [ ! -f $STOPAPP ] && echo_stop_app $APPDIR > $STOPAPP && chmod 755 $STOPAPP
+
+    LIST=(h1st_flows h1st_models h1st_data)
+    echo "*** Creating H1st-specific dirs: ${LIST[@]}"
+    for dir in ${LIST[@]} ; do
+	([ -d $APPDIR/$dir ] || mkdir $APPDIR/$dir)
+    done
+
+    $ISWEBAPP && LIST=(static templates tests)
+    $ISREACTAPP && LIST=(static tests)
+    $ISRESTAPP && LIST=(tests)
+    echo "*** Creating common app dirs: ${LIST[@]}"
+    for dir in ${LIST[@]}; do
+	([ -d $APPDIR/$dir ] || mkdir $APPDIR/$dir)
+    done
+}
+
+
+#
+# Set up files like urls.py and settings.py
+#
+function setup_config_files {
+    pushd $TOPDIR
+
+    FILE=$APPDIR/$APPNAME/settings.py
+    echo "*** Configuring $FILE"
+    for app in rest_framework $APPS ; do
+	grep -v $app $FILE | perl -p -e 's/^INSTALLED_APPS =.*$/INSTALLED_APPS = [\n    "'$app'",/' > $FILE.$$
+	mv $FILE.$$ $FILE
+    done
+
+    FILE=$APPDIR/$APPNAME/urls.py
+    echo "*** Configuring $FILE"
+    for ((i = 0 ; i < ${#APPLIST[@]} ; i++)); do
+	APP=${APPLIST[$i]}
+#	if [ $APP == "h1st_reactsss" ] ; then continue ; fi
+
+	URL=${APPURLS[$i]}
+	URL2=`echo $URL | sed -e 's/\//\\\\\//'`
+
+	echo "*** Configuring $FILE for $APP"
+	perl -pi -e 's/^from django.urls import path.*$/from django.urls import path,include/' $FILE
+	grep -v $APP $FILE | perl -p -e 's/^urlpatterns =.*$/urlpatterns = [\n    path("'$URL2'", include("'$APP.urls'")),/' > $FILE.$$
+	mv $FILE.$$ $FILE
+
+	echo "****** Configuring $APPDIR/$APP/urls.py"
+	echo_app_urls_py $APP > $APPDIR/$APP/urls.py
+
+	echo "****** Configuring $APPDIR/$APP/views.py"
+	case $APP in
+	    h1st_web)
+		echo_h1st_web_views_py > $APPDIR/$APP/views.py
+		;;
+
+	    h1st_api)
+		echo_h1st_api_views_py > $APPDIR/$APP/views.py
+		;;
+
+	    h1st_react)
+		echo_h1st_react_views_py > $APPDIR/$APP/views.py
+		;;
+
+	    *)
+		echo Unmatched $APP
+		;;
+	esac
+	
+    done
+
+    popd
+}
+
+
+#
+# Configure h1st_nginx.conf for the appropriate app type
+#
+function setup_nginx {
+    pushd $TOPDIR
+
+    cp -pr $CMDDIR/nginx/ $APPDIR/utils/nginx/
+    cd $APPDIR/utils/nginx
+
+    FILE=nginx.conf
+    $ISWEBAPP && perl -pi -e 's/^.*h1st_nginx configuration for.*$/include h1st_web.conf;    # h1st_nginx configuration for Web app/' $FILE
+    $ISREACTAPP && perl -pi -e 's/^.*h1st_nginx configuration for.*$/include h1st_react.conf;    # h1st_nginx configuration for React app/' $FILE
+    $ISRESTAPP && perl -pi -e 's/^.*h1st_nginx configuration for.*$/include h1st_rest.conf;    # h1st_nginx configuration for REST app/' $FILE
+
+    popd
+}
+
+
+function main {
+    initialize $*
+    create_project
+    setup_config_files
+    setup_nginx
+}
+
+main $*
