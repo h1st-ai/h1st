@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-smibr040))l3%7_k*g-wi%003lq(4+$#jax14g!ez6&46savg0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "mh.aitomatic.com",
+    os.getenv("ALLOWED_HOST", "modelcargo.aitomatic.com")
+]
 
 
 # Application definition
