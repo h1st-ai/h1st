@@ -38,6 +38,9 @@ services:
         environment:
             - TENSORFLOW_SERVER=http://tf_serving:8501/v1/models
             - PYTORCH_SERVER=http://pt_serving:8080
+        volumes: 
+            - ./model_repo/tensorflow_models/:/app/model_repo
+            - ./uploaded:/app/uploaded
     tf_serving:
         ports:
             - "8501:8501"
