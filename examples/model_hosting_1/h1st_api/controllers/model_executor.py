@@ -1,6 +1,6 @@
 from .mocked.model_step import H1ModelStep
 
-from PIL import Image
+from PIL import Image, ImageOps
 from loguru import logger
 
 import base64
@@ -76,7 +76,9 @@ class TensorFlowModelExecutor:
 
             # resize image
             if 'input-image-shape' in spec:
-                im = im.resize(spec['input-image-shape'])
+                # im = im.resize(spec['input-image-shape'])
+                center = (0.5, 0.5)
+                im = ImageOps.fit(im, spec['input-image-shape'], centering=center)
 
             if input_format == 'image_bytes':
                 logger.debug('Raw Image Bytes Input')
