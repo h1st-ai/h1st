@@ -27,6 +27,9 @@ SECRET_KEY = 'django-insecure-smibr040))l3%7_k*g-wi%003lq(4+$#jax14g!ez6&46savg0
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "127.0.0.1",
+    '0.0.0.0',
+    "localhost",
     "mh.aitomatic.com",
     os.getenv("ALLOWED_HOST", "modelcargo.aitomatic.com")
 ]
@@ -160,3 +163,9 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import logging
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+)
