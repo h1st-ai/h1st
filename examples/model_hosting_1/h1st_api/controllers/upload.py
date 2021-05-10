@@ -82,7 +82,7 @@ class Upload(APIView):
                 if deploy_result['success'] is False:
                     return JsonResponse({
                         "status": "DEPLOYMENT_ERROR",
-                        "error": deploy_result['error']
+                        "message": deploy_result['message']
                     })
                 
 
@@ -209,7 +209,7 @@ class Upload(APIView):
                 # Remove the extracted folder
                 if os.path.exists(destination):
                     shutil.rmtree(destination)
-                return {'success': False, 'error': ex.__str__}
+                return {'success': False, 'message': ex.__str__}
         
         return True
     

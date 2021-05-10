@@ -74,13 +74,17 @@ class TensorFlowModelExecutor:
 
             im = Image.open(io.BytesIO(input_data))
 
-            # convert to corresponding mode if needed
+            # convert to corresponding color mode if needed
             if 'input-image-mode' in spec:
-                im = im.convert(spec['input-image-mode'])
+                color_mode = spec['input-image-mode'].upper()
+            else:
+                color_mode = 'RGB'
+            if im.mode != color_mode:
+                im = im.convert(color_mode)
 
             # resize image
             if 'input-image-shape' in spec:
-                # im = im.resize(spec['input-image-shape'])
+                # This is from Gradio's Image Input widget's code
                 center = (0.5, 0.5)
                 im = ImageOps.fit(im, spec['input-image-shape'], centering=center)
 
