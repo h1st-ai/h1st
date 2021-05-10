@@ -38,8 +38,12 @@ class TensorFlowModelExecutor:
                 return (input_data - mean) / std
             elif 'input-min' in spec['input-scaling'] and 'input-max' in spec['input-scaling']:
                 logger.debug('Perform min-max scaling')
-                min_, max_ = np.array(spec['input-scaling']['input-min']), np.array(spec['input-scaling']['input-max'])
-                return (input_data - min_) / (max_ - min_)
+                input_min = np.array(spec['input-scaling']['input-min'])
+                input_max = np.array(spec['input-scaling']['input-max'])
+                target_min = np.array(spec['input-scaling']['target-min'])
+                target_max = np.array(spec['input-scaling']['target-max'])
+                return ((input_data - input_min) / (input_max - input_min)
+                        * (target_max - target_min) + target_min)
         return input_data
     
     @staticmethod
