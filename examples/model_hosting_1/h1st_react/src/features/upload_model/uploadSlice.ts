@@ -15,10 +15,21 @@ export interface UploadState {
     name: string;
     description: string | "" | undefined;
     input: AIModelInput[];
+    modelType: ModelTypes.TENSORFLOW | ModelTypes.PYTORCH;
     output: {
-      type: "REST" | "IMG_CLASSIFIER";
+      type: ModelOutputType.REST | ModelOutputType.IMG_CLASSIFIER;
     };
   };
+}
+
+export enum ModelTypes {
+  TENSORFLOW = "TF",
+  PYTORCH = "PT",
+}
+
+export enum ModelOutputType {
+  REST = "REST_API",
+  IMG_CLASSIFIER = "IMG_CLASSIFIER",
 }
 
 export interface AIModelInput {
@@ -70,8 +81,9 @@ const initialState: UploadState = {
     name: "",
     description: "",
     input: [],
+    modelType: ModelTypes.TENSORFLOW,
     output: {
-      type: "IMG_CLASSIFIER",
+      type: ModelOutputType.IMG_CLASSIFIER,
     },
   },
 };
