@@ -10,3 +10,4 @@ pyjwt~=1.7.1
 requests~=2.22.0
 zipfile36
 Pillow
+psycopg2~=2.8.6
