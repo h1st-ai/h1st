@@ -44,7 +44,9 @@ class UploadFilesService {
 
   cancelRequest() {
     // @ts-ignore
-    this.cancel();
+    if (typeof this.cancel === "function") {
+      this.cancel();
+    }
   }
 
   getFiles() {
