@@ -122,7 +122,7 @@ export default function ModelList() {
                             "bg-green-100 text-green-800":
                               model.status === "active",
                           },
-                          "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                          "inline-flex items-center px-2 py-0.5 rounded font-medium"
                         )}
                       >
                         <svg
