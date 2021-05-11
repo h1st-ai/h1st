@@ -10,6 +10,8 @@ import json
 import numpy as np
 import requests
 
+from .model_manager import TensorFlowModelManager
+
 
 TENSORFLOW_SERVER = os.getenv("TENSORFLOW_SERVER", "http://localhost:8501/v1/models")
 PYTORCH_SERVER = os.getenv("PYTORCH_SERVER", "http://localhost:8080")
@@ -113,7 +115,14 @@ class TensorFlowModelExecutor:
             # TODO: Check for error and return proper message
             response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
             logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
-            response.raise_for_status()
+            if response.status_code == 404:
+                # Re-register the model and request again
+                TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
+                response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+                logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+            else:
+                response.raise_for_status()
+            
             prediction = response.json()['predictions'][0]
             logger.debug(len(prediction))
             if 'classes' in prediction:
@@ -129,7 +138,14 @@ class TensorFlowModelExecutor:
             # TODO: Check for error and return proper message
             response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
             logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
-            response.raise_for_status()
+            if response.status_code == 404:
+                # Re-register the model and request again
+                TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
+                response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+                logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+            else:
+                response.raise_for_status()
+            
             prediction = response.json()['outputs']
             # TODO: We must read the signature spec and extract outputs correspondingly
             if model_name == 'sentiment_analysis':
