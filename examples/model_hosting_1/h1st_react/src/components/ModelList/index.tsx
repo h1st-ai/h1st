@@ -1,8 +1,14 @@
 import React from "react";
 import { ExternalLinkIcon } from "@heroicons/react/solid";
 import { useAppSelector, useAppDispatch } from "app/hooks";
-import { selectModels, setModels } from "features/upload_model/uploadSlice";
+import {
+  selectModels,
+  setModels,
+  showUploadForm,
+} from "features/upload_model/uploadSlice";
 import { useAuth0 } from "@auth0/auth0-react";
+import { PlusIcon } from "@heroicons/react/solid";
+import { Illustration } from "components/Illustration";
 
 const axios = require("axios").default;
 
@@ -21,8 +27,6 @@ export default function ModelList() {
         },
       });
 
-      console.log(result);
-
       if (result.status === 200 && result.data.status === "OK") {
         dispatch(setModels(result.data.result));
       }
@@ -30,6 +34,25 @@ export default function ModelList() {
 
     loadData();
   }, []);
+
+  if (models.length === 0) {
+    return (
+      <div className="w-6/12 m-auto text-center mt-4">
+        <p className="text-gray-500 text-lg mb-6 mt-12">
+          It's a little bit empty here
+        </p>
+        <button
+          onClick={() => dispatch(showUploadForm())}
+          type="button"
+          className="mb-10 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <PlusIcon className="-ml-1 mr-3 h-5 w-5" aria-hidden="true" /> Upload
+          a new model
+        </button>
+        <Illustration name="interact" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">
