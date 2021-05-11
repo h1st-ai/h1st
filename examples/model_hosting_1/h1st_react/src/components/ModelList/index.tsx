@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { ExternalLinkIcon } from "@heroicons/react/solid";
 import { useAppSelector, useAppDispatch } from "app/hooks";
+import klass from "classnames";
 import {
   selectModels,
   setModels,
@@ -13,6 +14,7 @@ import { Illustration } from "components/Illustration";
 const axios = require("axios").default;
 
 export default function ModelList() {
+  const [loaded, setLoaded] = useState<boolean>(false);
   const models = useAppSelector(selectModels);
   const dispatch = useAppDispatch();
 
@@ -30,12 +32,19 @@ export default function ModelList() {
       if (result.status === 200 && result.data.status === "OK") {
         dispatch(setModels(result.data.result));
       }
+
+      // indicate that data has been loaded
+      setLoaded(true);
     };
 
     loadData();
   }, []);
 
-  if (models.length === 0) {
+  if (!loaded) {
+    return null;
+  }
+
+  if (models.length === 0 && loaded) {
     return (
       <div className="w-6/12 m-auto text-center mt-4">
         <p className="text-gray-500 text-lg mb-6 mt-12">
@@ -78,7 +87,13 @@ export default function ModelList() {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Updated At
+                    Last Updated
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status
                   </th>
                   <th scope="col" className="relative px-6 py-3">
                     <span className="sr-only">Edit</span>
@@ -98,7 +113,32 @@ export default function ModelList() {
                       {model.description}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {model.updated_at}
+                      {new Date(model.updated_at).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span
+                        className={klass(
+                          {
+                            "bg-green-100 text-green-800":
+                              model.status === "active",
+                          },
+                          "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                        )}
+                      >
+                        <svg
+                          className={klass(
+                            {
+                              "text-green-400": model.status === "active",
+                            },
+                            "mr-1.5 h-2 w-2 "
+                          )}
+                          fill="currentColor"
+                          viewBox="0 0 8 8"
+                        >
+                          <circle cx={4} cy={4} r={3} />
+                        </svg>
+                        {model.status}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex">
                       <a

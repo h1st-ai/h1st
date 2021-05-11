@@ -52,6 +52,7 @@ export interface AIModel {
   created_at: string;
   updated_at: string;
   creator: string;
+  status: string;
 }
 
 export interface AIModelInputTypeChangePayload {

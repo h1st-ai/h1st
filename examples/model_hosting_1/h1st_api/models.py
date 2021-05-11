@@ -23,6 +23,7 @@ class AIModel(models.Model):
     config = models.JSONField()
     model_id = models.CharField(max_length=200, default="")
     file_name = models.CharField(max_length=200)
+    status = models.CharField(max_length=20, default="active")
     creator = models.CharField(max_length=255, help_text='Creator')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
