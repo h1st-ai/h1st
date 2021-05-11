@@ -19,6 +19,9 @@ import ModelInput from "features/upload_model/components/model_input";
 import ModelOutput from "features/upload_model/components/model_output";
 import UploadService from "features/upload_model/service.upload";
 
+import styles from "./Upload.module.css";
+import { addEmitHelper } from "typescript";
+
 const axios = require("axios").default;
 
 export default function UploadForm() {
@@ -30,13 +33,17 @@ export default function UploadForm() {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const onDrop = useCallback(async (acceptedFiles) => {
+    // reset progress
+    setProgress(0);
+    setUploadedFile(null);
+
     const token = await getAccessTokenSilently();
     const result = await UploadService.upload(
       "/api/upload/",
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
-        console.log(prog);
+
         setProgress(prog);
       },
       token
@@ -154,7 +161,7 @@ export default function UploadForm() {
                       "hover:border-indigo-500 dropzone mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-md",
                   })}
                 >
-                  <div className="space-y-1 text-center">
+                  <div className="space-y-1 text-center relative">
                     <svg
                       className="mx-auto h-12 w-12 text-gray-400 fill-current"
                       xmlns="http://www.w3.org/2000/svg"
@@ -180,12 +187,28 @@ export default function UploadForm() {
                       </label>
                     </div>
                     <p className="text-xs text-gray-500">
-                      File size limit: 10MB {progress}
+                      File size limit: 600MB
                     </p>
                     {acceptedFiles.length > 0 && (
                       <aside>
-                        <h4>File</h4>
                         <ul>{files}</ul>
+
+                        <span
+                          className={klass(
+                            styles["progress-bar"],
+                            "absolute w-64 h-2 bottom-2 left-0 bg-blue-200"
+                          )}
+                        >
+                          <span
+                            className={styles["progress-bar-content"]}
+                            style={{
+                              display: "block",
+                              transform: `scaleX(${Number(
+                                progress / 100
+                              ).toFixed(2)})`,
+                            }}
+                          ></span>
+                        </span>
                       </aside>
                     )}
                   </div>
@@ -254,44 +277,6 @@ export default function UploadForm() {
 
               <div className="sm:col-span-6">
                 <ModelOutput />
-                {/* <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="lg:border-r-2">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Application Input
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Please provide your model parameters name and type below.
-                    </p>
-
-                    {modelInputs.length > 0 && (
-                      <ul className="mt-6 sm:mr-6">{modelInputs}</ul>
-                    )}
-
-                    {modelInputs.length === 0 && (
-                      <div className="rounded-tl-md rounded-tr-md rounded-bl-md rounded-br-md text-center text-gray-900 py-5 bg-gray-100 mr-6 mt-6 round">
-                        <button
-                          type="button"
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={addNewModelInput}
-                        >
-                          Add input
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Application Output
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Select how you want to display the application output.
-                    </p>
-
-                    <div className="mt-6">
-                      <ModelOutput />
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
@@ -301,7 +286,7 @@ export default function UploadForm() {
           <div className="flex justify-start">
             <button
               type="button"
-              className="mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="disabled:opacity-50 mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               disabled={!applicationInfo.name || !fileRef || !uploadedFile}
               onClick={submit}
             >

@@ -7,4 +7,4 @@ docker run -d -t --rm -p 8501:8501 --name tf_serving -v "$(pwd)/model_repo/tenso
 docker run -d -t --rm -p 8080:8080 -p 8081:8081 --name pt_serving -v $(pwd)/model_repo/pytorch_models:/home/model-server/model-store pytorch/torchserve:latest
 
 # start Django server
-docker run -d --rm -t -p 8000:8000 --name h1st_api h1st_api
+# docker run -d --rm -t -p 8000:8000 --name h1st_api h1st_api
