@@ -24,6 +24,12 @@ import { addEmitHelper } from "typescript";
 
 const axios = require("axios").default;
 
+const BUTTON_STATES = {
+  IDLE: "Save",
+  UPLOADING: "Uploading...Please wait.",
+  SAVING: "Saving...Please wait",
+};
+
 export default function UploadForm() {
   const { getAccessTokenSilently } = useAuth0();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -31,11 +37,13 @@ export default function UploadForm() {
   const [submitted, setSubmitted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [buttonState, setButtonState] = useState(BUTTON_STATES.IDLE);
 
   const onDrop = useCallback(async (acceptedFiles) => {
     // reset progress
     setProgress(0);
     setUploadedFile(null);
+    setButtonState(BUTTON_STATES.UPLOADING);
 
     const token = await getAccessTokenSilently();
     const result = await UploadService.upload(
@@ -43,7 +51,6 @@ export default function UploadForm() {
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
-        console.log(prog);
         setProgress(prog);
       },
       token
@@ -53,6 +60,8 @@ export default function UploadForm() {
       // set the uploaded file here
       setUploadedFile(result.data.id);
     }
+
+    setButtonState(BUTTON_STATES.IDLE);
   }, []);
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -77,9 +86,9 @@ export default function UploadForm() {
     dispatch(updateApplicationDescription(value));
   };
 
-  const addNewModelInput = () => {
-    dispatch(addModelInput({ type: "string", name: "", id: v4() }));
-  };
+  // const addNewModelInput = () => {
+  //   dispatch(addModelInput({ type: "string", name: "", id: v4() }));
+  // };
 
   const cancel = () => {
     UploadService.cancelRequest();
@@ -89,6 +98,7 @@ export default function UploadForm() {
 
   const submit = async () => {
     setSubmitted(true);
+    setButtonState(BUTTON_STATES.SAVING);
 
     const token = await getAccessTokenSilently();
     const { name, description, input: rawInput, output } = applicationInfo;
@@ -113,8 +123,6 @@ export default function UploadForm() {
       }
     );
 
-    console.log(response);
-
     if (response.data.status === "OK") {
       dispatch(resetApplicationState());
       dispatch(addModel(response.data.result));
@@ -127,6 +135,8 @@ export default function UploadForm() {
       );
       setSubmitted(false);
     }
+
+    setButtonState(BUTTON_STATES.IDLE);
   };
 
   const modelInputs = applicationInfo.input.map((input, index) => (
@@ -286,11 +296,16 @@ export default function UploadForm() {
           <div className="flex justify-start">
             <button
               type="button"
-              className="disabled:opacity-50 mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              disabled={!applicationInfo.name || !fileRef || !uploadedFile}
+              className="disabled:pointer-events-none disabled:opacity-50 mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={
+                !applicationInfo.name || // no application name
+                !fileRef || // no file upload ref
+                !uploadedFile || // there is no uploaded file
+                buttonState !== BUTTON_STATES.IDLE // there is something going one
+              }
               onClick={submit}
             >
-              Save
+              {buttonState}
             </button>
 
             <button
