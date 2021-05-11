@@ -1,8 +1,13 @@
 from google.protobuf import text_format
 from tensorflow_serving.config import model_server_config_pb2
+from tensorflow_serving.apis import model_service_pb2_grpc
+from tensorflow_serving.apis import model_management_pb2
 
+import grpc
 import requests
+import os
 
+TENSORFLOW_GRPC_SERVER = os.getenv("TENSORFLOW_GRPC_SERVER", "tf_serving:8500")
 
 class ModelConfig:
     def __init__(self, model_id, model_platform, model_path):
@@ -21,7 +26,10 @@ class ModelManager:
     @staticmethod
     def update_model_config(model_id, model_platform, model_path):
         if model_platform == 'tensorflow':
-            TensorFlowModelManager.register_new_model('models.config', model_id, model_path)
+            # TensorFlowModelManager.register_new_model('models.config', model_id, model_path)
+            TensorFlowModelManager.register_new_model_grpc(model_id, model_path)
+            
+
 
 class TensorFlowModelManager:
     @staticmethod
@@ -42,6 +50,37 @@ class TensorFlowModelManager:
         f = open(conf_filepath, "w+")
         f.write(model_server_config.__str__())
         f.close()
+    
+    @staticmethod
+    def register_new_model_grpc(name, base_path, model_platform='tensorflow'):
+        channel = grpc.insecure_channel(TENSORFLOW_GRPC_SERVER) 
+        stub = model_service_pb2_grpc.ModelServiceStub(channel)
+        request = model_management_pb2.ReloadConfigRequest() 
+        model_server_config = model_server_config_pb2.ModelServerConfig()
+
+        #Create a config to add to the list of served models
+        config_list = model_server_config_pb2.ModelConfigList()       
+        one_config = config_list.config.add()
+        one_config.name= name
+        one_config.base_path=base_path
+        one_config.model_platform=model_platform
+
+        model_server_config.model_config_list.CopyFrom(config_list)
+
+        request.config.CopyFrom(model_server_config)
+
+        print(request.IsInitialized())
+        print(request.ListFields())
+
+        response = stub.HandleReloadConfigRequest(request,10)
+        if response.status.error_code == 0:
+            print("Reload sucessfully")
+            return True
+        else:
+            print("Reload failed!")
+            print(response.status.error_code)
+            print(response.status.error_message)
+            return False
 
 
 class PyTorchModelManager:
