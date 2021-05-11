@@ -51,9 +51,7 @@ export default function ModelOutput() {
                 settingIdx === settings.length - 1
                   ? "rounded-bl-md rounded-br-md"
                   : "",
-                checked
-                  ? "bg-indigo-50 border-indigo-200 z-10"
-                  : "border-gray-200",
+                checked ? "bg-blue-50 border-blue-200 z-10" : "border-gray-200",
                 "relative border p-4 flex cursor-pointer focus:outline-none",
                 "disabled:opacity-50"
               )
@@ -64,9 +62,9 @@ export default function ModelOutput() {
                 <span
                   className={classNames(
                     checked
-                      ? "bg-indigo-600 border-transparent"
+                      ? "bg-blue-600 border-transparent"
                       : "bg-white border-gray-300",
-                    active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                    active ? "ring-2 ring-offset-2 ring-blue-500" : "",
                     "h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center"
                   )}
                   aria-hidden="true"
@@ -77,7 +75,7 @@ export default function ModelOutput() {
                   <RadioGroup.Label
                     as="span"
                     className={classNames(
-                      checked ? "text-indigo-900" : "text-gray-900",
+                      checked ? "text-blue-900" : "text-gray-900",
                       "block text-sm font-medium"
                     )}
                   >
@@ -86,7 +84,7 @@ export default function ModelOutput() {
                   <RadioGroup.Description
                     as="span"
                     className={classNames(
-                      checked ? "text-indigo-700" : "text-gray-500",
+                      checked ? "text-blue-700" : "text-gray-500",
                       "block text-sm"
                     )}
                   >
