@@ -66,6 +66,7 @@ export default function UploadForm() {
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     onDrop,
+    accept: "application/zip",
   });
   const applicationInfo = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
@@ -357,7 +358,7 @@ export default function UploadForm() {
                           />
                         </label>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm text-gray-500">
                         <span className="text-blue-600">Select file</span> or
                         drag and drop a file here to upload (limit: 600MB)
                       </p>
