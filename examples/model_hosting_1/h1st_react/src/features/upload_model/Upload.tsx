@@ -130,7 +130,7 @@ export default function UploadForm() {
       dispatch(
         showMessage({
           title: "Success",
-          message: `${name} has been queued for deployment successfully`,
+          message: `${name} has been uploaded successfully`,
         })
       );
       setSubmitted(false);
