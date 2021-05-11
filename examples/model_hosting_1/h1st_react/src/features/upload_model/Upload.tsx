@@ -43,7 +43,7 @@ export default function UploadForm() {
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
-
+        console.log(prog);
         setProgress(prog);
       },
       token
@@ -65,7 +65,7 @@ export default function UploadForm() {
     // @ts-ignore
     <li key={file.path}>
       {/* @ts-ignore */}
-      {file.path} - {file.size} bytes
+      {file.path}
     </li>
   ));
 
@@ -82,6 +82,7 @@ export default function UploadForm() {
   };
 
   const cancel = () => {
+    UploadService.cancelRequest();
     dispatch(resetApplicationState());
     dispatch(hideUploadForm());
   };
@@ -192,11 +193,10 @@ export default function UploadForm() {
                     {acceptedFiles.length > 0 && (
                       <aside>
                         <ul>{files}</ul>
-
                         <span
                           className={klass(
                             styles["progress-bar"],
-                            "absolute w-64 h-2 bottom-2 left-0 bg-blue-200"
+                            "w-64 h-2 bottom-2 left-0 bg-blue-200"
                           )}
                         >
                           <span

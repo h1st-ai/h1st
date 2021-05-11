@@ -1,5 +1,9 @@
 /* loading animation */
-.progress-bar { @apply bg-gray-200 rounded overflow-hidden; }
+.progress-bar { 
+    @apply bg-gray-200 rounded overflow-hidden block mt-4; 
+    width: 100%;
+    max-width: 16rem;
+}
 
 .progress-bar-content {
     display: block;
