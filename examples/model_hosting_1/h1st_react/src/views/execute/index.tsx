@@ -51,6 +51,17 @@ export default function Execute(props: ExecutionProps) {
     return (
       <div className="md:w-1/2 md:m-auto md:mt-12 mx-4 m-auto mt-4 self-center">
         {widget}
+
+        <div className="text-xs text-gray-500 text-center my-10">
+          Powered by{" "}
+          <a href="https://www.h1st.ai/" className="text-blue-500">
+            Human First AI
+          </a>
+          . Hosted by{" "}
+          <a href="https://www.aitomatic.com/" className="text-blue-500">
+            Aitomatic
+          </a>
+        </div>
       </div>
     );
   }
