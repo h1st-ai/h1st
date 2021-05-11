@@ -1,8 +1,17 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  Fragment,
+} from "react";
 import { AIModel } from "features/upload_model/uploadSlice";
 import UploadService from "features/upload_model/service.upload";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDropzone } from "react-dropzone";
+import klass from "classnames";
+import { XCircleIcon } from "@heroicons/react/solid";
+import styles from "./styles.module.css";
 
 const numeral = require("numeral");
 export interface ImageClassiferWidgetProps {
@@ -11,6 +20,7 @@ export interface ImageClassiferWidgetProps {
 
 export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState([]);
   const [previewSrc, setPreviewSrc] = useState(0);
@@ -54,29 +64,39 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
     UploadService.cancelRequest();
     setPreviewSrc(0);
     acceptedFiles.splice(0);
+    setResult([]);
+    setError(null);
+    setLoading(false);
   };
 
   const submit = async () => {
     setLoading(true);
     const token = await getAccessTokenSilently();
+    let res = null;
 
-    const res = await UploadService.upload(
-      `/api/app/${model.model_id}/execute/img_classifer/`,
-      { file: acceptedFiles[0], model_id: model.model_id },
-      (event) => {
-        const prog = Math.round((100 * event.loaded) / event.total);
-        console.log(prog);
-        setProgress(prog);
-      },
-      token
-    );
+    try {
+      res = await UploadService.upload(
+        `/api/app/${model.model_id}/execute/img_classifer/`,
+        { file: acceptedFiles[0], model_id: model.model_id },
+        (event) => {
+          const prog = Math.round((100 * event.loaded) / event.total);
+          console.log(prog);
+          setProgress(prog);
+        },
+        token
+      );
 
-    if (res.data.status === "OK") {
-      setResult(res.data.result.slice(0, 3));
-      // set the uploaded file here
-      // setUploadedFile(result.data.id);
+      if (res.data.status === "OK") {
+        setResult(res.data.result.slice(0, 5));
+        // set the uploaded file here
+        // setUploadedFile(result.data.id);
+      }
+    } catch (ex) {
+      console.error(ex.response);
+      setError(ex.response.data);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -91,45 +111,87 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
       </div>
       <div className="px-4 py-5 sm:p-6">
         {acceptedFiles.length > 0 && previewSrc && (
-          <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-2 bg-gray-100">
-            <div>
-              <img
-                className=""
-                // @ts-ignore
-                src={previewSrc}
-                width="100%"
-                height="100%"
-                ref={previewImgEl}
-                alt="input"
-              />
-            </div>
-            <div className="p-6 text-sm">
-              <h3 className="font-bold">Input:</h3>
-              <ul className="">
-                {acceptedFiles.map((file) => (
-                  // @ts-ignore
-                  <li key={file.path}>
-                    {/* @ts-ignore */}
-                    {file.path} ({numeral(file.size).format("0b")})
-                  </li>
-                ))}
-              </ul>
-              {result.length > 0 && (
-                <div>
-                  <h3 className="font-bold">Result:</h3>
-                  <ul>
-                    {result.map((r) => {
-                      return (
-                        <div>
-                          {r[0]} {Number(r[1] * 100).toFixed(2)}%
-                        </div>
-                      );
-                    })}
-                  </ul>
+          <Fragment>
+            {error && (
+              <div className="rounded-md bg-red-50 p-4 mb-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <XCircleIcon
+                      className="h-5 w-5 text-red-400"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">
+                      There was an error trying to classify the image
+                    </h3>
+                    <div className="mt-2 text-sm text-red-700">
+                      <ul className="list-disc pl-5 space-y-1">
+                        {/* @ts-ignore */}
+                        <li>{error.message}</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
+            )}
+            <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-2 bg-gray-100">
+              <div className="flex item-center bg-gray-200">
+                <img
+                  className="self-center"
+                  // @ts-ignore
+                  src={previewSrc}
+                  width="100%"
+                  height="auto"
+                  ref={previewImgEl}
+                  alt="input"
+                />
+              </div>
+              <div className="p-6 text-sm">
+                <h3 className="font-bold">Input:</h3>
+                <ul className="">
+                  {acceptedFiles.map((file) => (
+                    // @ts-ignore
+                    <li key={file.path}>
+                      {/* @ts-ignore */}
+                      {file.path} ({numeral(file.size).format("0b")})
+                    </li>
+                  ))}
+                </ul>
+                {result.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="font-bold">Result:</h3>
+                    <ul>
+                      {result.map((r) => {
+                        return (
+                          <li>
+                            <div
+                              className="relative bg-blue-900 py-5 px-1 rounded-sm my-2"
+                              style={{ width: `${r[1] * 100}%` }}
+                            >
+                              <span
+                                className={klass(
+                                  {
+                                    "right-2 text-xs text-white ":
+                                      r[1] * 100 > 40,
+                                    [styles["overflown-result"]]:
+                                      r[1] * 100 <= 40,
+                                  },
+                                  "flex absolute inset-y-0 items-center whitespace-nowrap"
+                                )}
+                              >
+                                {r[0]} ({Number(r[1] * 100).toFixed(2)}%)
+                              </span>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          </Fragment>
         )}
 
         {acceptedFiles.length === 0 && (
@@ -179,7 +241,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                   </div>
                   <p className="text-sm text-gray-500">
                     <span className="text-blue-600">Select file</span> or drag
-                    and drop a file here to upload (limit: 200Kb)
+                    and drop a file here to upload (limit: 200KB)
                   </p>
                 </div>
               </div>
@@ -204,7 +266,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
         </button>
 
         <button
-          className="ml-4 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="lg:ml-4 lg:mt-0 mt-4 w-full inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm items-center justify-center"
           onClick={reset}
         >
           Reset
