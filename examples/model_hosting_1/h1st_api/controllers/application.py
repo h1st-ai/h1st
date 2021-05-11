@@ -3,6 +3,7 @@ import os.path
 import uuid
 import json
 
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.forms.models import model_to_dict
@@ -28,38 +29,48 @@ class Application(APIView):
         })
     
     def post(self, request, model_id, model_type):
-        print(model_type, model_id)
-
         if model_type == "img_classifer":
-            # try:
-            file = request.FILES['file']
-            # file_name, file_id = self.handle_uploaded_file(file)
+            try:
+                file = request.FILES['file']
+
+                if file.size > 200 * 1024:
+                    return Response({
+                        "status": status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        "message": "The uploaded photo exceeds maximum file size."
+                    }, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+
+            except Exception as ex:
+                print(ex)
+
+                return Response({
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "message": "Internal server error"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
             
-            # if uploaded_file.size > 200 * 1024:
-            #     return "Sorry, we accept only images with size <= 200KB"
             image_data = file.read()
 
-            # retrieve model
-            model = AIModel.objects.get(model_id=model_id);
-            spec = model.config
+            try:
+                # retrieve model
+                model = AIModel.objects.get(model_id=model_id);
 
-            print(type(spec))
-
-            return Response({
-                "status": "OK",
-                "result": self.execute(model_id, input_data=image_data, input_type='image', spec=spec)
-            })
-            # except Exception as ex:
-            #     print(ex)
-            #     # TODO handle error here
-            #     return Response({
-            #         "status": "BAD_REQUEST",
-            #     })
+                return Response({
+                    "status": "OK",
+                    "result": self.execute(model_id, input_data=image_data, input_type='image', spec=model.config)
+                })
+            except Exception as ex:
+                print(ex)
+                # TODO handle error here
+                return Response({
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "message": "Internal server error"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # not supported
         return Response({
-            'status': 'NOT_SUPPORTED',
-        })
+            'status': status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            'message': 'Unsupported type'
+        }, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def execute(self, model_id, input_data, input_type, spec):
         model_info = ModelManager.get_model_config(model_id)
