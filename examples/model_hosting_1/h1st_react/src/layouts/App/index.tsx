@@ -41,11 +41,18 @@ export default function App(props: any) {
                 <div className="flex items-center justify-between h-16">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <img
-                        className="h-8 w-8"
-                        src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                        alt="Workflow"
-                      />
+                      <svg
+                        width="30"
+                        height="35"
+                        viewBox="0 0 148 158"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M124.558 158H148L85.024 0H62.976L0 158H23.6952L32.6918 135.03L45.8699 99.4956H45.6164C55.1199 74.8755 64.6233 50.2554 74 25.6353C81.0959 43.7831 88.0651 62.1847 95.161 80.4594C96.0479 82.7438 96.9349 85.0281 97.8219 87.3125C99.3425 91.3735 100.99 95.4345 102.51 99.4956H102.257L114.168 131.857L124.558 158Z"
+                          fill="white"
+                        />
+                      </svg>
                     </div>
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">

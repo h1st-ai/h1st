@@ -47,7 +47,7 @@ export default function UploadForm() {
 
     const token = await getAccessTokenSilently();
     const result = await UploadService.upload(
-      "/api/upload/",
+      "api/upload/",
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
@@ -218,7 +218,7 @@ export default function UploadForm() {
                         <span
                           className={klass(
                             styles["progress-bar"],
-                            "w-64 h-2 bottom-2 left-0 bg-blue-200"
+                            "w-64 h-2 bottom-2 left-0 bg-blue-200 m-auto"
                           )}
                         >
                           <span

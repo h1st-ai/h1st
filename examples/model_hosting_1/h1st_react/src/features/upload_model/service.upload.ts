@@ -29,7 +29,7 @@ class UploadFilesService {
       formData.append(k, data[k]);
     });
 
-    return http.post(getFullUrl(url) || getFullUrl("/api/upload/"), formData, {
+    return http.post(getFullUrl(url) || getFullUrl("api/upload/"), formData, {
       // @ts-ignore
       cancelToken: new CancelToken((c) => {
         this.cancel = c;
