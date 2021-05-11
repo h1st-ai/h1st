@@ -194,7 +194,8 @@ class Upload(APIView):
 
                 
                 # consider deleting the uploaded file at this point
-                TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=dir_name, base_path="/models/{}/".format(dir_name))
+                # TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=dir_name, base_path="/models/{}/".format(dir_name))
+                TensorFlowModelManager.register_new_model_grpc(name=dir_name, base_path="/models/{}/".format(dir_name))
                 
                 # read model.io.json
                 config_data = self.handle_modelio_json(path='{}/{}/{}'.format(self.TF_PATH, dir_name, self.TF_MODEL_IO_FILE))
