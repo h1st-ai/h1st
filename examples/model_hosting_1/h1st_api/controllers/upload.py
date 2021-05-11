@@ -45,7 +45,7 @@ class Upload(APIView):
         """
         Return a list of applications for the current user
         """
-        models = list(AIModel.objects.filter(creator=request.user).only('id', 'name', 'description', 'type', 'creator').values())
+        models = list(AIModel.objects.filter(creator=request.user).only('id', 'name', 'description', 'type', 'creator', 'status').values())
 
         return Response({
             'status': 'OK',

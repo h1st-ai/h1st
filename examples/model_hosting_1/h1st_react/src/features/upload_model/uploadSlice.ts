@@ -19,6 +19,7 @@ export interface UploadState {
     output: {
       type: ModelOutputType.REST | ModelOutputType.IMG_CLASSIFIER;
     };
+    showGuide: boolean;
   };
 }
 
@@ -51,6 +52,7 @@ export interface AIModel {
   created_at: string;
   updated_at: string;
   creator: string;
+  status: string;
 }
 
 export interface AIModelInputTypeChangePayload {
@@ -85,6 +87,7 @@ const initialState: UploadState = {
     output: {
       type: ModelOutputType.IMG_CLASSIFIER,
     },
+    showGuide: false,
   },
 };
 
@@ -160,6 +163,9 @@ export const uploadSlice = createSlice({
       const { index, name } = action.payload;
       state.application.input[index].name = name;
     },
+    setShowModelPackingGuide: (state, action: PayloadAction<boolean>) => {
+      state.application.showGuide = action.payload;
+    },
   },
 });
 
@@ -179,6 +185,7 @@ export const {
   updateModelInputName,
   updateModelInputType,
   resetApplicationState,
+  setShowModelPackingGuide,
 } = uploadSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
