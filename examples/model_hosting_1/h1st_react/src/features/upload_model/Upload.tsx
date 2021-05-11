@@ -47,7 +47,7 @@ export default function UploadForm() {
 
     const token = await getAccessTokenSilently();
     const result = await UploadService.upload(
-      "api/upload/",
+      "/api/upload/",
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
