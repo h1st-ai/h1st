@@ -87,7 +87,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
       );
 
       if (res.data.status === "OK") {
-        setResult(res.data.result.slice(0, 5));
+        setResult(res.data.result.slice(0, 3));
         // set the uploaded file here
         // setUploadedFile(result.data.id);
       }
