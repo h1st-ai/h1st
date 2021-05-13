@@ -54,6 +54,8 @@ class Application(APIView):
                 # retrieve model
                 model = AIModel.objects.get(model_id=model_id);
 
+                print("Model retrieve",  model)
+
                 return Response({
                     "status": "OK",
                     "result": self.execute(model_id, input_data=image_data, input_type='image', spec=model.config)
