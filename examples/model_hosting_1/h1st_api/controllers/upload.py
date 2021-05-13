@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
@@ -69,10 +70,10 @@ class Upload(APIView):
                 print("DEPLOYYY", deploy_result)
                 
                 if deploy_result['success'] is False:
-                    return JsonResponse({
+                    return Response({
                         "status": "DEPLOYMENT_ERROR",
                         "message": deploy_result['message']
-                    }, status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
 
             #save to database
@@ -187,7 +188,7 @@ class Upload(APIView):
                 # read model.io.json
                 config_data = self.handle_modelio_json(path='{}/{}/{}'.format(self.TF_PATH, dir_name, self.TF_MODEL_IO_FILE))
 
-                return {'success': True}, config_data
+                return {'success': True, }, config_data
 
             except Exception as ex:
                 logging.info(type(ex))    # the exception
@@ -197,9 +198,9 @@ class Upload(APIView):
                 # Remove the extracted folder
                 if os.path.exists(destination):
                     shutil.rmtree(destination)
-                return {'success': False, 'message': ex.__str__}
+                return {'success': False, 'message': ex.__str__}, None
         
-        return {'success': False, 'message': 'Unsupported model type'}
+        return {'success': False, 'message': 'Unsupported model type'}, None
     
     def handle_modelio_json(self, path):
         f = open(path,)
