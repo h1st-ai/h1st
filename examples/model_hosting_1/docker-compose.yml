@@ -43,6 +43,7 @@ services:
         volumes: 
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded
+            - ./monitoring/prometheus:/monitoring/prometheus
     tf_serving:
         ports:
             - "8501:8501"
@@ -50,7 +51,7 @@ services:
         volumes:
             - ./model_repo/tensorflow_models/:/models/
         image: tensorflow/serving
-        command: --model_config_file=/models/models.config
+        command: --model_config_file=/models/models.config --monitoring_config_file=/monitoring/prometheus.config
     pt_serving:
         ports:
             - "8080:8080"

@@ -42,6 +42,7 @@ export default function UploadForm() {
   const [buttonState, setButtonState] = useState(BUTTON_STATES.IDLE);
 
   const onDrop = useCallback(async (acceptedFiles) => {
+    console.log("drop event triggered", acceptedFiles);
     // reset progress
     setProgress(0);
     setUploadedFile(null);
