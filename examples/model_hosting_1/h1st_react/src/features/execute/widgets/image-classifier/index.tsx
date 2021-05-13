@@ -240,7 +240,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                   </div>
                   <p className="text-sm text-gray-500">
                     <span className="text-blue-600">Select file</span> or drag
-                    and drop a file here to upload (limit: 200KB)
+                    and drop a file here to upload (limit: 10MB)
                   </p>
                 </div>
               </div>
