@@ -42,7 +42,18 @@ export default function UploadForm() {
   const [buttonState, setButtonState] = useState(BUTTON_STATES.IDLE);
 
   const onDrop = useCallback(async (acceptedFiles) => {
-    console.log("drop event triggered", acceptedFiles);
+    if (acceptedFiles && acceptedFiles.length === 0) {
+      dispatch(
+        showMessage({
+          title: "Missing file",
+          message: "No file accepted",
+          messageType: MessageType.ERROR,
+        })
+      );
+
+      return;
+    }
+
     // reset progress
     setProgress(0);
     setUploadedFile(null);
@@ -69,12 +80,12 @@ export default function UploadForm() {
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     onDrop,
-    // accept: [
-    //   "application/zip",
-    //   "application/octet-stream",
-    //   "application/x-zip-compressed",
-    //   "multipart/x-zip",
-    // ],
+    accept: [
+      "application/zip",
+      "application/octet-stream",
+      "application/x-zip-compressed",
+      "multipart/x-zip",
+    ],
   });
   const applicationInfo = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
