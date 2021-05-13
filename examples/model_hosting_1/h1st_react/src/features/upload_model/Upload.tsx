@@ -69,7 +69,12 @@ export default function UploadForm() {
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: "application/zip",
+    // accept: [
+    //   "application/zip",
+    //   "application/octet-stream",
+    //   "application/x-zip-compressed",
+    //   "multipart/x-zip",
+    // ],
   });
   const applicationInfo = useAppSelector(selectApplication);
   const dispatch = useAppDispatch();
