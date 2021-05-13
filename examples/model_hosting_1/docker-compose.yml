@@ -39,12 +39,9 @@ services:
             - TENSORFLOW_SERVER=http://tf_serving:8501/v1/models
             - TENSORFLOW_GRPC_SERVER=tf_serving:8500
             - PYTORCH_SERVER=http://pt_serving:8080
-            - DJANGO_DEBUG=False
-            - DEBUG=False
         volumes: 
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded
-            - ./monitoring/prometheus:/monitoring/prometheus
     tf_serving:
         ports:
             - "8501:8501"
@@ -52,7 +49,9 @@ services:
         volumes:
             - ./model_repo/tensorflow_models/:/models/
         image: tensorflow/serving
-        command: --model_config_file=/models/models.config --monitoring_config_file=/monitoring/prometheus.config
+        # Temporarily disable prometheus because somehow it blocks port 8501
+        # command: --model_config_file=/models/models.config --monitoring_config_file=/monitoring/prometheus.config
+        command: --model_config_file=/models/models.config
     pt_serving:
         ports:
             - "8080:8080"
