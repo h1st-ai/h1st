@@ -91,7 +91,7 @@ class Upload(APIView):
             # persist
             m.save()
 
-            print("M_USER", m.creator, type(m.creator))
+            # print("M_USER", m.creator, type(m.creator))
 
             return JsonResponse({
                 "status": "OK",
@@ -104,9 +104,9 @@ class Upload(APIView):
                     'output': model_output,
                     'created_at': m.created_at,
                     'updated_at': m.updated_at,
-                    'creator': m.creator
+                    'creator': "mocked_user"
                 }
-            }) 
+            })
 
     def create_model_config(self):
         os.mkdir(self.MODEL_EXT_PATH)
