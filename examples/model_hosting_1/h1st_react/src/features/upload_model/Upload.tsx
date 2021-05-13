@@ -13,6 +13,8 @@ import {
   hideUploadForm,
   showMessage,
   addModel,
+  MessageType,
+  ModelTypes,
 } from "./uploadSlice";
 import { useDropzone } from "react-dropzone";
 import ModelInput from "features/upload_model/components/model_input";
@@ -105,59 +107,71 @@ export default function UploadForm() {
     const { name, description, input: rawInput, output } = applicationInfo;
 
     const input = rawInput.filter((i) => i.name.trim() !== "");
-    const type = "TF";
+    const type = ModelTypes.TENSORFLOW;
 
-    const response = await axios.post(
-      "/api/upload/",
-      {
-        name,
-        description,
-        type,
-        input,
-        output,
-        uploadedFile,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      const response = await axios.post(
+        "/api/upload/",
+        {
+          name,
+          description,
+          type,
+          input,
+          output,
+          uploadedFile,
         },
-      }
-    );
-
-    if (response.data.status === "OK") {
-      dispatch(addModel(response.data.result));
-
-      dispatch(
-        showMessage({
-          title: "Success",
-          message: `${name} has been uploaded successfully`,
-        })
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      setTimeout(() => {
-        setSubmitted(false);
-        dispatch(resetApplicationState());
-        dispatch(hideUploadForm());
-      }, 1000);
-    }
+      if (response.data.status === "OK") {
+        dispatch(addModel(response.data.result));
 
-    setButtonState(BUTTON_STATES.IDLE);
+        dispatch(
+          showMessage({
+            title: "Success",
+            message: `${name} has been uploaded successfully`,
+            messageType: MessageType.SUCCESS,
+          })
+        );
+
+        setTimeout(() => {
+          setSubmitted(false);
+          dispatch(resetApplicationState());
+          dispatch(hideUploadForm());
+        }, 1000);
+      }
+    } catch (ex) {
+      console.log(ex.response.data);
+      dispatch(
+        showMessage({
+          title: "Error",
+          message: ex.response.data.message,
+          messageType: MessageType.SUCCESS,
+        })
+      );
+    } finally {
+      setButtonState(BUTTON_STATES.IDLE);
+    }
   };
 
   const showModelGuide = () => {
     dispatch(setShowModelPackingGuide(true));
   };
 
-  const modelInputs = applicationInfo.input.map((input, index) => (
-    <li>
-      <ModelInput
-        key={input.id}
-        id={input.id}
-        name={input.name}
-        index={index}
-      />
-    </li>
-  ));
+  // const modelInputs = applicationInfo.input.map((input, index) => (
+  //   <li>
+  //     <ModelInput
+  //       key={input.id}
+  //       id={input.id}
+  //       name={input.name}
+  //       index={index}
+  //     />
+  //   </li>
+  // ));
 
   return (
     <Fragment>

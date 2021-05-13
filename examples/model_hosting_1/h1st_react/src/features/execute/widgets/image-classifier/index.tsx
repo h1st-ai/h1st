@@ -172,12 +172,11 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                               <span
                                 className={klass(
                                   {
-                                    "right-2 text-xs text-white ":
-                                      r[1] * 100 > 40,
+                                    "right-2 text-white ": r[1] * 100 > 40,
                                     [styles["overflown-result"]]:
                                       r[1] * 100 <= 40,
                                   },
-                                  "flex absolute inset-y-0 items-center whitespace-nowrap"
+                                  "text-xs flex absolute inset-y-0 items-center whitespace-nowrap"
                                 )}
                               >
                                 {r[0]} ({Number(r[1] * 100).toFixed(2)}%)

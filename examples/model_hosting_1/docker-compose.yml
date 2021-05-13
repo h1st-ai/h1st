@@ -39,6 +39,7 @@ services:
             - TENSORFLOW_SERVER=http://tf_serving:8501/v1/models
             - TENSORFLOW_GRPC_SERVER=tf_serving:8500
             - PYTORCH_SERVER=http://pt_serving:8080
+            - DJANGO_DEBUG=False
         volumes: 
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded

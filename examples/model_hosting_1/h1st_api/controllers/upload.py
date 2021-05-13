@@ -1,5 +1,5 @@
+from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.response import Response
 
 
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
@@ -27,19 +27,6 @@ class Upload(APIView):
         self.TF_PATH = "{}/tensorflow_models".format(self.MODEL_EXT_PATH)
         self.TF_MODEL_CONFIG = "{}/models.config".format(self.TF_PATH)
         self.TF_MODEL_IO_FILE = "model-io.json"
-        
-    # @csrf_exempt
-    # def handle_request(self, req):
-    #     if (req.method == 'GET'):
-    #         return self.handle_get(req)
-    #     elif (req.method == 'POST'):
-    #         return self.handle_post(req)
-    #     elif (req.method == 'PUT'):
-    #         return self.handle_post(req)
-    #     elif (req.method == 'DELETE'):
-    #         return self.handle_post(req)
-    #     else:
-    #         return self.handle_default(req)
     
     def get(self, request, format=None):
         """
@@ -47,7 +34,7 @@ class Upload(APIView):
         """
         models = list(AIModel.objects.filter(creator=request.user).only('id', 'name', 'description', 'type', 'creator', 'status').values())
 
-        return Response({
+        return JsonResponse({
             'status': 'OK',
             'result': models
         })
@@ -78,12 +65,14 @@ class Upload(APIView):
                 file_path = "{}/{}".format(self.UPLOAD_PATH, file_name)
                 dir_name = file_name.split('.')[0]
                 deploy_result, config_data = self.deploy_tf_model(dir_name, file_path, model_type=type)
+
+                print("DEPLOYYY", deploy_result)
                 
                 if deploy_result['success'] is False:
                     return JsonResponse({
                         "status": "DEPLOYMENT_ERROR",
                         "message": deploy_result['message']
-                    })
+                    }, status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
 
             #save to database
@@ -102,6 +91,8 @@ class Upload(APIView):
             # persist
             m.save()
 
+            print("M_USER", m.creator, type(m.creator))
+
             return JsonResponse({
                 "status": "OK",
                 "result": {
@@ -113,7 +104,7 @@ class Upload(APIView):
                     'output': model_output,
                     'created_at': m.created_at,
                     'updated_at': m.updated_at,
-                    'creator': 'mocked_user'
+                    'creator': m.creator
                 }
             }) 
 
@@ -132,13 +123,9 @@ class Upload(APIView):
             destination = '{}/{}'.format(self.TF_PATH, dir_name)
             try:
                 with ZipFile(file_path, 'r') as Z:
-                    # for elem in Z.namelist() :
-                    #     Z.extract(elem, destination)
-                    # Extract all the contents of zip file in current directory
-
                     # Search for model-io.json
                     folder = None
-                    logging.debug(Z.namelist())
+                    # logging.debug(Z.namelist())
                     for elem in Z.namelist():
                         if '/' + self.TF_MODEL_IO_FILE in elem or elem == self.TF_MODEL_IO_FILE:
                             folder = elem.split('/')[:-1]
@@ -212,7 +199,7 @@ class Upload(APIView):
                     shutil.rmtree(destination)
                 return {'success': False, 'message': ex.__str__}
         
-        return True
+        return {'success': False, 'message': 'Unsupported model type'}
     
     def handle_modelio_json(self, path):
         f = open(path,)

@@ -10,6 +10,7 @@ export interface UploadState {
     title: string;
     message: string;
     visible: boolean;
+    messageType: MessageType;
   };
   application: {
     name: string;
@@ -33,6 +34,11 @@ export enum ModelOutputType {
   IMG_CLASSIFIER = "IMG_CLASSIFIER",
 }
 
+export enum MessageType {
+  SUCCESS = "SUCCESS",
+  ERROR = "ERROR",
+  INFO = "INFO",
+}
 export interface AIModelInput {
   type: string;
   name: string;
@@ -68,6 +74,7 @@ export interface AIModelInputNameChangePayload {
 export interface StatusMessagePayload {
   title: string;
   message: string;
+  messageType: MessageType;
 }
 
 const initialState: UploadState = {
@@ -78,6 +85,7 @@ const initialState: UploadState = {
     title: "",
     message: "",
     visible: false,
+    messageType: MessageType.INFO,
   },
   application: {
     name: "",
@@ -106,10 +114,11 @@ export const uploadSlice = createSlice({
       state.showUploadForm = false;
     },
     showMessage: (state, action: PayloadAction<StatusMessagePayload>) => {
-      const { title, message } = action.payload;
+      const { title, message, messageType } = action.payload;
       state.statusMessage.title = title;
       state.statusMessage.message = message;
       state.statusMessage.visible = true;
+      state.statusMessage.messageType = messageType;
     },
     hideMessage: (state) => {
       state.statusMessage.message = "";
