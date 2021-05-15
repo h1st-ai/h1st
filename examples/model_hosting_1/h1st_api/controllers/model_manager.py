@@ -7,7 +7,7 @@ import grpc
 import requests
 import os
 
-TENSORFLOW_GRPC_SERVER = os.getenv("TENSORFLOW_GRPC_SERVER", "127.0.01:8500")
+TENSORFLOW_GRPC_SERVER = os.getenv("TENSORFLOW_GRPC_SERVER", "127.0.0.1:8500")
 
 class ModelConfig:
     def __init__(self, model_id, model_platform, model_path):
