@@ -77,12 +77,12 @@ export default function ModelList() {
                   >
                     Name
                   </th>
-                  <th
+                  {/* <th
                     scope="col"
                     className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Description
-                  </th>
+                  </th> */}
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -107,11 +107,17 @@ export default function ModelList() {
                     className={modelIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {model.name}
+                      <a
+                        href={`/application/${model.model_id}/execute`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {model.name}
+                      </a>
                     </td>
-                    <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {/* <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {model.description}
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(model.updated_at).toLocaleString()}
                     </td>
@@ -140,14 +146,15 @@ export default function ModelList() {
                         {model.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex">
+                    <td className="px-6 py-4 text-right text-sm font-medium">
                       <a
                         href={`/application/${model.model_id}/execute`}
-                        className="w-5 h-5 text-gray-500 mr-4"
+                        className="block h-5 text-gray-500 mr-4 flex flex-row justify-end"
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <ExternalLinkIcon className="w-5 h-5 text-grey-100" />
+                        View{" "}
+                        <ExternalLinkIcon className="w-5 h-5 text-grey-100 ml-1" />
                       </a>
                     </td>
                   </tr>

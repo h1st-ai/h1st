@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+    tf_serving:
+        ports:
+            - "8501:8501"
+            - "8500:8500"
+        volumes:
+            - ./model_repo/tensorflow_models/:/models/
+        image: tensorflow/serving
+        command: --model_config_file=/models/models.config --monitoring_config_file=/monitoring/prometheus.config
+    pt_serving:
+        ports:
+            - "8080:8080"
+            - "8081:8081"
+        volumes:
+            - ./model_repo/pytorch_models:/home/model-server/model-store
+        image: pytorch/torchserve

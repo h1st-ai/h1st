@@ -11,7 +11,7 @@ import {
 import AppLayout from "layouts/App";
 import { PlusIcon } from "@heroicons/react/solid";
 
-export default function App(props: any) {
+export default function Home(props: any) {
   const showUploadModal = useAppSelector(selectShowModalState);
   const models = useAppSelector(selectModels);
   const dispatch = useAppDispatch();
