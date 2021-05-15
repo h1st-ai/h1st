@@ -29,7 +29,7 @@ const axios = require("axios").default;
 const BUTTON_STATES = {
   IDLE: "Save",
   UPLOADING: "Uploading...Please wait.",
-  SAVING: "Saving...Please wait",
+  SAVING: "Saving...",
 };
 
 export default function UploadForm() {
@@ -345,9 +345,11 @@ export default function UploadForm() {
                   </p>
                   <p>
                     <a
-                      onClick={showModelGuide}
-                      href="#guide"
+                      // onClick={showModelGuide}
+                      href="https://docs.google.com/document/d/e/2PACX-1vQmaYlLeSSX0iE0XjomOq4_IbUtdYaieD3kuD2vKvCRZ1GzerxdBBEZjefifiiQUid3zHsxILTressJ/pub"
                       className="flex items-centerblock mt-1 font-bold"
+                      target="_blank"
+                      rel="noreferrer"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -470,7 +472,6 @@ export default function UploadForm() {
                   </label>
                   <div className="mt-1 flex rounded-md shadow-sm">
                     <input
-                      placeholder="E.g. Image Classifier v1"
                       type="text"
                       name="model_name"
                       id="model_name"
@@ -492,11 +493,10 @@ export default function UploadForm() {
                     htmlFor="about"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Description
+                    Description (optional)
                   </label>
                   <div className="mt-1">
                     <textarea
-                      placeholder="Model description"
                       id="description"
                       name="description"
                       rows={3}
@@ -514,7 +514,7 @@ export default function UploadForm() {
             <div className="flex justify-start">
               <button
                 type="button"
-                className="disabled:pointer-events-none disabled:opacity-50 mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="disabled:pointer-events-none disabled:opacity-50 mr-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center"
                 disabled={
                   !applicationInfo.name || // no application name
                   !fileRef || // no file upload ref
@@ -523,6 +523,12 @@ export default function UploadForm() {
                 }
                 onClick={submit}
               >
+                {buttonState === BUTTON_STATES.SAVING && (
+                  <span className="flex h-2 w-2 relative mr-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-200 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
+                  </span>
+                )}
                 {buttonState}
               </button>
 
