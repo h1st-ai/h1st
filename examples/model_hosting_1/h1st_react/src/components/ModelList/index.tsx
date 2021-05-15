@@ -107,7 +107,13 @@ export default function ModelList() {
                     className={modelIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {model.name}
+                      <a
+                        href={`/application/${model.model_id}/execute`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {model.name}
+                      </a>
                     </td>
                     <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {model.description}
