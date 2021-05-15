@@ -470,7 +470,7 @@ export default function UploadForm() {
                   </label>
                   <div className="mt-1 flex rounded-md shadow-sm">
                     <input
-                      placeholder="Eg. Image Classifier v1"
+                      placeholder="E.g. Image Classifier v1"
                       type="text"
                       name="model_name"
                       id="model_name"
