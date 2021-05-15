@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ExternalLinkIcon } from "@heroicons/react/solid";
 import { useAppSelector, useAppDispatch } from "app/hooks";
 import klass from "classnames";
 import {
@@ -145,14 +146,15 @@ export default function ModelList() {
                         {model.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex">
+                    <td className="px-6 py-4 text-right text-sm font-medium">
                       <a
                         href={`/application/${model.model_id}/execute`}
-                        className="w-5 h-5 text-gray-500 mr-4 text-blue-900"
+                        className="block h-5 text-gray-500 mr-4 flex flex-row justify-end"
                         target="_blank"
                         rel="noreferrer"
                       >
-                        View
+                        View{" "}
+                        <ExternalLinkIcon className="w-5 h-5 text-grey-100 ml-1" />
                       </a>
                     </td>
                   </tr>
