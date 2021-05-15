@@ -3,9 +3,10 @@ import { useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { selectModel, setModel } from "features/execute/executionSlice";
-import { selectModels } from "features/upload_model/uploadSlice";
+// import { selectModels } from "features/upload_model/uploadSlice";
 
 import ImageClassifierWidget from "features/execute/widgets/image-classifier";
+import { getFullUrl } from "utils";
 
 const axios = require("axios").default;
 
@@ -19,7 +20,7 @@ export default function Execute(props: ExecutionProps) {
 
   React.useEffect(() => {
     const loadData = async function () {
-      const res = await axios.get(`/api/app/${id}`);
+      const res = await axios.get(getFullUrl(`/api/app/${id}/`));
 
       console.log(res);
 

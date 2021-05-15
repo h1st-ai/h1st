@@ -30,7 +30,7 @@ class UploadFilesService {
     });
 
     // TODO fix this to enable pathname segment
-    return http.post(url || "/api/upload/", formData, {
+    return http.post(url || getFullUrl("/api/upload/"), formData, {
       // @ts-ignore
       cancelToken: new CancelToken((c) => {
         this.cancel = c;

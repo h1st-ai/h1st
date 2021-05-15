@@ -23,6 +23,7 @@ import UploadService from "features/upload_model/service.upload";
 
 import styles from "./Upload.module.css";
 import SideContentPanel from "features/upload_model/components/guide";
+import { getFullUrl } from "utils";
 
 const axios = require("axios").default;
 
@@ -61,7 +62,7 @@ export default function UploadForm() {
 
     const token = await getAccessTokenSilently();
     const result = await UploadService.upload(
-      "/api/upload/",
+      getFullUrl("/api/upload/"),
       { file: acceptedFiles[0] },
       (event) => {
         const prog = Math.round((100 * event.loaded) / event.total);
