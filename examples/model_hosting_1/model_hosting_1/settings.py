@@ -123,10 +123,10 @@ WSGI_APPLICATION = 'model_hosting_1.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv("MH_DB_NAME", "model_hosting"), 
-        'USER': os.getenv("MH_DB_USER"), 
+        'NAME': os.getenv("MH_DB_NAME", "model_hosting"),
+        'USER': os.getenv("MH_DB_USER", "postgres"),
         'PASSWORD': os.getenv("MH_DB_PASSWORD"),
-        'HOST': os.getenv("MH_DB_HOST", "localhost"), 
+        'HOST': os.getenv("MH_DB_HOST", "localhost"),
         'PORT': os.getenv("MH_DB_PORT", "5432"),
     }
 }
