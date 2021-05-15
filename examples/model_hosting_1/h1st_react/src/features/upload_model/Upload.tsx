@@ -453,7 +453,7 @@ export default function UploadForm() {
             <div>
               <div>
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Application Information
+                  Model Information
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
                   Provide information and upload your model file
@@ -463,14 +463,17 @@ export default function UploadForm() {
               <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="username"
+                    htmlFor="model_name"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Application Name
+                    Model Name (required)
                   </label>
                   <div className="mt-1 flex rounded-md shadow-sm">
                     <input
+                      placeholder="Eg. Image Classifier v1"
                       type="text"
+                      name="model_name"
+                      id="model_name"
                       value={applicationInfo.name}
                       onChange={(e) => updateAppName(e.target.value)}
                       className={klass(
