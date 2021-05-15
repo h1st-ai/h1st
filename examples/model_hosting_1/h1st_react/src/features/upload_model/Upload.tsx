@@ -471,9 +471,6 @@ export default function UploadForm() {
                   <div className="mt-1 flex rounded-md shadow-sm">
                     <input
                       type="text"
-                      name="username"
-                      id="username"
-                      autoComplete="username"
                       value={applicationInfo.name}
                       onChange={(e) => updateAppName(e.target.value)}
                       className={klass(
