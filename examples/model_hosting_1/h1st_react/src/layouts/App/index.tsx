@@ -3,9 +3,10 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 
 import StatusMessage from "components/StatusMessage";
-import { useAppDispatch } from "app/hooks";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
+
+import LangingPage from "views/landing-page";
 
 const navigation = [{ label: "Dashboard", url: "/" }];
 const profile = ["Sign out"];
@@ -27,9 +28,9 @@ export default function App(props: any) {
     return <div>Loading ...</div>;
   }
 
-  if (!isAuthenticated) {
-    loginWithRedirect();
-  }
+  // if (!isAuthenticated) {
+  //   loginWithRedirect();
+  // }
 
   if (isAuthenticated) {
     return (
@@ -234,5 +235,5 @@ export default function App(props: any) {
     );
   }
 
-  return null;
+  return <LangingPage />;
 }

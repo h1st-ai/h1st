@@ -333,16 +333,45 @@ export default function UploadForm() {
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
                   Upload a model
                 </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Upload a Tensorflow model from your local drive. See{" "}
-                  <a
-                    href="#model-guide"
-                    className="text-blue-900"
-                    onClick={showModelGuide}
-                  >
-                    Model Packaging Guide
-                  </a>
+                <p className="mt-1 text-sm text-gray-500 mb-4">
+                  Upload a Tensorflow model from your local drive.
                 </p>
+
+                <div className="px-4 py-3 bg-blue-50 border rounded-lg border-blue-200">
+                  <p>
+                    We currently support{" "}
+                    <span className="text-blue-800">ImageClassification</span>.
+                    New model type support is coming soon.
+                  </p>
+                  <p>
+                    <a
+                      onClick={showModelGuide}
+                      href="#guide"
+                      className="flex items-centerblock mt-1 font-bold"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      How to prepare your Image Classification model
+                    </a>
+                  </p>
+                </div>
+
+                {/* <label
+                  htmlFor="model_type"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Model Type
+                </label> */}
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
@@ -476,10 +505,6 @@ export default function UploadForm() {
                       className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
                     />
                   </div>
-                </div>
-
-                <div className="sm:col-span-6">
-                  <ModelOutput />
                 </div>
               </div>
             </div>

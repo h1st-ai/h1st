@@ -1,3 +1,130 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* @import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities"; */
+
+/* ------ Add your CSS below this line (or @import your other CSS files). ------- */
+.main {
+   
+}
+a {
+    @apply text-blue-800;
+}
+
+.app-field-container{ 
+    @apply my-1;
+}
+.app-label {
+    @apply  flex mt-4 mb-2 text-slate-700 font-semibold tracking-wide;
+}
+
+.app-wrapper {
+    @apply rounded-lg border border-gray-100 shadow-sm max-w-2xl mx-auto px-6 pt-2 pb-6 bg-white;
+}
+.app-view-wrapper{
+    @apply rounded-lg border border-gray-100 shadow-sm max-w-3xl mx-auto bg-white;
+}
+.custom-radio {
+   @apply h-4 w-4 text-blue-600 border-gray-300 mr-1
+}
+.custom-radio:focus{
+    @apply ring-blue-500;
+}
+.disabled {
+    @apply opacity-70;
+}
+.inline-gray-badge {
+    @apply text-xs text-gray-600 uppercase font-semibold tracking-wide py-0.5 px-1.5 bg-slate-200 rounded;
+}
+.text-field{
+    @apply block w-full shadow-sm border rounded border-gray-300 focus:ring-indigo-500 border-gray-300 px-3 py-2;
+}
+.text-field:focus{
+    @apply ring-blue-500 ring-1 outline-none border-blue-500;
+}
+.text-field:hover{
+    @apply border-blue-500 
+}
+.radio-group-item{
+    @apply border-gray-200 relative border px-3 py-2 flex cursor-pointer flex;
+}
+.radio-group-item.checked{
+    @apply border-blue-700 ring-1 ring-blue-700 font-semibold;
+}
+.btn-primary {
+    @apply items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-800 font-semibold tracking-wide;
+}
+.btn-primary.dark-bg {
+    @apply bg-blue-600;
+}
+.btn-secondary{
+    @apply inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white ;
+}
+
+.btn-secondary:hover{
+    @apply bg-gray-50; 
+}
+.btn-secondary:focus{
+    @apply outline-none ring-2 ring-offset-2 ring-blue-500
+}
+.btn-primary.has-icon {
+    @apply inline-flex
+}
+.btn-primary.has-icon .icon {
+    @apply mr-2;
+}
+.btn-primary:focus {
+    @apply outline-none ring-2 ring-offset-2 ring-blue-500;
+}
+.btn-primary:hover{
+    @apply bg-blue-700 
+}
+.ui-input {
+
+}
+
+/* loading animation */
+.progress-bar {
+    @apply bg-gray-200 rounded overflow-hidden;}
+  
+  .progress-bar::before {
+    content: "";
+    display: block;
+    height: 100%;
+    @apply bg-blue-700 rounded;
+    transform-origin: 0;
+    animation: grow 10s linear;
+    transform: scaleX(95%);
+  }
+  
+  @keyframes grow {
+    0% {
+      transform: scaleX(0)
+    }
+  }
+
+
+
+
+@keyframes rotate-forever {
+100% {
+    transform: rotate(360deg);
+}
+}
+
+.loading-spinner {
+animation-duration: 0.75s;
+animation-iteration-count: infinite;
+animation-name: rotate-forever;
+animation-timing-function: linear;
+height: 16px;
+width: 16px;
+border: 3px solid #ffffff;
+border-right-color: transparent;
+border-radius: 50%;
+display: inline-block;
+opacity:.6
+}
