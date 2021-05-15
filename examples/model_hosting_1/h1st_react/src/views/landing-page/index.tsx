@@ -47,7 +47,7 @@ export default function App(props: any) {
                     fill="#B5C2F0"
                   />
                 </svg>
-                Upload your modal
+                Upload your model
               </button>
             </div>
             <div className="lg:w-1/2 pl-5">
