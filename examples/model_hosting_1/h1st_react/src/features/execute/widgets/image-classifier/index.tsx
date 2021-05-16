@@ -12,6 +12,7 @@ import { useDropzone } from "react-dropzone";
 import klass from "classnames";
 import { XCircleIcon } from "@heroicons/react/solid";
 import styles from "./styles.module.css";
+import { getFullUrl } from "utils";
 
 const numeral = require("numeral");
 export interface ImageClassiferWidgetProps {
@@ -76,7 +77,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
 
     try {
       res = await UploadService.upload(
-        `/api/app/${model.model_id}/execute/img_classifer/`,
+        getFullUrl(`/api/app/${model.model_id}/execute/img_classifer/`),
         { file: acceptedFiles[0], model_id: model.model_id },
         (event) => {
           const prog = Math.round((100 * event.loaded) / event.total);

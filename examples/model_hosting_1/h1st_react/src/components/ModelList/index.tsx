@@ -10,6 +10,7 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import { PlusIcon } from "@heroicons/react/solid";
 import { Illustration } from "components/Illustration";
+import { getFullUrl } from "utils";
 
 const axios = require("axios").default;
 
@@ -108,7 +109,9 @@ export default function ModelList() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       <a
-                        href={`/application/${model.model_id}/execute`}
+                        href={getFullUrl(
+                          `/application/${model.model_id}/execute`
+                        )}
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -148,7 +151,9 @@ export default function ModelList() {
                     </td>
                     <td className="px-6 py-4 text-right text-sm font-medium">
                       <a
-                        href={`/application/${model.model_id}/execute`}
+                        href={getFullUrl(
+                          `/application/${model.model_id}/execute`
+                        )}
                         className="block h-5 text-gray-500 mr-4 flex flex-row justify-end"
                         target="_blank"
                         rel="noreferrer"

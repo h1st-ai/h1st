@@ -11,6 +11,10 @@ import Illus4 from "./img/illus-4.svg";
 export default function App(props: any) {
   const { loginWithRedirect } = useAuth0();
 
+  const login = () => {
+    loginWithRedirect({ redirectUri: window.location.href });
+  };
+
   return (
     <main className="bg-white-200 text-sm min-h-screen">
       <div className="bg-blue-900 py-4 lg:py-6">
@@ -24,7 +28,7 @@ export default function App(props: any) {
               <button
                 type="button"
                 className="inline-flex my-4 mx-auto lg:ml-0 btn-primary dark-bg hero has-icon"
-                onClick={loginWithRedirect}
+                onClick={login}
               >
                 <svg
                   className="icon"

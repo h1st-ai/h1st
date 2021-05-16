@@ -8,14 +8,16 @@ import {
 import Home from "views/home";
 import Execute from "views/execute";
 
+const APP_PREFIX = "aicargo";
+
 export default function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/" exact={true}>
+        <Route path={`/${APP_PREFIX}`} exact={true}>
           <Home />
         </Route>
-        <Route path="/application/:id/execute">
+        <Route path={`/${APP_PREFIX}/application/:id/execute`}>
           <Execute />
         </Route>
         <Route path="*">

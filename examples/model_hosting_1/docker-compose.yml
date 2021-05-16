@@ -24,8 +24,11 @@ services:
             - "5000:5000"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.web.rule=PathPrefix(`/`)"
+            - "traefik.http.routers.web.rule=PathPrefix(`/aicargo`)"
             - "traefik.http.routers.web.entrypoints=web"
+            - "traefik.http.routers.web.middlewares=web-stripprefix"
+            - "traefik.http.middlewares.web-stripprefix.stripprefix.prefixes=/aicargo"
+            - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
     api:
         build: .
         command: python manage.py runserver 0.0.0.0:8000
@@ -33,8 +36,11 @@ services:
             - "8000:8000"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.api.rule=PathPrefix(`/api/`)"
+            - "traefik.http.routers.api.rule=PathPrefix(`/aicargo/api/`)"
             - "traefik.http.routers.api.entrypoints=web"
+            - "traefik.http.routers.api.middlewares=api-stripprefix"
+            - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/aicargo"
+            - "traefik.http.middlewares.api-stripprefix.stripprefix.forceslash=true"
         environment:
             - TENSORFLOW_SERVER=http://tf_serving:8501/v1/models
             - TENSORFLOW_GRPC_SERVER=tf_serving:8500
