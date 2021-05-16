@@ -7,9 +7,14 @@ services:
             # - "--log.level=DEBUG"
             - "--api"
             - "--api.dashboard"
-            - "--api.insecure" # Don't do that in production
+            # - "--api.insecure" # Don't do that in production
             - "--providers.docker"
             - "--entrypoints.web.address=:80"
+            # --entrypoints.web.address=:80
+            # - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+            # - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+            # - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+            # - "--entrypoints.websecure.address=:443"
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
         ports:
@@ -29,6 +34,7 @@ services:
             - "traefik.http.routers.web.middlewares=web-stripprefix"
             - "traefik.http.middlewares.web-stripprefix.stripprefix.prefixes=/aicargo"
             - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
+            - "traefik.http.middlewares.add-foo.addprefix.prefix=/aicargo"
     api:
         build: .
         command: python manage.py runserver 0.0.0.0:8000
@@ -36,7 +42,7 @@ services:
             - "8000:8000"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.api.rule=PathPrefix(`/aicargo/api/`)"
+            - "traefik.http.routers.api.rule=PathPrefix(`/aicargo/api`)"
             - "traefik.http.routers.api.entrypoints=web"
             - "traefik.http.routers.api.middlewares=api-stripprefix"
             - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/aicargo"
@@ -65,3 +71,4 @@ services:
         volumes:
             - ./model_repo/pytorch_models:/home/model-server/model-store
         image: pytorch/torchserve
+# 

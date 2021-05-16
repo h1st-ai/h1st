@@ -129,7 +129,7 @@ export default function UploadForm() {
 
     try {
       const response = await axios.post(
-        "/api/upload/",
+        getFullUrl("/api/upload/"),
         {
           name,
           description,

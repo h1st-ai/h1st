@@ -51,6 +51,7 @@
     ]
   },
   "proxy": "http://localhost:3000/",
+  "homepage": "/aicargo",
   "devDependencies": {
     "@craco/craco": "^6.1.1",
     "@tailwindcss/postcss7-compat": "^2.1.2",
