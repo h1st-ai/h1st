@@ -178,16 +178,23 @@ class Upload(APIView):
                     logging.debug(infer.structured_input_signature)
                     shape = infer.structured_input_signature[1][input_key].shape.as_list()
                     shape = [d if d is not None else 1 for d in shape]
-                    # logging.debug(infer(tf.ones(shape)))
+                    logging.debug(infer(tf.ones(shape)).keys())
 
-                
+                    logging.debug('Successfully load and generate prediction')
+
                 # consider deleting the uploaded file at this point
                 # TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=dir_name, base_path="/models/{}/".format(dir_name))
-                TensorFlowModelManager.register_new_model_grpc(name=dir_name, base_path="/models/{}/".format(dir_name))
+                if os.path.exists(destination):
+                    logging.debug('Registering the model with TFServing')
+                    TensorFlowModelManager.register_new_model_grpc(name=dir_name, base_path="/models/{}/".format(dir_name))
+                else:
+                    raise RuntimeError('No model directory exist at %s' % destination)
                 
                 # read model.io.json
                 config_data = self.handle_modelio_json(path='{}/{}/{}'.format(self.TF_PATH, dir_name, self.TF_MODEL_IO_FILE))
 
+                # remove zip file
+                os.remove(file_path)
                 return {'success': True, }, config_data
 
             except Exception as ex:
