@@ -15,6 +15,11 @@ from .model_manager import TensorFlowModelManager
 
 TENSORFLOW_SERVER = os.getenv("TENSORFLOW_SERVER", "http://localhost:8501/v1/models")
 PYTORCH_SERVER = os.getenv("PYTORCH_SERVER", "http://localhost:8080")
+
+# Path 
+MODEL_EXT_PATH = os.getenv("MODEL_EXT_PATH", "model_repo")
+TF_PATH = "{}/tensorflow_models".format(MODEL_EXT_PATH)
+
 # Need to set the right number,
 # given that the complex models may need a bit time to run 
 TIMEOUT = 100 # seconds
@@ -116,8 +121,11 @@ class TensorFlowModelExecutor:
             response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
             logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             if response.status_code == 404:
-                # Re-register the model and request again
-                TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
+                logger.info('Model not found in TFServing. Re-register the model and request again')
+                destination = '{}/{}'.format(TF_PATH, model_name)
+                if os.path.exists(destination):
+                    TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
+                
                 response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
                 logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             else:
@@ -139,8 +147,10 @@ class TensorFlowModelExecutor:
             response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
             logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             if response.status_code == 404:
-                # Re-register the model and request again
-                TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
+                logger.info('Model not found in TFServing. Re-register the model and request again')
+                destination = '{}/{}'.format(TF_PATH, model_name)
+                if os.path.exists(destination):
+                    TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
                 response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
                 logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
             else:
