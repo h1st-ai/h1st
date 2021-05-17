@@ -126,7 +126,7 @@ export default function App(props: any) {
       </section>
       <div className="text-center mb-5">
         <img src={Aitomatic} className="block mx-auto" alt="Aitomatic" />
-        <span className="block mt-2">An Aimtomatic&rsquo;s service</span>
+        <span className="block mt-2">An Aitomatic&rsquo;s service</span>
       </div>
     </main>
   );
