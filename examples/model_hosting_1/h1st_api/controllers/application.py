@@ -14,14 +14,23 @@ from rest_framework.permissions import AllowAny
 
 from h1st_api.models import AIModel
 
+import logging
+
 from h1st_api.controllers.mocked.model_step import H1ModelStep
 from .model_executor import ModelExecutor
 from .model_manager import ModelManager
 
+logger = logging.getLogger(__name__)
+
 @permission_classes([AllowAny])
 class Application(APIView):
     def get(self, request, model_id):
-        model = AIModel.objects.get(model_id=model_id);
+        try:
+            model = AIModel.objects.get(model_id=model_id);
+        except AIModel.DoesNotExist:
+            return Response({
+                'status': status.HTTP_404_NOT_FOUND
+            }, status=status.HTTP_404_NOT_FOUND)
 
         return Response({
             'status': 'OK',
@@ -29,6 +38,7 @@ class Application(APIView):
         })
 
     def post(self, request, model_id, model_type):
+        logger.info("model_id", model_id)
         if model_type == "img_classifer":
             try:
                 file = request.FILES['file']
@@ -40,7 +50,7 @@ class Application(APIView):
                     }, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
 
             except Exception as ex:
-                print(ex)
+                logger.error(ex)
                 capture_exception(ex)
 
                 return Response({
@@ -55,14 +65,12 @@ class Application(APIView):
                 # retrieve model
                 model = AIModel.objects.get(model_id=model_id);
 
-                print("Model retrieve",  model)
-
                 return Response({
                     "status": "OK",
                     "result": self.execute(model_id, input_data=image_data, input_type='image', spec=model.config)
                 })
             except Exception as ex:
-                print(ex)
+                logger.error(ex)
                 capture_exception(ex)
 
                 # TODO handle error here
@@ -83,5 +91,6 @@ class Application(APIView):
             step = H1ModelStep(model_id, model_info.model_platform, model_info.model_path)
             return ModelExecutor.execute(step, input_data, input_type, spec)
         except Exception as ex:
+            logger.error(ex)
             capture_exception(ex)
             raise ex

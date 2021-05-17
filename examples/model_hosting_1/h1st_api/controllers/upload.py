@@ -20,6 +20,8 @@ from .model_manager import TensorFlowModelManager
 from h1st_api.models import ModelClass
 
 from h1st_api.models import AIModel
+
+logger = logging.getLogger(__name__)
 class Upload(APIView):
     def __init__(self):
         super().__init__()
@@ -41,8 +43,6 @@ class Upload(APIView):
         })
     
     def post(self, request, format=None):
-        print('request.FILES', request.FILES)
-
         file = request.FILES.get('file', None)
 
         if file is not None:
@@ -70,7 +70,7 @@ class Upload(APIView):
                 type = data['type']
                 creator=request.user
             except KeyError as ex:
-                print(ex)
+                logger.error(ex)
                 capture_exception(ex)
 
                 return Response({
@@ -105,7 +105,7 @@ class Upload(APIView):
             # persist
             m.save()
 
-            print("M_USER", m.creator)
+            # print("M_USER", m.creator)
 
             return Response({
                 "status": "OK",
@@ -216,9 +216,9 @@ class Upload(APIView):
 
             except Exception as ex:
                 capture_exception(ex)
-                logging.info(type(ex))    # the exception
-                logging.info(ex.args)     # arguments stored in .args
-                logging.info(ex)          # __str__ allows args to be printed directly,
+                logger.info(type(ex))    # the exception
+                logger.info(ex.args)     # arguments stored in .args
+                logger.info(ex)          # __str__ allows args to be printed directly,
                 
                 # Remove the extracted folder
                 if os.path.exists(destination):
