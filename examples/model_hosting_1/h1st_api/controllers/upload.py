@@ -41,41 +41,54 @@ class Upload(APIView):
         })
     
     def post(self, request, format=None):
-        try:
-            file = request.FILES['file']
-            file_name, file_id = self.handle_uploaded_file(file)
-            
-            return JsonResponse({
+        print('request.FILES', request.FILES)
+
+        file = request.FILES.get('file', None)
+
+        if file is not None:
+            try:
+                file_name, file_id = self.handle_uploaded_file(file)
+            except Exception as ex:
+                capture_exception(ex);
+
+                return Response({
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response({
                 "status": "OK",
                 "id": file_id
             })
-        except:
-            # print(request.data)
-            # data = json.loads(request.data)
-            data = request.data
-            name = data['name']
-            description = data['description']
-            model_input = data['input']
-            model_output = data['output']
-            file_name = data['uploadedFile']
-            type = data['type']
-            creator=request.user
+        else:
+            try:
+                data = request.data
+                name = data['name']
+                description = data['description']
+                model_input = data['input']
+                model_output = data['output']
+                file_name = data['uploadedFile']
+                type = data['type']
+                creator=request.user
+            except KeyError as ex:
+                print(ex)
+                capture_exception(ex)
+
+                return Response({
+                    "status": status.HTTP_400_BAD_REQUEST,
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             if type == ModelClass.TF:
                 #deploy the model first
                 file_path = "{}/{}".format(self.UPLOAD_PATH, file_name)
                 dir_name = file_name.split('.')[0]
                 deploy_result, config_data = self.deploy_tf_model(dir_name, file_path, model_type=type)
-
-                print("DEPLOYYY", deploy_result)
                 
                 if deploy_result['success'] is False:
                     return Response({
                         "status": "DEPLOYMENT_ERROR",
                         "message": deploy_result['message']
                     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                
-
+            
             #save to database
             m = AIModel(
                 model_id=dir_name,
@@ -92,9 +105,9 @@ class Upload(APIView):
             # persist
             m.save()
 
-            # print("M_USER", m.creator, type(m.creator))
+            print("M_USER", m.creator)
 
-            return JsonResponse({
+            return Response({
                 "status": "OK",
                 "result": {
                     'id': m.id,
@@ -108,6 +121,8 @@ class Upload(APIView):
                     'creator': "mocked_user"
                 }
             })
+            
+                
 
     def create_model_config(self):
         os.mkdir(self.MODEL_EXT_PATH)
@@ -122,6 +137,7 @@ class Upload(APIView):
                 self.create_model_config()
 
             destination = '{}/{}'.format(self.TF_PATH, dir_name)
+            
             try:
                 with ZipFile(file_path, 'r') as Z:
                     # Search for model-io.json

@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.forms.models import model_to_dict
+from sentry_sdk import capture_exception
 
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
@@ -40,6 +41,7 @@ class Application(APIView):
 
             except Exception as ex:
                 print(ex)
+                capture_exception(ex)
 
                 return Response({
                     "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -61,6 +63,8 @@ class Application(APIView):
                 })
             except Exception as ex:
                 print(ex)
+                capture_exception(ex)
+
                 # TODO handle error here
                 return Response({
                     "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -74,6 +78,10 @@ class Application(APIView):
         }, status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def execute(self, model_id, input_data, input_type, spec):
-        model_info = ModelManager.get_model_config(model_id)
-        step = H1ModelStep(model_id, model_info.model_platform, model_info.model_path)
-        return ModelExecutor.execute(step, input_data, input_type, spec)
+        try:
+            model_info = ModelManager.get_model_config(model_id)
+            step = H1ModelStep(model_id, model_info.model_platform, model_info.model_path)
+            return ModelExecutor.execute(step, input_data, input_type, spec)
+        except Exception as ex:
+            capture_exception(ex)
+            raise ex
