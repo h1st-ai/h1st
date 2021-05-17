@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from sentry_sdk import capture_exception
 
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.views.decorators.csrf import csrf_exempt
@@ -187,7 +187,9 @@ class Upload(APIView):
                     logging.debug('Registering the model with TFServing')
                     TensorFlowModelManager.register_new_model_grpc(name=dir_name, base_path="/models/{}/".format(dir_name))
                 else:
-                    raise RuntimeError('No model directory exist at %s' % destination)
+                    ex = 'No model directory exist at %s' % destination
+                    capture_exception(ex)
+                    raise RuntimeError(ex)
                 
                 # read model.io.json
                 config_data = self.handle_modelio_json(path='{}/{}/{}'.format(self.TF_PATH, dir_name, self.TF_MODEL_IO_FILE))
@@ -197,6 +199,7 @@ class Upload(APIView):
                 return {'success': True, }, config_data
 
             except Exception as ex:
+                capture_exception(ex)
                 logging.info(type(ex))    # the exception
                 logging.info(ex.args)     # arguments stored in .args
                 logging.info(ex)          # __str__ allows args to be printed directly,
