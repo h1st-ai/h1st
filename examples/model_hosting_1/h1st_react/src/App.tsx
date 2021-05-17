@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Home from "views/home";
 import Execute from "views/execute";
+import Four0four from "views/404";
 
 const APP_PREFIX = "aicargo";
 
@@ -29,13 +30,7 @@ export default function App() {
 }
 
 function NoMatch() {
-  let location = useLocation();
+  // let location = useLocation();
 
-  return (
-    <div>
-      <h3>
-        No match for <code>{location.pathname}</code>
-      </h3>
-    </div>
-  );
+  return <Four0four />;
 }
