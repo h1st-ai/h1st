@@ -10,11 +10,11 @@ services:
             # - "--api.insecure" # Don't do that in production
             - "--providers.docker"
             - "--entrypoints.web.address=:80"
-            # --entrypoints.web.address=:80
-            # - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-            # - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-            # - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-            # - "--entrypoints.websecure.address=:443"
+            - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+            - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+            - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
+            - traefik.http.routers.http_catchall.entrypoints=http
+            - traefik.http.routers.http_catchall.middlewares=https_redirect
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
         ports:
