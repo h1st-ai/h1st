@@ -6,6 +6,7 @@ ADD requirements.txt /app/
 
 WORKDIR /app
 
+RUN pip install --upgrade sentry-sdk
 RUN pip install -r requirements.txt
 
 ADD ./ /app/
