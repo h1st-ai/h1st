@@ -34,7 +34,6 @@ services:
             - "traefik.http.routers.web.middlewares=web-stripprefix"
             - "traefik.http.middlewares.web-stripprefix.stripprefix.prefixes=/aicargo"
             - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
-            - "traefik.http.middlewares.add-foo.addprefix.prefix=/aicargo"
     api:
         build: .
         command: python manage.py runserver 0.0.0.0:8000
