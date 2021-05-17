@@ -188,7 +188,7 @@ class Upload(APIView):
                     TensorFlowModelManager.register_new_model_grpc(name=dir_name, base_path="/models/{}/".format(dir_name))
                 else:
                     ex = 'No model directory exist at %s' % destination
-                    capture_exception(ex)
+                    # capture_exception(ex)
                     raise RuntimeError(ex)
                 
                 # read model.io.json
@@ -199,7 +199,7 @@ class Upload(APIView):
                 return {'success': True, }, config_data
 
             except Exception as ex:
-                capture_exception(ex)
+                # capture_exception(ex)
                 logging.info(type(ex))    # the exception
                 logging.info(ex.args)     # arguments stored in .args
                 logging.info(ex)          # __str__ allows args to be printed directly,
