@@ -178,9 +178,8 @@ class Upload(APIView):
                     logging.debug(infer.structured_input_signature)
                     shape = infer.structured_input_signature[1][input_key].shape.as_list()
                     shape = [d if d is not None else 1 for d in shape]
-                    logging.debug(infer(tf.ones(shape)).keys())
-
-                    logging.debug('Successfully load and generate prediction')
+                    # logging.debug(infer(tf.ones(shape)).keys())
+                    # logging.debug('Successfully load and generate prediction')
 
                 # consider deleting the uploaded file at this point
                 # TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=dir_name, base_path="/models/{}/".format(dir_name))
