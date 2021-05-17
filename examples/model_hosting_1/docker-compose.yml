@@ -55,6 +55,7 @@ services:
             - MH_DB_PASSWORD=${MH_DB_PASSWORD}
             - MH_DB_HOST=${MH_DB_HOST}
             - MH_DB_PORT=${MH_DB_PORT}
+            - DJANGO_DEBUG=False
         volumes: 
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded
