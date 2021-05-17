@@ -56,6 +56,7 @@ services:
             - MH_DB_HOST=${MH_DB_HOST}
             - MH_DB_PORT=${MH_DB_PORT}
             - DJANGO_DEBUG=False
+            - SENTRY_URL=${SENTRY_URL}
         volumes: 
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded

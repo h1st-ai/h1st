@@ -12,3 +12,4 @@ zipfile36
 Pillow
 psycopg2~=2.8.6
 gunicorn
+sentry-sdk
