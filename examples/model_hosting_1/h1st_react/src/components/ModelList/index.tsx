@@ -24,7 +24,7 @@ export default function ModelList() {
   React.useEffect(() => {
     const loadData = async function () {
       const token = await getAccessTokenSilently();
-      const result = await axios.get("api/upload/", {
+      const result = await axios.get(getFullUrl("/api/upload/"), {
         headers: {
           Authorization: `Bearer ${token}`,
         },
