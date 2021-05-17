@@ -24,7 +24,7 @@ services:
         build: 
             context: ./h1st_react
 
-        command: serve -s build
+        # command: serve -s build
         ports:
             - "5000:5000"
         labels:
@@ -36,7 +36,7 @@ services:
             - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
     api:
         build: .
-        command: python manage.py runserver 0.0.0.0:8000
+        # command: python manage.py runserver 0.0.0.0:8000
         ports:
             - "8000:8000"
         labels:

@@ -1,5 +1,7 @@
 FROM python:3.7
 
+# RUN apt-get update && apt-get install -y gunicorn
+
 ADD requirements.txt /app/
 
 WORKDIR /app
@@ -10,4 +12,4 @@ ADD ./ /app/
 
 EXPOSE 8000
 
-CMD python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+CMD ["sh", "./entry.sh"]
