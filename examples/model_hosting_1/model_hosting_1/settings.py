@@ -31,7 +31,8 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
     "localhost",
     "mh.aitomatic.com",
-    os.getenv("ALLOWED_HOST", "apps.aitomatic.com")
+    "apps.aitomatic.com",
+    os.getenv("ALLOWED_HOST", "aitomatic.com")
 ]
 
 
