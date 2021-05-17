@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { AIModel } from "features/upload_model/uploadSlice";
 import UploadService from "features/upload_model/service.upload";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import { useDropzone } from "react-dropzone";
 import klass from "classnames";
 import { XCircleIcon } from "@heroicons/react/solid";
@@ -27,8 +27,6 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   const [previewSrc, setPreviewSrc] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const previewImgEl = useRef(null);
-
-  const { getAccessTokenSilently } = useAuth0();
 
   const [isInputMounted, setIsInputMounted] = useState(true);
 
@@ -72,7 +70,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
 
   const submit = async () => {
     setLoading(true);
-    const token = await getAccessTokenSilently();
+    // const token = await getAccessTokenSilently();
     let res = null;
 
     try {
@@ -80,17 +78,12 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
         getFullUrl(`/api/app/${model.model_id}/execute/img_classifer/`),
         { file: acceptedFiles[0], model_id: model.model_id },
         (event) => {
-          const prog = Math.round((100 * event.loaded) / event.total);
-          console.log(prog);
-          setProgress(prog);
-        },
-        token
+          setProgress(Math.round((100 * event.loaded) / event.total));
+        }
       );
 
       if (res.data.status === "OK") {
         setResult(res.data.result.slice(0, 3));
-        // set the uploaded file here
-        // setUploadedFile(result.data.id);
       }
     } catch (ex) {
       console.error(ex.response);

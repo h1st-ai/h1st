@@ -19,7 +19,6 @@ from .model_manager import ModelManager
 
 @permission_classes([AllowAny])
 class Application(APIView):
-
     def get(self, request, model_id):
         model = AIModel.objects.get(model_id=model_id);
 
@@ -27,7 +26,7 @@ class Application(APIView):
             'status': 'OK',
             'model': model_to_dict(model)
         })
-    
+
     def post(self, request, model_id, model_type):
         if model_type == "img_classifer":
             try:

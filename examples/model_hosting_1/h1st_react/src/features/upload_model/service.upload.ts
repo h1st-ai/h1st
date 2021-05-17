@@ -20,7 +20,7 @@ class UploadFilesService {
     url: string,
     data: Object,
     onUploadProgress: (progressEvent: any) => void,
-    token: string
+    token?: string
   ) {
     let formData = new FormData();
 
@@ -29,16 +29,22 @@ class UploadFilesService {
       formData.append(k, data[k]);
     });
 
+    const headers = {
+      "Content-Type": "multipart/form-data",
+    };
+
+    if (token) {
+      // @ts-ignore
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     // TODO fix this to enable pathname segment
     return http.post(url || getFullUrl("/api/upload/"), formData, {
       // @ts-ignore
       cancelToken: new CancelToken((c) => {
         this.cancel = c;
       }),
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
       onUploadProgress,
     });
   }
