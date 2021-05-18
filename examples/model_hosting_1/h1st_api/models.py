@@ -21,10 +21,10 @@ class AIModel(models.Model):
     input = models.JSONField()
     output = models.JSONField()
     config = models.JSONField()
-    model_id = models.CharField(max_length=200, default="")
+    model_id = models.CharField(max_length=200, default="", db_index=True)
     file_name = models.CharField(max_length=200)
     status = models.CharField(max_length=20, default="active")
-    creator = models.CharField(max_length=255, help_text='Creator')
+    creator = models.CharField(max_length=255, help_text='Creator', db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
