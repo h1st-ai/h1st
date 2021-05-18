@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 import LangingPage from "views/landing-page";
 
-const navigation = [{ label: "Dashboard", url: "/" }];
+const navigation = [{ label: "Dashboard", url: "/aicargo" }];
 const profile = ["Sign out"];
 
 function classNames(...classes: any) {
