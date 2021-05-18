@@ -211,7 +211,7 @@ class Upload(APIView):
                 config_data = self.handle_modelio_json(path='{}/{}/{}'.format(self.TF_PATH, dir_name, self.TF_MODEL_IO_FILE))
 
                 # remove zip file
-                os.remove(file_path)
+                # os.remove(file_path)
                 return {'success': True, }, config_data
 
             except Exception as ex:
