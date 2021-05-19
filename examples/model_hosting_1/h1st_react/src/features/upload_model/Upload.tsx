@@ -17,13 +17,18 @@ import {
   ModelTypes,
 } from "./uploadSlice";
 import { useDropzone } from "react-dropzone";
-import ModelInput from "features/upload_model/components/model_input";
-import ModelOutput from "features/upload_model/components/model_output";
+// import ModelInput from "features/upload_model/components/model_input";
+// import ModelOutput from "features/upload_model/components/model_output";
 import UploadService from "features/upload_model/service.upload";
 
 import styles from "./Upload.module.css";
 import SideContentPanel from "features/upload_model/components/guide";
 import { getFullUrl } from "utils";
+import {
+  ActionType,
+  DialogType,
+  setGlobalDialogMessage,
+} from "features/common/appSlice";
 
 const axios = require("axios").default;
 
@@ -165,10 +170,12 @@ export default function UploadForm() {
     } catch (ex) {
       console.log(ex.response.data);
       dispatch(
-        showMessage({
+        setGlobalDialogMessage({
+          type: DialogType.ERROR,
+          action: ActionType.OK,
           title: "Error",
-          message: ex.response.data.message,
-          messageType: MessageType.SUCCESS,
+          message:
+            "An error occured when trying to save model. Please try again.",
         })
       );
     } finally {

@@ -1,21 +1,17 @@
 import React, { Fragment, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 
-import Aitomatic from "./img/aitomatic.svg";
 import Logo from "./img/logo.svg";
 import LogoFooter from "./img/logo-footer.svg";
 import Illus1 from "./img/illus-1.svg";
 import Illus2 from "./img/illus-2.svg";
 import Illus3 from "./img/illus-3.svg";
 import Illus4 from "./img/illus-4.svg";
+import { useHistory } from "react-router";
+import { APP_PREFIX } from "config";
 
 export default function App(props: any) {
-  const { loginWithRedirect } = useAuth0();
+  const history = useHistory();
   const [showDialog, setShowDialog] = useState(false);
-
-  const login = () => {
-    loginWithRedirect({ redirectUri: window.location.href });
-  };
 
   return (
     <Fragment>
@@ -168,7 +164,7 @@ export default function App(props: any) {
                   <button
                     type="button"
                     className="inline-flex mr-4 lg:ml-0 btn-primary dark-bg hero has-icon"
-                    onClick={login}
+                    onClick={() => history.push(`/${APP_PREFIX}/upload`)}
                   >
                     <svg
                       className="icon"

@@ -7,10 +7,9 @@ import Logo from "components/logo";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
+import { APP_PREFIX } from "config";
 
-import LangingPage from "views/landing-page";
-
-const navigation = [{ label: "Dashboard", url: "/aicargo" }];
+const navigation = [{ label: "Your Models", url: `/${APP_PREFIX}/dashboard` }];
 const profile = ["Sign out"];
 
 function classNames(...classes: any) {
@@ -18,14 +17,23 @@ function classNames(...classes: any) {
 }
 
 export default function App(props: any) {
-  const { logout, user, isAuthenticated, isLoading } = useAuth0();
+  const { logout, user, isAuthenticated, isLoading, loginWithRedirect } =
+    useAuth0();
 
   if (isLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (isAuthenticated) {
-    return (
+  if (!isAuthenticated) {
+    loginWithRedirect({
+      appState: { returnTo: `/${APP_PREFIX}/upload` },
+    });
+
+    return null;
+  }
+
+  return (
+    <Fragment>
       <div className="min-h-screen">
         <StatusMessage />
         <Disclosure as="nav" className="bg-gray-800">
@@ -102,7 +110,7 @@ export default function App(props: any) {
                                     key={item}
                                     onClick={() =>
                                       logout({
-                                        returnTo: window.location.origin,
+                                        returnTo: `${window.location.origin}/${APP_PREFIX}`,
                                       })
                                     }
                                   >
@@ -196,7 +204,7 @@ export default function App(props: any) {
                         className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                         onClick={() =>
                           logout({
-                            returnTo: window.location.origin,
+                            returnTo: `${window.location.origin}/${APP_PREFIX}`,
                           })
                         }
                       >
@@ -213,8 +221,6 @@ export default function App(props: any) {
         {props.children}
         {/* /End replace */}
       </div>
-    );
-  }
-
-  return <LangingPage />;
+    </Fragment>
+  );
 }
