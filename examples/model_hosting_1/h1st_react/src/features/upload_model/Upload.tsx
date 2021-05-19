@@ -124,6 +124,10 @@ export default function UploadForm() {
     UploadService.cancelRequest();
     dispatch(resetApplicationState());
     dispatch(hideUploadForm());
+    setProgress(0);
+    setButtonState(BUTTON_STATES.IDLE);
+    acceptedFiles.splice(0, 1);
+    setUploadedFile(null);
   };
 
   const submit = async () => {
