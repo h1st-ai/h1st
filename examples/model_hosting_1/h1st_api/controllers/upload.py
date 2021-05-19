@@ -82,11 +82,13 @@ class Upload(APIView):
                 file_path = "{}/{}".format(self.UPLOAD_PATH, file_name)
                 dir_name = file_name.split('.')[0]
                 deploy_result, config_data = self.deploy_tf_model(dir_name, file_path, model_type=type)
+
+                print("deploy_result", deploy_result)
                 
                 if deploy_result['success'] is False:
                     return Response({
                         "status": "DEPLOYMENT_ERROR",
-                        "message": deploy_result['message']
+                        "message": "Error deploying model"
                     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
             #save to database
@@ -105,8 +107,6 @@ class Upload(APIView):
             # persist
             m.save()
 
-            # print("M_USER", m.creator)
-
             return Response({
                 "status": "OK",
                 "result": {
@@ -114,15 +114,11 @@ class Upload(APIView):
                     'model_id':dir_name,
                     'name': name,
                     'description': description,
-                    'input': model_input,
-                    'output': model_output,
                     'created_at': m.created_at,
                     'updated_at': m.updated_at,
-                    'creator': "mocked_user"
+                    'creator': m.creator
                 }
-            })
-            
-                
+            })      
 
     def create_model_config(self):
         os.mkdir(self.MODEL_EXT_PATH)
