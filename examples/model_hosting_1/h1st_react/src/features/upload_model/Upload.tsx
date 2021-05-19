@@ -505,6 +505,7 @@ export default function UploadForm() {
                       type="text"
                       name="model_name"
                       id="model_name"
+                      maxLength={255}
                       value={applicationInfo.name}
                       onChange={(e) => updateAppName(e.target.value)}
                       className={klass(
@@ -530,6 +531,7 @@ export default function UploadForm() {
                       id="description"
                       name="description"
                       rows={3}
+                      maxLength={255}
                       value={applicationInfo.description}
                       onChange={(e) => updateAppDescription(e.target.value)}
                       className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
