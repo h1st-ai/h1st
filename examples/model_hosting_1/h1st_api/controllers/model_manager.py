@@ -6,6 +6,7 @@ from tensorflow_serving.apis import model_management_pb2
 import grpc
 import requests
 import os
+from loguru import logger
 
 TENSORFLOW_GRPC_SERVER = os.getenv("TENSORFLOW_GRPC_SERVER", "127.0.0.1:8500")
 
@@ -69,17 +70,17 @@ class TensorFlowModelManager:
 
         request.config.CopyFrom(model_server_config)
 
-        print(request.IsInitialized())
-        print(request.ListFields())
+        logger.debug(request.IsInitialized())
+        logger.debug(request.ListFields())
 
         response = stub.HandleReloadConfigRequest(request,10)
         if response.status.error_code == 0:
-            print("Reload sucessfully")
+            logger.info("Register model {} sucessfully".format(name))
             return True
         else:
-            print("Reload failed!")
-            print(response.status.error_code)
-            print(response.status.error_message)
+            logger.info("Fail to register model {}!!!".format(name))
+            logger.info(response.status.error_code)
+            logger.info(response.status.error_message)
             return False
 
 

@@ -70,6 +70,7 @@ class TensorFlowModelExecutor:
     
     @staticmethod
     def execute(model_name, input_data, input_type='text', spec={}):
+        logger.info('Execute model {}'.format(model_name))
         server_url = '{host}/{model_name}:predict'.format(host=TENSORFLOW_SERVER, model_name=model_name)
 
         # image input
@@ -123,11 +124,15 @@ class TensorFlowModelExecutor:
             if response.status_code == 404:
                 logger.info('Model not found in TFServing. Re-register the model and request again')
                 destination = '{}/{}'.format(TF_PATH, model_name)
-                if os.path.exists(destination):
-                    TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
                 
-                response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
-                logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+                if os.path.exists(destination):
+                    if TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name)):
+                        response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+                        response.raise_for_status()
+                        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+                else:
+                    logger.info('Model not found in TFServing')
+                    raise RuntimeError('Model not found')
             else:
                 response.raise_for_status()
             
@@ -150,9 +155,13 @@ class TensorFlowModelExecutor:
                 logger.info('Model not found in TFServing. Re-register the model and request again')
                 destination = '{}/{}'.format(TF_PATH, model_name)
                 if os.path.exists(destination):
-                    TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name))
-                response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
-                logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+                    if TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name)):
+                        response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+                        response.raise_for_status()
+                        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+                else:
+                    logger.info('Model not found in TFServing')
+                    raise RuntimeError('Model not found')
             else:
                 response.raise_for_status()
             
