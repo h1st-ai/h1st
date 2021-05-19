@@ -8,15 +8,42 @@ import Illus3 from "./img/illus-3.svg";
 import Illus4 from "./img/illus-4.svg";
 import { useHistory } from "react-router";
 import { APP_PREFIX } from "config";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function LandingPage(props: any) {
   const history = useHistory();
+  const { loginWithRedirect, loginWithPopup } = useAuth0();
 
   return (
     <Fragment>
       <main className="bg-white-200 text-sm min-h-screen">
         <div className="bg-blue-900 py-4 lg:py-6">
           <div className="mx-auto max-w-5xl p-5 text-center lg:text-left">
+            <nav className="flex">
+              <img
+                src={Logo}
+                className="flex"
+                alt="AICargo - Bring your models to life"
+              />
+              <ul className="mr-0 ml-auto flex">
+                <li className="ml-2">
+                  <button
+                    className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
+                    onClick={loginWithRedirect}
+                  >
+                    Sign in
+                  </button>
+                </li>
+                <li className="ml-2">
+                  <button
+                    className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
+                    onClick={loginWithPopup}
+                  >
+                    Sign up
+                  </button>
+                </li>
+              </ul>
+            </nav>
             <div className="lg:flex block items-center md:text-center lg:text-left lg:pt-10 pt-4">
               <div className="lg:w-1/2 text-center lg:text-left lg:px-5">
                 <h1 className="text-white text-2xl lg:text-4xl font-bold tracking-wide">
