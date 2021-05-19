@@ -1,5 +1,7 @@
 // import FourSvg from "./img/404.svg";
 
+import { APP_PREFIX } from "config";
+
 export default function Four0four() {
   return (
     <div className="max-w-3xl mx-auto my-40 text-center">
@@ -11,7 +13,7 @@ export default function Four0four() {
         setting has changed .
       </p>
       <a
-        href="/aicargo"
+        href={`/${APP_PREFIX}/dashboard`}
         className="items-center inline-flex mx-auto my-6 font-bold tracking-wide hover:text-blue-700"
       >
         <svg
