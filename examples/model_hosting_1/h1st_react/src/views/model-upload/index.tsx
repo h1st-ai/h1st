@@ -13,7 +13,7 @@ export default function UploadView(props: any) {
       <header className="bg-white shadow model-upload-header">
         <div className="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="sm:text-xl text-2xl font-bold text-gray-900">
-            Upload your model
+            Upload a Model
           </h1>
 
           <button
@@ -21,7 +21,7 @@ export default function UploadView(props: any) {
             className="inline-flex bg-gray-200 items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md"
             onClick={() => history.push(`/${APP_PREFIX}/dashboard`)}
           >
-            Back to dashboard
+            Back to My Models
           </button>
         </div>
       </header>

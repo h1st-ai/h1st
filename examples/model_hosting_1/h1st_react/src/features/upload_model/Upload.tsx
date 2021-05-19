@@ -40,6 +40,106 @@ const BUTTON_STATES = {
   SAVING: "Saving...",
 };
 
+export interface SampleModelPackage {
+  name: string;
+  url: string;
+}
+
+const SAMPLE_PACKAGES: SampleModelPackage[] = [
+  {
+    name: "Keras-DenseNet121",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-DenseNet121-ImageNet-Classification/Keras-DenseNet121.tf.zip",
+  },
+  {
+    name: "Keras-DenseNet169",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-DenseNet169-ImageNet-Classification/Keras-DenseNet169.tf.zip",
+  },
+  {
+    name: "Keras-DenseNet201",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-DenseNet201-ImageNet-Classification/Keras-DenseNet201.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB0",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB0-ImageNet-Classification/Keras-EfficientNetB0.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB1",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB1-ImageNet-Classification/Keras-EfficientNetB1.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB2",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB2-ImageNet-Classification/Keras-EfficientNetB2.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB3",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB3-ImageNet-Classification/Keras-EfficientNetB3.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB4",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB4-ImageNet-Classification/Keras-EfficientNetB4.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB5",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB5-ImageNet-Classification/Keras-EfficientNetB5.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB6",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB6-ImageNet-Classification/Keras-EfficientNetB6.tf.zip",
+  },
+  {
+    name: "Keras-EfficientNetB7",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-EfficientNetB7-ImageNet-Classification/Keras-EfficientNetB7.tf.zip",
+  },
+  {
+    name: "Keras-InceptionResNetV2",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-InceptionResNetV2-ImageNet-Classification/Keras-InceptionResNetV2.tf.zip",
+  },
+  {
+    name: "Keras-InceptionV3",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-InceptionV3-ImageNet-Classification/Keras-InceptionV3.tf.zip",
+  },
+  {
+    name: "Keras-MobileNet",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-MobileNet-ImageNet-Classification/Keras-MobileNet.tf.zip",
+  },
+  {
+    name: "Keras-MobileNetV2",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-MobileNetV2-ImageNet-Classification/Keras-MobileNetV2.tf.zip",
+  },
+  {
+    name: "Keras-MobileNetV3Large",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-MobileNetV3Large-ImageNet-Classification/Keras-MobileNetV3Large.tf.zip",
+  },
+  {
+    name: "Keras-MobileNetV3Small",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-MobileNetV3Small-ImageNet-Classification/Keras-MobileNetV3Small.tf.zip",
+  },
+  {
+    name: "Keras-NASNetLarge",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-NASNetLarge-ImageNet-Classification/Keras-NASNetLarge.tf.zip",
+  },
+  {
+    name: "Keras-NASNetMobile",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-NASNetMobile-ImageNet-Classification/Keras-NASNetMobile.tf.zip",
+  },
+  {
+    name: "Keras-ResNet50V2",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-ResNet50V2-ImageNet-Classification/Keras-ResNet50V2.tf.zip",
+  },
+  {
+    name: "Keras-ResNet101V2",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-ResNet101V2-ImageNet-Classification/Keras-ResNet101V2.tf.zip",
+  },
+  {
+    name: "Keras-ResNet152V2",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-ResNet152V2-ImageNet-Classification/Keras-ResNet152V2.tf.zip",
+  },
+  {
+    name: "Keras-Xception",
+    url: "https://aitomatic-h1st-hosting-tests.s3-us-west-1.amazonaws.com/CV/Image-Classification/Keras-Xception-ImageNet-Classification/Keras-Xception.tf.zip",
+  },
+];
+
 export default function UploadForm() {
   const { getAccessTokenSilently } = useAuth0();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -222,8 +322,50 @@ export default function UploadForm() {
 
   return (
     <Fragment>
-      <SideContentPanel title="Model Packaging Guide">
-        <div className="text-sm text-gray-900 p-6">
+      <SideContentPanel title="Example model packages">
+        <svg className="hidden">
+          <symbol fill="currentColor" id="icon-download" viewBox="0 0 24 24">
+            <path d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm4.748,14.664-4,4.5a1,1,0,0,1-1.5,0l-4-4.5A1,1,0,0,1,8,13h2.25a.25.25,0,0,0,.25-.25V5.5a1.5,1.5,0,0,1,3,0v7.25a.25.25,0,0,0,.25.25H16a1,1,0,0,1,.748,1.664Z" />
+          </symbol>
+          <symbol id="icon-doc" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+            />
+          </symbol>
+        </svg>
+        <div className="py-6 relative flex-1 px-2 sm:px-6">
+          <ol className="list-decimal">
+            {SAMPLE_PACKAGES.map(({ name, url }) => (
+              <li className="text-gray-700 flex items-baseline">
+                <div className="flex">
+                  <svg className="text-gray-600 mt-2.5 h-5 w-5 mr-1">
+                    <use xlinkHref="#icon-doc" />
+                  </svg>
+                  <span className="py-2 ">{name}</span>
+                </div>
+                <div className="flex ml-auto">
+                  <a
+                    href={url}
+                    className="bg-slate-200 rounded px-2 py-1.5 text-blue-800 font-bold hover:text-blue-700 hover:bg-blue-200 flex items-center text-xs uppercase tracking-wide ml-2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <svg className="w-4 h-4 mr-1.5 text-blue-800">
+                      <use xlinkHref="#icon-download" />
+                    </svg>
+                    Download
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        {/* <div className="text-sm text-gray-900 p-6">
           <h3 className="text-xl">Overall package structure</h3>
 
           <p className="my-4">
@@ -352,7 +494,7 @@ export default function UploadForm() {
 }`}
             </pre>
           </p>
-        </div>
+        </div>*/}
       </SideContentPanel>
 
       <div className="py-6 px-8 shadow rounded bg-white">
@@ -370,32 +512,54 @@ export default function UploadForm() {
                 <div className="px-4 py-3 bg-blue-50 border rounded-lg border-blue-200">
                   <p>
                     We currently support{" "}
-                    <span className="text-blue-800">ImageClassification</span>.
-                    New model type support is coming soon.
+                    <span className="text-blue-800">Image Classification</span>{" "}
+                    models in TensorFlow. <br /> Support for new model types is
+                    coming soon.
                   </p>
-                  <p>
-                    <a
-                      // onClick={showModelGuide}
-                      href="https://docs.google.com/document/d/e/2PACX-1vQmaYlLeSSX0iE0XjomOq4_IbUtdYaieD3kuD2vKvCRZ1GzerxdBBEZjefifiiQUid3zHsxILTressJ/pub"
-                      className="flex items-centerblock mt-1 font-bold"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                  <ul className="flex">
+                    <li>
+                      <a
+                        href="https://docs.google.com/document/d/e/2PACX-1vQmaYlLeSSX0iE0XjomOq4_IbUtdYaieD3kuD2vKvCRZ1GzerxdBBEZjefifiiQUid3zHsxILTressJ/pub"
+                        className="flex items-center mt-1 font-bold"
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                      How to prepare your Image Classification model
-                    </a>
-                  </p>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                        How to prepare your package
+                      </a>
+                    </li>
+                    <li className="ml-4">
+                      <button
+                        onClick={showModelGuide}
+                        className="flex items-center mt-1 font-bold text-blue-800 outline-none focus:outline-none"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 mr-1"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <title>shipment-package</title>
+                          <path d="M15.973,8.271a.25.25,0,0,0,0-.455L6.216,3.368a.5.5,0,0,0-.406,0L1.993,5.024a.25.25,0,0,0,0,.46l10.29,4.288a.5.5,0,0,0,.4-.006Z" />
+                          <path d="M22.062,5.5a.25.25,0,0,0,0-.456L12.4.847a1,1,0,0,0-.8,0L8.38,2.247a.25.25,0,0,0,0,.457l9.7,4.422a.5.5,0,0,0,.414,0Z" />
+                          <path d="M.846,6.63A.25.25,0,0,0,.5,6.861V18.007a1,1,0,0,0,.615.923L11.4,23.217a.25.25,0,0,0,.346-.231V11.34a.251.251,0,0,0-.154-.231Z" />
+                          <path d="M13.25,22.944a.251.251,0,0,0,.353.228l9.311-4.232a1,1,0,0,0,.586-.91V6.886a.25.25,0,0,0-.353-.228L13.4,11.09a.248.248,0,0,0-.147.227Z" />
+                        </svg>
+                        Try example model packages
+                      </button>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* <label
@@ -487,9 +651,6 @@ export default function UploadForm() {
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
                   Model Information
                 </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Provide information and upload your model file
-                </p>
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">

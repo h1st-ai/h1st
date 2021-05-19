@@ -49,13 +49,19 @@ const ModelPackingGuide: FunctionComponent<GuildPanelProps> = (props) => {
               leaveFrom="translate-x-0"
               leaveTo="translate-x-full"
             >
-              <div className="w-screen max-w-2xl">
+              <div className="w-screen max-w-lg">
                 <div className="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
                   <div className="px-4 sm:px-6">
                     <div className="flex items-start justify-between">
-                      <Dialog.Title className="text-2xl font-medium text-gray-900">
+                      {/* <Dialog.Title className="text-2xl font-medium text-gray-900">
+                        
+                      </Dialog.Title> */}
+                      <h2
+                        className="text-lg font-medium text-gray-900"
+                        id="slide-over-title"
+                      >
                         {props.title}
-                      </Dialog.Title>
+                      </h2>
                       <div className="ml-3 h-7 flex items-center">
                         <button
                           className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900"
