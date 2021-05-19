@@ -398,9 +398,9 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
             </section>
 
             <section className="ui-output py-5 pl-5 pr-5 pl-2.5  w-1/2 ">
-              {result.length > 0 && (
-                <div className="mt-4">
-                  <h3 className="font-semibold text-blue-800 mb-4">Output</h3>
+              <div>
+                <h3 className="font-semibold text-blue-800 mb-4">Output</h3>
+                {result.length > 0 && (
                   <ul className="flex flex-col justify-between -mt-1">
                     {result.map((r) => {
                       return (
@@ -434,8 +434,8 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                       );
                     })}
                   </ul>
-                </div>
-              )}
+                )}
+              </div>
             </section>
           </div>
         </div>
