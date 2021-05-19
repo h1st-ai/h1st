@@ -171,7 +171,7 @@ export default function UploadForm() {
           dispatch(hideUploadForm());
 
           history.push(
-            `${APP_PREFIX}/application/${response.data.result.model_id}/execute`
+            `/${APP_PREFIX}/application/${response.data.result.model_id}/execute`
           );
         }, 1000);
       } else {
