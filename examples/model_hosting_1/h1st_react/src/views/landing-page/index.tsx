@@ -9,10 +9,12 @@ import Illus4 from "./img/illus-4.svg";
 import { useHistory } from "react-router";
 import { APP_PREFIX } from "config";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 export default function LandingPage(props: any) {
   const history = useHistory();
-  const { loginWithRedirect, loginWithPopup } = useAuth0();
+  const { loginWithRedirect, loginWithPopup, isAuthenticated, isLoading } =
+    useAuth0();
 
   return (
     <Fragment>
@@ -25,24 +27,39 @@ export default function LandingPage(props: any) {
                 className="flex"
                 alt="AICargo - Bring your models to life"
               />
-              <ul className="mr-0 ml-auto flex">
-                <li className="ml-2">
-                  <button
-                    className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
-                    onClick={loginWithRedirect}
-                  >
-                    Sign in
-                  </button>
-                </li>
-                <li className="ml-2">
-                  <button
-                    className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
-                    onClick={loginWithPopup}
-                  >
-                    Sign up
-                  </button>
-                </li>
-              </ul>
+              {!isLoading && !isAuthenticated && (
+                <ul className="mr-0 ml-auto flex">
+                  <li className="ml-2">
+                    <button
+                      className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
+                      onClick={loginWithRedirect}
+                    >
+                      Sign in
+                    </button>
+                  </li>
+                  <li className="ml-2">
+                    <button
+                      className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
+                      onClick={loginWithPopup}
+                    >
+                      Sign up
+                    </button>
+                  </li>
+                </ul>
+              )}
+
+              {!isLoading && isAuthenticated && (
+                <ul className="mr-0 ml-auto flex">
+                  <li className="ml-2">
+                    <Link
+                      className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
+                      to={`/${APP_PREFIX}/dashboard`}
+                    >
+                      Your Models
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </nav>
             <div className="lg:flex block items-center md:text-center lg:text-left lg:pt-10 pt-4">
               <div className="lg:w-1/2 text-center lg:text-left lg:px-5">
