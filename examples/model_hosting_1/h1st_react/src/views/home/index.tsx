@@ -15,7 +15,7 @@ export default function Home(props: any) {
       <header className="bg-white shadow model-list-header">
         <div className="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="sm:text-xl text-2xl font-bold text-gray-900">
-            Your models
+            My models
           </h1>
           {models.length > 0 && (
             <button

@@ -55,7 +55,7 @@ export default function LandingPage(props: any) {
                       className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
                       to={`/${APP_PREFIX}/dashboard`}
                     >
-                      Your Models
+                      My Models
                     </Link>
                   </li>
                 </ul>
@@ -109,7 +109,7 @@ export default function LandingPage(props: any) {
             <a
               className="text-blue-800 hover:text-blue-600 "
               target="_blank"
-              href="https://www.h1st.ai/"
+              href="https://github.com/h1st-ai/h1st"
               rel="noreferrer"
             >
               H1st AI App Framework{" "}

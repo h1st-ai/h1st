@@ -82,24 +82,6 @@ export default function App(props: any) {
       --> */}
               <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
                 <div>
-                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                    {/* <!-- Heroicon name: outline/check --> */}
-                    <svg
-                      className="h-6 w-6 text-green-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <h3
                       className="text-lg leading-6 font-medium text-gray-900"
@@ -210,7 +192,7 @@ export default function App(props: any) {
                           onClick={() => setShowRoadmap(true)}
                           className="text-white bg-green-700 px-4 py-2 rounded-full text-sm font-semibold tracking-wide"
                         >
-                          Roadmap
+                          Coming Soon
                         </button>
                       </div>
                     </div>
@@ -323,7 +305,7 @@ export default function App(props: any) {
                     onClick={() => setShowRoadmap(true)}
                     className="text-white bg-green-700 px-4 py-2 rounded-full text-sm font-semibold tracking-wide"
                   >
-                    Roadmap
+                    Coming Soon
                   </button>
                 </div>
                 <div className="pt-4 pb-3 border-t border-gray-700">
