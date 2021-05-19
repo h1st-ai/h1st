@@ -133,7 +133,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                   d="M10 19l-7-7m0 0l7-7m-7 7h18"
                 />
               </svg>
-              Dashboard
+              Your models
             </Link>
           </div>
         )}
