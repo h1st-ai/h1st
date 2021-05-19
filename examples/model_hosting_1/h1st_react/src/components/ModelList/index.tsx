@@ -11,6 +11,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { PlusIcon } from "@heroicons/react/solid";
 import { Illustration } from "components/Illustration";
 import { getFullUrl } from "utils";
+import LoadingIndicator from "components/loading-indicator";
 
 const axios = require("axios").default;
 
@@ -42,7 +43,11 @@ export default function ModelList() {
   }, []);
 
   if (!loaded) {
-    return null;
+    return (
+      <div className="flex p-16 justify-center">
+        <LoadingIndicator size={50} />
+      </div>
+    );
   }
 
   if (models.length === 0 && loaded) {
