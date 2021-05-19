@@ -168,6 +168,7 @@ export default function App(props: any) {
                   <button
                     type="button"
                     className="inline-flex mr-4 lg:ml-0 btn-primary dark-bg hero has-icon"
+                    onClick={login}
                   >
                     <svg
                       className="icon"
