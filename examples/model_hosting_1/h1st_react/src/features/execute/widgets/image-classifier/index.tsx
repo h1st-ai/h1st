@@ -112,7 +112,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
 
   return (
     <Fragment>
-      <main className="text-sm p-6 min-h-screen">
+      <main className="text-sm p-6">
         {isAuthenticated && (
           <div className="max-w-3xl mx-auto mb-4 flex">
             <Link
