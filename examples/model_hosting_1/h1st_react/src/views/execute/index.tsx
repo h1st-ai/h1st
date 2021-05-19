@@ -50,7 +50,7 @@ export default function Execute(props: ExecutionProps) {
     }
 
     return (
-      <div className="md:w-1/2 md:m-auto md:mt-12 mx-4 m-auto mt-4 self-center">
+      <div className="bg-gray-200  md:m-auto md:pt-12 mx-4 m-auto pt-4 self-center">
         {widget}
 
         <div className="text-xs text-gray-500 text-center my-10">

@@ -107,6 +107,8 @@ class Upload(APIView):
             # persist
             m.save()
 
+            # print("TYPE", type(m.creator))
+
             return Response({
                 "status": "OK",
                 "result": {
@@ -116,7 +118,7 @@ class Upload(APIView):
                     'description': description,
                     'created_at': m.created_at,
                     'updated_at': m.updated_at,
-                    'creator': m.creator
+                    'creator': str(m.creator)
                 }
             })      
 

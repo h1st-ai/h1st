@@ -11,12 +11,17 @@ import UploadService from "features/upload_model/service.upload";
 import { useDropzone } from "react-dropzone";
 import klass from "classnames";
 import { XCircleIcon } from "@heroicons/react/solid";
-import styles from "./styles.module.css";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import { getFullUrl } from "utils";
 
 const numeral = require("numeral");
 export interface ImageClassiferWidgetProps {
   model: AIModel;
+}
+
+export enum CopyStatus {
+  DEFAULT = "Copy link to this Model",
+  COPIED = "Copied to clipboard",
 }
 
 export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
@@ -28,7 +33,15 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const previewImgEl = useRef(null);
 
+  const [copyStatus, setCopyStatus] = useState(CopyStatus.DEFAULT);
+
   const [isInputMounted, setIsInputMounted] = useState(true);
+
+  const copyText = () => {
+    setCopyStatus(CopyStatus.COPIED);
+
+    setTimeout(() => setCopyStatus(CopyStatus.DEFAULT), 5000);
+  };
 
   const onDrop = useCallback((acceptedFiles) => {
     var reader = new FileReader();
@@ -94,177 +107,339 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   };
 
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg divide-y divide-gray-200">
-      <div className="px-4 py-5 sm:px-6">
-        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:text-2xl sm:truncate">
-          {model.name}
-        </h1>
-        <p className="mt-2 text-sm sm:text-md font-medium text-gray-500 hover:text-gray-700">
-          {model.description}
-        </p>
-      </div>
-      <div className="px-4 py-5 sm:p-6">
-        {acceptedFiles.length > 0 && previewSrc && (
-          <Fragment>
-            {error && (
-              <div className="rounded-md bg-red-50 p-4 mb-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <XCircleIcon
-                      className="h-5 w-5 text-red-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">
-                      There was an error trying to classify the image
-                    </h3>
-                    <div className="mt-2 text-sm text-red-700">
-                      <ul className="list-disc pl-5 space-y-1">
-                        {/* @ts-ignore */}
-                        <li>{error.message}</li>
-                      </ul>
-                    </div>
+    <Fragment>
+      <main className="text-sm p-6 min-h-screen">
+        <div className="app-view-wrapper">
+          <div className="flex w-full border-b border-gray-200 py-4 px-5">
+            <div>
+              <div className="flex items-center group relative">
+                <h1 className="text-lg text-gray-800 font-semibold">
+                  {model.name}
+                </h1>
+                <button className="flex text-xs rounded-md font-semibold tracking-wide py-1 px-1.5 border border-blue-300 text-blue-700 ml-2 uppercase opacity-0  group-hover:opacity-100 group-hover:visible">
+                  <span className="mr-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3.5 w-3.5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </span>
+                  Rename
+                </button>
+                {/* <!-- replace the name and button with the following when user clicks on Rename--> */}
+                {/* <!-- <input type="text" value="Cat or not" className="text-lg pr-20 text-gray-800 border border-blue-500 font-semibold rounded" /> */}
+                {/* <button className=" text-xs absolute right-2.5 top-2.5 rounded font-semibold tracking-wide py-1 px-1.5 bg-blue-700 text-white ml-2 uppercase">Save</button> --> */}
+              </div>
+              <div className="relative flex items-center group">
+                <p className="text-gray-500">{model.description}</p>
+                <button className="flex text-xs rounded-md font-semibold tracking-wide py-1 px-1.5 border border-blue-300 text-blue-700 ml-2 uppercase opacity-0  group-hover:opacity-100 group-hover:visible">
+                  <span className="mr-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3.5 w-3.5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </span>
+                  Edit
+                </button>
+                {/* <!-- for Edit state --> */}
+                {/* <!-- <textarea type="text" className="pr-20 text-base text-gray-800 border border-blue-500 font-semibold rounded">A simple cat indentification app</textarea> */}
+                {/* <button className=" text-xs absolute right-2.5 top-2.5 rounded font-semibold tracking-wide py-1 px-1.5 bg-blue-700 text-white ml-2 uppercase">Save</button> --> */}
+              </div>
+            </div>
+            <div className="ml-auto">
+              <button className="text-gray-600 inline-flex font-semibold tracking-wide items-center hover:text-blue-700">
+                <svg
+                  xmlns=" http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-gray-400 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                  />
+                </svg>{" "}
+                <CopyToClipboard text={window.location.href} onCopy={copyText}>
+                  <button>{copyStatus}</button>
+                </CopyToClipboard>
+              </button>
+            </div>
+          </div>
+          {error && (
+            <div className="rounded-md bg-red-50 p-4 mb-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <XCircleIcon
+                    className="h-5 w-5 text-red-400"
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    There was an error trying to classify the image
+                  </h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    <ul className="list-disc pl-5 space-y-1">
+                      {/* @ts-ignore */}
+                      <li>{error.message}</li>
+                    </ul>
                   </div>
                 </div>
               </div>
-            )}
-            <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-2 bg-gray-100">
-              <div className="flex item-center bg-gray-200">
-                <img
-                  className="self-center"
-                  // @ts-ignore
-                  src={previewSrc}
-                  width="100%"
-                  height="auto"
-                  ref={previewImgEl}
-                  alt="input"
-                />
-              </div>
-              <div className="p-6 text-sm">
-                <h3 className="font-bold">Input:</h3>
-                <ul className="">
-                  {acceptedFiles.map((file) => (
+            </div>
+          )}
+          <div className="input-output-wrapper flex">
+            <section className="ui-input py-5 pl-5 pr-2.5 w-1/2 mr-2">
+              <h3 className="font-semibold text-blue-800 mb-4">Input</h3>
+              {acceptedFiles.length > 0 && previewImgEl && (
+                <div>
+                  <img
+                    className="max-w-full rounded-lg"
                     // @ts-ignore
-                    <li key={file.path}>
-                      {/* @ts-ignore */}
-                      {file.path} ({numeral(file.size).format("0b")})
-                    </li>
-                  ))}
-                </ul>
-                {result.length > 0 && (
-                  <div className="mt-4">
-                    <h3 className="font-bold">Result:</h3>
-                    <ul>
-                      {result.map((r) => {
-                        return (
-                          <li>
+                    src={previewSrc}
+                    ref={previewImgEl}
+                    alt="input"
+                  />
+                </div>
+              )}
+
+              {/* <!--dropzone - remove "hidden" to show--> */}
+              {(acceptedFiles.length === 0 || !setPreviewSrc) && (
+                <div
+                  {...getRootProps({
+                    className:
+                      "flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md relative",
+                  })}
+                >
+                  {/* <!-- <span className="absolute w-64 h-2 progress-bar bottom-2"></span> --> */}
+
+                  <div className="space-y-1 text-center text-gray-500">
+                    <svg
+                      className="w-12 h-12 mx-auto mb-2"
+                      viewBox="0 0 64 64"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g clip-path="url(#clip0)">
+                        <path
+                          d="M17.3333 25.3333C20.2789 25.3333 22.6667 22.9455 22.6667 20C22.6667 17.0545 20.2789 14.6667 17.3333 14.6667C14.3878 14.6667 12 17.0545 12 20C12 22.9455 14.3878 25.3333 17.3333 25.3333Z"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M17.3333 25.3333C20.2789 25.3333 22.6667 22.9455 22.6667 20C22.6667 17.0545 20.2789 14.6667 17.3333 14.6667C14.3878 14.6667 12 17.0545 12 20C12 22.9455 14.3878 25.3333 17.3333 25.3333Z"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M32.7999 28.76L31.7893 27.1413C31.6694 26.9496 31.5027 26.7914 31.3049 26.6818C31.1072 26.5722 30.8847 26.5146 30.6586 26.5146C30.4324 26.5146 30.21 26.5722 30.0122 26.6818C29.8144 26.7914 29.6478 26.9496 29.5279 27.1413L22.5013 38.4L19.6319 33.808C19.5121 33.6162 19.3454 33.4581 19.1476 33.3485C18.9498 33.2388 18.7274 33.1813 18.5013 33.1813C18.2751 33.1813 18.0527 33.2388 17.8549 33.3485C17.6571 33.4581 17.4904 33.6162 17.3706 33.808L9.33325 46.6667H22.6666"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M32.7999 28.76L31.7893 27.1413C31.6694 26.9496 31.5027 26.7914 31.3049 26.6818C31.1072 26.5722 30.8847 26.5146 30.6586 26.5146C30.4324 26.5146 30.21 26.5722 30.0122 26.6818C29.8144 26.7914 29.6478 26.9496 29.5279 27.1413L22.5013 38.4L19.6319 33.808C19.5121 33.6162 19.3454 33.4581 19.1476 33.3485C18.9498 33.2388 18.7274 33.1813 18.5013 33.1813C18.2751 33.1813 18.0527 33.2388 17.8549 33.3485C17.6571 33.4581 17.4904 33.6162 17.3706 33.808L9.33325 46.6667H22.6666"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M25.3333 62.6667H3.99992C3.29267 62.6667 2.6144 62.3857 2.1143 61.8856C1.6142 61.3855 1.33325 60.7072 1.33325 60V3.99999C1.33325 3.29275 1.6142 2.61447 2.1143 2.11438C2.6144 1.61428 3.29267 1.33333 3.99992 1.33333H39.4479C40.1551 1.33348 40.8333 1.61453 41.3333 2.11466L51.2186 12C51.7187 12.5 51.9998 13.1781 51.9999 13.8853V22.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M25.3333 62.6667H3.99992C3.29267 62.6667 2.6144 62.3857 2.1143 61.8856C1.6142 61.3855 1.33325 60.7072 1.33325 60V3.99999C1.33325 3.29275 1.6142 2.61447 2.1143 2.11438C2.6144 1.61428 3.29267 1.33333 3.99992 1.33333H39.4479C40.1551 1.33348 40.8333 1.61453 41.3333 2.11466L51.2186 12C51.7187 12.5 51.9998 13.1781 51.9999 13.8853V22.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 62.6667C55.5033 62.6667 62.6667 55.5032 62.6667 46.6667C62.6667 37.8301 55.5033 30.6667 46.6667 30.6667C37.8302 30.6667 30.6667 37.8301 30.6667 46.6667C30.6667 55.5032 37.8302 62.6667 46.6667 62.6667Z"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 62.6667C55.5033 62.6667 62.6667 55.5032 62.6667 46.6667C62.6667 37.8301 55.5033 30.6667 46.6667 30.6667C37.8302 30.6667 30.6667 37.8301 30.6667 46.6667C30.6667 55.5032 37.8302 62.6667 46.6667 62.6667Z"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 54.6667V38.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 54.6667V38.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 38.6667L40.6667 44.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 38.6667L40.6667 44.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 38.6667L52.6667 44.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M46.6667 38.6667L52.6667 44.6667"
+                          stroke="#B0B6C1"
+                          stroke-width="3"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </g>
+                    </svg>
+
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-800 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                      >
+                        <span className="inline-block mr-1">Browse</span>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          ref={fileRef}
+                          {...getInputProps()}
+                        />
+                      </label>{" "}
+                      or drag and drop an image to classify
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Maximum file size is 10Mb
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* <!--end of dropzone--> */}
+              <div className="flex mt-6">
+                <button
+                  className="btn-primary has-icon"
+                  onClick={submit}
+                  disabled={loading || acceptedFiles.length === 0}
+                >
+                  {/* <!-- <svg className="w-3 h-3 mr-1" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M6.29289 5.29289L1.70711 0.707107C1.07714 0.077142 0 0.523309 0 1.41421V10.5858C0 11.4767 1.07714 11.9229 1.70711 11.2929L6.29289 6.70711C6.68342 6.31658 6.68342 5.68342 6.29289 5.29289Z"
+                  fill="white" fill-opacity="0.7" />
+              </svg> --> */}
+                  {loading && (
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  )}
+                  Classify Image
+                </button>
+                <button className="btn-secondary ml-auto" onClick={reset}>
+                  Reset
+                </button>
+              </div>
+            </section>
+
+            <section className="ui-output py-5 pl-5 pr-5 pl-2.5  w-1/2 ">
+              {result.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="font-semibold text-blue-800 mb-4">Output</h3>
+                  <ul className="flex flex-col justify-between -mt-1">
+                    {result.map((r) => {
+                      return (
+                        <li className="flex items-center my-1">
+                          <span className="pr-2 w-24">{r[0]}</span>
+                          <div className="flex flex-1 items-center">
                             <div
-                              className="relative bg-blue-900 py-5 px-1 rounded-sm my-2"
+                              className={klass(
+                                {
+                                  relative: r[1] < 0.3,
+                                },
+                                "flex h-8 px-4 rounded-lg bg-blue-800 p-1"
+                              )}
                               style={{ width: `${r[1] * 100}%` }}
                             >
                               <span
                                 className={klass(
                                   {
-                                    "right-2 text-white ": r[1] * 100 > 40,
-                                    [styles["overflown-result"]]:
-                                      r[1] * 100 <= 40,
+                                    "font-medium text-blue-800 absolute -right-1 transform translate-x-full":
+                                      r[1] < 0.3,
+                                    "text-white": r[1] >= 0.3,
                                   },
-                                  "text-xs flex absolute inset-y-0 items-center whitespace-nowrap"
+                                  "font-medium"
                                 )}
                               >
-                                {r[0]} ({Number(r[1] * 100).toFixed(2)}%)
+                                {Number(r[1] * 100).toFixed(2)}%
                               </span>
                             </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Fragment>
-        )}
-
-        {acceptedFiles.length === 0 && (
-          <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-            <div className="sm:col-span-6">
-              <div
-                {...getRootProps({
-                  className:
-                    "hover:border-blue-500 dropzone mt-1 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-md",
-                })}
-              >
-                <div className="space-y-1 text-center">
-                  <svg
-                    className="mx-auto h-12 w-12 text-gray-400 fill-current"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clipPath="url(#clip0)">
-                      <path d="M6.5 11C5.21442 11 3.95772 11.3812 2.8888 12.0954C1.81988 12.8097 0.986756 13.8248 0.494786 15.0126C0.00281635 16.2003 -0.125905 17.5072 0.124899 18.7681C0.375703 20.029 0.994768 21.1872 1.90381 22.0962C2.81285 23.0052 3.97104 23.6243 5.23192 23.8751C6.49279 24.1259 7.79973 23.9972 8.98744 23.5052C10.1752 23.0132 11.1903 22.1801 11.9046 21.1112C12.6188 20.0423 13 18.7856 13 17.5C12.9979 15.7767 12.3124 14.1247 11.0939 12.9061C9.87533 11.6876 8.22326 11.0021 6.5 11ZM8.891 16.688C8.94976 16.7616 8.98655 16.8503 8.99713 16.9438C9.0077 17.0374 8.99164 17.1321 8.95078 17.2169C8.90993 17.3018 8.84594 17.3734 8.76619 17.4234C8.68644 17.4735 8.59417 17.5001 8.5 17.5H7.75C7.6837 17.5 7.62011 17.5263 7.57323 17.5732C7.52634 17.6201 7.5 17.6837 7.5 17.75V20.5C7.5 20.7652 7.39465 21.0196 7.20711 21.2071C7.01957 21.3946 6.76522 21.5 6.5 21.5C6.23479 21.5 5.98043 21.3946 5.7929 21.2071C5.60536 21.0196 5.5 20.7652 5.5 20.5V17.75C5.5 17.6837 5.47366 17.6201 5.42678 17.5732C5.3799 17.5263 5.31631 17.5 5.25 17.5H4.5C4.40583 17.5001 4.31356 17.4735 4.23381 17.4234C4.15406 17.3734 4.09008 17.3018 4.04922 17.2169C4.00837 17.1321 3.9923 17.0374 4.00288 16.9438C4.01345 16.8503 4.05024 16.7616 4.109 16.688L6.109 14.188C6.15754 14.1319 6.21757 14.0869 6.28504 14.0561C6.35251 14.0252 6.42582 14.0092 6.5 14.0092C6.57419 14.0092 6.6475 14.0252 6.71497 14.0561C6.78243 14.0869 6.84247 14.1319 6.891 14.188L8.891 16.688Z" />
-                      <path d="M6.5 11C5.21442 11 3.95772 11.3812 2.8888 12.0954C1.81988 12.8097 0.986756 13.8248 0.494786 15.0126C0.00281635 16.2003 -0.125905 17.5072 0.124899 18.7681C0.375703 20.029 0.994768 21.1872 1.90381 22.0962C2.81285 23.0052 3.97104 23.6243 5.23192 23.8751C6.49279 24.1259 7.79973 23.9972 8.98744 23.5052C10.1752 23.0132 11.1903 22.1801 11.9046 21.1112C12.6188 20.0423 13 18.7856 13 17.5C12.9979 15.7767 12.3124 14.1247 11.0939 12.9061C9.87533 11.6876 8.22326 11.0021 6.5 11ZM8.891 16.688C8.94976 16.7616 8.98655 16.8503 8.99713 16.9438C9.0077 17.0374 8.99164 17.1321 8.95078 17.2169C8.90993 17.3018 8.84594 17.3734 8.76619 17.4234C8.68644 17.4735 8.59417 17.5001 8.5 17.5H7.75C7.6837 17.5 7.62011 17.5263 7.57323 17.5732C7.52634 17.6201 7.5 17.6837 7.5 17.75V20.5C7.5 20.7652 7.39465 21.0196 7.20711 21.2071C7.01957 21.3946 6.76522 21.5 6.5 21.5C6.23479 21.5 5.98043 21.3946 5.7929 21.2071C5.60536 21.0196 5.5 20.7652 5.5 20.5V17.75C5.5 17.6837 5.47366 17.6201 5.42678 17.5732C5.3799 17.5263 5.31631 17.5 5.25 17.5H4.5C4.40583 17.5001 4.31356 17.4735 4.23381 17.4234C4.15406 17.3734 4.09008 17.3018 4.04922 17.2169C4.00837 17.1321 3.9923 17.0374 4.00288 16.9438C4.01345 16.8503 4.05024 16.7616 4.109 16.688L6.109 14.188C6.15754 14.1319 6.21757 14.0869 6.28504 14.0561C6.35251 14.0252 6.42582 14.0092 6.5 14.0092C6.57419 14.0092 6.6475 14.0252 6.71497 14.0561C6.78243 14.0869 6.84247 14.1319 6.891 14.188L8.891 16.688Z" />
-                      <path d="M24 4.414C23.9999 3.88361 23.7891 3.37499 23.414 3L21 0.586C20.8142 0.400151 20.5936 0.252738 20.3508 0.152189C20.108 0.0516398 19.8478 -7.51847e-05 19.585 8.20398e-08H8.00001C7.46958 8.20398e-08 6.96087 0.210714 6.58579 0.585787C6.21072 0.960859 6.00001 1.46957 6.00001 2V9.275C5.99946 9.34009 6.02453 9.40279 6.06981 9.44956C6.11508 9.49633 6.17693 9.52343 6.24201 9.525C6.60801 9.531 7.28001 9.558 7.72701 9.608C7.76168 9.61183 7.79676 9.60825 7.82994 9.59748C7.86312 9.58672 7.89363 9.56903 7.91944 9.54557C7.94526 9.52212 7.9658 9.49345 7.97969 9.46145C7.99358 9.42946 8.0005 9.39488 8.00001 9.36V2.5C8.00001 2.36739 8.05269 2.24021 8.14645 2.14645C8.24022 2.05268 8.3674 2 8.50001 2H19.379C19.5114 2.00003 19.6383 2.05253 19.732 2.146L21.854 4.268C21.9475 4.36171 22 4.48865 22 4.621V18C22 18.1326 21.9473 18.2598 21.8536 18.3536C21.7598 18.4473 21.6326 18.5 21.5 18.5H14.642C14.5834 18.5004 14.5268 18.5217 14.4825 18.5603C14.4383 18.5988 14.4094 18.6519 14.401 18.71C14.3259 19.2064 14.2041 19.6946 14.037 20.168C14.0229 20.2049 14.018 20.2448 14.0227 20.284C14.0274 20.3233 14.0416 20.3608 14.064 20.3934C14.0865 20.426 14.1165 20.4526 14.1515 20.471C14.1865 20.4894 14.2255 20.499 14.265 20.499H22C22.5304 20.499 23.0392 20.2883 23.4142 19.9132C23.7893 19.5381 24 19.0294 24 18.499V4.414Z" />
-                      <path d="M24 4.414C23.9999 3.88361 23.7891 3.37499 23.414 3L21 0.586C20.8142 0.400151 20.5936 0.252738 20.3508 0.152189C20.108 0.0516398 19.8478 -7.51847e-05 19.585 8.20398e-08H8.00001C7.46958 8.20398e-08 6.96087 0.210714 6.58579 0.585787C6.21072 0.960859 6.00001 1.46957 6.00001 2V9.275C5.99946 9.34009 6.02453 9.40279 6.06981 9.44956C6.11508 9.49633 6.17693 9.52343 6.24201 9.525C6.60801 9.531 7.28001 9.558 7.72701 9.608C7.76168 9.61183 7.79676 9.60825 7.82994 9.59748C7.86312 9.58672 7.89363 9.56903 7.91944 9.54557C7.94526 9.52212 7.9658 9.49345 7.97969 9.46145C7.99358 9.42946 8.0005 9.39488 8.00001 9.36V2.5C8.00001 2.36739 8.05269 2.24021 8.14645 2.14645C8.24022 2.05268 8.3674 2 8.50001 2H19.379C19.5114 2.00003 19.6383 2.05253 19.732 2.146L21.854 4.268C21.9475 4.36171 22 4.48865 22 4.621V18C22 18.1326 21.9473 18.2598 21.8536 18.3536C21.7598 18.4473 21.6326 18.5 21.5 18.5H14.642C14.5834 18.5004 14.5268 18.5217 14.4825 18.5603C14.4383 18.5988 14.4094 18.6519 14.401 18.71C14.3259 19.2064 14.2041 19.6946 14.037 20.168C14.0229 20.2049 14.018 20.2448 14.0227 20.284C14.0274 20.3233 14.0416 20.3608 14.064 20.3934C14.0865 20.426 14.1165 20.4526 14.1515 20.471C14.1865 20.4894 14.2255 20.499 14.265 20.499H22C22.5304 20.499 23.0392 20.2883 23.4142 19.9132C23.7893 19.5381 24 19.0294 24 18.499V4.414Z" />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0">
-                        <rect width="24" height="24" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-
-                  <div className="flex text-sm text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                    >
-                      <input
-                        id="file-upload"
-                        name="file-upload"
-                        type="file"
-                        ref={fileRef}
-                        {...getInputProps()}
-                      />
-                    </label>
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    <span className="text-blue-600">Select file</span> or drag
-                    and drop a file here to upload (limit: 10MB)
-                  </p>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
-              </div>
-            </div>
+              )}
+            </section>
           </div>
-        )}
-      </div>
-      <div className="px-4 py-4 sm:px-6 bg-gray-50 ">
-        <button
-          type="submit"
-          className="disabled:opacity-50 mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm"
-          onClick={submit}
-          disabled={loading || acceptedFiles.length === 0}
-        >
-          {loading && (
-            <span className="flex h-2 w-2 relative mr-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-200 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
-            </span>
-          )}
-          Classify Image
-        </button>
-
-        <button
-          className="lg:ml-4 lg:mt-0 mt-4 w-full inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm items-center justify-center"
-          onClick={reset}
-        >
-          Reset
-        </button>
-      </div>
-    </div>
+        </div>
+      </main>
+    </Fragment>
   );
 }
