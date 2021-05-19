@@ -124,7 +124,7 @@ export default function ModelList() {
                         {model.name}
                       </a>
                     </td>
-                    <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 text-sm text-gray-500">
                       {model.description}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
