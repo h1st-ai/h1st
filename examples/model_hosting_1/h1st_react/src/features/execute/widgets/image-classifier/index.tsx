@@ -13,6 +13,9 @@ import klass from "classnames";
 import { XCircleIcon } from "@heroicons/react/solid";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { getFullUrl } from "utils";
+import { Link } from "react-router-dom";
+import { APP_PREFIX } from "config";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const numeral = require("numeral");
 export interface ImageClassiferWidgetProps {
@@ -32,6 +35,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   const [previewSrc, setPreviewSrc] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
   const previewImgEl = useRef(null);
+  const { isAuthenticated } = useAuth0();
 
   const [copyStatus, setCopyStatus] = useState(CopyStatus.DEFAULT);
 
@@ -109,6 +113,30 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   return (
     <Fragment>
       <main className="text-sm p-6 min-h-screen">
+        {isAuthenticated && (
+          <div className="max-w-3xl mx-auto mb-4 flex">
+            <Link
+              to={`/${APP_PREFIX}/dashboard`}
+              className="flex items-center uppercase text-xs font-bold tracking-wide ml-auto hover:text-blue-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Dashboard
+            </Link>
+          </div>
+        )}
         <div className="app-view-wrapper">
           <div className="flex w-full border-b border-gray-200 py-4 px-5">
             <div>
