@@ -8,6 +8,7 @@ import Logo from "components/logo";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
 import { APP_PREFIX } from "config";
+import GlobalMessageDialog from "components/global-dialog";
 
 const navigation = [{ label: "Your Models", url: `/${APP_PREFIX}/dashboard` }];
 const profile = ["Sign out"];
@@ -35,6 +36,7 @@ export default function App(props: any) {
   return (
     <Fragment>
       <div className="min-h-screen">
+        <GlobalMessageDialog />
         <StatusMessage />
         <Disclosure as="nav" className="bg-gray-800">
           {({ open }) => (
@@ -43,7 +45,9 @@ export default function App(props: any) {
                 <div className="flex items-center justify-between h-16">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <Logo />
+                      <Link to={`/${APP_PREFIX}`}>
+                        <Logo />
+                      </Link>
                     </div>
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">

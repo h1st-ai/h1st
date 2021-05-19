@@ -29,6 +29,8 @@ import {
   DialogType,
   setGlobalDialogMessage,
 } from "features/common/appSlice";
+import { useHistory } from "react-router";
+import { APP_PREFIX } from "config";
 
 const axios = require("axios").default;
 
@@ -46,6 +48,8 @@ export default function UploadForm() {
   const [progress, setProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [buttonState, setButtonState] = useState(BUTTON_STATES.IDLE);
+
+  const history = useHistory();
 
   const onDrop = useCallback(async (acceptedFiles) => {
     if (acceptedFiles && acceptedFiles.length === 0) {
@@ -165,7 +169,21 @@ export default function UploadForm() {
           setSubmitted(false);
           dispatch(resetApplicationState());
           dispatch(hideUploadForm());
+
+          history.push(
+            `${APP_PREFIX}/application/${response.data.result.model_id}/execute`
+          );
         }, 1000);
+      } else {
+        dispatch(
+          setGlobalDialogMessage({
+            type: DialogType.ERROR,
+            action: ActionType.OK,
+            title: "Error",
+            message:
+              "An error occured when trying to save model. Please try again.",
+          })
+        );
       }
     } catch (ex) {
       console.log(ex.response.data);
