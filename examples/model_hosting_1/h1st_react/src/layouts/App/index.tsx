@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 
@@ -9,6 +9,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
 import { APP_PREFIX } from "config";
 import GlobalMessageDialog from "components/global-dialog";
+import { showMessage } from "features/upload_model/uploadSlice";
 
 const navigation = [{ label: "Your Models", url: `/${APP_PREFIX}/dashboard` }];
 const profile = ["Sign out"];
@@ -20,6 +21,8 @@ function classNames(...classes: any) {
 export default function App(props: any) {
   const { logout, user, isAuthenticated, isLoading, loginWithRedirect } =
     useAuth0();
+
+  const [showRoadmap, setShowRoadmap] = useState(false);
 
   if (isLoading) {
     return <div>Loading ...</div>;
@@ -36,6 +39,137 @@ export default function App(props: any) {
   return (
     <Fragment>
       <div className="min-h-screen">
+        {showRoadmap && (
+          <div
+            className="coming-soon-dialog fixed z-10 inset-0 overflow-y-auto"
+            aria-labelledby="modal-title"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+              {/* <!--
+        Background overlay, show/hide based on modal state.
+  
+        Entering: "ease-out duration-300"
+          From: "opacity-0"
+          To: "opacity-100"
+        Leaving: "ease-in duration-200"
+          From: "opacity-100"
+          To: "opacity-0"
+      --> */}
+              <div
+                className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity"
+                aria-hidden="true"
+              ></div>
+
+              {/* <!-- This element is to trick the browser into centering the modal contents. --> */}
+              <span
+                className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                aria-hidden="true"
+              >
+                &#8203;
+              </span>
+
+              {/* <!--
+        Modal panel, show/hide based on modal state.
+  
+        Entering: "ease-out duration-300"
+          From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          To: "opacity-100 translate-y-0 sm:scale-100"
+        Leaving: "ease-in duration-200"
+          From: "opacity-100 translate-y-0 sm:scale-100"
+          To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+      --> */}
+              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                <div>
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    {/* <!-- Heroicon name: outline/check --> */}
+                    <svg
+                      className="h-6 w-6 text-green-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <h3
+                      className="text-lg leading-6 font-medium text-gray-900"
+                      id="modal-title"
+                    >
+                      Coming soon
+                    </h3>
+                    <div className="mt-2 text-left">
+                      <div className="text-sm text-gray-600">
+                        <ul>
+                          <li className="flex items-center">
+                            <svg className="w-4 h-4 mr-1.5 text-green-600">
+                              <use xlinkHref="#icon-checked" />
+                            </svg>
+                            NLP: Text Classification
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="w-4 h-4 mr-1.5 text-green-600">
+                              <use xlinkHref="#icon-checked" />
+                            </svg>
+                            NLP: Translation
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="w-4 h-4 mr-1.5 text-green-600">
+                              <use xlinkHref="#icon-checked" />
+                            </svg>
+                            NLP: Text Summary
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="w-4 h-4 mr-1.5 text-green-600">
+                              <use xlinkHref="#icon-checked" />
+                            </svg>
+                            Image Captioning
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="w-4 h-4 mr-1.5 text-green-600">
+                              <use xlinkHref="#icon-checked" />
+                            </svg>
+                            Time Series Anomaly Detection
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="w-4 h-4 mr-1.5 text-green-600">
+                              <use xlinkHref="#icon-checked" />
+                            </svg>
+                            Model Inference API
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="w-4 h-4 mr-1.5 text-green-600">
+                              <use xlinkHref="#icon-checked" />
+                            </svg>
+                            and more ...
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-6">
+                  <button
+                    type="button"
+                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-slate-200 text-base font-medium text-gray-700 font-semibold tracking-wide hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm"
+                    onClick={() => setShowRoadmap(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <GlobalMessageDialog />
         <StatusMessage />
         <Disclosure as="nav" className="bg-gray-800">
@@ -71,6 +205,13 @@ export default function App(props: any) {
                             </Link>
                           )
                         )}
+
+                        <button
+                          onClick={() => setShowRoadmap(true)}
+                          className="text-white bg-green-700 px-4 py-2 rounded-full text-sm font-semibold tracking-wide"
+                        >
+                          Roadmap
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -177,6 +318,13 @@ export default function App(props: any) {
                       </Link>
                     )
                   )}
+
+                  <button
+                    onClick={() => setShowRoadmap(true)}
+                    className="text-white bg-green-700 px-4 py-2 rounded-full text-sm font-semibold tracking-wide"
+                  >
+                    Roadmap
+                  </button>
                 </div>
                 <div className="pt-4 pb-3 border-t border-gray-700">
                   <div className="flex items-center px-5">
