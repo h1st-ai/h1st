@@ -144,7 +144,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
         )}
         <div className="app-view-wrapper">
           <div className="flex w-full border-b border-gray-200 py-4 px-5">
-            <div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center group relative">
                 <h1 className="text-lg text-gray-800 font-semibold">
                   {model.name}
