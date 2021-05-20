@@ -144,12 +144,12 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
         )}
         <div className="app-view-wrapper">
           <div className="flex w-full border-b border-gray-200 py-4 px-5">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div>
               <div className="flex items-center group relative">
                 <h1 className="text-lg text-gray-800 font-semibold">
                   {model.name}
                 </h1>
-                <button className="flex text-xs rounded-md font-semibold tracking-wide py-1 px-1.5 border border-blue-300 text-blue-700 ml-2 uppercase opacity-0  group-hover:opacity-100 group-hover:visible">
+                {/* <button className="flex text-xs rounded-md font-semibold tracking-wide py-1 px-1.5 border border-blue-300 text-blue-700 ml-2 uppercase opacity-0  group-hover:opacity-100 group-hover:visible">
                   <span className="mr-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -161,14 +161,14 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                     </svg>
                   </span>
                   Rename
-                </button>
+                </button> */}
                 {/* <!-- replace the name and button with the following when user clicks on Rename--> */}
                 {/* <!-- <input type="text" value="Cat or not" className="text-lg pr-20 text-gray-800 border border-blue-500 font-semibold rounded" /> */}
                 {/* <button className=" text-xs absolute right-2.5 top-2.5 rounded font-semibold tracking-wide py-1 px-1.5 bg-blue-700 text-white ml-2 uppercase">Save</button> --> */}
               </div>
               <div className="relative flex items-center group">
                 <p className="text-gray-500">{model.description}</p>
-                <button className="flex text-xs rounded-md font-semibold tracking-wide py-1 px-1.5 border border-blue-300 text-blue-700 ml-2 uppercase opacity-0  group-hover:opacity-100 group-hover:visible">
+                {/* <button className="flex text-xs rounded-md font-semibold tracking-wide py-1 px-1.5 border border-blue-300 text-blue-700 ml-2 uppercase opacity-0  group-hover:opacity-100 group-hover:visible">
                   <span className="mr-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -180,7 +180,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                     </svg>
                   </span>
                   Edit
-                </button>
+                </button> */}
                 {/* <!-- for Edit state --> */}
                 {/* <!-- <textarea type="text" className="pr-20 text-base text-gray-800 border border-blue-500 font-semibold rounded">A simple cat indentification app</textarea> */}
                 {/* <button className=" text-xs absolute right-2.5 top-2.5 rounded font-semibold tracking-wide py-1 px-1.5 bg-blue-700 text-white ml-2 uppercase">Save</button> --> */}
