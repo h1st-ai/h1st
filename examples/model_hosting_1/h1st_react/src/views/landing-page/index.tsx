@@ -32,7 +32,11 @@ export default function LandingPage(props: any) {
                   <li className="ml-2">
                     <button
                       className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
-                      onClick={loginWithRedirect}
+                      onClick={() =>
+                        loginWithRedirect({
+                          appState: { returnTo: `/${APP_PREFIX}/dashboard` },
+                        })
+                      }
                     >
                       Sign in
                     </button>
@@ -40,7 +44,7 @@ export default function LandingPage(props: any) {
                   <li className="ml-2">
                     <button
                       className="outline-none px-2 py-3 text-white font-semibold tracking-wide text-base hover:text-blue-200"
-                      onClick={loginWithPopup}
+                      onClick={() => loginWithPopup()}
                     >
                       Sign up
                     </button>
