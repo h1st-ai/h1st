@@ -16,6 +16,8 @@ import { getFullUrl } from "utils";
 import { Link } from "react-router-dom";
 import { APP_PREFIX } from "config";
 import { useAuth0 } from "@auth0/auth0-react";
+import LoadingIndicator from "components/loading-indicator";
+import styles from "./styles.module.css";
 
 const numeral = require("numeral");
 export interface ImageClassiferWidgetProps {
@@ -31,6 +33,7 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState(0);
+  const [loadingImage, setLoadingImage] = useState(false);
   const [result, setResult] = useState([]);
   const [previewSrc, setPreviewSrc] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -48,9 +51,11 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
   };
 
   const onDrop = useCallback((acceptedFiles) => {
+    setLoadingImage(true);
     var reader = new FileReader();
 
     reader.onload = function (e) {
+      setLoadingImage(false);
       // @ts-ignore
       setPreviewSrc(e.target.result);
     };
@@ -229,6 +234,16 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
           <div className="input-output-wrapper flex">
             <section className="ui-input py-5 pl-5 pr-2.5 w-1/2 mr-2">
               <h3 className="font-semibold text-blue-800 mb-4">Input</h3>
+              {loadingImage && (
+                <div
+                  className={klass(
+                    styles["preview-holder"],
+                    "relative w-full rounded-lg flex items-center justify-center bg-gray-100 box-border"
+                  )}
+                >
+                  <LoadingIndicator />
+                </div>
+              )}
               {acceptedFiles.length > 0 && previewImgEl && (
                 <div>
                   <img
@@ -361,19 +376,16 @@ export default function ImageClassifer({ model }: ImageClassiferWidgetProps) {
                     </svg>
 
                     <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-800 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                      >
-                        <span className="inline-block mr-1">Browse</span>
-                        <input
-                          id="file-upload"
-                          name="file-upload"
-                          type="file"
-                          ref={fileRef}
-                          {...getInputProps()}
-                        />
-                      </label>{" "}
+                      <span className="inline-block mr-1 relative cursor-pointer bg-white rounded-md font-medium text-blue-800 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                        Browse
+                      </span>
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        ref={fileRef}
+                        {...getInputProps()}
+                      />
                       or drag and drop an image to classify
                     </div>
                     <p className="text-xs text-gray-500">
