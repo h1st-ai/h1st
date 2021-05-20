@@ -155,8 +155,8 @@ export default function UploadForm() {
     if (acceptedFiles && acceptedFiles.length === 0) {
       dispatch(
         showMessage({
-          title: "Missing file",
-          message: "No file accepted",
+          title: "Incorrect file type",
+          message: "Please upload a zip file",
           messageType: MessageType.ERROR,
         })
       );
