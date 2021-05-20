@@ -11,7 +11,7 @@ import { APP_PREFIX } from "config";
 import GlobalMessageDialog from "components/global-dialog";
 import { showMessage } from "features/upload_model/uploadSlice";
 
-const navigation = [{ label: "Your Models", url: `/${APP_PREFIX}/dashboard` }];
+const navigation = [{ label: "My Models", url: `/${APP_PREFIX}/dashboard` }];
 const profile = ["Sign out"];
 
 function classNames(...classes: any) {
