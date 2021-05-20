@@ -615,8 +615,9 @@ export default function UploadForm() {
                         </label>
                       </div>
                       <p className="text-sm text-gray-500">
-                        <span className="text-blue-600">Select file</span> or
-                        drag and drop a file here to upload (limit: 600MB)
+                        <span>
+                          Upload your model package in zip format (limit: 600MB)
+                        </span>
                       </p>
                       {acceptedFiles.length > 0 && (
                         <aside>
