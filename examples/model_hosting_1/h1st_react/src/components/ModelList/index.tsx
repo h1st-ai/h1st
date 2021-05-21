@@ -2,16 +2,14 @@ import React, { useState } from "react";
 // import { ExternalLinkIcon } from "@heroicons/react/solid";
 import { useAppSelector, useAppDispatch } from "app/hooks";
 import klass from "classnames";
-import {
-  selectModels,
-  setModels,
-  showUploadForm,
-} from "features/upload_model/uploadSlice";
+import { selectModels, setModels } from "features/upload_model/uploadSlice";
 import { useAuth0 } from "@auth0/auth0-react";
 import { PlusIcon } from "@heroicons/react/solid";
 import { Illustration } from "components/Illustration";
 import { getFullUrl } from "utils";
 import LoadingIndicator from "components/loading-indicator";
+import { APP_PREFIX } from "config";
+import { useHistory } from "react-router";
 
 const axios = require("axios").default;
 
@@ -19,6 +17,7 @@ export default function ModelList() {
   const [loaded, setLoaded] = useState<boolean>(false);
   const models = useAppSelector(selectModels);
   const dispatch = useAppDispatch();
+  const history = useHistory();
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -57,7 +56,7 @@ export default function ModelList() {
           It's a little bit empty here
         </p>
         <button
-          onClick={() => dispatch(showUploadForm())}
+          onClick={() => history.push(`/${APP_PREFIX}/upload`)}
           type="button"
           className="mb-10 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
