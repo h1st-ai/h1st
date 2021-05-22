@@ -111,7 +111,7 @@ export default function ModelList() {
                     key={model.id}
                     className={modelIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs overflow-ellipsis overflow-hidden">
                       <a
                         href={getFullUrl(
                           `/application/${model.model_id}/execute`
@@ -123,7 +123,7 @@ export default function ModelList() {
                         {model.name}
                       </a>
                     </td>
-                    <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 text-sm text-gray-500">
+                    <td className="overflow-ellipsis overflow-hidden flex-wrap max-w-sm px-6 py-4 text-sm text-gray-500 max-w-sm overflow-ellipsis overflow-hidden">
                       {model.description}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
