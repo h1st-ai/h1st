@@ -1,7 +1,6 @@
 from .mocked.model_step import H1ModelStep
 
 from PIL import Image, ImageOps
-from loguru import logger
 
 import base64
 import os
@@ -11,14 +10,13 @@ import numpy as np
 import requests
 
 from .model_manager import TensorFlowModelManager
+from .model_saver import ModelSaver
 
+import logging
+logger = logging.getLogger(__name__)
 
 TENSORFLOW_SERVER = os.getenv("TENSORFLOW_SERVER", "http://localhost:8501/v1/models")
 PYTORCH_SERVER = os.getenv("PYTORCH_SERVER", "http://localhost:8080")
-
-# Path 
-MODEL_EXT_PATH = os.getenv("MODEL_EXT_PATH", "model_repo")
-TF_PATH = "{}/tensorflow_models".format(MODEL_EXT_PATH)
 
 # Need to set the right number,
 # given that the complex models may need a bit time to run 
@@ -26,7 +24,7 @@ TIMEOUT = 100 # seconds
 
 class ModelExecutor:
     @staticmethod
-    def execute(model_step: H1ModelStep, input_data, input_type, spec={}):
+    def execute(model_step: H1ModelStep, input_data, input_type, config={}, spec={}):
         if model_step.model_platform == 'tensorflow':
             return TensorFlowModelExecutor.execute(model_step.model_id, input_data, input_type=input_type, spec=spec)
         if model_step.model_platform == 'pytorch':
@@ -69,7 +67,29 @@ class TensorFlowModelExecutor:
         return ret
     
     @staticmethod
-    def execute(model_name, input_data, input_type='text', spec={}):
+    def send_prediction_request(server_url, model_name, predict_request, config):
+        response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+        if response.status_code == 404:
+            logger.info('Model not found in TFServing. Re-register the model and request again')
+            
+            saver = ModelSaver.get_saver(config.FILE_SYSTEM)
+            base_path = config.FILE_SYSTEM_PREFIX + '{}/{}'.format(config.TF_PATH, model_name)
+            if saver.exists(base_path):
+                if TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path=base_path):
+                    response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
+                    response.raise_for_status()
+                    logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
+            else:
+                logger.info('Model not found in TFServing')
+                raise RuntimeError('Model not found')
+        else:
+            response.raise_for_status()
+
+        return response.json()
+
+    @staticmethod
+    def execute(model_name, input_data, input_type='text', config={}, spec={}):
         logger.info('Execute model {}'.format(model_name))
         server_url = '{host}/{model_name}:predict'.format(host=TENSORFLOW_SERVER, model_name=model_name)
 
@@ -119,24 +139,10 @@ class TensorFlowModelExecutor:
             # Send request
             # TODO: Retry up to N times?
             # TODO: Check for error and return proper message
-            response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
-            logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
-            if response.status_code == 404:
-                logger.info('Model not found in TFServing. Re-register the model and request again')
-                destination = '{}/{}'.format(TF_PATH, model_name)
-                
-                if os.path.exists(destination):
-                    if TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name)):
-                        response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
-                        response.raise_for_status()
-                        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
-                else:
-                    logger.info('Model not found in TFServing')
-                    raise RuntimeError('Model not found')
-            else:
-                response.raise_for_status()
             
-            prediction = response.json()['predictions'][0]
+            response = TensorFlowModelExecutor.send_prediction_request(server_url, model_name, predict_request, config)
+            
+            prediction = response['predictions'][0]
             logger.debug(len(prediction))
             if 'classes' in prediction:
                 # This is for Resnet with `image_bytes` input
@@ -147,25 +153,10 @@ class TensorFlowModelExecutor:
         elif input_type=='text':
             # text input
             predict_request = '{"inputs" : ["%s"]}' % input_data
-            # TODO: Retry up to N times?
-            # TODO: Check for error and return proper message
-            response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
-            logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
-            if response.status_code == 404:
-                logger.info('Model not found in TFServing. Re-register the model and request again')
-                destination = '{}/{}'.format(TF_PATH, model_name)
-                if os.path.exists(destination):
-                    if TensorFlowModelManager.register_new_model_grpc(name=model_name, base_path="/models/{}/".format(model_name)):
-                        response = requests.post(server_url, data=predict_request, timeout=TIMEOUT)
-                        response.raise_for_status()
-                        logger.info('Response time: %d seconds' % response.elapsed.total_seconds())
-                else:
-                    logger.info('Model not found in TFServing')
-                    raise RuntimeError('Model not found')
-            else:
-                response.raise_for_status()
             
-            prediction = response.json()['outputs']
+            response = TensorFlowModelExecutor.send_prediction_request(server_url, model_name, predict_request, config)
+            
+            prediction = response['outputs']
             # TODO: We must read the signature spec and extract outputs correspondingly
             if model_name == 'sentiment_analysis':
                 prediction = prediction['prediction']

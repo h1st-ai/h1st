@@ -6,7 +6,8 @@ from tensorflow_serving.apis import model_management_pb2
 import grpc
 import requests
 import os
-from loguru import logger
+import logging
+logger = logging.getLogger(__name__)
 
 TENSORFLOW_GRPC_SERVER = os.getenv("TENSORFLOW_GRPC_SERVER", "127.0.0.1:8500")
 
