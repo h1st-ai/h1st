@@ -16,20 +16,24 @@ from zipfile import ZipFile
 import tensorflow as tf
 import logging
 
+from .model_saver import ModelSaver
 from .model_manager import TensorFlowModelManager
 from h1st_api.models import ModelClass
 
 from h1st_api.models import AIModel
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 class Upload(APIView):
     def __init__(self):
         super().__init__()
-        self.UPLOAD_PATH = "uploaded"
-        self.MODEL_EXT_PATH = "model_repo"
-        self.TF_PATH = "{}/tensorflow_models".format(self.MODEL_EXT_PATH)
-        self.TF_MODEL_CONFIG = "{}/models.config".format(self.TF_PATH)
-        self.TF_MODEL_IO_FILE = "model-io.json"
+        self.FILE_SYSTEM = settings.FILE_SYSTEM  # local, s3
+        self.FILE_SYSTEM_PREFIX = settings.FILE_SYSTEM_PREFIX
+        self.UPLOAD_PATH = settings.UPLOAD_PATH
+        # self.MODEL_PATH_PREFIX = settings.MODEL_PATH_PREFIX
+        self.TF_PATH = settings.TF_PATH
+        # self.TF_MODEL_CONFIG = "{}/models.config".format(self.TF_PATH)
+        self.TF_MODEL_IO_FILE = settings.TF_MODEL_IO_FILE
     
     def get(self, request, format=None):
         """
@@ -122,25 +126,27 @@ class Upload(APIView):
                 }
             })      
 
-    def create_model_config(self):
-        os.mkdir(self.MODEL_EXT_PATH)
-        os.mkdir(self.TF_PATH)
-        with open(self.TF_MODEL_CONFIG, 'a') as out:
-            out.write(f'model_config_list {{}}' + '\n')
+    # def create_model_config(self):
+    #     os.mkdir(self.MODEL_PATH_PREFIX)
+    #     os.mkdir(self.TF_PATH)
+    #     with open(self.TF_MODEL_CONFIG, 'a') as out:
+    #         out.write(f'model_config_list {{}}' + '\n')
     
     def deploy_tf_model(self, dir_name, file_path, model_type = ModelClass.TF):
+        logger.info('Deploying TF model {}'.format(dir_name))
         if model_type == ModelClass.TF :
             # check to see if the directory exist
-            if not os.path.exists(self.MODEL_EXT_PATH):
-                self.create_model_config()
+            # if not os.path.exists(self.MODEL_PATH_PREFIX):
+            #     self.create_model_config()
 
             destination = '{}/{}'.format(self.TF_PATH, dir_name)
+            logger.debug('Destination folder: {}'.format(destination))
             
             try:
                 with ZipFile(file_path, 'r') as Z:
                     # Search for model-io.json
                     folder = None
-                    # logging.debug(Z.namelist())
+                    # logger.debug(Z.namelist())
                     for elem in Z.namelist():
                         if '/' + self.TF_MODEL_IO_FILE in elem or elem == self.TF_MODEL_IO_FILE:
                             folder = elem.split('/')[:-1]
@@ -161,12 +167,12 @@ class Upload(APIView):
                 # Search for a folder with SavedModel artifacts
                 items = os.listdir(destination)
                 folders = [item for item in items if os.path.isdir(os.path.join(destination, item))]
-                logging.debug(folders)
+                logger.debug(folders)
                 # search for folder with saved_model.pb file
                 model_folder = None
                 for _, folder in enumerate(folders):
                     folder_items = os.listdir(os.path.join(destination, folder))
-                    logging.debug(folder_items)
+                    logger.debug(folder_items)
                     if 'saved_model.pb' in folder_items or 'saved_model.pbtxt' in folder_items:
                         model_folder = folder
                         break
@@ -182,31 +188,41 @@ class Upload(APIView):
                 # For now, we assume the default `serving_default` signature and only 1 input
                 # Any error will be thrown
                 # TODO: capture and throw the right error
-                logging.debug('Try loading model and get prediction.')
+                logger.info('Try loading model and get prediction.')
                 loaded_model = tf.saved_model.load(new_folder_name)
                 if 'serving_default' in loaded_model.signatures:
-                    logging.debug('serving_default signature found.')
+                    logger.debug('serving_default signature found.')
                     infer = loaded_model.signatures['serving_default']
-                    logging.debug(infer.structured_input_signature)
+                    logger.debug(infer.structured_input_signature)
                     input_key = list(infer.structured_input_signature[1])[0]
-                    logging.debug(infer.structured_input_signature)
+                    logger.debug(infer.structured_input_signature)
                     shape = infer.structured_input_signature[1][input_key].shape.as_list()
                     shape = [d if d is not None else 1 for d in shape]
-                    # logging.debug(infer(tf.ones(shape)).keys())
-                    # logging.debug('Successfully load and generate prediction')
+                    # logger.debug(infer(tf.ones(shape)).keys())
+                    # logger.debug('Successfully load and generate prediction')
 
-                # consider deleting the uploaded file at this point
-                # TensorFlowModelManager.register_new_model(conf_filepath=self.TF_MODEL_CONFIG, name=dir_name, base_path="/models/{}/".format(dir_name))
-                if os.path.exists(destination):
-                    logging.debug('Registering the model with TFServing')
-                    TensorFlowModelManager.register_new_model_grpc(name=dir_name, base_path="/models/{}/".format(dir_name))
+                # Save the directory to the corresponding location
+                # for example s3 if the target file system is not local
+                saver = ModelSaver.get_saver(self.FILE_SYSTEM)
+                ret = saver.save(destination, self.FILE_SYSTEM_PREFIX + destination)
+                if not ret['success']:
+                    raise RuntimeError(ret['message'])
+                
+                # Register the model
+                base_path = self.FILE_SYSTEM_PREFIX + destination
+                if saver.exists(base_path):
+                    logger.info('Registering the model with TFServing')
+                    TensorFlowModelManager.register_new_model_grpc(name=dir_name, base_path=base_path)
                 else:
-                    ex = 'No model directory exist at %s' % destination
+                    ex = 'No model directory exist at %s' % base_path
                     capture_exception(ex)
                     raise RuntimeError(ex)
                 
                 # read model.io.json
                 config_data = self.handle_modelio_json(path='{}/{}/{}'.format(self.TF_PATH, dir_name, self.TF_MODEL_IO_FILE))
+
+                # if self.FILE_SYSTEM != 'local':
+                #     shutil.rmtree(destination)
 
                 # remove zip file
                 # os.remove(file_path)
@@ -219,8 +235,8 @@ class Upload(APIView):
                 logger.info(ex)          # __str__ allows args to be printed directly,
                 
                 # Remove the extracted folder
-                if os.path.exists(destination):
-                    shutil.rmtree(destination)
+                # if os.path.exists(destination):
+                #     shutil.rmtree(destination)
                 return {'success': False, 'message': ex.__str__}, None
         
         return {'success': False, 'message': 'Unsupported model type'}, None

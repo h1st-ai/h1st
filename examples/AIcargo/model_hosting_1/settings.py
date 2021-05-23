@@ -217,3 +217,11 @@ LOGGING = {
         },
     },
 }
+
+FILE_SYSTEM = os.environ.get('FILE_SYSTEM', 'local')
+FILE_SYSTEM_PREFIX = os.environ.get('FILE_SYSTEM_PREFIX', './')
+UPLOAD_PATH = os.environ.get('UPLOAD_PATH', 'uploaded')
+MODEL_PATH_PREFIX = os.environ.get('MODEL_PATH_PREFIX', 'model_repo')
+TF_PATH = "{}/tensorflow_models".format(MODEL_PATH_PREFIX)
+TF_MODEL_IO_FILE = os.environ.get('TF_MODEL_IO_FILE', 'model-io.json')
+TF_MODEL_CONFIG = "{}/models.config".format(TF_PATH)
