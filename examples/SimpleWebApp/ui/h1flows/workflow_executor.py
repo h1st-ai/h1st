@@ -1,2 +1,0 @@
-class WorkflowExecutor:
-    pass

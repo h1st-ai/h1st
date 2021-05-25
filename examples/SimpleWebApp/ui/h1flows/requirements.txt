@@ -1,5 +1,0 @@
-Django
-protobuf
-requests
-loguru
-tensorflow-serving-api
