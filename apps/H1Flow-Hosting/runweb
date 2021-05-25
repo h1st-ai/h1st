@@ -1,9 +1,0 @@
-#!/bin/bash
-#
-# H1st customizations are in:
-#   frameworks/django/project/__init__.py
-#   frameworks/django/project/__init__.py
-#   frameworks/django/project/urls.py
-#
-
-python ui/frameworks/django/manage.py runserver
