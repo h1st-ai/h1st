@@ -1,3 +1,0 @@
-#!/bin/bash
-cd /Users/ctn/src/h1st-ai/h1st/examples/SimpleApp
-python manage.py runserver
