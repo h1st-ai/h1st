@@ -4,7 +4,7 @@ Storage module
 Provide a generic API to interact with different storage system. The storage can
 read and write raw bytes or python objects It currently supports local disk and S3.::
 
-   from h1st.model_repository.storage import LocalStorage
+   from h1st.model.repository.storage import LocalStorage
 
    storage = LocalStorage(local_path)
    # save and retrive a dataframe to disk
@@ -14,8 +14,8 @@ read and write raw bytes or python objects It currently supports local disk and 
 
 """
 
-from h1st.model_repository.storage.local import LocalStorage
-from h1st.model_repository.storage.s3 import S3Storage
+from h1st.model.repository.storage.local import LocalStorage
+from h1st.model.repository.storage.s3 import S3Storage
 
 
 def create_storage(storage):
