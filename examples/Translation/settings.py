@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # this app's Django modules
-    'translation'
+    # ...
 ]
 
 MIDDLEWARE = [
