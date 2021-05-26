@@ -1,5 +1,5 @@
 from typing import Dict
-from h1st.core.exception import GraphException
+from h1st.exceptions.exception import GraphException
 # from h1st.schema.schema_validator import SchemaValidator
 # from h1st.schema.schema_validation_result import SchemaValidationResult
 
