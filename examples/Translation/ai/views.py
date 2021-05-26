@@ -8,7 +8,7 @@ from .models.google_cloud import GoogleLanguageTranslationModel
 
 @permission_classes([AllowAny])
 class TranslationModelAPIView(APIView):
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         model = GoogleLanguageTranslationModel()
         result = model.predict(request.data, target='fr')
         return Response(result)
