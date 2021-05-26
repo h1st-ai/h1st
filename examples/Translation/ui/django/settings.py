@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/dev/ref/settings
 """
 
 
-from djai.util.config import parse_config_file
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist
 
@@ -99,7 +96,6 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
-    'default': parse_config_file()['db']
 }
 
 
