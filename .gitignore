@@ -14,6 +14,7 @@ develop-eggs/
 dist/
 downloads/
 examples/*/models
+examples/*/model_repo
 eggs/
 .eggs/
 lib/
@@ -149,3 +150,8 @@ flake8.txt
 
 # misc/other
 .DS_Store
+
+
+node_modules
+examples/ModelHosting/uploaded/**
+/examples/AIcargo/uploaded

@@ -1,0 +1,78 @@
+version: "3"
+
+services:
+    # proxy:
+    #     image: traefik:v2.4.2
+    #     command:
+    #         # - "--log.level=DEBUG"
+    #         - "--api"
+    #         - "--api.dashboard"
+    #         # - "--api.insecure" # Don't do that in production
+    #         - "--providers.docker"
+    #         - "--entrypoints.web.address=:80"
+    #         # --entrypoints.web.address=:80
+    #         # - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+    #         # - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+    #         # - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+    #         # - "--entrypoints.websecure.address=:443"
+    #     volumes:
+    #         - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    #     ports:
+    #         - "80:80"
+    #         - "9000:8080"
+    # web:
+    #     build: 
+    #         context: ./h1st_react
+
+    #     # command: serve -s build
+    #     ports:
+    #         - "5000:5000"
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.web.rule=PathPrefix(`/aicargo`)"
+    #         - "traefik.http.routers.web.entrypoints=web"
+    #         - "traefik.http.routers.web.middlewares=web-stripprefix"
+    #         - "traefik.http.middlewares.web-stripprefix.stripprefix.prefixes=/aicargo"
+    #         - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
+    # api:
+    #     build: .
+    #     # command: python manage.py runserver 0.0.0.0:8000
+    #     ports:
+    #         - "8000:8000"
+    #     labels:
+    #         - "traefik.enable=true"
+    #         - "traefik.http.routers.api.rule=PathPrefix(`/aicargo/api`)"
+    #         - "traefik.http.routers.api.entrypoints=web"
+    #         - "traefik.http.routers.api.middlewares=api-stripprefix"
+    #         - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/aicargo"
+    #         - "traefik.http.middlewares.api-stripprefix.stripprefix.forceslash=true"
+    #     environment:
+    #         - TENSORFLOW_SERVER=http://tf_serving:8501/v1/models
+    #         - TENSORFLOW_GRPC_SERVER=tf_serving:8500
+    #         - PYTORCH_SERVER=http://pt_serving:8080
+    #     volumes: 
+    #         - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
+    #         - ./uploaded:/app/uploaded
+    tf_serving:
+        ports:
+            - "8501:8501"
+            - "8500:8500"
+        volumes:
+            - ./model_repo/tensorflow_models/:/models/
+        image: tensorflow/serving
+        # Temporarily disable prometheus because somehow it blocks port 8501
+        # command: --model_config_file=/models/models.config --monitoring_config_file=/monitoring/prometheus.config
+        command: --model_config_file=/models/models.config
+    pt_serving:
+        ports:
+            - "8080:8080"
+            - "8081:8081"
+        volumes:
+            - ./model_repo/pytorch_models:/home/model-server/model-store
+        image: pytorch/torchserve
+    # database:
+    #     image: "postgres" 
+    #     environment:
+    #     - database.env # configure postgres
+    #     volumes:
+    #         - database-data:/var/lib/postgresql/data/

@@ -1,0 +1,21 @@
+/* loading animation */
+.progress-bar { 
+    @apply bg-gray-200 rounded overflow-hidden block mt-4; 
+    width: 100%;
+    max-width: 16rem;
+}
+
+.progress-bar-content {
+    display: block;
+    height: 100%;
+    @apply bg-blue-700 rounded;
+    transform-origin: 0;
+    /* animation: grow 10s linear; */
+    transform: scaleX(0%);
+}
+
+    @keyframes grow {
+        0% {
+        transform: scaleX(0)
+        }
+    }
