@@ -13,7 +13,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 
-from .google_cloud import LanguageTranslationModel
+from ...model.ml_model import MLModel
 
 class TransformerEncoder(layers.Layer):
     def __init__(self, embed_dim, dense_dim, num_heads, **kwargs):
@@ -121,7 +121,7 @@ class TransformerDecoder(layers.Layer):
         )
         return tf.tile(mask, mult)
 
-class En2SpaSeq2SeqTransformer(LanguageTranslationModel):
+class Seq2SeqTransformer(MLModel):
     def __init__(self, vocab_size = 15000, sequence_length = 20, batch_size = 64, embed_dim=256, latent_dim=2048, num_heads = 8):
         self.sequence_length = sequence_length
         self.vocab_size = vocab_size
@@ -145,16 +145,8 @@ class En2SpaSeq2SeqTransformer(LanguageTranslationModel):
             [encoder_inputs, decoder_inputs], decoder_outputs, name="transformer"
         )
 
-    def load_data(self):
-        text_file = keras.utils.get_file(
-            fname="spa-eng.zip",
-            origin="http://storage.googleapis.com/download.tensorflow.org/data/spa-eng.zip",
-            extract=True,
-        )
-        text_file = pathlib.Path(text_file).parent / "spa-eng" / "spa.txt"
-
-        print(text_file)
-
+    def load_data(self, text_file):
+        
         with open(text_file) as f:
             lines = f.read().split("\n")[:-1]
         text_pairs = []
@@ -177,15 +169,16 @@ class En2SpaSeq2SeqTransformer(LanguageTranslationModel):
 
         return train_pairs, val_pairs, test_pairs
 
-    def prep_data(self, train_pairs, val_pairs):
-        strip_chars = string.punctuation + "¿"
-        strip_chars = strip_chars.replace("[", "")
-        strip_chars = strip_chars.replace("]", "")
+    def prep_data(self, data):
+        train_pairs, val_pairs = data
+        
+        self.strip_chars = self.strip_chars.replace("[", "")
+        self.strip_chars = self.strip_chars.replace("]", "")
 
 
         def custom_standardization(input_string):
             lowercase = tf.strings.lower(input_string)
-            return tf.strings.regex_replace(lowercase, "[%s]" % re.escape(strip_chars), "")
+            return tf.strings.regex_replace(lowercase, "[%s]" % re.escape(self.strip_chars), "")
 
 
         self.eng_vectorization = TextVectorization(
