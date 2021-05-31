@@ -2,7 +2,7 @@ from ..model import Model as H1stModel
 
 
 class GoogleCloudTranslateModel(H1stModel):
-    def predict(self, text, src_lang='en', target_lang='fr'):
+    def predict(self, text, src_lang='en', target_lang='es'):
         from google.cloud import translate_v2 as translate
 
         translate_client = translate.Client()
