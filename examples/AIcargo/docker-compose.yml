@@ -10,7 +10,6 @@ services:
             # - "--api.insecure" # Don't do that in production
             - "--providers.docker"
             - "--entrypoints.web.address=:80"
-            # - "--entrypoints.translate_web.address=:80"
             - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
             - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
             - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
@@ -24,7 +23,6 @@ services:
     web:
         build: 
             context: ./h1st_react
-        # command: serve -s build
         ports:
             - "5000:5000"
         labels:
@@ -62,29 +60,31 @@ services:
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded
     translate_web:
-        build: ../../../H1st-AI-App-Templates/h1st-with-model-io-mapping-ui/react_ui
+        build: ../../../h1st-ai-app-templates/h1st-with-model-io-mapping-ui/react_ui
         # command: serve -s build
         ports:
             - "3003:3003"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.translate_web.rule=PathPrefix(`/translate`)"
-            - "traefik.http.routers.translate_web.entrypoints=translate_web"
-            - "traefik.http.routers.translate_web.middlewares=translate-web-stripprefix"
-            - "traefik.http.middlewares.translate-web-stripprefix.stripprefix.prefixes=/translate"
-            - "traefik.http.middlewares.translate-web-stripprefix.stripprefix.forceslash=true"
+            - "traefik.http.routers.web.rule=PathPrefix(`/translate`)"
+            - "traefik.http.routers.web.entrypoints=web"
+            - "traefik.http.routers.web.middlewares=web-stripprefix"
+            - "traefik.http.middlewares.web-stripprefix.stripprefix.prefixes=/translate"
+            - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
+        environment:
+            - PUBLIC_URL=translate
+            - REACT_APP_AI_WORKFLOW_URL=${REACT_APP_AI_WORKFLOW_URL}
     translate_api:
-        build: ../../../H1st-AI-App-Templates/h1st-with-model-io-mapping-ui
-        # command: python manage.py runserver 0.0.0.0:8000
+        build: ../../../h1st-ai-app-templates/h1st-with-model-io-mapping-ui
         ports:
             - "8008:8008"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.translate_api.rule=PathPrefix(`/translate/api`)"
-            - "traefik.http.routers.translate_api.entrypoints=translate_web"
-            - "traefik.http.routers.translate_api.middlewares=translate-api-stripprefix"
-            - "traefik.http.middlewares.translate-api-stripprefix.stripprefix.prefixes=/translate"
-            - "traefik.http.middlewares.translate-api-stripprefix.stripprefix.forceslash=true"
+            - "traefik.http.routers.api.rule=PathPrefix(`/translate/h1st`)"
+            - "traefik.http.routers.api.entrypoints=web"
+            - "traefik.http.routers.api.middlewares=api-stripprefix"
+            - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/translate"
+            - "traefik.http.middlewares.api-stripprefix.stripprefix.forceslash=true"
         environment:
             - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
     tf_serving:
@@ -104,4 +104,3 @@ services:
         volumes:
             - ./model_repo/pytorch_models:/home/model-server/model-store
         image: pytorch/torchserve
-# 
