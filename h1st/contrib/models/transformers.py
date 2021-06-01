@@ -2,7 +2,6 @@
 Source: https://keras.io/examples/nlp/neural_machine_translation_with_transformer/
 """
 import os
-import versionlib
 import random
 import string
 import re
@@ -158,9 +157,10 @@ class Seq2SeqTransformer(MLModel):
             lines = f.read().split("\n")[:-1]
         text_pairs = []
         for line in lines:
-            eng, spa = line.split("\t")
-            spa = "[start] " + spa + " [end]"
-            text_pairs.append((eng, spa))
+            if 'Hello' in line or 'hello' in line:
+                eng, spa = line.split("\t")
+                spa = "[start] " + spa + " [end]"
+                text_pairs.append((eng, spa))
 
         random.shuffle(text_pairs)
         num_val_samples = int(0.15 * len(text_pairs))
@@ -228,7 +228,6 @@ class Seq2SeqTransformer(MLModel):
     
     def train(self, data, epochs=30):
         train_ds, val_ds = data
-        epochs = 1  # This should be at least 30 for convergence
 
         self.base_model.summary()
         self.base_model.compile(
@@ -254,7 +253,7 @@ class Seq2SeqTransformer(MLModel):
         #             , open(f"{version}/sv_layer.pkl", "wb"))
 
         
-        self.model.save(model_version)
+        self.base_model.save(model_version)
 
     def load(self, version):
 
@@ -273,7 +272,7 @@ class Seq2SeqTransformer(MLModel):
         train_pairs, val_pairs, _ = self.load_data(verbose=False)
         train_ds, val_ds = self.prep_data(data=(train_pairs, val_pairs))
 
-        self.model = tf.saved_model.load(f"{version}/model")
+        self.base_model = tf.saved_model.load(f"{version}/model")
 
     def predict(self, text):
         spa_vocab = self.spa_vectorization.get_vocabulary()
