@@ -122,7 +122,14 @@ class TransformerDecoder(layers.Layer):
         return tf.tile(mask, mult)
 
 class Seq2SeqTransformer(MLModel):
-    def __init__(self, vocab_size = 15000, sequence_length = 20, batch_size = 64, embed_dim=256, latent_dim=2048, num_heads = 8):
+    def __init__(self, vocab_size = 15000, 
+                       sequence_length = 20, 
+                       batch_size = 64, 
+                       embed_dim=256, 
+                       latent_dim=2048, 
+                       num_heads = 8,
+                       **kwargs
+                    ):
         self.sequence_length = sequence_length
         self.vocab_size = vocab_size
         self.batch_size = batch_size
