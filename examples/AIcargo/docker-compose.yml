@@ -59,6 +59,21 @@ services:
         volumes: 
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded
+    translate_api:
+        build: ../../../h1st-ai-app-templates/h1st-with-model-io-mapping-ui
+        ports:
+            - "8008:8008"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.tapi.rule=PathPrefix(`/translate/h1st`)"
+            - "traefik.http.routers.tapi.priority=500"
+            - "traefik.http.routers.tapi.entrypoints=web"
+            - "traefik.http.routers.tapi.middlewares=tapi-stripprefix"
+            - "traefik.http.middlewares.tapi-stripprefix.stripprefix.prefixes=/translate"
+            - "traefik.http.middlewares.tapi-stripprefix.stripprefix.forceslash=true"
+        environment:
+            - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+
     translate_web:
         build: ../../../h1st-ai-app-templates/h1st-with-model-io-mapping-ui/react_ui
         # command: serve -s build
@@ -66,27 +81,16 @@ services:
             - "3003:3003"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.web.rule=PathPrefix(`/translate`)"
-            - "traefik.http.routers.web.entrypoints=web"
-            - "traefik.http.routers.web.middlewares=web-stripprefix"
-            - "traefik.http.middlewares.web-stripprefix.stripprefix.prefixes=/translate"
-            - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
+            - "traefik.http.routers.tweb.rule=PathPrefix(`/translate`, `/translate/static`)"
+            - "traefik.http.routers.tweb.priority=9"
+            - "traefik.http.routers.tweb.entrypoints=web"
+            - "traefik.http.routers.tweb.middlewares=tweb-stripprefix"
+            - "traefik.http.middlewares.tweb-stripprefix.stripprefix.prefixes=/translate"
+            - "traefik.http.middlewares.tweb-stripprefix.stripprefix.forceslash=true"
         environment:
             - PUBLIC_URL=translate
             - REACT_APP_AI_WORKFLOW_URL=${REACT_APP_AI_WORKFLOW_URL}
-    translate_api:
-        build: ../../../h1st-ai-app-templates/h1st-with-model-io-mapping-ui
-        ports:
-            - "8008:8008"
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.api.rule=PathPrefix(`/translate/h1st`)"
-            - "traefik.http.routers.api.entrypoints=web"
-            - "traefik.http.routers.api.middlewares=api-stripprefix"
-            - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/translate"
-            - "traefik.http.middlewares.api-stripprefix.stripprefix.forceslash=true"
-        environment:
-            - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+    
     tf_serving:
         ports:
             - "8501:8501"
