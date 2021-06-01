@@ -2,6 +2,7 @@
 Source: https://keras.io/examples/nlp/neural_machine_translation_with_transformer/
 """
 import os
+from pathlib import Path
 import random
 import string
 import re
@@ -237,8 +238,9 @@ class Seq2SeqTransformer(MLModel):
         self.base_model.fit(train_ds, epochs=epochs, validation_data=val_ds)
 
     def persist(self, version):
-        model_version = f"{version}/model"
-        os.makedirs(model_version, exist_ok=True)
+        home = str(Path.home())
+        model_path = f"{home}/.models/{version}/model"
+        os.makedirs(model_path, exist_ok=True)
 
         # # Pickle the English Vectorization's config and weights
         # config, weights = self.eng_vectorization.get_config(), self.eng_vectorization.get_weights()
@@ -253,7 +255,7 @@ class Seq2SeqTransformer(MLModel):
         #             , open(f"{version}/sv_layer.pkl", "wb"))
 
         
-        self.base_model.save(model_version)
+        self.base_model.save(model_path)
 
     def load(self, version):
 
@@ -272,7 +274,9 @@ class Seq2SeqTransformer(MLModel):
         train_pairs, val_pairs, _ = self.load_data(verbose=False)
         train_ds, val_ds = self.prep_data(data=(train_pairs, val_pairs))
 
-        self.base_model = tf.saved_model.load(f"{version}/model")
+        home = str(Path.home())
+        model_path = f"{home}/.models/{version}/model"
+        self.base_model = tf.saved_model.load(model_path)
 
     def predict(self, text):
         spa_vocab = self.spa_vectorization.get_vocabulary()
