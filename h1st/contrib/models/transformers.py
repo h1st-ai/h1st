@@ -2,7 +2,7 @@
 Source: https://keras.io/examples/nlp/neural_machine_translation_with_transformer/
 """
 import os
-import pathlib
+import versionlib
 import random
 import string
 import re
@@ -152,7 +152,7 @@ class Seq2SeqTransformer(MLModel):
             [encoder_inputs, decoder_inputs], decoder_outputs, name="transformer"
         )
 
-    def load_data(self, text_file):
+    def load_data(self, text_file, verbose=True):
         
         with open(text_file) as f:
             lines = f.read().split("\n")[:-1]
@@ -169,10 +169,11 @@ class Seq2SeqTransformer(MLModel):
         val_pairs = text_pairs[num_train_samples : num_train_samples + num_val_samples]
         test_pairs = text_pairs[num_train_samples + num_val_samples :]
 
-        print(f"{len(text_pairs)} total pairs")
-        print(f"{len(train_pairs)} training pairs")
-        print(f"{len(val_pairs)} validation pairs")
-        print(f"{len(test_pairs)} test pairs")
+        if verbose:
+            print(f"{len(text_pairs)} total pairs")
+            print(f"{len(train_pairs)} training pairs")
+            print(f"{len(val_pairs)} validation pairs")
+            print(f"{len(test_pairs)} test pairs")
 
         return train_pairs, val_pairs, test_pairs
 
@@ -236,40 +237,43 @@ class Seq2SeqTransformer(MLModel):
 
         self.base_model.fit(train_ds, epochs=epochs, validation_data=val_ds)
 
-    def persist(self, path):
-        model_path = f"{path}/model"
-        os.makedirs(model_path, exist_ok=True)
+    def persist(self, version):
+        model_version = f"{version}/model"
+        os.makedirs(model_version, exist_ok=True)
 
-        # Pickle the English Vectorization's config and weights
-        config, weights = self.eng_vectorization.get_config(), self.eng_vectorization.get_weights()
-        pickle.dump({'config': config,
-                    'weights': weights}
-                    , open(f"{path}/ev_layer.pkl", "wb"))
+        # # Pickle the English Vectorization's config and weights
+        # config, weights = self.eng_vectorization.get_config(), self.eng_vectorization.get_weights()
+        # pickle.dump({'config': config,
+        #             'weights': weights}
+        #             , open(f"{version}/ev_layer.pkl", "wb"))
 
-        # Pickle the Spanish Vectorization's config and weights
-        config, weights = self.spa_vectorization.get_config(), self.spa_vectorization.get_weights()
-        pickle.dump({'config': config,
-                    'weights': weights}
-                    , open(f"{path}/sv_layer.pkl", "wb"))
+        # # Pickle the Spanish Vectorization's config and weights
+        # config, weights = self.spa_vectorization.get_config(), self.spa_vectorization.get_weights()
+        # pickle.dump({'config': config,
+        #             'weights': weights}
+        #             , open(f"{version}/sv_layer.pkl", "wb"))
 
         
-        self.model.save(model_path)
+        self.model.save(model_version)
 
-    def load(self, path):
+    def load(self, version):
 
-        ev_layer = pickle.load(open(f"{path}/ev_layer.pkl", "rb"))
-        self.eng_vectorization = TextVectorization.from_config(ev_layer['config'])
-        # You have to call `adapt` with some dummy data (BUG in Keras)
-        new_v.adapt(tf.data.Dataset.from_tensor_slices(["xyz"]))
-        self.eng_vectorization.set_weights(ev_layer['weights'])
+        # ev_layer = pickle.load(open(f"{version}/ev_layer.pkl", "rb"))
+        # self.eng_vectorization = TextVectorization.from_config(ev_layer['config'])
+        # # You have to call `adapt` with some dummy data (BUG in Keras)
+        # new_v.adapt(tf.data.Dataset.from_tensor_slices(["xyz"]))
+        # self.eng_vectorization.set_weights(ev_layer['weights'])
 
-        spa_layer = pickle.load(open(f"{path}/sv_layer.pkl", "rb"))
-        self.spa_vectorization = TextVectorization.from_config(spa_layer['config'])
-        # You have to call `adapt` with some dummy data (BUG in Keras)
-        new_v.adapt(tf.data.Dataset.from_tensor_slices(["xyz"]))
-        self.spa_vectorization.set_weights(spa_layer['weights'])
+        # spa_layer = pickle.load(open(f"{version}/sv_layer.pkl", "rb"))
+        # self.spa_vectorization = TextVectorization.from_config(spa_layer['config'])
+        # # You have to call `adapt` with some dummy data (BUG in Keras)
+        # new_v.adapt(tf.data.Dataset.from_tensor_slices(["xyz"]))
+        # self.spa_vectorization.set_weights(spa_layer['weights'])
 
-        self.model = tf.saved_model.load(f"{path}/model")
+        train_pairs, val_pairs, _ = self.load_data(verbose=False)
+        train_ds, val_ds = self.prep_data(data=(train_pairs, val_pairs))
+
+        self.model = tf.saved_model.load(f"{version}/model")
 
     def predict(self, text):
         spa_vocab = self.spa_vectorization.get_vocabulary()
@@ -292,7 +296,6 @@ class Seq2SeqTransformer(MLModel):
 
                 if sampled_token == "[end]":
                     break
-            
             return ' '.join(result[:-1])
 
         return decode_sequence(text)

@@ -12,13 +12,19 @@ def test_hugging_face_translation():
 def test_En2Spa_transformer_translation():
 
     model = En2SpaSeq2SeqTransformer()
-    # model_folder = 'En2SpaSeq2SeqTransformer'
+    model_version = 'En2SpaSeq2SeqTransformer'
     train_pairs, val_pairs, _ = model.load_data()
     train_ds, val_ds = model.prep_data(data=(train_pairs, val_pairs))
 
     # This will take ~ 20 minute per epoch
     model.train(data=(train_ds, val_ds))
-    # model persistence does not work for now
-    # model.persist(model_folder)
+    model.persist(model_version)
 
-    model.predict('She handed him the money')
+def test_En2Spa_transformer_translation_prediction():
+
+    model = En2SpaSeq2SeqTransformer()
+    model_version = 'En2SpaSeq2SeqTransformer'
+    model.load(model_version)
+
+    print(model.predict('Hello'))
+
