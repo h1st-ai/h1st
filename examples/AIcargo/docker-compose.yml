@@ -67,11 +67,11 @@ services:
             - "3003:3003"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.web.rule=PathPrefix(`/translate`)"
-            - "traefik.http.routers.web.entrypoints=web"
-            - "traefik.http.routers.web.middlewares=web-stripprefix"
-            - "traefik.http.middlewares.web-stripprefix.stripprefix.prefixes=/translate"
-            - "traefik.http.middlewares.web-stripprefix.stripprefix.forceslash=true"
+            - "traefik.http.routers.translate_web.rule=PathPrefix(`/translate`)"
+            - "traefik.http.routers.translate_web.entrypoints=web"
+            - "traefik.http.routers.translate_web.middlewares=web-stripprefix"
+            - "traefik.http.middlewares.translate-web-stripprefix.stripprefix.prefixes=/translate"
+            - "traefik.http.middlewares.translate-web-stripprefix.stripprefix.forceslash=true"
     translate_api:
         build: ../../../H1st-AI-App-Templates/h1st-with-model-io-mapping-ui
         # command: python manage.py runserver 0.0.0.0:8000
@@ -79,11 +79,11 @@ services:
             - "8008:8008"
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.api.rule=PathPrefix(`/translate/api`)"
-            - "traefik.http.routers.api.entrypoints=web"
-            - "traefik.http.routers.api.middlewares=api-stripprefix"
-            - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/translate"
-            - "traefik.http.middlewares.api-stripprefix.stripprefix.forceslash=true"
+            - "traefik.http.routers.translate_api.rule=PathPrefix(`/translate/api`)"
+            - "traefik.http.routers.translate_api.entrypoints=web"
+            - "traefik.http.routers.translate_api.middlewares=api-stripprefix"
+            - "traefik.http.middlewares.translate-api-stripprefix.stripprefix.prefixes=/translate"
+            - "traefik.http.middlewares.translate-api-stripprefix.stripprefix.forceslash=true"
         environment:
             - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
     tf_serving:
