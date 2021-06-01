@@ -10,6 +10,7 @@ services:
             # - "--api.insecure" # Don't do that in production
             - "--providers.docker"
             - "--entrypoints.web.address=:80"
+            # - "--entrypoints.translate_web.address=:80"
             - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
             - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
             - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
@@ -68,8 +69,8 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.translate_web.rule=PathPrefix(`/translate`)"
-            - "traefik.http.routers.translate_web.entrypoints=web"
-            - "traefik.http.routers.translate_web.middlewares=web-stripprefix"
+            - "traefik.http.routers.translate_web.entrypoints=translate_web"
+            - "traefik.http.routers.translate_web.middlewares=translate-web-stripprefix"
             - "traefik.http.middlewares.translate-web-stripprefix.stripprefix.prefixes=/translate"
             - "traefik.http.middlewares.translate-web-stripprefix.stripprefix.forceslash=true"
     translate_api:
@@ -80,8 +81,8 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.translate_api.rule=PathPrefix(`/translate/api`)"
-            - "traefik.http.routers.translate_api.entrypoints=web"
-            - "traefik.http.routers.translate_api.middlewares=api-stripprefix"
+            - "traefik.http.routers.translate_api.entrypoints=translate_web"
+            - "traefik.http.routers.translate_api.middlewares=translate-api-stripprefix"
             - "traefik.http.middlewares.translate-api-stripprefix.stripprefix.prefixes=/translate"
             - "traefik.http.middlewares.translate-api-stripprefix.stripprefix.forceslash=true"
         environment:
