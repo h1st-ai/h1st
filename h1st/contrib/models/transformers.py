@@ -277,8 +277,15 @@ class Seq2SeqTransformer(MLModel):
         model_path = f"{home}/.models/{version}/model"
         self.base_model = tf.saved_model.load(model_path)
 
+    def predict(self, data):
+        from google.cloud import translate_v2 as translate
+        translate_client = translate.Client()
+        result = translate_client.translate(data,
+                                            source_language='en',
+                                            target_language='es')
+        return result['translatedText']
 
-    def predict(self, text):
+    def predict2(self, text):
         spa_vocab = self.spa_vectorization.get_vocabulary()
         spa_index_lookup = dict(zip(range(len(spa_vocab)), spa_vocab))
         max_decoded_sentence_length = 20
