@@ -9,6 +9,8 @@ class TFNeuronCoverage1():
             for iter in range(100):
                 print("Generate mutants...")
                 time.sleep(1)
+                print("Perform gradient descent...")
+                time.sleep(5)
                 print("Computing neuron coverage....")
                 time.sleep(1)
 
@@ -22,9 +24,9 @@ class TFNeuronCoverage2():
         for _ in range(1000):
             for iter in range(100):
                 print("Generate mutants...")
-                time.sleep(20)
+                time.sleep(1)
                 print("Computing neuron coverage....")
-                time.sleep(20)
+                time.sleep(1)
 
             print('Covered neurons percentage: %.2f %%' % 54)
 
