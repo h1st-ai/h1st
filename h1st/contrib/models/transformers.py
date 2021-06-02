@@ -235,7 +235,7 @@ class Seq2SeqTransformer(MLModel):
             "rmsprop", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
         )
 
-        self.base_model.fit(train_ds, epochs=epochs, validation_data=val_ds)
+        self.base_model.fit(train_ds, epochs=epochs, validation_data=train_ds)
 
     def persist(self, version):
         home = str(Path.home())
