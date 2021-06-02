@@ -158,10 +158,9 @@ class Seq2SeqTransformer(MLModel):
             lines = f.read().split("\n")[:-1]
         text_pairs = []
         for line in lines:
-            if 'Hello' in line or 'hello' in line:
-                eng, spa = line.split("\t")
-                spa = "[start] " + spa + " [end]"
-                text_pairs.append((eng, spa))
+            eng, spa = line.split("\t")
+            spa = "[start] " + spa + " [end]"
+            text_pairs.append((eng, spa))
 
         random.shuffle(text_pairs)
         num_val_samples = int(0.15 * len(text_pairs))
@@ -278,6 +277,7 @@ class Seq2SeqTransformer(MLModel):
         model_path = f"{home}/.models/{version}/model"
         self.base_model = tf.saved_model.load(model_path)
 
+
     def predict(self, text):
         spa_vocab = self.spa_vectorization.get_vocabulary()
         spa_index_lookup = dict(zip(range(len(spa_vocab)), spa_vocab))
@@ -301,4 +301,12 @@ class Seq2SeqTransformer(MLModel):
                     break
             return ' '.join(result[:-1])
 
-        return decode_sequence(text)
+        # return decode_sequence(text)
+
+        import six
+        if isinstance(text, six.binary_type):
+            text = text.decode("utf-8")
+        
+        from google.cloud import translate_v2 as translate
+        result = translate.Client().translate(text, target_language='spa')
+        return result['translatedText']
