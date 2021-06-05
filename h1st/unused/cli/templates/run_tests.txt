@@ -1,5 +1,0 @@
-#!/usr/bin/env python
-import os
-import subprocess
-
-subprocess.check_call(["nose2"], cwd=os.path.dirname(__file__) or ".")
