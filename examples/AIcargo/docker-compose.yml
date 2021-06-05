@@ -62,7 +62,7 @@ services:
             - ./model_repo/tensorflow_models/:/app/model_repo/tensorflow_models
             - ./uploaded:/app/uploaded
     translate_api:
-        build: ../../../h1st-ai-app-templates/h1st-with-model-io-mapping-ui
+        build: ../../../H1st-AI-App-Templates/h1st-with-model-io-mapping-ui
         ports:
             - "8008:8008"
         labels:
@@ -77,7 +77,7 @@ services:
             - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
 
     translate_web:
-        build: ../../../h1st-ai-app-templates/h1st-with-model-io-mapping-ui/react_ui
+        build: ../../../H1st-AI-App-Templates/h1st-with-model-io-mapping-ui/react_ui
         # command: serve -s build
         ports:
             - "3003:3003"
