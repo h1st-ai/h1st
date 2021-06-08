@@ -71,8 +71,3 @@ class S3ModelSaver(ModelSaver):
                     return {'success': False, 'message': 'Fail to save model'}
 
         return {'success': True, 'message': ''}
-
-if __name__ == '__main__':
-    # Test-cases
-    S3ModelSaver.save('/Users/nhanitvn/arimo/projects/h1st/examples/model_hosting_1/model_repo/tensorflow_models/1c8a548a-e814-4c9e-89fa-62242f116ccf', 
-                        's3://model-hosting-sg/model_repo/tensorflow_models/')
