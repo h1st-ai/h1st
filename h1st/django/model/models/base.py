@@ -1,4 +1,4 @@
-from h1st.core.model import Model as _CoreH1stModel
+from h1st.model.model import Model as _CoreH1stModel
 
 from polymorphic.models import PolymorphicModel
 
