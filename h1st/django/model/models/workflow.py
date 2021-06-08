@@ -1,4 +1,4 @@
-from h1st.core.graph import Graph as _CoreH1stWorkflow
+from h1st.h1flow.h1flow import Graph as _CoreH1stWorkflow
 
 from ...util import PGSQL_IDENTIFIER_MAX_LEN
 from ..apps import H1stModelModuleConfig
