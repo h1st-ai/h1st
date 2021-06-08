@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.preprocessing import RobustScaler
 from typing import Dict, List, Any
 
-from h1st.core.model import Model
+from h1st.model.model import Model
 from h1st.core.exception import ModelException
 from h1st.core.ensemble import Ensemble
 

@@ -4,7 +4,7 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import accuracy_score
 from sklearn.multioutput import MultiOutputClassifier
 
-from h1st.core.model import Model
+from h1st.model.model import Model
 from h1st.core.ensemble import StackEnsemble
 
 
