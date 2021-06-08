@@ -29,7 +29,7 @@ class NodeContainable:
     @property
     def node(self) -> 'Node':
         if not self._node:
-            from h1st.core.graph import Graph 
+            from h1st.h1flow.h1flow import Graph 
 
             g = Graph()
             g.start()
