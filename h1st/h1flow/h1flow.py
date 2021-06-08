@@ -2,7 +2,7 @@ import sys
 from types import SimpleNamespace
 from typing import List, Union, Any, NoReturn, Dict
 
-from h1st.core.node import Node, Action
+from h1st.h1flow.h1step import Node, Action
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.exceptions.exception import GraphException
 from h1st.core.viz import DotGraphVisualizer
