@@ -19,10 +19,6 @@ with open(current_dir_path / H1ST_PACKAGE_NAME /
           'requirements.txt') as f:
     requirements = f.readlines()
 
-with open(current_dir_path / H1ST_PACKAGE_NAME /
-          'django' / 'requirements.txt') as f:
-    django_requirements = f.readlines()
-
 
 setup(
     name=metadata['PACKAGE'],
@@ -43,12 +39,11 @@ setup(
     keywords=metadata['KEYWORDS'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=requirements + django_requirements,
+    install_requires=requirements,
     entry_points="""
     [console_scripts]
     h1=h1st.cli:main
     """,
-    extras_require=dict(django=django_requirements),
-    python_requires='>= 3.7',
+    python_requires='>= 3.8',
     namespace_packages=[H1ST_PACKAGE_NAME]
 )
