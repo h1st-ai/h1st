@@ -72,5 +72,5 @@ class Migration(migrations.Migration):
             },
 
             bases=(models.Model,
-                   h1st.core.model.Model)
+                   h1st.model.model.Model)
         ),

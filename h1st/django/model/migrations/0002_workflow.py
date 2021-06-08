@@ -45,5 +45,5 @@ class Migration(migrations.Migration):
             },
 
             bases=('H1stModel.model',
-                   h1st.core.graph.Graph)
+                   h1st.h1flow.h1flow.Graph)
         ),
