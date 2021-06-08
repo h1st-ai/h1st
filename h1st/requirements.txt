@@ -85,7 +85,7 @@ JobLib >= 1.0.1
 
 # OTHER
 Cython >= 0.29.23
-GitPython >= 3.1.14
-Ruamel.YAML >= 0.17.4
+GitPython >= 3.1.17
+Ruamel.YAML >= 0.17.7
 PSUtil >= 5.8.0
-Tqdm >= 4.60.0
+Tqdm >= 4.61.0
