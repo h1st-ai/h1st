@@ -1,6 +1,6 @@
 # DATA MANAGEMENT & PROCESSING
 NumPy >= 1.19.5, < 1.20
-Pandas >= 1.2.4
+Pandas >= 1.2.5
 PyArrow >= 4.0.1
 Ray[tune] >= 1.4.0; (python_version < '3.9') and (platform_machine != 'armv7l')
 
@@ -77,7 +77,7 @@ Django-CORS-Headers >= 3.7.0
 
 # DATABASE CONNECTORS/DRIVERS
 MySQLClient >= 2.0.3; python_version < '3.9'
-PsycoPG2-binary >= 2.8.6
+PsycoPG2-binary >= 2.9.1
 
 # ML MODEL SERDE
 JobLib >= 1.0.1
@@ -85,7 +85,7 @@ JobLib >= 1.0.1
 
 # OTHER
 Cython >= 0.29.23
-GitPython >= 3.1.17
-Ruamel.YAML >= 0.17.7
+GitPython >= 3.1.18
+Ruamel.YAML >= 0.17.9
 PSUtil >= 5.8.0
-Tqdm >= 4.61.0
+Tqdm >= 4.61.1
