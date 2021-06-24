@@ -44,6 +44,7 @@ Colored >= 1.4.2
 
 # DJANGO
 Django >= 3.1.8, < 3.2
+    # *** Jun 2021: Silk profiling incompatible with Django 3.2 ***
 
 # Django Polymorphic Models
 Django-Polymorphic >= 3.0.0
