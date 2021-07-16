@@ -2,7 +2,7 @@ import os
 from math import inf
 from types import SimpleNamespace
 from graphviz import Digraph, ExecutableNotFound, Graph
-from h1st.core.node import Decision
+from h1st.h1flow.h1step import Decision
 
 __theme__ = {
     'arrow_size': '0.5',

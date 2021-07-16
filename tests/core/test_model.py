@@ -1,7 +1,7 @@
 from unittest import TestCase, skip
 from h1st.core import Model, MLModel, RuleBasedModel
-from h1st.model_repository import ModelRepository, ModelSerDe
-from h1st.model_repository.storage.local import LocalStorage
+from h1st.model.repository import ModelRepository, ModelSerDe
+from h1st.model.repository.storage.local import LocalStorage
 import tempfile
 import sklearn
 from sklearn.datasets import load_iris
