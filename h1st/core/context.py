@@ -10,7 +10,7 @@ class Context:
 
     @classmethod
     def init_model_repo(cls, repo_path):
-        from h1st.model_repository import ModelRepository
+        from h1st.model.repository import ModelRepository
         if not hasattr(ModelRepository, 'MODEL_REPO'):
             setattr(ModelRepository, 'MODEL_REPO', ModelRepository(storage=repo_path))
 

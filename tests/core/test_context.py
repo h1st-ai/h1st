@@ -9,7 +9,7 @@ from h1st.core.context import init, discover_h1st_project
 
 class TestContext(TestCase):
     def test_explicit_init_model_repo(self):
-        from h1st.model_repository import ModelRepository
+        from h1st.model.repository import ModelRepository
         init(MODEL_REPO_PATH=".model")
         mm = ModelRepository.get_model_repo()
         assert(mm._storage.storage_path == ".model")
