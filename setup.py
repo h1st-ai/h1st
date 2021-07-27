@@ -10,7 +10,7 @@ def __read_requirement(type=None):
 
 
 def __read_version():
-    return '2021.06'
+    return '0.0.1'
 
 
 with open(os.path.join(os.path.dirname(__file__), '.', 'README.md'), 'r', encoding='utf8') as f:
@@ -21,8 +21,7 @@ setup(
     cmdclass={'install': install},
     name='h1st',
     version=__read_version(),
-    author='Arimo',
-    author_email='admin@arimo.com',
+    author='h1st-ai',
     namespace_packages=['h1st'],
     packages=find_namespace_packages(include=['h1st.*']),
     include_package_data=True,
@@ -34,9 +33,5 @@ setup(
     long_description_content_type='text/markdown',
     install_requires=__read_requirement(),
     python_requires='>= 3',
-    entry_points="""
-    [console_scripts]
-    h1=h1st.cli:main
-    """,
     extras_require={}
 )
