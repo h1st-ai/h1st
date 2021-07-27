@@ -153,6 +153,3 @@ data
 .DS_Store
 
 
-node_modules
-examples/ModelHosting/uploaded/**
-/examples/AIcargo/uploaded
