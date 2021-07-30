@@ -10,7 +10,7 @@ def __read_requirement(type=None):
 
 
 def __read_version():
-    return '0.0.1'
+    return '0.0.2'
 
 
 with open(os.path.join(os.path.dirname(__file__), '.', 'README.md'), 'r', encoding='utf8') as f:
