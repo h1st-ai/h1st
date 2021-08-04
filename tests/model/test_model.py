@@ -1,13 +1,15 @@
-from unittest import TestCase, skip
-from h1st.core import Model, MLModel, RuleBasedModel
-from h1st.model.repository import ModelRepository, ModelSerDe
-from h1st.model.repository.storage.local import LocalStorage
 import tempfile
-import sklearn
-from sklearn.datasets import load_iris
-from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.linear_model import LogisticRegression
+from unittest import TestCase, skip
+
 import tensorflow as tf
+from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+
+from h1st.model.ml_model import MLModel
+from h1st.model.model import Model
+from h1st.model.repository import ModelSerDe
+from h1st.model.rule_based_model import RuleBasedModel
 
 
 class MySkLearnEstimator(BaseEstimator, ClassifierMixin):
@@ -36,8 +38,7 @@ class ModelSerDeTestCase(TestCase):
         with tempfile.TemporaryDirectory() as path:
             # print(path)
             model_serde.serialize(model, path)
-            
-            import os
+
             # print(os.listdir(path))
 
             import yaml
@@ -175,32 +176,6 @@ class ModelSerDeTestCase(TestCase):
         self.assert_models(MyModel, 'tensorflow-keras', 'model_Iris', 'dict')
 
 
-class ModelRepositoryTestCase(TestCase):
-    def test_serialize_sklearn_model(self):
-        class MyModel(MLModel):
-            def __init__(self):
-                super().__init__()
-                self.base_model = LogisticRegression(random_state=0)
-            def train(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
-                self.base_model.fit(X, y)
-
-
-        X, y = load_iris(return_X_y=True)
-        prepared_data = {'X': X, 'y': y}
-
-        model = MyModel()
-        model.train(prepared_data)
-        with tempfile.TemporaryDirectory() as path:
-            mm = ModelRepository(storage=LocalStorage(storage_path=path))
-            version = mm.persist(model=model)
-
-            model_2 = MyModel()
-            mm.load(model=model_2, version=version)
-
-            assert 'sklearn' in str(type(model_2.base_model))
-
-
 class ModelStatsSerDeTestCase(TestCase):
     def test_serialize_dict(self):
         class MyModel(Model):
@@ -219,8 +194,7 @@ class ModelStatsSerDeTestCase(TestCase):
         with tempfile.TemporaryDirectory() as path:
             # print(path)
             model_serde.serialize(model, path)
-            
-            import os
+
             # print(os.listdir(path))
 
             import yaml
@@ -244,4 +218,4 @@ class RuleModelTestCase(TestCase):
                 return {"result": sum(input_data['X'])}
 
         model = MyRule()
-        self.assertEquals({'result': 42}, model.predict({'X': [1, 1, 10, 10, 20]}))
+        self.assertEqual({'result': 42}, model.predict({'X': [1, 1, 10, 10, 20]}))

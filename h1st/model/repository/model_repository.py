@@ -78,8 +78,8 @@ class ModelSerDe:
         :param model: H1ST Model
         :param path: path to save models to
         """
-        from h1st.core import MLModel
-        from h1st.core.rule_based_model import RuleBasedModel
+        from h1st.model.ml_model import MLModel
+        from h1st.model.rule_based_model import RuleBasedModel
 
         meta_info = {}
 

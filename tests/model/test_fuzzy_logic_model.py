@@ -1,11 +1,11 @@
-import math
-from unittest import TestCase, skip
+from unittest import TestCase
 
 import numpy as np
 
-import h1st.core as h1
+from h1st.model.fuzzy_logic_model import FuzzyLogicModel
 
-class MyFuzzyLogicModel(h1.FuzzyLogicModel):
+
+class TestFuzzyLogicModel(FuzzyLogicModel):
     def add_variables(self):
         """
         Add fuzzy variables with membership functions
@@ -23,7 +23,7 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
             membership_funcs=[('normal', 'gaussian', [3, 3.3]),
                               ('abnormal', 'triangle', [8, 15, 15])],
             type_='antecedent'
-        )        
+        )
         self.add_variable(
             range_=np.arange(0, 10, 0.5),
             name='problem1',
@@ -40,7 +40,7 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
         vars = self.variables
         self.add_rule(
             'rule1',
-            if_=vars['sensor1']['abnormal'] & vars['sensor2']['abnormal'], 
+            if_=vars['sensor1']['abnormal'] & vars['sensor2']['abnormal'],
             then_=vars['problem1']['yes'])
         self.add_rule(
             'rule2',
@@ -54,7 +54,7 @@ class MyFuzzyLogicModel(h1.FuzzyLogicModel):
 
 class FuzzyLogicModelTestCase(TestCase):
     def test_fuzzy_logic_model(self):
-        my_fuzzy_logic_model = MyFuzzyLogicModel()
+        my_fuzzy_logic_model = TestFuzzyLogicModel()
         sensor_input = {
             'sensor1': 7,
             'sensor2': 10
@@ -67,7 +67,7 @@ class FuzzyLogicModelTestCase(TestCase):
             'sensor2': 15
         }
         prediction = my_fuzzy_logic_model.predict(sensor_input)
-        assert prediction['problem1'] < 5        
+        assert prediction['problem1'] < 5
 
         sensor_input = {
             'sensor1': 10,

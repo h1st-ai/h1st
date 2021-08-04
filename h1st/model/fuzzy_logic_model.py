@@ -5,7 +5,7 @@ import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 from skfuzzy.control.term import Term
 
-from h1st.core.rule_based_model import RuleBasedModel
+from h1st.model.rule_based_model import RuleBasedModel
 
 
 logging.basicConfig(level=logging.INFO)
