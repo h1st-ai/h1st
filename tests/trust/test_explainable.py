@@ -1,19 +1,14 @@
+import unittest
 
 import numpy as np
 import pandas as pd
-import lime
-import lime.lime_tabular as lt
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import accuracy_score, f1_score
-import matplotlib.pyplot as plt
-import sklearn
+from sklearn.model_selection import train_test_split
 
-import h1st.core as h1
-import unittest
+from h1st.model.ml_model import MLModel
 
-class TestModelExplainable(h1.MLModel):
+
+class TestModelExplainable(MLModel):
     def __init__(self):
         super().__init__()
         self.dataset_name = "WineQuality"
@@ -31,11 +26,6 @@ class TestModelExplainable(h1.MLModel):
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
-
-    def explore_data(self, data):
-        data["quality"].hist()
-        plt.title("Wine Quality Rating Output Labels Distribution")
-        plt.show()
 
     def prep_data(self, data):
         """
@@ -72,7 +62,8 @@ class TestModelExplainable(h1.MLModel):
             "mape": self._mean_absolute_percentage_error(y_true, y_pred)
         }
         return self.metrics
-        
+
+
 class TestExplainable(unittest.TestCase):
     def test_explainable(self):
         m = TestModelExplainable()
@@ -82,7 +73,5 @@ class TestExplainable(unittest.TestCase):
         idx = 4
         decision = m.prepared_data["train_df"].iloc[idx], m.prepared_data["train_labels"].iloc[idx]
         explainer = m.explain(decision=decision)
-        self.assertEquals(len(explainer.lime_explainer.explainer.feature_names), len(m.features))
+        self.assertEqual(len(explainer.lime_explainer.explainer.feature_names), len(m.features))
         self.assertIsInstance(explainer, object)
-
-

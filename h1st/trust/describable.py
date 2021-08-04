@@ -1,4 +1,4 @@
-# from .shap_model_describer import SHAPModelDescriber   # TODO: fix
+from .shap_model_describer import SHAPModelDescriber   # TODO: fix
 from .enums import Constituency, Aspect
 from .describer import Describer
 

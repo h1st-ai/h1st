@@ -1,19 +1,14 @@
+import unittest
 
 import numpy as np
 import pandas as pd
-import lime
-import lime.lime_tabular as lt
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import accuracy_score, f1_score
-import matplotlib.pyplot as plt
-import sklearn
+from sklearn.model_selection import train_test_split
 
-import h1st.core as h1
-import unittest
+from h1st.model.ml_model import MLModel
 
-class TestModelDescribable(h1.MLModel):
+
+class TestModelDescribable(MLModel):
     def __init__(self):
         super().__init__()
         self.dataset_name = "WineQuality"
@@ -31,11 +26,6 @@ class TestModelDescribable(h1.MLModel):
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
-
-    def explore_data(self, data):
-        data["quality"].hist()
-        plt.title("Wine Quality Rating Output Labels Distribution")
-        plt.show()
 
     def prep_data(self, data):
         """
@@ -72,15 +62,14 @@ class TestModelDescribable(h1.MLModel):
             "mape": self._mean_absolute_percentage_error(y_true, y_pred)
         }
         return self.metrics
-        
+
+
 class TestDescribable(unittest.TestCase):
     def test_describable(self):
         m = TestModelDescribable()
         data = m.load_data()
         prepared_data = m.prep_data(data)
         m.train(prepared_data)
-        describer = m.describe()     
-        self.assertEquals(describer.shap_describer.shap_values.shape, m.prepared_data['train_df'].shape)
+        describer = m.describe()
+        self.assertEqual(describer.shap_describer.shap_values.shape, m.prepared_data['train_df'].shape)
         self.assertIsInstance(describer, object)
-
-

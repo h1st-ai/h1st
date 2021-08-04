@@ -13,7 +13,7 @@ GraphViz >= 0.16
 Auto-SKLearn >= 0.12.6; python_version < '3.9'
 SciKit-Learn >= 0.24.2
 LIME >= 0.2.0.1
-# SHAP >= 0.39.0
+SHAP >= 0.39.0
 
 # HYPER-PARAMETER TUNING
 Bayesian-Optimization >= 1.2.0
