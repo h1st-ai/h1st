@@ -1,23 +1,20 @@
-import os
 import logging
-from matplotlib import pyplot as plt
-import tensorflow as tf
+
 import numpy as np
 import pandas as pd
-
-from sklearn.preprocessing import RobustScaler
-from sklearn import svm
+import tensorflow as tf
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import RobustScaler
 
-import h1st.core as h1
-from examples.Ensemble import config
-from examples.Ensemble.utils import prepare_train_test_data
+from h1st.model.ml_model import MLModel
+from . import config
+from .utils import prepare_train_test_data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class TensorflowMLPClassifier(h1.MLModel):
+class TensorflowMLPClassifier(MLModel):
     def __init__(self):    
         self.base_model = self.build_tf_architecture(units=16, num_class=config.NUM_CLASS)
 

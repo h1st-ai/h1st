@@ -1,29 +1,28 @@
-import os
 import logging
-from matplotlib import pyplot as plt
-import tensorflow as tf
+
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import RobustScaler
+from matplotlib import pyplot as plt
 from sklearn import svm
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import RobustScaler
 
-import h1st.core as h1
-from examples.Ensemble import config
-from examples.Ensemble.utils import prepare_train_test_data
+from h1st.model.ml_model import MLModel
+from . import config
+from .utils import prepare_train_test_data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class SklearnSVMClassifier(h1.MLModel):
+
+class SklearnSVMClassifier(MLModel):
     def __init__(self):
         self.base_model = svm.SVC()
-    
+
     def load_data(self):
         df = pd.read_excel(config.DATA_PATH, header=1)
         return df
-    
+
     def explore(self, loaded_data):
         df = loaded_data
         for target in config.DATA_TARGETS:
@@ -53,4 +52,3 @@ class SklearnSVMClassifier(h1.MLModel):
         predictions = self.base_model.predict(X)
         predictions = np.reshape(predictions, [len(predictions), -1])
         return {'predictions': predictions}
-

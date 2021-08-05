@@ -1,14 +1,16 @@
-import math
-import pandas as pd
-from unittest import TestCase, skip
-from sklearn.model_selection import train_test_split
-import h1st.core as h1
-import examples.Ensemble.config as config
-from examples.Ensemble.sklearn_smv_classifier import SklearnSVMClassifier
-from examples.Ensemble.tensorflow_mlp_classifier import TensorflowMLPClassifier
+from unittest import TestCase
 
-class RandomForestClassifierStackEnsemble(h1.RandomForestClassifierStackEnsemble):
-    def load_data(self,):
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+from . import config
+from h1st.model.ensemble.randomforest_classifier_stack_ensemble import RandomForestClassifierStackEnsemble
+from .sklearn_smv_classifier import SklearnSVMClassifier
+from .tensorflow_mlp_classifier import TensorflowMLPClassifier
+
+
+class TestRandomForestClassifierStackEnsemble(RandomForestClassifierStackEnsemble):
+    def load_data(self, ):
         df = pd.read_excel(config.DATA_PATH, header=1)
         return df
 
@@ -18,13 +20,14 @@ class RandomForestClassifierStackEnsemble(h1.RandomForestClassifierStackEnsemble
         y = df[config.DATA_TARGETS].values
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.33, shuffle=True, random_state=10)
-        
+
         return {
             'X_train': X_train,
             'X_test': X_test,
             'y_train': y_train,
             'y_test': y_test
         }
+
 
 class RandomForestClassifierStackEnsembleTestCase(TestCase):
     def test_ensemble(self):
@@ -44,7 +47,7 @@ class RandomForestClassifierStackEnsembleTestCase(TestCase):
         m2.persist('m2')
         self.assertIn('accuracy', m2.metrics)
 
-        ensemble = RandomForestClassifierStackEnsemble([
+        ensemble = TestRandomForestClassifierStackEnsemble([
             SklearnSVMClassifier().load('m1'),
             TensorflowMLPClassifier().load('m2')
         ])
@@ -56,8 +59,5 @@ class RandomForestClassifierStackEnsembleTestCase(TestCase):
         self.assertIn('accuracy', ensemble.metrics)
 
         # ensure performance of ensemble is better than any sub models
-        self.assertGreaterEqual(ensemble.metrics['accuracy'], m1.metrics['accuracy']-0.02)
-        self.assertGreaterEqual(ensemble.metrics['accuracy'], m2.metrics['accuracy']-0.02)
-
-
-        
+        self.assertGreaterEqual(ensemble.metrics['accuracy'], m1.metrics['accuracy'] - 0.02)
+        self.assertGreaterEqual(ensemble.metrics['accuracy'], m2.metrics['accuracy'] - 0.02)
