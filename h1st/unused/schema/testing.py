@@ -1,7 +1,8 @@
-from unittest import TestCase
 import inspect
-from h1st.schema.validation_schema import ValidationSchema
-from h1st.schema.schema_validation_result import SchemaValidationResult
+from unittest import TestCase
+
+from h1st.unused.schema.schema_validation_result import SchemaValidationResult
+from h1st.unused.schema.validation_schema import ValidationSchema
 
 
 def setup_schema_tests(graph, scope, prepare_func=None):
@@ -37,6 +38,7 @@ def _make_prepare_func(prepare_func):
     Generate a function to prepare test data
     :returns: function
     """
+
     def prepare_test_data(node, item, schema):
         if not prepare_func:
             return item
@@ -62,6 +64,7 @@ def _make_test_case(name, scope_name, node, schema_info, prepare_test_data):
 
     :returns: generated test case class
     """
+
     class IOTestCase(TestCase):
         def __init__(self, method):
             self.method = method
