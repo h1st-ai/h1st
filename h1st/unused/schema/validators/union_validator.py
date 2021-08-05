@@ -1,11 +1,12 @@
-from h1st.schema.validators.base import BaseValidator
-from h1st.schema.validators.type_helper import is_union_type
+from h1st.unused.schema.validators.base import BaseValidator
+from h1st.unused.schema.validators.type_helper import is_union_type
 
 
 class UnionValidator(BaseValidator):
     """
     Validate python ``Union`` type
     """
+
     def is_applicable(self, schema):
         return is_union_type(schema)
 
