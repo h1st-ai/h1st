@@ -34,28 +34,6 @@ S3FS >= 0.4, < 0.5
 ULID-Py >= 1.1.0
 
 
-# CLI
-Click >= 8.0.1
-Colored >= 1.4.2
-
-
-# DJANGO
-Django >= 3.2.4
-
-# Django Admin Themes
-Django-Jazzmin >= 2.4.7
-
-# Django REST Framework
-DjangoRESTFramework >= 3.12.4
-CoreAPI >= 2.3.3
-    # closely related to Django REST Framework
-
-# Django Extensions & Utilities
-Django-Extensions >= 3.1.3
-
-# Django CORS Headers
-Django-CORS-Headers >= 3.7.0
-
 
 # OTHER
 Cython >= 0.29.23
