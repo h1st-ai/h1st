@@ -1,10 +1,10 @@
 from typing import List
-from sklearn.multioutput import MultiOutputClassifier
+
 from sklearn.ensemble import RandomForestClassifier
 
+from h1st.model.ensemble.classifier_stack_ensemble import ClassifierStackEnsemble
 from h1st.model.model import Model
-from h1st.core.exception import ModelException
-from h1st.core.ensemble import ClassifierStackEnsemble
+
 
 class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):
     """

@@ -1,11 +1,12 @@
-from h1st.schema.validators.base import BaseValidator
-from h1st.schema.validators.type_helper import is_list_type, get_list_type, type_name
+from h1st.unused.schema.validators.base import BaseValidator
+from h1st.unused.schema.validators.type_helper import is_list_type, type_name, get_list_type
 
 
 class ListValidator(BaseValidator):
     """
     Validate python list type
     """
+
     def is_applicable(self, schema):
         return is_list_type(schema)
 

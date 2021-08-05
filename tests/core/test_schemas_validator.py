@@ -3,8 +3,8 @@ from unittest import TestCase
 import pyarrow as pa
 import pandas as pd
 import numpy as np
-from h1st.schema.schema_validator import SchemaValidator
 
+from h1st.unused.schema.schema_validator import SchemaValidator
 
 dummy = lambda: None
 

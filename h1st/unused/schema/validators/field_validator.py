@@ -1,6 +1,7 @@
 import pandas as pd
-from h1st.schema.validators.base import BaseValidator
-from h1st.schema.validators.type_helper import is_optional_type
+
+from h1st.unused.schema.validators.base import BaseValidator
+from h1st.unused.schema.validators.type_helper import is_optional_type
 
 
 class FieldValidator(BaseValidator):

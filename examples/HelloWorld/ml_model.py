@@ -4,10 +4,10 @@ We demonstrate here how to wrap a ScikitLearn model within an h1.Model
 """
 
 from sklearn import svm, datasets, metrics
-import h1st.core as h1
+from h1st.model.ml_model import MLModel
 
 
-class MLModel(h1.MLModel):
+class SimpleMLModel(MLModel):
     def __init__(self):
         # H1st can automatically save/load this "self.base_model" property if it's a SKlearn or tf.keras.Model
         # This is the native SKLearn model
@@ -50,9 +50,7 @@ class MLModel(h1.MLModel):
         return self.base_model.predict(input_data["x"])
 
 if __name__ == "__main__":
-    h1.init(MODEL_REPO_PATH=".models")
-    
-    m = MLModel()
+    m = SimpleMLModel()
     raw_data = m.get_data()
     print(raw_data)
 

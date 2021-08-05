@@ -3,7 +3,8 @@ from datetime import datetime
 import pyarrow as pa
 import numpy as np
 import pandas as pd
-from h1st.schema import SchemaInferrer
+
+from h1st.unused.schema.schema_inferrer import SchemaInferrer
 
 
 class SchemaInferrerTestCase(TestCase):

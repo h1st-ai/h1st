@@ -1,16 +1,18 @@
-import numpy as np
-from sklearn.preprocessing import RobustScaler
 from typing import Dict, List, Any
 
+import numpy as np
+from sklearn.preprocessing import RobustScaler
+
+from h1st.exceptions.exception import ModelException
+from h1st.model.ensemble.ensemble import Ensemble
 from h1st.model.model import Model
-from h1st.core.exception import ModelException
-from h1st.core.ensemble import Ensemble
 
 
 class StackEnsemble(Ensemble):
     """
     Base StackEnsemble class to implement StackEnsemble classifiers or regressors.
     """
+
     def __init__(self, ensembler, sub_models: List[Model], **kwargs):
         """
         :param **kwargs: StackEnsemble use h1st models as submodels and the predict function of

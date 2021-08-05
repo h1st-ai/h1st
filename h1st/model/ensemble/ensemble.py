@@ -1,7 +1,7 @@
 from typing import List
 
-from h1st.core import MLModel
-from h1st.core import Model
+from h1st.model.ml_model import MLModel
+from h1st.model.model import Model
 
 
 class Ensemble(MLModel):

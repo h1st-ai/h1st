@@ -1,7 +1,7 @@
 import logging
 from sklearn.model_selection import train_test_split
 
-from examples.Ensemble import config
+from . import config
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

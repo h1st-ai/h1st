@@ -1,45 +1,47 @@
 import pandas as pd
-from unittest import TestCase, skip
-from h1st.core import Graph, Decision, Action, NodeContainable, GraphException
-import h1st.core as h1
+from unittest import TestCase
+from h1st.exceptions.exception import GraphException
+from h1st.h1flow.h1flow import Graph
+from h1st.h1flow.h1step import NodeContainable, Decision
+from h1st.model.model import Model
 
 
-class DummyAction(h1.NodeContainable):
+class DummyAction(NodeContainable):
     def call(self, command, inputs):
         return {}
 
-class DummyModel(h1.Model):
+
+class DummyModel(Model):
     def call(self, command, inputs):
         return {}
+
 
 class NodeIdTestCase(TestCase):
     def test_non_duplicated_node_ids(self):
-        class MyGraph(h1.Graph):
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
                 (
-                    self
-                        .start()
-                        .add(DummyAction())                        
+                    self.start()
+                        .add(DummyAction())
                 )
 
                 self.end()
 
         g = MyGraph()
-        self.assertNotEqual(g.nodes.DummyAction, None) 
+        self.assertNotEqual(g.nodes.DummyAction, None)
 
     def test_multiple_nodes_same_class_without_node_id(self):
-        class MyGraph(h1.Graph):
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
                 (
-                    self
-                        .start()
+                    self.start()
                         .add(DummyAction())
                         .add(DummyAction())
-                        .add(DummyAction())                        
+                        .add(DummyAction())
                 )
 
                 self.end()
@@ -53,46 +55,46 @@ class NodeIdTestCase(TestCase):
         self.assertNotEqual(g.nodes.DummyAction3, None)
 
     def test_duplicated_node_ids(self):
-        class MyGraph(h1.Graph):
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
                 (
-                    self
-                        .start()
+                    self.start()
                         .add(DummyAction(), id='node1')
                         .add(DummyAction())
-                        .add(DummyAction(), id='node1')                        
+                        .add(DummyAction(), id='node1')
                 )
 
                 self.end()
 
-        self.assertRaises(GraphException, lambda: MyGraph())  
+        self.assertRaises(GraphException, lambda: MyGraph())
+
 
 class ActionNodeTestCase(TestCase):
     def setUp(self):
-        class Action1(h1.NodeContainable):
+        class Action1(NodeContainable):
             def call(self, command, inputs):
                 return {
                     'aaa': inputs['a'],
                     'sum1': 10
                 }
 
-        class Action2(h1.NodeContainable):
+        class Action2(NodeContainable):
             def call(self, command, inputs):
                 return {
                     'bbb': inputs['b'],
                     'sum2': inputs['sum1'] + 100
                 }
 
-        class Action3(h1.NodeContainable):
+        class Action3(NodeContainable):
             def call(self, command, inputs):
                 return {
                     'ccc': inputs['c'],
                     'sum3': inputs['sum2'] + 1000
                 }
 
-        class MyGraph(h1.Graph):
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
@@ -101,19 +103,20 @@ class ActionNodeTestCase(TestCase):
                         .start()
                         .add(Action1())
                         .add(Action2())
-                        .add(Action3())                        
+                        .add(Action3())
                 )
 
                 self.end()
-        
+
         self._g = MyGraph()
 
     def test_action_call(self):
-        result = self._g.predict(data={ 'a': 5, 'b': 10, 'c': 15 })
+        result = self._g.predict(data={'a': 5, 'b': 10, 'c': 15})
         self.assertEqual(result['sum3'], 1110)
         self.assertEqual(result['aaa'], 5)
         self.assertEqual(result['bbb'], 10)
         self.assertEqual(result['ccc'], 15)
+
 
 class SimpleDecisionNodeTestCase(TestCase):
     def _create_and_excute_graph_with_decision_node(self, input_data):
@@ -123,40 +126,39 @@ class SimpleDecisionNodeTestCase(TestCase):
             then each downstream node will calculate its sum
         '''
 
-        class MyModel(h1.Model):
+        class MyModel(Model):
             def predict(self, inputs):
                 return {
                     "results": [
-                        {'value': value, 'prediction': value >=10 } for value in inputs['values']
+                        {'value': value, 'prediction': value >= 10} for value in inputs['values']
                     ]
                 }
 
-        class YesAction(h1.NodeContainable):
+        class YesAction(NodeContainable):
             def call(self, command, inputs):
                 return {'yes_sum': sum(i['value'] for i in inputs['results'])}
 
-        class NoAction(h1.NodeContainable):
+        class NoAction(NodeContainable):
             def call(self, command, inputs):
-                return {'no_sum': sum(i['value'] for i in inputs['results'])}                
-                
-        class MyGraph(h1.Graph):
+                return {'no_sum': sum(i['value'] for i in inputs['results'])}
+
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
                 yes_node, no_node = (
-                    self
-                        .start()
+                    self.start()
                         .add(DummyAction())
                         .add(Decision(MyModel()))
                         .add(
-                            yes = YesAction(),
-                            no = NoAction()
-                        )
+                        yes=YesAction(),
+                        no=NoAction()
+                    )
                 )
 
                 no_node.add(DummyAction())
-                self.end()  
-        
+                self.end()
+
         g = MyGraph()
         return g.predict(data={'values': input_data})
 
@@ -178,51 +180,50 @@ class SimpleDecisionNodeTestCase(TestCase):
         y = [5, 10, 15, 20]
         predictions = [True, False, False, True]
 
-        class MyModel(h1.Model):
+        class MyModel(Model):
             def predict(self, inputs):
                 return {
                     "results": pd.DataFrame({
-                            'x': x,
-                            'y': y,
-                            'label': predictions
-                        })
+                        'x': x,
+                        'y': y,
+                        'label': predictions
+                    })
                 }
 
-        class YesAction(h1.NodeContainable):
+        class YesAction(NodeContainable):
             def call(self, command, inputs):
                 df = inputs['results']
-                return {'yes_sum': sum(df['x']*df['y'])}
+                return {'yes_sum': sum(df['x'] * df['y'])}
 
-        class NoAction(h1.NodeContainable):
+        class NoAction(NodeContainable):
             def call(self, command, inputs):
                 df = inputs['results']
-                return {'no_sum': sum(df['x']*df['y'])}
-                
-        class MyGraph(h1.Graph):
+                return {'no_sum': sum(df['x'] * df['y'])}
+
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
                 yes_node, no_node = (
-                    self
-                        .start()
+                    self.start()
                         .add(DummyAction())
                         .add(Decision(MyModel(), decision_field='label'))
                         .add(
-                            yes = YesAction(),
-                            no = NoAction()
-                        )
+                        yes=YesAction(),
+                        no=NoAction()
+                    )
                 )
 
                 no_node.add(DummyAction())
-                self.end() 
-                        
+                self.end()
+
         result = MyGraph().predict(data={})
 
-        expected_yes_sum = sum([x[i]*y[i] for i in range(len(x)) if predictions[i]])
+        expected_yes_sum = sum([x[i] * y[i] for i in range(len(x)) if predictions[i]])
         self.assertEqual(result['yes_sum'], expected_yes_sum)
 
-        expected_no_sum = sum([x[i]*y[i] for i in range(len(x)) if not predictions[i]])
-        self.assertEqual(result['no_sum'],  expected_no_sum)
+        expected_no_sum = sum([x[i] * y[i] for i in range(len(x)) if not predictions[i]])
+        self.assertEqual(result['no_sum'], expected_no_sum)
 
     def test_decision_node_with_transform_output_for_yes_no_branches(self):
         arr = [
@@ -232,21 +233,21 @@ class SimpleDecisionNodeTestCase(TestCase):
             {'x': 400, 'prediction': True},
         ]
 
-        class MyModel(h1.Model):
+        class MyModel(Model):
             def predict(self, inputs):
                 return {
                     "results": arr
                 }
 
-        class YesAction(h1.NodeContainable):
+        class YesAction(NodeContainable):
             def call(self, command, inputs):
                 return {'yes_results': sum([i['x'] for i in inputs['results']])}
 
-        class NoAction(h1.NodeContainable):
+        class NoAction(NodeContainable):
             def call(self, command, inputs):
                 return {'no_results': sum([i['x'] for i in inputs['results']])}
-                
-        class MyGraph(h1.Graph):
+
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
@@ -255,45 +256,46 @@ class SimpleDecisionNodeTestCase(TestCase):
                         .start()
                         .add(Decision(MyModel()))
                         .add(
-                            yes = YesAction(),
-                            no = NoAction()
-                        )
+                        yes=YesAction(),
+                        no=NoAction()
+                    )
                 )
 
-                self.end() 
+                self.end()
 
-                self.nodes.end.transform_output = lambda inputs: {'result': inputs['yes_results'] + inputs['no_results']*1000}
-                        
+                self.nodes.end.transform_output = lambda inputs: {
+                    'result': inputs['yes_results'] + inputs['no_results'] * 1000}
+
         result = MyGraph().predict(data={})
 
-        expected_result = sum([i['x'] for i in arr if i['prediction']]) + sum([i['x'] for i in arr if not i['prediction']])*1000
-        self.assertEqual(result['result'],  expected_result)
-
+        expected_result = sum([i['x'] for i in arr if i['prediction']]) + sum(
+            [i['x'] for i in arr if not i['prediction']]) * 1000
+        self.assertEqual(result['result'], expected_result)
 
     def test_transform_output_for_end_node_of_graph_with_decision_node(self):
         x = [10, 100, 1000, 10000]
         predictions = [False, False, True, False]
 
-        class MyModel(h1.Model):
+        class MyModel(Model):
             def predict(self, inputs):
                 return {
                     "results": pd.DataFrame({
-                            'x': x,
-                            'prediction': predictions
-                        })
+                        'x': x,
+                        'prediction': predictions
+                    })
                 }
 
-        class YesAction(h1.NodeContainable):
+        class YesAction(NodeContainable):
             def call(self, command, inputs):
                 df = inputs['results']
                 return {'results': sum(df['x'])}
 
-        class NoAction(h1.NodeContainable):
+        class NoAction(NodeContainable):
             def call(self, command, inputs):
                 df = inputs['results']
                 return {'results': sum(df['x'])}
-                
-        class MyGraph(h1.Graph):
+
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
@@ -303,49 +305,50 @@ class SimpleDecisionNodeTestCase(TestCase):
                         .add(DummyAction())
                         .add(Decision(MyModel()))
                         .add(
-                            yes = YesAction(),
-                            no = NoAction()
-                        )
+                        yes=YesAction(),
+                        no=NoAction()
+                    )
                 )
 
-                no_node.add(DummyAction())                
-                self.end() 
+                no_node.add(DummyAction())
+                self.end()
 
                 self.nodes.YesAction.transform_output = lambda inputs: {'yes_sum': inputs['results']}
                 self.nodes.NoAction.transform_output = lambda inputs: {'no_sum': inputs['results']}
-                        
+
         result = MyGraph().predict(data={})
 
         expected_yes_sum = sum([x[i] for i in range(len(x)) if predictions[i]])
         self.assertEqual(result['yes_sum'], expected_yes_sum)
 
         expected_no_sum = sum([x[i] for i in range(len(x)) if not predictions[i]])
-        self.assertEqual(result['no_sum'],  expected_no_sum)
+        self.assertEqual(result['no_sum'], expected_no_sum)
+
 
 class ModelNodeTestCase(TestCase):
     def test_model_predict(self):
-        class Model1(h1.Model):
+        class Model1(Model):
             def predict(self, inputs):
                 return {
                     'model1_input': inputs['model1'],
                     'model1_output': 'O1'
                 }
 
-        class Model2(h1.Model):
+        class Model2(Model):
             def predict(self, inputs):
-                return {                    
+                return {
                     'model2_input': inputs['model2'],
                     'model2_output': 'O2'
                 }
 
-        class Model3(h1.Model):
+        class Model3(Model):
             def predict(self, inputs):
                 return {
                     'model3_input': inputs['model3'],
                     'model3_output': 'O3'
                 }
 
-        class MyGraph(h1.Graph):
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
@@ -354,14 +357,14 @@ class ModelNodeTestCase(TestCase):
                         .start()
                         .add(Model1())
                         .add(Model2())
-                        .add(Model3())                                                
+                        .add(Model3())
                 )
 
                 self.end()
-        
+
         g = MyGraph()
-    
-        result = g.predict(data={ 'model1': 'i1', 'model2': 'i2', 'model3': 'i3' })
+
+        result = g.predict(data={'model1': 'i1', 'model2': 'i2', 'model3': 'i3'})
         self.assertEqual(result['model1_input'], 'i1')
         self.assertEqual(result['model1_output'], 'O1')
         self.assertEqual(result['model2_input'], 'i2')
@@ -370,7 +373,7 @@ class ModelNodeTestCase(TestCase):
         self.assertEqual(result['model3_output'], 'O3')
 
     def test_dummy_model(self):
-        class MyGraph(h1.Graph):
+        class MyGraph(Graph):
             def __init__(self):
                 super().__init__()
 
