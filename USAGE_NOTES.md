@@ -1,5 +1,5 @@
 # USAGE NOTES
-## July 16th 2020
+## July 16th 2021
 Due to changes to the package structure, please update your code to:
 - Import `Graph` class from `h1st.h1flow.h1flow` instead `h1st.core.graph` .
 - Import `Node` class from `h1st.h1flow.h1step` instead of `h1st.core.node`.
