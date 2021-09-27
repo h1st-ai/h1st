@@ -17,10 +17,11 @@ pyarrow = "^5.0.0"
 cloudpickle = "^2.0.0"
 s3fs = "^2021.9.0"
 lime = "^0.2.0"
-shap = "^0.39.0"
 graphviz = "^0.17"
 scikit-fuzzy = "^0.4.2"
 ulid-py = "^1.1.0"
+numpy = "<1.20"
+shap = "^0.39.0"
 
 [tool.poetry.dev-dependencies]
 commitizen = "^2.19.0"

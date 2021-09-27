@@ -3,10 +3,10 @@ from unittest import TestCase
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from . import config
 from h1st.model.ensemble.randomforest_classifier_stack_ensemble import RandomForestClassifierStackEnsemble
-from .sklearn_smv_classifier import SklearnSVMClassifier
-from .tensorflow_mlp_classifier import TensorflowMLPClassifier
+import examples.Ensemble.config as config
+from examples.Ensemble.sklearn_smv_classifier import SklearnSVMClassifier
+from examples.Ensemble.tensorflow_mlp_classifier import TensorflowMLPClassifier
 
 
 class TestRandomForestClassifierStackEnsemble(RandomForestClassifierStackEnsemble):

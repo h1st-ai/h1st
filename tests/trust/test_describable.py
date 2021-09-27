@@ -1,5 +1,3 @@
-import unittest
-
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -8,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from h1st.model.ml_model import MLModel
 
 
-class TestModelDescribable(MLModel):
+class DescribableModel(MLModel):
     def __init__(self):
         super().__init__()
         self.dataset_name = "WineQuality"
@@ -64,12 +62,12 @@ class TestModelDescribable(MLModel):
         return self.metrics
 
 
-class TestDescribable(unittest.TestCase):
+class TestDescribable:
     def test_describable(self):
-        m = TestModelDescribable()
+        m = DescribableModel()
         data = m.load_data()
         prepared_data = m.prep_data(data)
         m.train(prepared_data)
         describer = m.describe()
-        self.assertEqual(describer.shap_describer.shap_values.shape, m.prepared_data['train_df'].shape)
-        self.assertIsInstance(describer, object)
+        assert describer.shap_describer.shap_values.shape == m.prepared_data['train_df'].shape
+        assert isinstance(describer, object)
