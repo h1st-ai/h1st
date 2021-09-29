@@ -1,3 +1,7 @@
+import os
+import urllib.parse
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -20,7 +24,7 @@ class ExplainableModel(MLModel):
         self.prepared_data = None
 
     def load_data(self):
-        filename = "./examples/Trust/data/wine_quality.csv"
+        filename = "./tests/trust/wine_quality.csv"
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
