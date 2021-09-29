@@ -9,15 +9,16 @@ from sklearn.preprocessing import RobustScaler
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 
-import h1st.core as h1
 from examples.RayTune import config
 from examples.RayTune.utils import prepare_train_test_data
+
+from h1st.model.ml_model import MLModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class TensorflowMLPClassifier(h1.MLModel):
+class TensorflowMLPClassifier(MLModel):
 #     hyperparameter = {
 #         'tuning_param': {
 #             'lr': float, # 0.01 ~ 0.1

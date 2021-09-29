@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "h1st"
+version = "0.0.4"
+description = "Human-First AI (H1ST)"
+authors = ["h1st-ai <engineering@aitomatic.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://h1st.ai"
+repository = "https://github.com/h1st-ai/h1st"
+include = ["h1st/*"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+ray = {extras = ["tune"], version = "^1.6.0"}
+scikit-learn = "^1.0"
+pyarrow = "^5.0.0"
+cloudpickle = "^2.0.0"
+s3fs = "^2021.9.0"
+lime = "^0.2.0"
+graphviz = "^0.17"
+scikit-fuzzy = "^0.4.2"
+ulid-py = "^1.1.0"
+numpy = "<1.20"
+shap = "^0.39.0"
+
+[tool.poetry.dev-dependencies]
+commitizen = "^2.19.0"
+pytest = "^6.2.5"
+pre-commit = "^2.15.0"
+tensorflow = "^2.6.0"
+xlrd = "^2.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

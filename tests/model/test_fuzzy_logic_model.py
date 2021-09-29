@@ -1,11 +1,9 @@
-from unittest import TestCase
-
 import numpy as np
 
 from h1st.model.fuzzy_logic_model import FuzzyLogicModel
 
 
-class TestFuzzyLogicModel(FuzzyLogicModel):
+class SensorFuzzyLogicModel(FuzzyLogicModel):
     def add_variables(self):
         """
         Add fuzzy variables with membership functions
@@ -52,9 +50,9 @@ class TestFuzzyLogicModel(FuzzyLogicModel):
             then_=vars['problem1']['no'])
 
 
-class FuzzyLogicModelTestCase(TestCase):
+class TestFuzzyLogicModelTestCase():
     def test_fuzzy_logic_model(self):
-        my_fuzzy_logic_model = TestFuzzyLogicModel()
+        my_fuzzy_logic_model = SensorFuzzyLogicModel()
         sensor_input = {
             'sensor1': 7,
             'sensor2': 10

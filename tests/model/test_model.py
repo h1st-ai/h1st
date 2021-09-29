@@ -1,5 +1,4 @@
 import tempfile
-from unittest import TestCase, skip
 
 import tensorflow as tf
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -22,7 +21,8 @@ class MySkLearnEstimator(BaseEstimator, ClassifierMixin):
     def predict(self, X):
         return self.model.predict(X)
 
-class ModelSerDeTestCase(TestCase):
+
+class TestModelSerDe:
     def assert_models(self, model_class, model_type, model_path, collection='none'):
         """
         Assert only 1st item in the list of models or the Iris key for dict
@@ -135,27 +135,6 @@ class ModelSerDeTestCase(TestCase):
 
         self.assert_models(MyModel, 'tensorflow-keras', 'model')
 
-    @skip('skip tf test')
-    def test_serialize_list_tensorflow_model(self):
-        class MyModel(MLModel):
-            def __init__(self):
-                super().__init__()
-                model = tf.keras.Sequential([
-                                                tf.keras.layers.Dense(8, input_dim=4, activation='relu'),
-                                                tf.keras.layers.Dense(1, activation='softmax')
-                                                ])
-
-                self.base_model = [model, model]
-            
-            def train(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
-                for model in self.base_model:
-                    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                    model.fit(X, y, verbose=2, batch_size=5, epochs=20)
-
-        # Check 1st model
-        self.assert_models(MyModel, 'tensorflow-keras', 'model_0', 'list')
-
     def test_serialize_dict_tensorflow_model(self):
         class MyModel(MLModel):
             def __init__(self):
@@ -176,7 +155,7 @@ class ModelSerDeTestCase(TestCase):
         self.assert_models(MyModel, 'tensorflow-keras', 'model_Iris', 'dict')
 
 
-class ModelStatsSerDeTestCase(TestCase):
+class TestModelStatsSerDe:
     def test_serialize_dict(self):
         class MyModel(Model):
             def __init__(self):
@@ -211,11 +190,11 @@ class ModelStatsSerDeTestCase(TestCase):
                 assert 'CarSpeed' in model_2.stats
 
 
-class RuleModelTestCase(TestCase):
+class TestRuleModel:
     def test_ruled_based_model(self):
         class MyRule(RuleBasedModel):
             def predict(self, input_data):
                 return {"result": sum(input_data['X'])}
 
         model = MyRule()
-        self.assertEqual({'result': 42}, model.predict({'X': [1, 1, 10, 10, 20]}))
+        assert {'result': 42} == model.predict({'X': [1, 1, 10, 10, 20]})
