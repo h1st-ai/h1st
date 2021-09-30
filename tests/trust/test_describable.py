@@ -20,7 +20,7 @@ class DescribableModel(MLModel):
         self.prepared_data = None
 
     def load_data(self):
-        filename = "./examples/Trust/data/wine_quality.csv"
+        filename = "./tests/trust/wine_quality.csv"
         df = pd.read_csv(filename)
         df["quality"] = df["quality"].astype(int)
         return df.reset_index(drop=True)
