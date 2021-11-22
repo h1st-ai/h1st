@@ -1,8 +1,0 @@
-# Concept
-
-Graph
-
-Node
-
-Model
-
