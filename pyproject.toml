@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h1st"
-version = "0.0.5"
+version = "0.0.6"
 description = "Human-First AI (H1ST)"
 authors = ["h1st-ai <engineering@aitomatic.com>"]
 license = "Apache-2.0"
@@ -11,7 +11,7 @@ include = ["h1st/*"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
-scikit-learn = "^1.0"
+scikit-learn = "^0.24.2"
 pyarrow = "^5.0.0"
 s3fs = "^2021.9.0"
 lime = "^0.2.0"
