@@ -6,10 +6,10 @@ from h1st.core.node import Node
 
 @dataclass
 class GraphInfo:
-    nodes: set[Node]
-    edges: set[Tuple[Node, Node]]
+    nodes: list[Node]
+    edges: list[Tuple[Node, Node]]
     adjacency_list: dict
-    root_nodes: set[Node]
+    root_nodes: list[Node]
     is_linear: bool
 
 

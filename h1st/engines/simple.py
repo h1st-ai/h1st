@@ -18,6 +18,6 @@ class SimpleExecutionEngine(ExecutionEngine):
         adj = graph.adjacency_list
         if not graph.is_linear:
             raise NotImplementedError("Executing non-linear graphs is not supported at the moment.")
-        first_node = graph.root_nodes.pop()
+        first_node = graph.root_nodes[0]
         result = self._linear_exec(first_node, adj)
         return result

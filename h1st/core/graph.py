@@ -46,8 +46,8 @@ class Graph:
         print(self.__graph)
 
     def get_info(self):
-        nodes = set(self.__graph.keys())
-        edges = set()
+        nodes = list(self.__graph.keys())
+        edges = list()
         adjacency_list = {}
         is_linear = True
         for node in self.__graph.keys():
@@ -56,8 +56,8 @@ class Graph:
             if len(next_nodes) > 1:
                 is_linear = False
             for next_node in next_nodes:
-                edges.add((node, next_node))
-        return GraphInfo(nodes, edges, adjacency_list, set(self.__root_nodes), is_linear)
+                edges.append((node, next_node))
+        return GraphInfo(nodes, edges, adjacency_list, self.__root_nodes, is_linear)
 
     def execute(self):
         graph_info = self.get_info()
