@@ -40,6 +40,7 @@ class TestUpdatedGraph:
         graph_info = g.get_info()
         assert len(graph_info.nodes) == 2
         assert len(graph_info.edges) == 1
+        assert len(graph_info.root_nodes) == 1
 
     def test_is_linear(self):
         g = Graph()
@@ -52,5 +53,6 @@ class TestUpdatedGraph:
         data_node3 = DataNode()
         g.add_node(data_node3)
         g.add_edge(data_node1, data_node3)
+        assert len(g.get_info().root_nodes) == 1
         assert not g.get_info().is_linear
 

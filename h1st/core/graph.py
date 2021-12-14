@@ -13,7 +13,6 @@ class Graph:
             raise TypeError("must be Node, not {}".format(type(node).__name__))
         if node not in self.__graph.keys():
             self.__graph[node] = NodeInfo()
-            self.__root_nodes.append(node)
 
     def add_edge(self, from_node: Node, to_node: Node):
         if not isinstance(from_node, Node):
@@ -33,6 +32,8 @@ class Graph:
                 from_node not in self.__graph[to_node].next_nodes:
             self.__graph[from_node].next_nodes.append(to_node)
             self.__graph[to_node].has_previous = True
+            if from_node not in self.__root_nodes:
+                self.__root_nodes.append(from_node)
             if is_root_node:
                 self.__root_nodes.remove(to_node)
 
