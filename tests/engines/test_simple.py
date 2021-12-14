@@ -1,5 +1,7 @@
-import os
 from typing import Any
+
+import pytest
+from tests.test_fixture import mock_env_simple
 
 from h1st.core.graph import Graph
 from h1st.core.node import Node
@@ -19,12 +21,13 @@ class TransformNode(Node):
         return result
 
 
+@pytest.mark.usefixtures("mock_env_simple")
 class TestSimpleExecutionEngine:
     def test_execution(self):
-        os.environ["H1ST_ENGINE"] = "h1st.engines.simple.SimpleExecutionEngine"
         g = Graph()
         data_gen = DataNode()
         transform = TransformNode()
         g.add_edge(data_gen, transform)
         result = g.execute()
+        assert len(result) == 4
         assert result == [13, 21, 47, 111]
