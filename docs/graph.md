@@ -4,3 +4,4 @@ api definition, model training, etc. and requires execution capabilities.
 
 The graph definition and execution are separate so that the execution engine can be chosen without impacting user code.
 
+![h1st graph execution](graph.png)
