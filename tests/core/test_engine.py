@@ -21,7 +21,7 @@ class TransformNode(Node):
 
 class TestSimpleExecutionEngine:
     def test_execution(self):
-        os.environ["H1ST_ENGINE"] = "h1st.core.engine.SimpleExecutionEngine"
+        os.environ["H1ST_ENGINE"] = "h1st.engines.simple.SimpleExecutionEngine"
         g = Graph()
         data_gen = DataNode()
         transform = TransformNode()
