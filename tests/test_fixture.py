@@ -3,7 +3,6 @@ from _pytest.monkeypatch import MonkeyPatch
 
 
 @pytest.fixture(scope="class")
-def mock_env_simple(request):
+def mock_env_simple():
     monkeypatch = MonkeyPatch()
     monkeypatch.setenv("H1ST_ENGINE", "h1st.engines.simple.SimpleExecutionEngine")
-
