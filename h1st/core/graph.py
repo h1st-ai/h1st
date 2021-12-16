@@ -1,3 +1,5 @@
+import collections
+
 from h1st.core import NodeInfo, GraphInfo
 from h1st.core.execution import ExecutionManager
 from h1st.core.node import Node
@@ -7,6 +9,7 @@ class Graph:
     def __init__(self) -> None:
         self.__graph = {}  # dictionary of Node -> NodeInfo
         self.__root_nodes: list[Node] = []
+        self.__last_updated_node = None
 
     def add_node(self, node: Node):
         if not isinstance(node, Node):
@@ -37,13 +40,8 @@ class Graph:
             if is_root_node:
                 self.__root_nodes.remove(to_node)
 
-    @property
-    def is_linear(self):
-        all_next_nodes_len = [len(node_info.next_nodes) for node_info in self.__graph.values()]
-        filtered = filter(lambda next_nodes_count: next_nodes_count > 1, all_next_nodes_len)
-        return len(list(filtered)) == 0
-
     def show(self):
+        # TODO port visualization
         print(self.__graph)
 
     def get_info(self):
@@ -51,6 +49,7 @@ class Graph:
         edges = list()
         adjacency_list = {}
         is_linear = True
+        all_next_nodes = list()
         for node in self.__graph.keys():
             next_nodes = self.__graph[node].next_nodes
             adjacency_list[node] = next_nodes
@@ -58,8 +57,23 @@ class Graph:
                 is_linear = False
             for next_node in next_nodes:
                 edges.append((node, next_node))
+                all_next_nodes.append(next_node)
+        group_by_occurrence = collections.Counter(all_next_nodes)
+        filtered = filter(lambda elem_count: elem_count > 1, group_by_occurrence.values())
+        is_linear = is_linear and len(list(filtered)) == 0
         return GraphInfo(nodes, edges, adjacency_list, self.__root_nodes, is_linear)
 
     def execute(self):
         graph_info = self.get_info()
         return ExecutionManager.execute_with_engine(graph_info)
+
+    def add(self, node: Node, previous_nodes: list[Node] = None):
+        if previous_nodes is None:
+            if self.__last_updated_node is None:
+                self.add_node(node)
+            else:
+                self.add_edge(self.__last_updated_node, node)
+        else:
+            for from_node in previous_nodes:
+                self.add_edge(from_node, node)
+        self.__last_updated_node = node
