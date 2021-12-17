@@ -57,7 +57,27 @@ class TestUpdatedGraph:
         assert len(g.get_info().root_nodes) == 1
         assert not g.get_info().is_linear
 
-    def test_add(self):
+    def test_add_sequential(self):
+        """
+        data_node -> some_node
+        """
+        g = Graph()
+        data_node = DataNode()
+        some_node = DataNode()
+        g.add(data_node)
+        g.add(some_node)
+        graph_info = g.get_info()
+        assert len(graph_info.root_nodes) == 1
+        assert graph_info.is_linear
+        assert len(graph_info.nodes) == 2
+        assert graph_info.adjacency_list[data_node] == [some_node]
+        assert graph_info.adjacency_list[some_node] == []
+
+    def test_add_converging(self):
+        """
+        data_node1 -> some_node
+        data_node2 -> some_node
+        """
         graph = Graph()
         data_node1 = DataNode()
         data_node2 = DataNode()
@@ -69,3 +89,20 @@ class TestUpdatedGraph:
         assert len(graph_info.nodes) == 3
         assert graph_info.adjacency_list[data_node1] == [some_node]
         assert graph_info.adjacency_list[data_node2] == [some_node]
+
+    def test_add_diverging(self):
+        """
+        some_node -> data_node1
+        some_node -> data_node2
+        """
+        graph = Graph()
+        data_node1 = DataNode()
+        data_node2 = DataNode()
+        some_node = SomeNode()
+        graph.add(data_node1, previous_nodes=[some_node])
+        graph.add(data_node2, previous_nodes=[some_node])
+        graph_info = graph.get_info()
+        assert len(graph_info.root_nodes) == 1
+        assert not graph_info.is_linear
+        assert len(graph_info.nodes) == 3
+        assert graph_info.adjacency_list[some_node] == [data_node1, data_node2]
