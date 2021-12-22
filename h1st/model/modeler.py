@@ -43,12 +43,30 @@ class Modeler(NodeContainable, Trustable):
            my_model_2.load('1st_version')
     """
     @property
+    def model_class(self) -> Any:
+        return getattr(self, "__model_class", None)
+
+    @model_class.setter
+    def model_class(self, value):
+        setattr(self, "__model_class", value)
+
+    @property
     def stats(self):
         return getattr(self, '__stats__', None)
 
     @stats.setter
     def stats(self, value) -> dict:
         setattr(self, '__stats__', value)
+
+    @property
+    def metrics(self):
+        if not hasattr(self, '__metrics__'):
+            setattr(self, '__metrics__', {})
+        return getattr(self, '__metrics__')
+
+    @metrics.setter
+    def metrics(self, value) -> dict:
+        setattr(self, '__metrics__', value)
     
     def load_data(self) -> dict:
         """
@@ -62,20 +80,15 @@ class Modeler(NodeContainable, Trustable):
         Implement logic to explore data from loaded data
         """
 
-    def train(self, prepared_data: dict):
-        """
-        Implement logic of training model
-
-        :param prepared_data: prepared data from ``prep`` method
-        """
-
-    def evaluate(self, prepared_data: dict) -> NoReturn:
+    def evaluate(self, prepared_data: dict, model: Model) -> NoReturn:
         """
         Implement logic to evaluate the model using the prepared_data
         This function will calculate model metrics and store it into self.metrics
 
         :param data: loaded data
         """
+        if type(model) != self.model_class:
+            raise ValueError('The provided model is not a %s' % self.model_class.__name__)
     
     def build(self) -> Model:
         """

@@ -1,30 +1,40 @@
 import tempfile
 from unittest import TestCase
 
+from typing import Any, Dict
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 
 from h1st.model.ml_model import MLModel
+from h1st.model.ml_modeler import MLModeler
 from h1st.model.repository import ModelRepository
 from h1st.model.repository.storage import LocalStorage
 
 
 class ModelRepositoryTestCase(TestCase):
     def test_serialize_sklearn_model(self):
-        class MyModel(MLModel):
-            def __init__(self):
-                super().__init__()
-                self.base_model = LogisticRegression(random_state=0)
+        class MyModeler(MLModeler):
+            def load_data(self) -> dict:
+                data = load_iris()
+                return {'data': data} 
+
+            def generate_training_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+                data = data['data']
+                return {'X': data.data, 'y': data.target}
+
             def train(self, prepared_data):
+                model = LogisticRegression(random_state=0)
                 X, y = prepared_data['X'], prepared_data['y']
-                self.base_model.fit(X, y)
+                model.fit(X, y)
+                return model
 
+        class MyModel(MLModel):
+            pass
 
-        X, y = load_iris(return_X_y=True)
-        prepared_data = {'X': X, 'y': y}
+        my_modeler = MyModeler()
+        my_modeler.model_class = MyModel
 
-        model = MyModel()
-        model.train(prepared_data)
+        model = my_modeler.build()
         with tempfile.TemporaryDirectory() as path:
             mm = ModelRepository(storage=LocalStorage(storage_path=path))
             version = mm.persist(model=model)

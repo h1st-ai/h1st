@@ -1,9 +1,12 @@
+import os
 from typing import Any, Dict
+import tempfile
 import pandas as pd
 from sklearn import datasets
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score
+from h1st.model.model import Model
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.ml_model import MLModel
 
@@ -14,7 +17,7 @@ class MyMLModeler(MLModeler):
 
     def load_data(self) -> Dict:
         df_raw = datasets.load_iris(as_frame=True).frame
-        return {'df_raw': df_raw} 
+        return self.generate_training_data({'df_raw': df_raw} )
     
     def preprocess(self, data):
         self.stats['scaler'] = StandardScaler()
@@ -62,10 +65,11 @@ class MyMLModeler(MLModeler):
         return model
     
     # TODO: need to check model instance type
-    def evaluate(self, data: Dict, model: Any) -> Dict:
+    def evaluate(self, data: Dict, model: Model) -> Dict:
+        super().evaluate(data, model)
         X, y_true = data['test_x'], data['test_y']
-        y_pred = model.predict(X)
-        return {'r2_score': r2_score(y_true, y_pred)} 
+        y_pred = model.predict({'X': X, 'y': y_true})['species']
+        self.metrics = {'r2_score': r2_score(y_true, y_pred)} 
 
 class MyMLModel(MLModel):
     def preprocess(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -73,7 +77,7 @@ class MyMLModel(MLModel):
         return {
             'X': self.stats['scaler'].transform(raw_data)
         }
-    
+
     def predict(self, data: Dict[str, Any]) -> Dict[str, Any]:
         preprocess_data = self.preprocess(data)
         y = self.base_model.predict(preprocess_data['X'])
@@ -95,3 +99,16 @@ class TestMLModeler:
         })
 
         assert prediction == {'species': [0, 1]}
+
+        # TODO:
+        with tempfile.TemporaryDirectory() as path:
+            os.environ['H1ST_MODEL_REPO_PATH'] = path
+            version = my_ml_model.persist()
+
+            model_2 = MyMLModel()
+            model_2.load(version)
+
+            assert 'sklearn' in str(type(model_2.base_model))
+            assert all(model_2.stats['scaler'].mean_ == my_ml_model.stats['scaler'].mean_)
+            assert all(model_2.stats['scaler'].var_ == my_ml_model.stats['scaler'].var_)
+            assert model_2.metrics == my_ml_model.metrics

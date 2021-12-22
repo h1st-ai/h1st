@@ -7,26 +7,30 @@ class MLModeler(Modeler):
     """
     Base class for H1st ML Modeler.
     """
-    @property
-    def model_class(self) -> Any:
-        return getattr(self, "__model_class", None)
+    
+    def train(self, prepared_data: dict):
+        """
+        Implement logic of training model
 
-    @model_class.setter
-    def model_class(self, value):
-        setattr(self, "__model_class", value)
+        :param prepared_data: prepared data from ``prep`` method
+        """
     
     def build(self) -> MLModel:
         """
         Implement logic to create the corresponding MLModel object.
         """
         data = self.load_data()
-        training_data = self.generate_training_data(data)
-        base_model = self.train(training_data)
+        base_model = self.train(data)
+        if self.model_class is None:
+            raise ValueError('Model class not provided')
+
         ml_model = self.model_class()
         ml_model.base_model = base_model
         
         # Pass stats to the model
-        ml_model.stats = self.stats.copy()
+        if self.stats is not None:
+            ml_model.stats = self.stats.copy()
         # Compute metrics and pass to the model
-        ml_model.metrics = self.evaluate(training_data, ml_model.base_model)
+        self.evaluate(data, ml_model)
+        ml_model.metrics = self.metrics.copy()
         return ml_model
