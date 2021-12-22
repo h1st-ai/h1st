@@ -16,10 +16,6 @@ class ModelRepositoryTestCase(TestCase):
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'data': data} 
-
-            def generate_training_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
-                data = data['data']
                 return {'X': data.data, 'y': data.target}
 
             def train(self, prepared_data):
