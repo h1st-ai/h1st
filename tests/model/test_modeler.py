@@ -17,7 +17,7 @@ class MyMLModeler(MLModeler):
 
     def load_data(self) -> Dict:
         df_raw = datasets.load_iris(as_frame=True).frame
-        return self.generate_training_data({'df_raw': df_raw} )
+        return self.generate_training_data({'df_raw': df_raw})
     
     def preprocess(self, data):
         self.stats['scaler'] = StandardScaler()
@@ -27,9 +27,8 @@ class MyMLModeler(MLModeler):
         df_raw = data['df_raw']
         df_raw.columns = ['sepal_length','sepal_width','petal_length','petal_width', 'species']
         
-        self.stats['targets'] = sorted(df_raw['species'].unique())
+        self.stats['targets'] = ['Setosa', 'Versicolour', 'Virginica']
         self.stats['targets_dict'] = {k: v for v, k in enumerate(self.stats['targets'])}
-        df_raw['species'] = df_raw['species'].apply(lambda x: self.stats['targets_dict'][x])
 
         # Shuffle all the df_raw
         df_raw = df_raw.sample(frac=1, random_state=5).reset_index(drop=True)
@@ -68,7 +67,7 @@ class MyMLModeler(MLModeler):
     def evaluate(self, data: Dict, model: Model) -> Dict:
         super().evaluate(data, model)
         X, y_true = data['test_x'], data['test_y']
-        y_pred = model.predict({'X': X, 'y': y_true})['species']
+        y_pred = pd.Series(model.predict({'X': X, 'y': y_true})['species']).map(model.stats['targets_dict'])
         return {'r2_score': r2_score(y_true, y_pred)}
 
 class MyMLModel(MLModel):
@@ -98,7 +97,7 @@ class TestMLModeler:
                 columns=['sepal_length','sepal_width','petal_length','petal_width'])
         })
 
-        assert prediction == {'species': [0, 1]}
+        assert prediction == {'species': ['Setosa', 'Versicolour']}
 
         # TODO:
         with tempfile.TemporaryDirectory() as path:
