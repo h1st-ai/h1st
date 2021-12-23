@@ -80,7 +80,7 @@ class Modeler(NodeContainable, Trustable):
         Implement logic to explore data from loaded data
         """
 
-    def evaluate(self, prepared_data: dict, model: Model) -> NoReturn:
+    def evaluate(self, prepared_data: dict, model: Model) -> dict:
         """
         Implement logic to evaluate the model using the prepared_data
         This function will calculate model metrics and store it into self.metrics
@@ -89,6 +89,8 @@ class Modeler(NodeContainable, Trustable):
         """
         if type(model) != self.model_class:
             raise ValueError('The provided model is not a %s' % self.model_class.__name__)
+        
+        return None
     
     def build(self) -> Model:
         """

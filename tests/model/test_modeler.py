@@ -69,7 +69,7 @@ class MyMLModeler(MLModeler):
         super().evaluate(data, model)
         X, y_true = data['test_x'], data['test_y']
         y_pred = model.predict({'X': X, 'y': y_true})['species']
-        self.metrics = {'r2_score': r2_score(y_true, y_pred)} 
+        return {'r2_score': r2_score(y_true, y_pred)}
 
 class MyMLModel(MLModel):
     def preprocess(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -78,8 +78,8 @@ class MyMLModel(MLModel):
             'X': self.stats['scaler'].transform(raw_data)
         }
 
-    def predict(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        preprocess_data = self.preprocess(data)
+    def process(self, input_data: dict) -> dict:
+        preprocess_data = self.preprocess(input_data)
         y = self.base_model.predict(preprocess_data['X'])
         return {'species': [self.stats['targets'][item] for item in y]}
 

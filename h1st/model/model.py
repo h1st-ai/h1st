@@ -94,4 +94,4 @@ class Model(NodeContainable, Trustable):
         :returns: processing result as a dictionary
         """
         # not raise NotImplementedError so the initial model created by integrator will just work 
-        return {"input_data" : input_data}
+        return {"output_data" : input_data}
