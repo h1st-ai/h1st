@@ -40,6 +40,7 @@ class MLModel(Model):
            my_model_2 = MyModel()
            my_model_2.load('1st_version')
     """
+
     @property
     def base_model(self) -> Any:
         return getattr(self, "__base_model", None)
@@ -47,3 +48,12 @@ class MLModel(Model):
     @base_model.setter
     def base_model(self, value):
         setattr(self, "__base_model", value)
+
+    def predict(self, input_data: dict) -> dict:
+        """
+        Implement logic to generate prediction from data
+
+        :params data: data for prediction
+        :returns: prediction result as a dictionary
+        """
+        return self.process(input_data=input_data)
