@@ -19,6 +19,7 @@ graphviz = "^0.17"
 scikit-fuzzy = "^0.4.2"
 ulid-py = "^1.1.0"
 shap = "^0.39.0"
+pyyaml = "^5.3"
 
 [tool.poetry.dev-dependencies]
 commitizen = "^2.19.0"
@@ -27,5 +28,5 @@ pre-commit = "^2.15.0"
 tensorflow = "^2.6.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["setuptools", "poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
