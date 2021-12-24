@@ -86,12 +86,13 @@ class Model(NodeContainable, Trustable):
 
         return self
         
-    def process(self, input_data: dict) -> dict:
+    def process(self, input_data: dict) -> Any:
         """
         Implement logic to process data
 
         :params data: data to process
-        :returns: processing result as a dictionary
+        :returns: processing result as Any
         """
         # not raise NotImplementedError so the initial model created by integrator will just work 
-        return {"output_data" : input_data}
+        return input_data
+

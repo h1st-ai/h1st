@@ -1,8 +1,10 @@
 from typing import Any
+
+from h1st.model.predictive_model import PredictiveModel
 from .model import Model
 
 
-class MLModel(Model):
+class MLModel(PredictiveModel):
     """
     Base class for H1st Model.
 
@@ -48,12 +50,3 @@ class MLModel(Model):
     @base_model.setter
     def base_model(self, value):
         setattr(self, "__base_model", value)
-
-    def predict(self, input_data: dict) -> dict:
-        """
-        Implement logic to generate prediction from data
-
-        :params data: data for prediction
-        :returns: prediction result as a dictionary
-        """
-        return self.process(input_data=input_data)
