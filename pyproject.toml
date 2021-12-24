@@ -11,22 +11,26 @@ include = ["h1st/*"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
-scikit-learn = "^0.24.2"
-pyarrow = "^5.0.0"
-s3fs = "^2021.9.0"
-lime = "^0.2.0"
-graphviz = "^0.17"
+
+pyarrow = "^6.0.1"
+graphviz = "^0.19.1"
+lime = "^0.2.0.1"
+s3fs = "^2021.11.1"
 scikit-fuzzy = "^0.4.2"
+scikit-learn = "^0.24.2"
+shap = "^0.40.0"
 ulid-py = "^1.1.0"
-shap = "^0.39.0"
-pyyaml = "^5.3"
+pyyaml = "^6.0"
 
 [tool.poetry.dev-dependencies]
-commitizen = "^2.19.0"
+commitizen = "^2.20.3"
+pre-commit = "^2.16.0"
 pytest = "^6.2.5"
-pre-commit = "^2.15.0"
-tensorflow = "^2.6.0"
+tensorflow = "^2.7.0"
 
 [build-system]
-requires = ["setuptools", "poetry-core>=1.0.0"]
+requires = [
+  "poetry-core >= 1.0.0",
+  "setuptools",   # temp fix to setuptools-60.x-related bug
+]
 build-backend = "poetry.core.masonry.api"
