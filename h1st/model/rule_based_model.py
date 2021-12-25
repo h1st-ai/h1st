@@ -1,6 +1,5 @@
 from h1st.model.model import Model
+from h1st.model.predictive_model import PredictiveModel
 
-class RuleBasedModel(Model):
-    def predict(self, input_data: dict) -> dict:
-        return {}
-
+class RuleBasedModel(PredictiveModel):
+    pass

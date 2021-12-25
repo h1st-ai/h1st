@@ -1,8 +1,10 @@
 from typing import Any
+
+from h1st.model.predictive_model import PredictiveModel
 from .model import Model
 
 
-class MLModel(Model):
+class MLModel(PredictiveModel):
     """
     Base class for H1st Model.
 
@@ -40,6 +42,7 @@ class MLModel(Model):
            my_model_2 = MyModel()
            my_model_2.load('1st_version')
     """
+
     @property
     def base_model(self) -> Any:
         return getattr(self, "__base_model", None)
