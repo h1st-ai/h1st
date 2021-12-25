@@ -14,4 +14,4 @@ class PredictiveModel(Model):
         :params data: data for prediction
         :returns: prediction result as a dict
         """
-        return {"prediction": self.process(input_data = input_data)}
+        return self.process(input_data = input_data)
