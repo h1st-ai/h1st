@@ -1,6 +1,7 @@
 import __init__
 from h1st.model.boolean_model import BooleanModel
 
+
 class UserBooleanModel(BooleanModel):
     def process(self, input_data: dict):
         x = input_data["x"]

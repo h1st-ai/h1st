@@ -1,9 +1,10 @@
-import __init__
 from typing import Dict, Any
 
+import pandas as pd
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LogisticRegression
 
+import __init__
 from h1st.model.kgen_modeler import KGenModeler
 from h1st.model.ml_model import MLModel
 
@@ -12,7 +13,7 @@ class MyGenModeler(KGenModeler):
     def __init__(self):
         self.stats = {}
 
-    def preprocess(self, data):
+    def preprocess(self, data: pd.DataFrame) -> Any:
         self.stats['scaler'] = RobustScaler(quantile_range=(5.0, 95.0), with_centering=False)
         return self.stats['scaler'].fit_transform(data) 
     

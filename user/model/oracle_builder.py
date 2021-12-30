@@ -5,7 +5,6 @@ from h1st.model.ensemble.ensemble_modeler import EnsembleModeler
 from h1st.model.rule_based_model import RuleBasedModel
 from h1st.h1flow.h1flow import Graph
 import pandas as pd
-
 from boolean_model import BooleanModel
 from generalizer_modeler import MyGenModeler
 from generalizer import MyGeneralizer
@@ -15,7 +14,7 @@ from oracle import MyOracle
 
 
 class MyOracleBuilder:
-    def load_data(self):
+    def load_data(self) -> Dict:
         path_to_data = ""
         df_data = pd.read_parquet(path_to_data)
         self.feature_list = ['feature_1', 'feature_2']
