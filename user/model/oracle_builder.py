@@ -1,11 +1,10 @@
 from typing import Dict, Any
 
+import pandas as pd
+
 import __init__
-from h1st.model.ensemble.ensemble_modeler import EnsembleModeler
 from h1st.model.rule_based_model import RuleBasedModel
 from h1st.h1flow.h1flow import Graph
-import pandas as pd
-from boolean_model import BooleanModel
 from generalizer_modeler import MyGenModeler
 from generalizer import MyGeneralizer
 from ensemble_modeler import MyEnsembleModeler
