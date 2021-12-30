@@ -5,11 +5,12 @@ import pandas as pd
 import __init__
 from h1st.model.rule_based_model import RuleBasedModel
 from h1st.h1flow.h1flow import Graph
-from generalizer_modeler import MyGenModeler
-from generalizer import MyGeneralizer
-from ensemble_modeler import MyEnsembleModeler
-from ensemble import MyEnsemble
+from student import MyStudentModeler, MyStudent
+from ensemble import EnsembleModeler, MyEnsemble
 from oracle import MyOracle
+import __init__
+from h1st.h1flow.h1flow import Graph
+
 
 
 class MyOracleBuilder:
@@ -54,3 +55,13 @@ class MyOracleBuilder:
             ensemble=my_ensemble
         )
         return my_oracle
+
+
+class MyOracle(Graph):
+    def __init__(self, k_model, k_gen, ensemble):
+        super().__init__()
+        self.start()
+        self.add([k_model, k_gen])
+        self.add(ensemble)
+        self.end()
+

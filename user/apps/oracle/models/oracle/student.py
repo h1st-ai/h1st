@@ -10,7 +10,7 @@ from h1st.model.kgen_model import KGenModel
 from h1st.model.ml_model import MLModel
 
 
-class StudentModeler(KGenModeler):
+class MyStudentModeler(KGenModeler):
     def __init__(self):
         self.stats = {}
 
@@ -44,7 +44,7 @@ class StudentModeler(KGenModeler):
         return my_gen
 
 
-class Student(KGenModel):
+class MyStudent(KGenModel):
     def preprocess(self, data: Dict[str, Any]) -> Dict[str, Any]:
         raw_data = data['X']
         return {
