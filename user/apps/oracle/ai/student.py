@@ -1,15 +1,16 @@
+import __init__
 from typing import Dict, Any
 
 import pandas as pd
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LogisticRegression
 
-import __init__
 from h1st.model.kgen_modeler import KGenModeler
+from h1st.model.kgen_model import KGenModel
 from h1st.model.ml_model import MLModel
 
 
-class MyGenModeler(KGenModeler):
+class StudentModeler(KGenModeler):
     def __init__(self):
         self.stats = {}
 
@@ -41,3 +42,18 @@ class MyGenModeler(KGenModeler):
         # Compute metrics and pass to the model
 #         ml_model.metrics = self.evaluate(data, ml_model)
         return my_gen
+
+
+class Student(KGenModel):
+    def preprocess(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        raw_data = data['X']
+        return {
+            'X': self.stats['scaler'].transform(raw_data)
+        }
+
+    def predict(self, input_data: Dict) -> Dict:
+        preprocess_data = self.preprocess(input_data)
+        y = self.base_model.predict(preprocess_data['X'])
+        return {'predictions': [self.stats['targets'][item] for item in y]}
+
+        
