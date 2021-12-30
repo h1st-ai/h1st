@@ -1,5 +1,3 @@
-from h1st import Graph
-
 import __init__
 from h1st.h1flow.h1flow import Graph
 

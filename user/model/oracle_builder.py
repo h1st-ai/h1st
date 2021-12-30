@@ -3,6 +3,7 @@ from typing import Dict, Any
 import __init__
 from h1st.model.ensemble.ensemble_modeler import EnsembleModeler
 from h1st.model.rule_based_model import RuleBasedModel
+from h1st.h1flow.h1flow import Graph
 import pandas as pd
 
 from boolean_model import BooleanModel
@@ -22,7 +23,7 @@ class MyOracleBuilder:
             'df_data': df_data[self.feature_list]
         }    
 
-    def build(self, data: Dict, my_knowledge_model: RuleBasedModel):
+    def build(self, data: Dict, my_knowledge_model: RuleBasedModel) -> Graph:
         df_data = data['df_data']
         # Get K-Model prediction
         y_pred_bool = my_knowledge_model.predict({
