@@ -1,10 +1,11 @@
 from typing import Dict
 from h1st.exceptions.exception import GraphException
+from h1st.trust.trustable import Trustable
 # from h1st.schema.schema_validator import SchemaValidator
 # from h1st.schema.schema_validation_result import SchemaValidationResult
 
 
-class NodeContainable:
+class NodeContainable(Trustable):
     """
     Type of an instance to be added to a graph as a node must be the subclass of NodeContainable.
     .. code-block:: python

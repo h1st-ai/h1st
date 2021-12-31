@@ -2,17 +2,27 @@ import sys
 from types import SimpleNamespace
 from typing import List, Union, Any, NoReturn, Dict
 
-from h1st.h1flow.h1step import Node, Action
-from h1st.h1flow.h1step_containable import NodeContainable
+from h1step import Node, Action
+from h1step_containable import NodeContainable
 from h1st.exceptions.exception import GraphException
 from h1st.core.viz import DotGraphVisualizer
 from h1st.trust.trustable import Trustable
 
 
+# __TODO__: refactor to Flows and Steps
+
 class Graph(NodeContainable, Trustable):
     """
     A Graph is itself a NodeContainable, meaning it can be enclosed within a Node,
     forming a hierarchy of Graphs
+
+    ```mermaid
+    graph TD
+    A[Hard] -->|Text| B(Round)
+    B --> C{Decision}
+    C -->|One| D[Result 1]
+    C -->|Two| E[Result 2]
+
     """
 
     def __init__(self, node_validation_schema_name='NODE_VALIDATION_SCHEMA'):

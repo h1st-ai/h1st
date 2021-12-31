@@ -1,10 +1,13 @@
 from typing import Any, NoReturn
-from h1st.model.repository import ModelRepository
+
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
+from repository.model_repository import ModelRepository
+from modeler import Modelable
 
-class Model(NodeContainable, Trustable):
+
+class Model(NodeContainable, Trustable, Modelable):
     """
     Base class for H1st Model.
 
@@ -95,4 +98,3 @@ class Model(NodeContainable, Trustable):
         """
         # not raise NotImplementedError so the initial model created by integrator will just work 
         return input_data
-

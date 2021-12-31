@@ -1,7 +1,6 @@
 from typing import Any
 
-from h1st.model.predictive_model import PredictiveModel
-from .model import Model
+from predictive_model import PredictiveModel
 
 
 class MLModel(PredictiveModel):

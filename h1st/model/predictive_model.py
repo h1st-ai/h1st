@@ -1,5 +1,6 @@
 from typing import Any
-from .model import Model
+
+from model import Model
 
 
 class PredictiveModel(Model):

@@ -1,23 +1,22 @@
-from typing import Any, Dict
-from h1st.model.modeler import Modeler
-from h1st.model.ml_model import MLModel
+from ml_model import MLModel
+from modeler import Modeler
 
 
 class MLModeler(Modeler):
     """
-    Base class for H1st ML Modeler.
+    Base class for H1st ML Modelers. Has capabilities that are specific to MLModels.
     """
     
-    def train(self, prepared_data: dict):
+    def train_model(self, prepared_data: dict) -> MLModel:
         """
         Implement logic of training model
 
         :param prepared_data: prepared data from ``prep`` method
         """
     
-    def build(self) -> MLModel:
+    def build_model(self) -> MLModel:
         """
-        Implement logic to create the corresponding MLModel object.
+        Implement logic to create the corresponding MLModel, including both training and evaluation. 
         """
         data = self.load_data()
         base_model = self.train(data)
@@ -33,3 +32,4 @@ class MLModeler(Modeler):
         # Compute metrics and pass to the model
         ml_model.metrics = self.evaluate(data, ml_model)
         return ml_model
+
