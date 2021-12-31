@@ -1,4 +1,4 @@
 ```mermaid
-classdiagram
+classDiagram
     Model ..|> Modelable
     Modelable <.. Modeler
