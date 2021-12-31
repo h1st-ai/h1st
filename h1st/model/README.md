@@ -1,4 +1,4 @@
-*Note: to view these diagrams, install [this Chrome plugin](https://chrome.google.com/webstore/detail/plantuml-visualizer/ffaloebcmkogfdkemcekamlmfkkmgkcf).*
+*Note: to view these diagrams, view this [README.md](https://github.com/h1st-ai/h1st/blob/api-design/docs/README.md)*
 
 ### Model Hiearchy
 ```
