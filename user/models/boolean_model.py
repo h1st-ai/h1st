@@ -1,4 +1,4 @@
-import __init__
+# This can be run with "poetry run python boolean_model.py"
 from h1st.model.boolean_model import BooleanModel
 
 
