@@ -1,4 +1,7 @@
-```mermaid
-classDiagram
-    Model ..|> Modelable
-    Modelable <.. Modeler
+```
+@startuml
+interface Modelable
+Modeler - Modelable : produces >
+Model ..> Modelable : implements
+@enduml
+```
