@@ -19,7 +19,7 @@ class DataNode(Node):
         return [random(), random(), random()]
 
 
-class TestUpdatedGraph:
+class TestGraph:
 
     def test_add_node(self):
         g = Graph()
@@ -82,7 +82,7 @@ class TestUpdatedGraph:
         data_node1 = DataNode()
         data_node2 = DataNode()
         some_node = SomeNode()
-        graph.add(some_node, previous_nodes=[data_node1, data_node2])
+        graph.add(some_node, after=[data_node1, data_node2])
         graph_info = graph.get_info()
         assert len(graph_info.root_nodes) == 2
         assert not graph_info.is_linear
@@ -99,10 +99,36 @@ class TestUpdatedGraph:
         data_node1 = DataNode()
         data_node2 = DataNode()
         some_node = SomeNode()
-        graph.add(data_node1, previous_nodes=[some_node])
-        graph.add(data_node2, previous_nodes=[some_node])
+        graph.add(data_node1, after=[some_node])
+        graph.add(data_node2, after=[some_node])
         graph_info = graph.get_info()
         assert len(graph_info.root_nodes) == 1
         assert not graph_info.is_linear
         assert len(graph_info.nodes) == 3
         assert graph_info.adjacency_list[some_node] == [data_node1, data_node2]
+
+    def test_add_both(self):
+        """
+            a -> b -> d -> f
+            a -> c -> e -> f
+        """
+        graph = Graph()
+        a = SomeNode(name="a")
+        b = SomeNode(name="b")
+        c = SomeNode(name="c")
+        d = SomeNode(name="d")
+        e = SomeNode(name="e")
+        f = SomeNode(name="f")
+        graph.add(a)
+        graph.add(b)
+        graph.add(d)
+        graph.add(c, after=[a])
+        graph.add(e)
+        graph.add(f, after=[d, e])
+        graph_info = graph.get_info()
+        assert len(graph_info.root_nodes) == 1
+        assert not graph_info.is_linear
+        assert len(graph_info.nodes) == 6
+        assert graph_info.adjacency_list[a] == [b, c]
+        assert graph_info.adjacency_list[d] == [f]
+        assert graph_info.adjacency_list[e] == [f]

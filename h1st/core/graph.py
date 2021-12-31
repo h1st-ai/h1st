@@ -9,13 +9,15 @@ class Graph:
     def __init__(self) -> None:
         self.__graph = {}  # dictionary of Node -> NodeInfo
         self.__root_nodes: list[Node] = []
-        self.__last_updated_node = None
+        self.__non_root_nodes: list[Node] = []
+        self.__last_updated_node: Node = None
 
     def add_node(self, node: Node):
         if not isinstance(node, Node):
             raise TypeError("must be Node, not {}".format(type(node).__name__))
         if node not in self.__graph.keys():
             self.__graph[node] = NodeInfo()
+            self.__last_updated_node = node
 
     def add_edge(self, from_node: Node, to_node: Node):
         if not isinstance(from_node, Node):
@@ -35,7 +37,9 @@ class Graph:
                 from_node not in self.__graph[to_node].next_nodes:
             self.__graph[from_node].next_nodes.append(to_node)
             self.__graph[to_node].has_previous = True
-            if from_node not in self.__root_nodes:
+            self.__non_root_nodes.append(to_node)
+            self.__last_updated_node = to_node
+            if from_node not in self.__non_root_nodes and from_node not in self.__root_nodes:
                 self.__root_nodes.append(from_node)
             if is_root_node:
                 self.__root_nodes.remove(to_node)
@@ -67,13 +71,13 @@ class Graph:
         graph_info = self.get_info()
         return ExecutionManager.execute_with_engine(graph_info)
 
-    def add(self, node: Node, previous_nodes: list[Node] = None):
-        if previous_nodes is None:
+    def add(self, node: Node, after: list[Node] = None):
+        if after is None:
             if self.__last_updated_node is None:
                 self.add_node(node)
             else:
                 self.add_edge(self.__last_updated_node, node)
         else:
-            for from_node in previous_nodes:
+            for from_node in after:
                 self.add_edge(from_node, node)
         self.__last_updated_node = node
