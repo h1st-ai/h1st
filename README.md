@@ -28,7 +28,7 @@ To fully understand H1st philosophy and power, check out the [H1st Automotive Cy
 
 
 ## Read the Tutorials, Wiki, and API Documentation
-We highly recommend following the [H1st Automotive Cybersecurity Tutorial](https://h1st.ai) as well as the quick-start examples in the [examples/HelloWorld folder](examples/HelloWorld).
+We highly recommend following the [H1st Automotive Cybersecurity Tutorial](https://h1st.ai) as well as the quick-start examples in the [h1st-examples folder](https://github.com/h1st-ai/h1st-examples).
 
 See the wiki for design consideration e.g. [H1st.AI Model Explained](../../wiki/Human-First-AI-Graph-Explained), [H1st.AI Graph Explained](../../wiki/Human-First-AI-Graph-Explained).
 
