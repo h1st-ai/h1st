@@ -29,8 +29,5 @@ pytest = "^6.2.5"
 tensorflow = "^2.7.0"
 
 [build-system]
-requires = [
-  "poetry-core >= 1.0.0",
-  "setuptools",   # temp fix to setuptools-60.x-related bug
-]
+requires = ["poetry-core >= 1.0.0"]
 build-backend = "poetry.core.masonry.api"
