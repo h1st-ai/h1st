@@ -14,3 +14,16 @@ To view these diagrams, you will need a Chrome/Edge extension. Here’s how:
 4. Turn on “Developer Mode” (a button)
 5. Click on “Load Unpacked”
 6. Select the unzipped directory, `dist/`
+
+When you are done, reload this page to see the hidden message below.
+
+```
+@startuml
+left to right direction
+Class E 
+E --> A
+G --> R
+A --> T
+R --> E
+@enduml
+```
