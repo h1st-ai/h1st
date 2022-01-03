@@ -1,6 +1,7 @@
 
 ### Basic object model
 
+```
 @startuml
 
 interface Modelable
@@ -18,9 +19,11 @@ Model : load_params()
 Model : process() → Any
 
 @enduml
+```
 
 ### Basic Model hiearchy
 
+```
 @startuml
 
 Class Model
@@ -34,3 +37,4 @@ RuleBasedModel -up->PredictiveModel
 FuzzyLogicModel -up->RuleBasedModel
 
 @enduml
+```
