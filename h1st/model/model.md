@@ -25,7 +25,6 @@ Model : process() → Any
 
 ```
 @startuml
-
 Class Model
 
 PredictiveModel -up-> Model
@@ -33,8 +32,8 @@ PredictiveModel -up-> Model
 MLModel -up->PredictiveModel
 BooleanModel -up->PredictiveModel
 RuleBasedModel -up->PredictiveModel
+Oracle -up-> PredictiveModel
 
 FuzzyLogicModel -up->RuleBasedModel
-
 @enduml
 ```
