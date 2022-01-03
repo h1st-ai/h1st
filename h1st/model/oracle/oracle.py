@@ -1,5 +1,4 @@
-from h1st.model.ml_model import MLModel
-from h1st.model.ml_model import MLModel
+from h1st.model.predictive_model import PredictiveModel
 
 from student import Student, StudenModeler
 from teacher import Teacher, TeacherModeler
@@ -11,12 +10,17 @@ Oracle architecture:
 @startuml
 allowmixing
 
-Class Teacher <<RuleBasedModel>>
-Class Student <<ML Generalizer>>
-Actor User
+Class Teacher
+Actor "AI Engineer" as User
 
-User .right.> Teacher  : creates
-Teacher -right-> Student : teaches
+User .down.> TeacherModeler : uses
+User .down.> StudentModeler : uses
+
+TeacherModeler -down-> Teacher : builds
+StudentModeler -down-> Student : builds
+Teacher .right.> Student : teaches
+
+
 
 Teacher -down-> Oracle : trains
 Student -down-> Oracle : trains
@@ -31,10 +35,9 @@ end Note
 @startuml
 allowmixing
 
-
 Class Teacher <<RuleBasedModel>>
 Class Student <<ML Generalizer>>
-Circle Data
+Database Data
 Circle Prediction
 
 Data -down-> Teacher
@@ -48,11 +51,10 @@ Oracle -down-> Prediction
 Note as N1  #green
 <size:16><color:white>Execution Phase</color></size>
 end Note
-
 @enduml
 """
 
-class Oracle(MLModel):
+class Oracle(PredictiveModel):
     """
     Teacher Model in Oracle framework
     """
