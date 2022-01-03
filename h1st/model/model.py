@@ -66,7 +66,7 @@ class Model(NodeContainable, Trustable, Modelable):
     def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
 
-    def persist(self, version=None):
+    def persist(self, version=None) -> None:
         """
         Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
@@ -79,7 +79,7 @@ class Model(NodeContainable, Trustable, Modelable):
         repo = ModelRepository.get_model_repo(self)
         return repo.persist(model=self, version=version)
 
-    def load(self, version: str = None) -> "Model":
+    def load_params(self, version: str = None) -> None:
         """
         Load parameters from the specified `version` from the ModelRepository.
         Leave version blank to load latest version.
