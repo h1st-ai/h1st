@@ -1,5 +1,5 @@
-from ml_model import MLModel
-from modeler import Modeler
+from .ml_model import MLModel
+from .modeler import Modeler
 
 
 class MLModeler(Modeler):
@@ -32,4 +32,3 @@ class MLModeler(Modeler):
         # Compute metrics and pass to the model
         ml_model.metrics = self.evaluate(data, ml_model)
         return ml_model
-

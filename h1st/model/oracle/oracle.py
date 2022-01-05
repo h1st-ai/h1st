@@ -1,8 +1,8 @@
 from h1st.model.predictive_model import PredictiveModel
 
-from student import Student, StudentModeler
-from teacher import Teacher, TeacherModeler
-from ensemble import Ensemble
+from .student import Student, StudentModeler
+from .teacher import Teacher, TeacherModeler
+from .ensemble import Ensemble
 
 """
 Oracle architecture:

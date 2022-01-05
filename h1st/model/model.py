@@ -3,8 +3,8 @@ from typing import Any, NoReturn
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
-from repository.model_repository import ModelRepository
-from modeler import Modelable
+from .repository.model_repository import ModelRepository
+from .modeler import Modelable
 
 
 class Model(NodeContainable, Trustable, Modelable):

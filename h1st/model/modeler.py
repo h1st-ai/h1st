@@ -2,7 +2,7 @@ from typing import Any
 
 from h1st.h1flow.h1step_containable import NodeContainable
 
-from modelable import Modelable
+from .modelable import Modelable
 
 
 class Modeler(NodeContainable):
