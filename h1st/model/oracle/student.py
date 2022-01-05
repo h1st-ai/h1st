@@ -9,7 +9,7 @@ class Student(MLModel):
     pass
 
 
-class StudenModeler(MLModeler):
+class StudentModeler(MLModeler):
     """
     Knowledge Generalization Modeler
     """
