@@ -30,5 +30,5 @@ class MLModeler(Modeler):
         if self.stats is not None:
             ml_model.stats = self.stats.copy()
         # Compute metrics and pass to the model
-        ml_model.metrics = self.evaluate(data, ml_model)
+        ml_model.metrics = self.evaluate_model(data, ml_model)
         return ml_model

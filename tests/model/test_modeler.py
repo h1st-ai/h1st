@@ -63,8 +63,8 @@ class MyMLModeler(MLModeler):
         model.fit(X, y)
         return model
     
-    def evaluate(self, data: Dict, model: MLModel) -> Dict:
-        super().evaluate(data, model)
+    def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
+        super().evaluate_model(data, model)
         X, y_true = data['test_x'], data['test_y']
         y_pred = pd.Series(model.predict({'X': X, 'y': y_true})['species']).map(model.stats['targets_dict'])
         return {'r2_score': r2_score(y_true, y_pred)}

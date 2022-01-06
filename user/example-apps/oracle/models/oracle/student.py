@@ -1,12 +1,11 @@
-import __init__
 from typing import Dict, Any
 
 import pandas as pd
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LogisticRegression
 
-from h1st.model.kgen_modeler import KGenModeler
-from h1st.model.kgen_model import KGenModel
+from h1st.model.oracle.kgen_modeler import KGenModeler
+from h1st.model.oracle.student import KGenModel
 from h1st.model.ml_model import MLModel
 
 
@@ -40,7 +39,7 @@ class MyStudentModeler(KGenModeler):
         if self.stats:
             my_gen.stats = self.stats.copy()
         # Compute metrics and pass to the model
-#         ml_model.metrics = self.evaluate(data, ml_model)
+#         ml_model.metrics = self.evaluate_model(data, ml_model)
         return my_gen
 
 
