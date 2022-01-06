@@ -34,8 +34,8 @@ class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):
         class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):
             def __init__(self):
                 super().__init__([
-                    Model1().load('version_of_model_1'),
-                    Model2().load('version_of_model_2')
+                    Model1().load_params('version_of_model_1'),
+                    Model2().load_params('version_of_model_2')
                 ])
 
             def load_data(self,):
@@ -64,8 +64,8 @@ class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):
         m2.persist('version_of_model_2')
 
         ensemble = RandomForestClassifierStackEnsemble(
-            [Model1().load('version_of_model_1'),
-             Model2().load('version_of_model_2')])
+            [Model1().load_params'version_of_model_1'),
+             Model2().load_params('version_of_model_2')])
         ensemble.load_prep_train_eval()
         print(ensemble.metrics)
         ensemble.persist('version_of_model_ensemble')

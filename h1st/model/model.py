@@ -44,7 +44,7 @@ class Model(NodeContainable, Trustable, Modelable):
 
            # Load the model from the repo
            my_model_2 = MyModel()
-           my_model_2.load('1st_version')
+           my_model_2.load_params('1st_version')
     """
 
     ## TODO: Need a better naming and the definition of the property
