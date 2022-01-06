@@ -34,7 +34,7 @@ class TestModelSerDe:
 
         my_modeler.model_class = model_class
 
-        model = my_modeler.build()
+        model = my_modeler.build_model()
         print(model.base_model)
         model_2 = model_class()
         model_serde = ModelSerDe()
@@ -210,7 +210,7 @@ class TestModelStatsSerDe:
 
         my_modeler = MyModeler()
         my_modeler.model_class = MyModel
-        model = my_modeler.build()
+        model = my_modeler.build_model()
 
         model_2 = MyModel()
 

@@ -87,7 +87,7 @@ class TestMLModeler:
         my_ml_modeler = MyMLModeler()
         my_ml_modeler.model_class = MyMLModel
 
-        my_ml_model = my_ml_modeler.build()
+        my_ml_model = my_ml_modeler.build_model()
 
         prediction = my_ml_model.predict({
             'X': pd.DataFrame(

@@ -37,7 +37,7 @@ class Model(NodeContainable, Trustable, Modelable):
            my_modeler = MyModeler()
            my_modeler.model_class = MyModel
 
-           my_model = my_modeler.build()
+           my_model = my_modeler.build_model()
 
            # Persist the model to repo
            my_model.persist('1st_version')
