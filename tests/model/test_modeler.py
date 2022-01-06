@@ -104,7 +104,7 @@ class TestMLModeler:
             version = my_ml_model.persist()
 
             model_2 = MyMLModel()
-            model_2.load(version)
+            model_2.load_params(version)
 
             assert 'sklearn' in str(type(model_2.base_model))
             assert all(model_2.stats['scaler'].mean_ == my_ml_model.stats['scaler'].mean_)
