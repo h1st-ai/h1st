@@ -84,7 +84,7 @@ class TestFuzzyLogicModelTestCase():
     # def test_save_load(self):
     #     my_fuzzy_logic_model = MyFuzzyLogicModel()
     #     my_fuzzy_logic_model.persist('test_model')
-    #     my_fuzzy_logic_model.load('test_model')
+    #     my_fuzzy_logic_model.load_params('test_model')
     #     sensor_input = {
     #         'sensor1': 10,
     #         'sensor2': 15
