@@ -1,4 +1,6 @@
-from ..h1flow.ui.web_ui import HasWebUI
+from h1st.h1flow.ui.has_web_ui import HasWebUI
+
+# __TODO__ remove this file
 
 class H1Step():
     def __init__(self):

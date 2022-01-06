@@ -1,10 +1,13 @@
 from typing import Any, NoReturn
-from h1st.model.repository import ModelRepository
+
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
+from .repository.model_repository import ModelRepository
+from .modeler import Modelable
 
-class Model(NodeContainable, Trustable):
+
+class Model(NodeContainable, Trustable, Modelable):
     """
     Base class for H1st Model.
 
@@ -34,14 +37,14 @@ class Model(NodeContainable, Trustable):
            my_modeler = MyModeler()
            my_modeler.model_class = MyModel
 
-           my_model = my_modeler.build()
+           my_model = my_modeler.build_model()
 
            # Persist the model to repo
            my_model.persist('1st_version')
 
            # Load the model from the repo
            my_model_2 = MyModel()
-           my_model_2.load('1st_version')
+           my_model_2.load_params('1st_version')
     """
 
     ## TODO: Need a better naming and the definition of the property
@@ -63,7 +66,7 @@ class Model(NodeContainable, Trustable):
     def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
 
-    def persist(self, version=None):
+    def persist(self, version=None) -> None:
         """
         Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
@@ -76,7 +79,7 @@ class Model(NodeContainable, Trustable):
         repo = ModelRepository.get_model_repo(self)
         return repo.persist(model=self, version=version)
 
-    def load(self, version: str = None) -> "Model":
+    def load_params(self, version: str = None) -> None:
         """
         Load parameters from the specified `version` from the ModelRepository.
         Leave version blank to load latest version.
@@ -95,4 +98,3 @@ class Model(NodeContainable, Trustable):
         """
         # not raise NotImplementedError so the initial model created by integrator will just work 
         return input_data
-

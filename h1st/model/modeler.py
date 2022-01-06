@@ -1,10 +1,11 @@
-from typing import Any, NoReturn
-from h1st.model.model import Model
+from typing import Any
+
 from h1st.h1flow.h1step_containable import NodeContainable
-from h1st.trust.trustable import Trustable
+
+from .modelable import Modelable
 
 
-class Modeler(NodeContainable, Trustable):
+class Modeler(NodeContainable):
     """
     Base class for H1st Modeler.
 
@@ -33,14 +34,14 @@ class Modeler(NodeContainable, Trustable):
            my_modeler = MyModeler()
            my_modeler.model_class = MyModel
 
-           my_model = my_modeler.build()
+           my_model = my_modeler.build_model()
 
            # Persist the model to repo
            my_model.persist('1st_version')
 
            # Load the model from the repo
            my_model_2 = MyModel()
-           my_model_2.load('1st_version')
+           my_model_2.load_params('1st_version')
     """
     @property
     def model_class(self) -> Any:
@@ -75,12 +76,12 @@ class Modeler(NodeContainable, Trustable):
         :returns: loaded data
         """
 
-    def explore(self, loaded_data: dict) -> None:
+    def explore_data(self, loaded_data: dict) -> None:
         """
         Implement logic to explore data from loaded data
         """
 
-    def evaluate(self, prepared_data: dict, model: Model) -> dict:
+    def evaluate_model(self, prepared_data: dict, model: Modelable) -> dict:
         """
         Implement logic to evaluate the model using the prepared_data
         This function will calculate model metrics and store it into self.metrics
@@ -92,7 +93,7 @@ class Modeler(NodeContainable, Trustable):
         
         return None
     
-    def build(self) -> Model:
+    def build_model(self) -> Modelable:
         """
         Implement logic to create the corresponding Model object
         """

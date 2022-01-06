@@ -63,8 +63,8 @@ class MyMLModeler(MLModeler):
         model.fit(X, y)
         return model
     
-    def evaluate(self, data: Dict, model: MLModel) -> Dict:
-        super().evaluate(data, model)
+    def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
+        super().evaluate_model(data, model)
         X, y_true = data['test_x'], data['test_y']
         y_pred = pd.Series(model.predict({'X': X, 'y': y_true})['species']).map(model.stats['targets_dict'])
         return {'r2_score': r2_score(y_true, y_pred)}
@@ -87,7 +87,7 @@ class TestMLModeler:
         my_ml_modeler = MyMLModeler()
         my_ml_modeler.model_class = MyMLModel
 
-        my_ml_model = my_ml_modeler.build()
+        my_ml_model = my_ml_modeler.build_model()
 
         prediction = my_ml_model.predict({
             'X': pd.DataFrame(
@@ -104,7 +104,7 @@ class TestMLModeler:
             version = my_ml_model.persist()
 
             model_2 = MyMLModel()
-            model_2.load(version)
+            model_2.load_params(version)
 
             assert 'sklearn' in str(type(model_2.base_model))
             assert all(model_2.stats['scaler'].mean_ == my_ml_model.stats['scaler'].mean_)

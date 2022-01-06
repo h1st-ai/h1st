@@ -1,4 +1,6 @@
-from ..model import Model as H1stModel
+from h1st.model import Model as H1stModel
+
+# __TODO__: what is this? Does it belong here at all?
 
 
 class GoogleCloudTranslateModel(H1stModel):
