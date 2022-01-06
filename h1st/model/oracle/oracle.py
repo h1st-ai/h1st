@@ -10,7 +10,12 @@ Oracle architecture:
 @startuml
 allowmixing
 
-Class Teacher
+Node Oracle {
+	Class Teacher
+	Class Student
+	Class Ensemble
+}
+
 Actor "AI Engineer" as User
 
 User .down.> TeacherModeler : uses
@@ -35,8 +40,12 @@ end Note
 @startuml
 allowmixing
 
-Class Teacher <<RuleBasedModel>>
-Class Student <<ML Generalizer>>
+Node Oracle {
+    Class Teacher <<RuleBasedModel>>
+    Class Student <<ML Generalizer>>
+	Class Ensemble
+}
+
 Database Data
 Circle Prediction
 
