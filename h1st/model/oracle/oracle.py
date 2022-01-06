@@ -10,7 +10,7 @@ Oracle architecture:
 @startuml
 allowmixing
 
-Node Oracle {
+Package Oracle #EEE {
 	Class Teacher
 	Class Student
 	Class Ensemble
@@ -40,7 +40,7 @@ end Note
 @startuml
 allowmixing
 
-Node Oracle {
+Package Oracle #EEE {
     Class Teacher <<RuleBasedModel>>
     Class Student <<ML Generalizer>>
 	Class Ensemble
