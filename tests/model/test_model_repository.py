@@ -7,8 +7,8 @@ from sklearn.linear_model import LogisticRegression
 
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
-from h1st.model.repository import ModelRepository
-from h1st.model.repository.storage import LocalStorage
+from h1st.model.repository.model_repository import ModelRepository
+from h1st.model.repository.storage.local import LocalStorage
 
 
 class ModelRepositoryTestCase(TestCase):

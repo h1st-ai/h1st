@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.model import Model
-from h1st.model.repository import ModelSerDe
+from h1st.model.repository.model_repository import ModelSerDe
 from h1st.model.rule_based_model import RuleBasedModel
 
 
