@@ -9,7 +9,7 @@ import os
 
 
 PACKAGE_NAMESPACE = 'h1st'
-METADATA_FILE_NAME = 'metadata.json'
+METADATA_FILE_NAME = 'bad-metadata.json'
 
 
 _metadata = json.load(
