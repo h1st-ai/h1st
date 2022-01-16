@@ -1,13 +1,24 @@
 # Configuration file for the Sphinx documentation builder.
 
+from datetime import date
+import json
+import os
+PACKAGE_NAMESPACE = 'h1st'
+METADATA_FILE_NAME = 'metadata.json'
+_metadata = json.load(open(os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    PACKAGE_NAMESPACE,
+    METADATA_FILE_NAME)))
+
+
 # -- Project information
 
-project = 'H1st'
-copyright = '2021, Aitomatic'
-author = 'CTN'
+project = _metadata['project']
+author = _metadata['author']
+copyright = f'{date.today().year}, {author}'
 
-release = '0.1'
-version = '0.1.0'
+release = _metadata['release']
+version = _metadata['version']
 
 # -- General configuration
 
@@ -29,9 +40,11 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
-#html_theme = 'sphinx_rtd_theme'
-html_theme = 'furo'
-html_theme_path = ['themes', '../themes']
+html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
+html_css_files = ['css/custom.css']
+#html_theme = 'furo'
+#html_theme_path = ['themes', '../themes']
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
