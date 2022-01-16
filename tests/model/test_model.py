@@ -81,7 +81,7 @@ class TestModelSerDe:
                 data = load_iris()
                 return {'X': data.data, 'y': data.target}
 
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 model = LogisticRegression(random_state=0)
                 X, y = prepared_data['X'], prepared_data['y']
                 model.fit(X, y)
@@ -99,7 +99,7 @@ class TestModelSerDe:
                 data = load_iris()
                 return {'X': data.data, 'y': data.target}
 
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 model = MySkLearnEstimator()
                 X, y = prepared_data['X'], prepared_data['y']
                 model.fit(X, y)
@@ -116,7 +116,7 @@ class TestModelSerDe:
                 data = load_iris()
                 return {'X': data.data, 'y': data.target}
 
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
                 return [LogisticRegression(random_state=0).fit(X, y), LogisticRegression(random_state=0).fit(X, y)]
         
@@ -131,7 +131,7 @@ class TestModelSerDe:
                 data = load_iris()
                 return {'X': data.data, 'y': data.target}
 
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
                 return {'Iris': LogisticRegression(random_state=0).fit(X, y)}
         
@@ -146,7 +146,7 @@ class TestModelSerDe:
                 data = load_iris()
                 return {'X': data.data, 'y': data.target}
 
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
                 model = self.model_class.get_model_arch()
                 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -173,7 +173,7 @@ class TestModelSerDe:
                 data = load_iris()
                 return {'X': data.data, 'y': data.target}
 
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 X, y = prepared_data['X'], prepared_data['y']
                 model = self.model_class.get_model_arch()['Iris']
                 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -201,7 +201,7 @@ class TestModelStatsSerDe:
             def __init__(self):
                 super().__init__()
             
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 self.stats = {'CarSpeed': {'min': 0.01}}
                 return None
 

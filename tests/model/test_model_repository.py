@@ -18,7 +18,7 @@ class ModelRepositoryTestCase(TestCase):
                 data = load_iris()
                 return {'X': data.data, 'y': data.target}
 
-            def train(self, prepared_data):
+            def train_base_model(self, prepared_data):
                 model = LogisticRegression(random_state=0)
                 X, y = prepared_data['X'], prepared_data['y']
                 model.fit(X, y)
