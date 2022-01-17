@@ -1,4 +1,5 @@
-# Concept
+The Concepts
+============
 
 Graph
 
