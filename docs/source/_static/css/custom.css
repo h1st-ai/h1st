@@ -1,0 +1,43 @@
+body, p {
+    --h1st-font-stack: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+    --font-stack: "SFMono-Regular",Lato,proxima-nova,Helvetica Neue,Arial,sans-serif
+    #--h1st-font-stack: "SFMono-Regular",Menlo,Consolas,Monaco,Liberation Mono,Lucida Console,monospace;
+    #--font-stack--monospace: "SFMono-Regular",Menlo,Consolas,Monaco,Liberation Mono,Lucida Console,monospace;
+    font-family: var(--h1st-font-stack);
+    font-size: 12pt;
+}
+
+.rst-content { 
+    font-family: var(--h1st-font-stack);
+    color: #444;
+}
+
+.rst-content .toctree-wrapper>p.caption, h1, h2, h3, h4, h5, h6, legend {
+    font-family: var(--font-stack);
+    font-weight: normal;
+    color: #333;
+}
+
+.rst-content dl dt {
+    font-weight: 500;
+}
+
+.wy-nav-content, .wy-nav-content-wrap {
+    background: #fff;
+}
+
+.wy-side-nav-search, .wy-nav-side {
+    background: #555;
+}
+
+.wy-side-nav-search input[type=text] {
+    border: none;
+}
+
+.wy-menu-vertical {
+    font-size: 90%;
+}
+
+footer, footer p {
+    font-size: 10pt;
+}
