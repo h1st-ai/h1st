@@ -5,7 +5,7 @@
 Before sending your pull requests, make sure you followed this list.
 
 - Read [contributing guidelines](CONTRIBUTING.md).
-- Read [Code of Conduct] [TBD]
+- Read [Code of Conduct](CODE_OF_CONDUCT.md)
 - Check if my changes are consistent with the [guidelines]: TBD
 - Changes are consistent with the [Coding Style] (TBD)
 - Run [Unit Tests]: ``nose2``
