@@ -25,11 +25,6 @@ c. Framework & Architecture
 ===========================
 TODO
 
-=====================================================================
-Encoding Human Knowledge with H1st Canonical Architecture (or Oracle)
-=====================================================================
-Coming soon
-
 *************************
 2. Tutorials and examples
 *************************
@@ -49,6 +44,11 @@ Coming soon
 3. API
 *******
 .. toctree::
-    :maxdepth: 6
+    :maxdepth: 2
 
     index
+
+.. toctree::
+    :maxdepth: 4
+
+    api/modules.rst
