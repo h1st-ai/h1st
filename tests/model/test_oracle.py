@@ -36,8 +36,7 @@ class TestOracle:
         test_data = df_raw.iloc[:n_test, :].reset_index(drop=True)
 
 
-        return {'training_data': {'X': training_data[['sepal_length', 'sepal_width']],
-                'y': training_data['species']},
+        return {'training_data': {'X': training_data[['sepal_length', 'sepal_width']]},
                 'test_data': {'X': test_data[['sepal_length', 'sepal_width']],
                 'y': test_data['species']},
                 }
