@@ -6,7 +6,8 @@ from .student import Student, StudentModeler
 from .ensemble import Ensemble
 
 class TimeSeriesOracle(Oracle):
-    def __init__(self, knowledge_model: PredictiveModel, student_modeler: StudentModeler = StudentModeler, student: Student = Student, ensemble: Ensemble = Ensemble):
+    def __init__(self, knowledge_model: PredictiveModel, student_modeler: StudentModeler = StudentModeler,
+                student: Student = Student, ensemble: Ensemble = Ensemble):
         super().__init__(knowledge_model, student_modeler, student, ensemble)
         self.meta = {}
 
@@ -25,20 +26,16 @@ class TimeSeriesOracle(Oracle):
             raise ValueError(f'{ts_col} does not exist')
 
         features = []
-        group_names = []
-        i = 0
+        teacher_pred = []
         for group_name, group_df in df.groupby([id_col, ts_col]):
-            if i >= 100:
-                break
-            group_names.append(group_name)
             # temporarily remove datetime column for now
-            group_df.drop([id_col, ts_col, 'datetime'], axis=1, inplace=True)
+            group_df.drop([id_col, ts_col], axis=1, inplace=True)
+            teacher_pred.append(self.teacher.predict({'X': group_df})['pred'])
             
             features.append(self.generate_features({'data': group_df}))
 
-            i += 1
-
-        return {'group_names': group_names, 'features': pd.concat(features)}
+        df_features = pd.concat(features).fillna(0)
+        return {'X': df_features, 'y': pd.Series(teacher_pred)}
 
 
     def build(self, data: Dict, id_col: str, ts_col: str) -> NoReturn:
@@ -51,26 +48,19 @@ class TimeSeriesOracle(Oracle):
         
         self.meta['id_col'] = id_col
         self.meta['ts_col'] = ts_col
-
-        # Generate knowledge_model's prediction
-        teacher_pred = self.teacher.predict(data)['pred']
         
         # Generate training data to train the student model
         training_data = self.generate_data(data, id_col, ts_col)
-
         # Train the student model
-        self.student = self.student_modeler.build_model({'X': training_data['features'], 'y': teacher_pred})
+        self.student = self.student_modeler.build_model(training_data)
 
     def predict(self, input_data: dict) -> dict:
         if not hasattr(self, 'student'):
             raise RuntimeError('No student built')
 
-        # Generate knowledge_model's prediction
-        teacher_pred = self.teacher.predict(input_data)
-
         # Generate features the student model
         predict_data = self.generate_data(input_data, self.meta['id_col'], self.meta['ts_col'])
         # Generate student model's prediction
-        student_pred = self.student.predict({'X': predict_data['features']})
+        student_pred = self.student.predict({'X': predict_data['X']})
 
-        return self.ensemble.predict({'teacher_pred': teacher_pred['pred'], 'student_pred': student_pred['pred']})
+        return self.ensemble.predict({'teacher_pred': predict_data['y'], 'student_pred': student_pred['pred']})
