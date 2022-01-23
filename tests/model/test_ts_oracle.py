@@ -60,3 +60,14 @@ class TestTimeSeriesOracle:
 
         pred = oracle.predict(data['training_data'])['pred']
         assert len(pred) == len(training_data['y'])
+
+        with tempfile.TemporaryDirectory() as path:
+            os.environ['H1ST_MODEL_REPO_PATH'] = path
+            version = oracle.persist()
+
+            oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
+            oracle_2.load_params(version)
+            
+            assert 'sklearn' in str(type(oracle_2.student.base_model))
+            pred_2 = oracle_2.predict(data['training_data'])['pred']
+            assert all(pred == pred_2)

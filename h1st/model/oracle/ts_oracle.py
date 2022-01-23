@@ -9,7 +9,7 @@ class TimeSeriesOracle(Oracle):
     def __init__(self, knowledge_model: PredictiveModel, student_modeler: StudentModeler = StudentModeler,
                 student: Student = Student, ensemble: Ensemble = Ensemble):
         super().__init__(knowledge_model, student_modeler, student, ensemble)
-        self.meta = {}
+        self.stats = {}
 
     def generate_features(self, data: Dict):
         df = data['data']
@@ -46,8 +46,8 @@ class TimeSeriesOracle(Oracle):
         :param ts_col: time-granuality column to group the data
         '''
         
-        self.meta['id_col'] = id_col
-        self.meta['ts_col'] = ts_col
+        self.stats['id_col'] = id_col
+        self.stats['ts_col'] = ts_col
         
         # Generate training data to train the student model
         training_data = self.generate_data(data, id_col, ts_col)
@@ -59,7 +59,7 @@ class TimeSeriesOracle(Oracle):
             raise RuntimeError('No student built')
 
         # Generate features the student model
-        predict_data = self.generate_data(input_data, self.meta['id_col'], self.meta['ts_col'])
+        predict_data = self.generate_data(input_data, self.stats['id_col'], self.stats['ts_col'])
         # Generate student model's prediction
         student_pred = self.student.predict({'X': predict_data['X']})
 
