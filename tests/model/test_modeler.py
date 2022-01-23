@@ -57,7 +57,7 @@ class MyMLModeler(MLModeler):
             'test_y':test_data_y,
         }
 
-    def train(self, data: Dict[str, Any]) -> Any:
+    def train_base_model(self, data: Dict[str, Any]) -> Any:
         X, y = data['train_x'], data['train_y']
         model = LogisticRegression(random_state=0)
         model.fit(X, y)

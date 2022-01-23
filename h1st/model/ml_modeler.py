@@ -22,7 +22,7 @@ class MLModeler(Modeler):
         :param prepared_data: prepared data
         """
     
-    def build_model(self, data) -> MLModel:
+    def build_model(self, data: Dict[str, Any] = None) -> MLModel:
         """
         Implement logic to create the corresponding MLModel, including both training and evaluation. 
         """
