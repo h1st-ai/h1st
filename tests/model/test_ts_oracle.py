@@ -30,9 +30,11 @@ class RuleModel:
         
         return {'pred': pred}
 
-class TestOracle:
+class TestTimeSeriesOracle:
     def load_data(self):
         path = f'{dir_path}/data/'
+        if not os.path.exists(path):
+            path = 'https://azuremlsampleexperiments.blob.core.windows.net/datasets/'
         telemetry_url = 'PdM_telemetry.csv'
         df = pd.read_csv(path + 'PdM_telemetry.csv')
         df.loc[:, 'datetime'] = pd.to_datetime(df['datetime'])
