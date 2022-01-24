@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from .ml_model import MLModel
 from .modeler import Modeler
 
@@ -13,13 +14,21 @@ class MLModeler(Modeler):
 
         :param prepared_data: prepared data from ``prep`` method
         """
+
+    def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
+        """
+        Implement logic of training the base/native model
+
+        :param prepared_data: prepared data
+        """
     
-    def build_model(self) -> MLModel:
+    def build_model(self, data: Dict[str, Any] = None) -> MLModel:
         """
         Implement logic to create the corresponding MLModel, including both training and evaluation. 
         """
-        data = self.load_data()
-        base_model = self.train(data)
+        if not data:
+            data = self.load_data()
+        base_model = self.train_base_model(data)
         if self.model_class is None:
             raise ValueError('Model class not provided')
 
