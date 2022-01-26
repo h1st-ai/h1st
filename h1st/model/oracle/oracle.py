@@ -67,7 +67,14 @@ class Oracle(PredictiveModel):
     """
     Oracle Model in Oracle framework
     """
-    def __init__(self, knowledge_model: PredictiveModel, student_modeler: StudentModeler = StudentModeler, student: Student = Student, ensemble: Ensemble = Ensemble):
+    def __init__(self, knowledge_model: PredictiveModel, student_modeler: StudentModeler = StudentModeler,
+                       student: Student = Student, ensemble: Ensemble = Ensemble):
+        '''
+        :param knowledge_model: The knowledge model.
+        :param student_modeler: The student modeler class.
+        :param student_model: The student model class.
+        :param ensemble: The ensemble model class.
+        '''
         self.metas = {}
         self.teacher = knowledge_model
         self.ensemble = ensemble()
@@ -75,6 +82,10 @@ class Oracle(PredictiveModel):
         self.student_modeler.model_class = student
 
     def build(self, data:Dict) -> NoReturn:
+        '''
+        Build the student and ensemble components.
+        :param data: Unlabeled data.
+        '''
         # Generate knowledge_model's prediction
         teacher_pred = self.teacher.predict(data)['pred']
 
