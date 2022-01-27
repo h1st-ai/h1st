@@ -1,5 +1,7 @@
 import os
+from pyexpat import features
 import tempfile
+from typing import Dict
 import pandas as pd
 from sklearn import datasets, metrics
 from h1st.model.oracle.ts_oracle import TimeSeriesOracle
@@ -28,7 +30,7 @@ class RuleModel:
         elif vibration_val > self.daily_thresholds['vibration']:
             pred = 3 # fault 3
         
-        return {'pred': pred}
+        return {'predictions': pred}
 
 class TestTimeSeriesOracle:
     def load_data(self):
@@ -56,9 +58,9 @@ class TestTimeSeriesOracle:
         oracle = TimeSeriesOracle(knowledge_model=RuleModel())
         oracle.build(data['training_data'], id_col='machineID', ts_col='date')
 
-        training_data = oracle.generate_data(data['training_data'], id_col='machineID', ts_col='date')
+        training_data = oracle.generate_data(data['training_data'])
 
-        pred = oracle.predict(data['training_data'])['pred']
+        pred = oracle.predict(data['training_data'])['predictions']
         assert len(pred) == len(training_data['y'])
 
         with tempfile.TemporaryDirectory() as path:
@@ -68,6 +70,60 @@ class TestTimeSeriesOracle:
             oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
             oracle_2.load_params(version)
             
-            assert 'sklearn' in str(type(oracle_2.student.base_model))
-            pred_2 = oracle_2.predict(data['training_data'])['pred']
-            assert all(pred == pred_2)
+            assert 'sklearn' in str(type(oracle_2.students[0].base_model))
+            pred_2 = oracle_2.predict(data['training_data'])['predictions']
+            pred_df = pd.concat((pred, pred_2), axis=1)
+            pred_df.columns = ['predictions', 'pred_2']
+            assert len(pred_df[pred_df['predictions'] != pred_df['pred_2']]) == 0
+
+    def test_azure_iot_with_features(self):
+        data = self.load_data()
+
+        oracle = TimeSeriesOracle(knowledge_model=RuleModel())
+        oracle.build(data['training_data'],
+                    id_col='machineID',
+                    ts_col='date',
+                    features=['volt', 'rotate', 'vibration']
+                    )
+
+        training_data = oracle.generate_data(data['training_data'])
+
+        pred = oracle.predict(data['training_data'])['predictions']
+        assert len(pred) == len(training_data['y'])
+
+        with tempfile.TemporaryDirectory() as path:
+            os.environ['H1ST_MODEL_REPO_PATH'] = path
+            version = oracle.persist()
+
+            oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
+            oracle_2.load_params(version)
+            
+            assert 'sklearn' in str(type(oracle_2.students[0].base_model))
+            pred_2 = oracle_2.predict(data['training_data'])['predictions']
+            pred_df = pd.concat((pred, pred_2), axis=1)
+            pred_df.columns = ['predictions', 'pred_2']
+            assert len(pred_df[pred_df['predictions'] != pred_df['pred_2']]) == 0
+
+    def test_azure_iot_one_equipment(self):
+        data = self.load_data()
+        data['training_data']['X'].drop('machineID', axis=1, inplace=True)
+        oracle = TimeSeriesOracle(knowledge_model=RuleModel())
+        oracle.build(data['training_data'], ts_col='date')
+
+        training_data = oracle.generate_data(data['training_data'])
+
+        pred = oracle.predict(data['training_data'])['predictions']
+        assert len(pred) == len(training_data['y'])
+
+        with tempfile.TemporaryDirectory() as path:
+            os.environ['H1ST_MODEL_REPO_PATH'] = path
+            version = oracle.persist()
+
+            oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
+            oracle_2.load_params(version)
+            
+            assert 'sklearn' in str(type(oracle_2.students[0].base_model))
+            pred_2 = oracle_2.predict(data['training_data'])['predictions']
+            pred_df = pd.concat((pred, pred_2), axis=1)
+            pred_df.columns = ['predictions', 'pred_2']
+            assert len(pred_df[pred_df['predictions'] != pred_df['pred_2']]) == 0
