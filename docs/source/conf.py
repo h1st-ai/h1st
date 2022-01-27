@@ -20,6 +20,8 @@ copyright = f'{date.today().year}, {author}'
 release = _metadata['release']
 version = _metadata['version']
 
+master_doc = 'README'
+
 # -- General configuration
 
 extensions = [
