@@ -9,6 +9,11 @@ How to Work on Docs
 
     % pip install sphinx
 
+(Optional, only run this step if there are changes in the api)
+- Build the api::
+
+    % cd h1st/docs && build_api.sh
+
 - Build the docs::
 
     % cd h1st/docs && make html
