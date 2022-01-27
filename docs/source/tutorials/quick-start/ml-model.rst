@@ -1,0 +1,116 @@
+ML Model
+========
+
+The H1st Model is one of the core concepts of H1st, and it is central to the way H1st works. Model presents a uniform interface to its users, whether the underlying model is boolean logic, fuzzy logic derived from human’s intuition, a Scikit-learn random forest, or a Tensorflow neural network. This makes it possible for you to use and combine Models in Graphs or Ensembles easily.
+
+The easiest way to understand H1st model is actually implementing it. H1st model provides all the interfaces to manage the life cycle of the model.
+
+Below is an example of H1st Model that utilizes an underlying Scikit-learn model for digits classification.
+
+.. code-block:: python
+
+  from sklearn import svm, datasets, metrics
+  import h1st as h1
+
+  class MLModel(h1.MLModel):
+      def __init__(self):
+          # This is the native SKLearn model
+          # H1st can automatically save/load this "self.model" property if it's a SKlearn or tf.keras.Model
+          self.model = svm.SVC(gamma=0.001, C=100.)
+
+      def get_data(self):
+          digits = datasets.load_digits()
+          return {
+              "x": digits.data,
+              "y": digits.target
+          }
+
+      def explore_data(self, data):
+          pass
+
+      def prep(self, data):
+          x = data["x"]
+          y = data["y"]
+          num_tests = 10
+          return {
+              "train_x": x[num_tests:],
+              "train_y": y[num_tests:],
+              "test_x": x[0:num_tests],
+              "test_y": y[0:num_tests]
+          }
+
+      def train(self, prepared_data):
+          self.model.fit(prepared_data["train_x"], prepared_data["train_y"])
+
+      def evaluate(self, data):
+          pred_y = self.predict({"x": data["test_x"]})
+          # self.metrics can also be persisted automatically by H1st
+          self.metrics = metrics.accuracy_score(data["test_y"], pred_y)
+          return self.metrics
+
+      def predict(self, input_data: dict) -> dict:
+          """
+          We expect an array of input data rows in the "x" field of the input_data dict
+          """
+          return self.model.predict(input_data["x"])
+
+
+To create an H1st model, you can start by create a new class and subclass from the h1.Model.
+
+Then we populate the methods to get_data() to get the data, prep() to preprocess it, and of course train(), evaluate() and predict().
+
+This is how the model is used. Pay close attention to the parameters of the methods and note that the train-val data splitting is done in prep(), and that most data parameters should be Python dictionaries where the data scientists can creatively decide how to use the keys & values such as train_x, test_x.
+
+
+.. code-block:: python
+
+  m = MLModel()
+  raw_data = m.get_data()
+  print(raw_data)
+
+  prepared_data = m.prep(raw_data)
+
+  m.train(prepared_data)
+  m.evaluate(prepared_data)
+  print("accuracy_score = %.4f" % m.metrics)
+
+
+.. code-block:: python
+
+  {'x': array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],
+        [ 0.,  0.,  0., ..., 10.,  0.,  0.],
+        [ 0.,  0.,  0., ..., 16.,  9.,  0.],
+        ...,
+        [ 0.,  0.,  1., ...,  6.,  0.,  0.],
+        [ 0.,  0.,  2., ..., 12.,  0.,  0.],
+        [ 0.,  0., 10., ..., 12.,  1.,  0.]]), 'y': array([0, 1, 2, ..., 8, 9, 8])}
+  accuracy_score = 0.9000
+
+The beauty of this API is that we can keep same workflow steps for all kinds of models, whether they are boolean/fuzzy logic or ML models!
+
+.. code-block:: python
+
+  h1.init(MODEL_REPO_PATH=".models")
+  version_id = m.persist()
+
+  m = MLModel().load(version_id)
+  print("accuracy_score of loaded model = %.4f" % m.metrics)
+
+
+.. code-block::
+
+  2020-09-30 00:34:46,129 INFO h1st.model_repository.model_repository: Saving metrics property...
+  2020-09-30 00:34:46,131 INFO h1st.model_repository.model_repository: Saving model property...
+  2020-09-30 00:34:48,722 INFO h1st.model_repository.model_repository: Loading version 01EKEYYQKGY5FJ8BFE90KY2A01 ....
+
+
+.. code-block::
+
+  accuracy_score of loaded model = 0.9000
+
+
+H1st AI supports out-of-the-box easy persisting & loading of sklearn and tf.keras models to a model repository (other types can be added).
+
+This makes it much easier to include model in larger workflows such as in H1st Graphs or Ensembles. It can enable data science teams to be much more productive.
+
+A model repository is simply a folder on local disk or S3. We call h1.init() specifying MODEL_REPO_PATH. Alternative it can be automatically picked up in the project’s config.py.
