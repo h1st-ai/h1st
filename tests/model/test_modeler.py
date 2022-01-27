@@ -57,7 +57,7 @@ class MyMLModeler(MLModeler):
             'test_y':test_data_y,
         }
 
-    def train(self, data: Dict[str, Any]) -> Any:
+    def train_base_model(self, data: Dict[str, Any]) -> Any:
         X, y = data['train_x'], data['train_y']
         model = LogisticRegression(random_state=0)
         model.fit(X, y)
@@ -76,7 +76,7 @@ class MyMLModel(MLModel):
             'X': self.stats['scaler'].transform(raw_data)
         }
 
-    def process(self, input_data: dict) -> dict:
+    def process(self, input_data: Dict) -> Dict:
         preprocess_data = self.preprocess(input_data)
         y = self.base_model.predict(preprocess_data['X'])
         return {'species': [self.stats['targets'][item] for item in y]}

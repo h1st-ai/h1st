@@ -79,7 +79,7 @@ class NodeContainable(Trustable):
 
         return result
 
-    # def validate_node_output(self, input_data: dict=None, schema=None) -> SchemaValidationResult:
+    # def validate_node_output(self, input_data: Dict=None, schema=None) -> SchemaValidationResult:
     #     """
     #     Subclass will implement this function to verify its output schema
 
