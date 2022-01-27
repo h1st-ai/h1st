@@ -1,5 +1,5 @@
 Rule-Based Model
-================
+################
 
 Rule-based model is an example of usingour human knowledge to solve a problem. You could also use boolean logic, fuzzy logic, or make decision based on statistcs or myriad other ways that humans do to solve problems.
 

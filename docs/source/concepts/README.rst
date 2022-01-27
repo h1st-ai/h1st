@@ -12,3 +12,4 @@ H1st is designed with the following principles:
     k1st.rst
     a1st.rst
     ai-rule.rst
+    object-model.rst

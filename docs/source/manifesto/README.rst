@@ -4,6 +4,9 @@ Human-First AI Manifesto
 Join the revolution
 -------------------
 
+.. image:: https://images.unsplash.com/photo-1505243542579-da5adfe8338f?w=700
+    :alt: H1st AI revolution image
+
 *“We humans have .. insight that can then be mixed with powerful
 AI .. to help move society forward. Second, we also have to build
 trust directly into our technology .. And third, all of the

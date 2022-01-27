@@ -1,5 +1,5 @@
 ML Model
-========
+########
 
 The H1st Model is one of the core concepts of H1st, and it is central to the way H1st works. Model presents a uniform interface to its users, whether the underlying model is boolean logic, fuzzy logic derived from human’s intuition, a Scikit-learn random forest, or a Tensorflow neural network. This makes it possible for you to use and combine Models in Graphs or Ensembles easily.
 

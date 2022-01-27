@@ -3,6 +3,9 @@
 Welcome to Human-First AI
 =========================
 
+.. image:: https://images.unsplash.com/photo-1552598911-e3b72c148679?w=700
+    :alt: Human-First AI concept image
+
 **Why:** With Human-First AI, we aim to put human insight, human control, and human values back on center-stage. 
 The AI/ML era should be about combining human and machine inteligence, and not substituting one for the other.
 It should be about the elevation of humanity, and not our subjugation.

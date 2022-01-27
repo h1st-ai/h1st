@@ -1,10 +1,6 @@
 Quick Start Guide
-==============
+=================
 
-..  toctree::
-    :hidden:
-    :maxdepth: 4
-
-    h1st-graph.rst
-    ml-model.rst
-    rule-based-model.rst
+..  include:: h1st-graph.rst.txt
+..  include:: ml-model.rst.txt
+..  include:: rule-based-model.rst.txt
