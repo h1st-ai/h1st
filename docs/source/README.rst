@@ -30,6 +30,7 @@ It is maintained by Aitomatic and other contributors. The repository can be foun
     :hidden:
     :maxdepth: 4
 
+    manifesto/README.rst
     concepts/README.rst
     api/README.rst
     tutorials/README.rst
