@@ -12,6 +12,8 @@ class Ensemble(PredictiveModel):
         teacher's output in case of conflicts.
         Inherit and override this method to support other
         types of combination.
+        :param teacher_pred: teacher's prediction
+        :param student_pred: student's prediction
         '''
         pred = pd.DataFrame({'teacher_pred': teacher_pred, 'student_pred': student_pred})\
                  .apply(lambda row: row['teacher_pred'] 

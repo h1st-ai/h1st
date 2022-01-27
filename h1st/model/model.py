@@ -15,8 +15,8 @@ class Model(NodeContainable, Trustable, Modelable):
     Please refer to Tutorial for more details how to create a model.
 
     The framework allows you to persist and load model to the model repository.
-    To persist the model, you can call `persist()`, and then `load` to retrieve the model.
-    See `persist()` and `load()` document for more detail.
+    To persist the model, you can call `persist()`, and then `load_params` to retrieve the model.
+    See `persist()` and `load_params()` document for more detail.
 
         .. code-block:: python
            :caption: Model Persistence and Loading Example
@@ -24,10 +24,7 @@ class Model(NodeContainable, Trustable, Modelable):
            import h1st
 
            class MyModeler(h1st.model.Modeler):
-               def train(self, data):
-                   X, y = prepared_data['X'], prepared_data['y']
-                   ...
-               def build(self):
+               def build_model(self):
                    ...
 
            class MyModel(h1st.model.Model):

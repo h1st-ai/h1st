@@ -12,11 +12,26 @@ class TimeSeriesOracle(Oracle):
         self.stats = {}
 
     def generate_features(self, data: Dict):
+        '''
+        Generate features to train the Student model.
+        By default, we flatten all data points of the grouped dataframe.
+        Overwrite this method to do custom featurization work.
+        :param data: grouped dataframe.
+        '''
         df = data['data']
         ret = pd.DataFrame(df.values.reshape(1, df.shape[0]*df.shape[1]))
         return ret
 
     def generate_data(self, data: Dict, id_col: str, ts_col: str) -> Dict:
+        '''
+        Generate data to train the Student model
+        :param data: unlabelled data.
+        :param id_col: the ID column to group data points belong to
+        the same entity.
+        :param ts_col: the datetime column to group data points. For example,
+        `date` to group data points of the same date together.
+        :returns: a dictionary of features and teacher's prediction.
+        '''
         df = data['X']
 
         if id_col not in df.columns:
