@@ -1,5 +1,5 @@
 H1st Oracle: Combine Encoded Domain Knowledge with Machine Learning
-================================
+===================================================================
 
 In this tutorial, we will demonstrate the end-to-end process of building
 Oracle, from raw data to Oracle model, using Microsoft Azure Predictive
