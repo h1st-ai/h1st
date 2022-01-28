@@ -3,6 +3,7 @@ import tempfile
 import pandas as pd
 from sklearn import datasets, metrics
 from h1st.model.oracle.oracle import Oracle
+from h1st.model.oracle.student import RandomForestModeler
 
 class RuleModel:
     sepal_length_max: float = 6.0
@@ -12,7 +13,7 @@ class RuleModel:
     
     def predict(self, data):
         df = data['X']
-        return {'pred': pd.Series(map(self.predict_setosa, df['sepal_length'], df['sepal_width']), 
+        return {'predictions': pd.Series(map(self.predict_setosa, df['sepal_length'], df['sepal_width']), 
                          name='prediction')}
 
     
@@ -46,7 +47,7 @@ class TestOracle:
         oracle = Oracle(knowledge_model=RuleModel())
         oracle.build(data['training_data'])
 
-        pred = oracle.predict(data['test_data'])['pred']
+        pred = oracle.predict(data['test_data'])['predictions']
         assert len(pred) == len(data['test_data']['y'])
         # print(metrics.f1_score(data['test_data']['y'], pred, average='macro'))
 
@@ -54,9 +55,34 @@ class TestOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = Oracle(RuleModel())
+            oracle_2 = Oracle(knowledge_model=RuleModel())
             oracle_2.load_params(version)
             
-            assert 'sklearn' in str(type(oracle_2.student.base_model))
-            pred_2 = oracle_2.predict(data['test_data'])['pred']
-            assert all(pred == pred_2)
+            assert 'sklearn' in str(type(oracle_2.students[0].base_model))
+            pred_2 = oracle_2.predict(data['test_data'])['predictions']
+            pred_df = pd.concat((pred, pred_2), axis=1)
+            pred_df.columns = ['predictions', 'pred_2']
+            assert len(pred_df[pred_df['predictions'] != pred_df['pred_2']]) == 0
+
+    def test_iris_one_student(self):
+        data = self.load_data()
+        oracle = Oracle(knowledge_model=RuleModel(), student_modelers=[RandomForestModeler()])
+        oracle.build(data['training_data'])
+
+        pred = oracle.predict(data['test_data'])['predictions']
+        assert len(pred) == len(data['test_data']['y'])
+        assert any(pred != data['test_data']['y'])
+        # print(metrics.f1_score(data['test_data']['y'], pred, average='macro'))
+
+        with tempfile.TemporaryDirectory() as path:
+            os.environ['H1ST_MODEL_REPO_PATH'] = path
+            version = oracle.persist()
+
+            oracle_2 = Oracle(knowledge_model=RuleModel(), student_modelers=[RandomForestModeler()])
+            oracle_2.load_params(version)
+            
+            assert 'sklearn' in str(type(oracle_2.students[0].base_model))
+            pred_2 = oracle_2.predict(data['test_data'])['predictions']
+            pred_df = pd.concat((pred, pred_2), axis=1)
+            pred_df.columns = ['predictions', 'pred_2']
+            assert len(pred_df[pred_df['predictions'] != pred_df['pred_2']]) == 0
