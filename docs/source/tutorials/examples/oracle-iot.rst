@@ -1541,6 +1541,10 @@ machines (gives many false alarm).
     f1_micro_rule_model: 0.898 f1_macro_rule_model: 0.405
 
 
+From the above test results, we can see that Oracle made improvement in both 
+f1_micro and f1_macro around 2.4% and 5.4% compared to the f1 score of rule-based model. 
+
+
 Test out if a persisted Oracle can be loaded and give the same
 predictions as the original Oracle object.
 
