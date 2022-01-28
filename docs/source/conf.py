@@ -30,7 +30,6 @@ master_doc = 'README'
 # -- General configuration
 
 extensions = [
-    'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',

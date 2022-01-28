@@ -1,13 +1,9 @@
 h1st.trust namespace
 ====================
 
-.. py:module:: h1st.trust
 
-Submodules
-----------
 
 .. toctree::
-   :maxdepth: 9
 
    h1st.trust.auditable
    h1st.trust.debiasable
