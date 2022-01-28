@@ -11,8 +11,7 @@ class Ensemble(PredictiveModel):
         '''
         Combine output of teacher and students using majority vote by default. In case
         when majority vote cannot be applied, use teacher's output as the final output.
-        Inherit and override this method to support other
-        types of combination.
+        Inherit and override this method to use your custom combining approach.
         :param teacher_pred: teacher's prediction
         :param student_pred: student's prediction
         :returns: a dictionary with key `predictions` containing the predictions
