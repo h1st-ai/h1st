@@ -9,10 +9,9 @@ class Ensemble(PredictiveModel):
     """
     def combine(self, teacher_pred, student_preds):
         '''
-        Provide default combination for multi-class outputs which prioritizes
-        teacher's output in case of conflicts.
-        Inherit and override this method to support other
-        types of combination.
+        Combine output of teacher and students using majority vote by default. In case
+        when majority vote cannot be applied, use teacher's output as the final output.
+        Inherit and override this method to use your custom combining approach.
         :param teacher_pred: teacher's prediction
         :param student_pred: student's prediction
         :returns: a dictionary with key `predictions` containing the predictions
