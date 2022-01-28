@@ -1,0 +1,6 @@
+numpy
+pandas
+s3fs
+shap
+sklearn
+ulid
