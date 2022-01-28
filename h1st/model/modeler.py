@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from h1st.h1flow.h1step_containable import NodeContainable
 
@@ -53,7 +53,7 @@ class Modeler(NodeContainable):
         return getattr(self, '__stats__', None)
 
     @stats.setter
-    def stats(self, value) -> dict:
+    def stats(self, value) -> Dict:
         setattr(self, '__stats__', value)
 
     @property
@@ -63,23 +63,23 @@ class Modeler(NodeContainable):
         return getattr(self, '__metrics__')
 
     @metrics.setter
-    def metrics(self, value) -> dict:
+    def metrics(self, value) -> Dict:
         setattr(self, '__metrics__', value)
     
-    def load_data(self) -> dict:
+    def load_data(self) -> Dict:
         """
         Implement logic of load data from data source
 
         :returns: loaded data
         """
 
-    def explore_data(self, loaded_data: dict) -> None:
+    def explore_data(self, loaded_data: Dict) -> None:
         """
         Implement logic to explore data from loaded data
         :param loaded_data: the data loaded using `load_data`.
         """
 
-    def evaluate_model(self, prepared_data: dict, model: Modelable) -> dict:
+    def evaluate_model(self, prepared_data: Dict, model: Modelable) -> Dict:
         """
         Implement logic to evaluate the model using the prepared_data
         This function will calculate model metrics and store it into self.metrics

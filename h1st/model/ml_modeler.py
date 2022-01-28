@@ -8,7 +8,7 @@ class MLModeler(Modeler):
     Base class for H1st ML Modelers. Has capabilities that are specific to MLModels.
     """
     
-    def train_model(self, prepared_data: dict) -> MLModel:
+    def train_model(self, prepared_data: Dict) -> MLModel:
         """
         Implement logic of training model
 

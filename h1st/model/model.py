@@ -1,4 +1,4 @@
-from typing import Any, NoReturn
+from typing import Dict
 
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
@@ -50,7 +50,7 @@ class Model(NodeContainable, Trustable, Modelable):
         return getattr(self, '__stats__', None)
 
     @stats.setter
-    def stats(self, value) -> dict:
+    def stats(self, value) -> Dict:
         setattr(self, '__stats__', value)
 
     @property
@@ -60,7 +60,7 @@ class Model(NodeContainable, Trustable, Modelable):
         return getattr(self, '__metrics__')
 
     @metrics.setter
-    def metrics(self, value) -> dict:
+    def metrics(self, value) -> Dict:
         setattr(self, '__metrics__', value)
 
     def persist(self, version=None) -> None:
@@ -86,12 +86,12 @@ class Model(NodeContainable, Trustable, Modelable):
 
         return self
         
-    def process(self, input_data: dict) -> Any:
+    def process(self, input_data: Dict) -> Dict:
         """
         Implement logic to process data
 
         :params data: data to process
-        :returns: processing result as Any
+        :returns: processing result as a dictionary
         """
         # not raise NotImplementedError so the initial model created by integrator will just work 
         return input_data

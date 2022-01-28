@@ -1,5 +1,5 @@
 import logging
-from typing import Any, NoReturn
+from typing import Dict, NoReturn
 
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
@@ -152,7 +152,7 @@ class FuzzyLogicModel(RuleBasedModel):
         else:
             logger.warning(f"{variable_name} not found")
 
-    def predict(self, input_data: dict) -> dict:
+    def predict(self, input_data: Dict) -> Dict:
         for key, value in input_data.items():
             self.css.input[key] = value
 

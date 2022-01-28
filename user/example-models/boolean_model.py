@@ -1,9 +1,10 @@
 # This can be run with "poetry run python boolean_model.py"
+from typing import Dict
 from h1st.model.boolean_model import BooleanModel
 
 
 class UserBooleanModel(BooleanModel):
-    def process(self, input_data: dict):
+    def process(self, input_data: Dict):
         x = input_data["x"]
         if x > 0.5:
             return True
