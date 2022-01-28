@@ -23,7 +23,7 @@ class Ensemble(PredictiveModel):
             pred_dict = {'teacher_pred': teacher_pred}
             pred_dict.update({f'student_pred_{i}': student_pred 
                                     for i, student_pred in enumerate(student_preds)})
-            predictions = pd.DataFrame(pred_dict).mode(axis='columns', numeric_only=True)
+            predictions = pd.DataFrame(pred_dict).mode(axis='columns', numeric_only=True)[0]
 
         return {'predictions': predictions}
 
