@@ -1,5 +1,5 @@
 H1st Oracle: Combine Encoded Domain Knowledge with Machine Learning
-===================================================================
+====================================================================
 
 In this tutorial, we will demonstrate the end-to-end process of building
 Oracle, from raw data to Oracle model, using Microsoft Azure Predictive
@@ -30,7 +30,7 @@ performance of Oracle and compare it with that of rule-based model
 `6. Summary <#summary>`__
 
 1. H1st Oracle
---------------
+---------------
 
 1.1 What is H1st Oracle ?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,12 +49,12 @@ don’t need to). Lastly, if you already have some labeled data, you can
 use them as well to build a more powerful Oracle.
 
 1.2 Architeture of Oracle
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Oracle consists of one Teacher (RuleBasedModel), multiple Students 
 (ML Generalizer), and one Ensemble. 
 
-  .. image:: h1st-oracle.jpg
+.. image:: h1st-oracle.jpg
     :width: 522px
     :align: center
     :alt: H1st Oracle Architecture
@@ -67,10 +67,10 @@ Additionally:
 \* You can also check out the `H1st API documentation <https://h1st.readthedocs.io/en/latest/api/README.html>`__
 
 2. Setup an Experiment
-----------------------
+-----------------------
 
 2.1 Define the problem we solve in this tutorial
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this tutorial, we want to solve Predictive Maintenance problem.
 Predictive Maintenacne is to help determine the codition of operating
@@ -91,18 +91,25 @@ Microsoft Azure equipments, we wouldn’t have used any labeled data to
 create rules.
 
 2.2 Experiment Process
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
-The experiment process will be like the following. - Through data
-analysis, identify rules and build a rule-based model that can classify
-faulty component of machine - Split the entire dataset into training set
-and test set. - Evaluate the rule-based model using test set. - Build
-Oracle using the rule-based model and training set (without label) -
-Evaluate the Oracle using test set. - Compare the evaluation results of
-rule-based model and Oracle
+The experiment process will be like the following. 
+
+-  Through data analysis, identify rules and build a rule-based model 
+   that can classify faulty component of machine 
+
+-  Split the entire dataset into training set and test set. 
+
+-  Evaluate the rule-based model using test set. 
+
+-  Build Oracle using the rule-based model and training set (without label) 
+
+-  Evaluate the Oracle using test set. 
+
+-  Compare the evaluation results of rule-based model and Oracle
 
 3. Microsoft Azure Predictive Maintenance dataset
--------------------------------------------------
+--------------------------------------------------
 
 In this section, we will do basic Exploratory Data Analysis (EDA) to
 find out some rules (patterns) that can be used to predict potentially
@@ -156,7 +163,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_failures.csv
 https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 3.1 Exploratory Data Analysis (EDA)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -709,32 +716,51 @@ characteristics of dataset in details.
 
 
 
+.. image:: timeseries_plot.png
+    :width: 800px
+    :align: center
+    :alt: Time Series Plot of MachineID: 1
+
+
 From the following timeseries plot where we ploted daily mean value of
-each sensor, we observe very interesting patterns. 1. “comp1” failure
-can be detected when the daily average of “volt” goes above 180 2.
-“comp2” failure can be detected when the daily average of “rotate” goes
-below 420 3. “comp4” failure can be detected when the daily average of
-“vibration” goes above 45
+each sensor, we observe very interesting patterns. 
+
+1. “comp1” failure can be detected when the daily average of “volt” goes above 180 
+
+2. “comp2” failure can be detected when the daily average of “rotate” goes below 420 
+
+3. “comp4” failure can be detected when the daily average of “vibration” goes above 45
+
+
+
 
 .. code:: ipython3
 
     df_one_daily = df_one.set_index('datetime').resample('1d').mean()
     sensors = 'volt'
     fig = px.line(df_one_daily, x=df_one_daily.index, y=sensors,
-    #               hover_data={"date": "|%B %d, %Y"},
                   title=f'"comp1" failure can be detected when the daily average of "volt" goes above 180')
     df_fail_one = df_failures[df_failures.machineID == machine_id]
     for row in df_fail_one.iterrows():
-        fig.add_vline(
-            row[1]['datetime'], 
-        )
-        fig.add_annotation(x=row[1]['datetime'],
-                           y=df_one_daily.max()[sensors],
-                           text=row[1]['failure'],
-                           showarrow=True,
-                           arrowhead=1)
+        if row[1]['failure'] == 'comp1':
+            fig.add_vline(
+                row[1]['datetime'], 
+            )
+            fig.add_annotation(x=row[1]['datetime'],
+                            y=df_one_daily.max()[sensors],
+                            text=row[1]['failure'],
+                            showarrow=True,
+                            arrowhead=1)
     fig.add_hline(180, line_color='#00ff00')
     fig.show()
+
+
+
+
+.. image:: timeseries_comp1.png
+    :width: 800px
+    :align: center
+    :alt: Time Series Plot of comp1
 
 
 
@@ -744,20 +770,28 @@ below 420 3. “comp4” failure can be detected when the daily average of
     df_one_daily = df_one.set_index('datetime').resample('1d').mean()
     sensors = 'rotate'
     fig = px.line(df_one_daily, x=df_one_daily.index, y=sensors,
-    #               hover_data={"date": "|%B %d, %Y"},
                   title=f'"comp2" failure can be detected when the daily average of "rotate" goes below 420')
     df_fail_one = df_failures[df_failures.machineID == machine_id]
     for row in df_fail_one.iterrows():
-        fig.add_vline(
-            row[1]['datetime'], 
-        )
-        fig.add_annotation(x=row[1]['datetime'],
-                           y=df_one_daily.max()[sensors],
-                           text=row[1]['failure'],
-                           showarrow=True,
-                           arrowhead=1)
+        if row[1]['failure'] == 'comp2':
+            fig.add_vline(
+                row[1]['datetime'], 
+            )
+            fig.add_annotation(x=row[1]['datetime'],
+                            y=df_one_daily.max()[sensors],
+                            text=row[1]['failure'],
+                            showarrow=True,
+                            arrowhead=1)
     fig.add_hline(420, line_color='#00ff00')    
     fig.show()
+
+
+
+
+.. image:: timeseries_comp2.png
+    :width: 800px
+    :align: center
+    :alt: Time Series Plot of comp2
 
 
 
@@ -781,6 +815,14 @@ below 420 3. “comp4” failure can be detected when the daily average of
                            arrowhead=1)
     fig.add_hline(45, line_color='#00ff00')
     fig.show()
+
+
+
+
+.. image:: timeseries_comp4.png
+    :width: 800px
+    :align: center
+    :alt: Time Series Plot of comp4
 
 
 
@@ -946,6 +988,14 @@ those thresholds filter out reasonable amount of data.
 
 
 
+.. image:: histogram_with_threshold.png
+    :width: 800px
+    :align: center
+    :alt: Histogram With Threshold
+
+
+
+
 .. code:: ipython3
 
     from scipy import stats
@@ -968,7 +1018,7 @@ From the above histograms, we could confirm that the thresholds we used
 detect reasonably small portion of dataset as failures.
 
 3.2 Create training / test dataset
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We want to create a training and test dataset in this section. We will
 define one datapoint as (24,4) array which consists of 4 sensors for 24
@@ -1269,10 +1319,10 @@ ideal case, dataset should have a balanced classes.
 
 
 4. Build a rule-based model
----------------------------
+----------------------------
 
 4.1 Build a rule-based model that can predict the faulty component of a machine
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the previous section, we have found following rules that can detect
 the faulty component of a machine.
@@ -1300,7 +1350,6 @@ machines.
             'vibration': 45, # >   
         }
        
-    
         def predict(self, input_data):
             df = input_data['X']
             df_resampled = df.mean(axis=0)
@@ -1315,7 +1364,7 @@ machines.
             return results
 
 4.2 Evaluate the performance of the rule-based model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using the test dataset we generated in #3.2, let’s evaluate the
 performance of rule-based Fault Predictor
@@ -1400,10 +1449,10 @@ and we can say this model detects many of normal machine as failed
 machines (gives many false alarm).
 
 5. Build an Oracle using H1st.TimeSeriesOracle
-----------------------------------------------
+-----------------------------------------------
 
 5.1 Build an Oracle from a rule-based Fault Predictor
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -1423,7 +1472,7 @@ machines (gives many false alarm).
     oracle.build(data, id_col='machineID', ts_col='date')
 
 5.2 Evaluate the performance of Oracle and compare it with that of rule-based model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
@@ -1492,6 +1541,10 @@ machines (gives many false alarm).
     f1_micro_rule_model: 0.898 f1_macro_rule_model: 0.405
 
 
+From the above test results, we can see that Oracle made improvement in both 
+f1_micro and f1_macro around 2.4% and 5.4% compared to the f1 score of rule-based model. 
+
+
 Test out if a persisted Oracle can be loaded and give the same
 predictions as the original Oracle object.
 
@@ -1535,7 +1588,7 @@ mechanism, you can easily reuse the built Oracle in real-world
 applications.
 
 6. Summary
-----------
+-----------
 
 In this tutorial, we have achieved the following: 1. We could understand
 what is H1st Oracle and how to build it from Rule-based Model (encoding
