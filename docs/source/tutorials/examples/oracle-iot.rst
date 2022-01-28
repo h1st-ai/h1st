@@ -165,16 +165,16 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 3.1 Exploratory Data Analysis (EDA)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: ipython3
+.. code:: python
 
     import pandas as pd
     import plotly.express as px
 
-.. code:: ipython3
+.. code:: python
 
     data_basepath = 'https://azuremlsampleexperiments.blob.core.windows.net/datasets/'
 
-.. code:: ipython3
+.. code:: python
 
     df_telemetry = pd.read_csv(data_basepath + 'PdM_telemetry.csv')
     df_telemetry.shape
@@ -188,7 +188,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_telemetry.head()
 
@@ -275,7 +275,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_machines = pd.read_csv(data_basepath + 'PdM_machines.csv')
     df_machines.shape        
@@ -289,7 +289,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_machines.head()
 
@@ -358,7 +358,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_failures = pd.read_csv(data_basepath + 'PdM_failures.csv')
     df_failures.shape        
@@ -372,7 +372,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_failures.head()
 
@@ -441,7 +441,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-.. code:: ipython3
+.. code:: python
 
     # Join df_telemetry and df_machines
     df_combined = df_telemetry.join(df_machines.set_index('machineID'), on='machineID')
@@ -456,11 +456,11 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_combined.sort_values(by=['machineID', 'datetime'], inplace=True)
 
-.. code:: ipython3
+.. code:: python
 
     df_combined.head()
 
@@ -561,7 +561,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 We can confirm that there are 100 unqiue machineID
 
-.. code:: ipython3
+.. code:: python
 
     df_combined.machineID.nunique()
 
@@ -580,15 +580,15 @@ the local time. If we look at the datetime column of this data, we can
 see that the start time of data is 2015-01-01 06:00:00. Let’s adjust
 this time to local time so that it can start from 2015-01-01 00:00:00.
 
-.. code:: ipython3
+.. code:: python
 
     df_combined['datetime'] = pd.to_datetime(df_combined['datetime'])
 
-.. code:: ipython3
+.. code:: python
 
     df_combined['datetime'] = df_combined['datetime'] - pd.Timedelta(hours=6)
 
-.. code:: ipython3
+.. code:: python
 
     df_combined.datetime.value_counts().sort_index()
 
@@ -616,7 +616,7 @@ We can see that there are four different types of machines. In this
 experiment, let’s use model3 machine which has the largest amount of
 data.
 
-.. code:: ipython3
+.. code:: python
 
     df_combined.model.value_counts()
 
@@ -633,7 +633,7 @@ data.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_model3 = df_combined[df_combined.model=='model3']
     df_model3.shape
@@ -650,7 +650,7 @@ data.
 We can see that there are three different types of failures (comp1,
 comp2, comp4) in model3 machines.
 
-.. code:: ipython3
+.. code:: python
 
     df_model3_failures = df_failures[df_failures.machineID.isin(df_model3.machineID.unique())]
     df_model3_failures.shape
@@ -664,7 +664,7 @@ comp2, comp4) in model3 machines.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_model3_failures.failure.value_counts()
 
@@ -683,7 +683,7 @@ comp2, comp4) in model3 machines.
 Now, let’s draw a time series plot of one machine to understand the
 characteristics of dataset in details.
 
-.. code:: ipython3
+.. code:: python
 
     machine_id = df_model3.machineID.unique()[0]
     df_one = df_model3[df_model3.machineID == machine_id]
@@ -698,7 +698,7 @@ characteristics of dataset in details.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     sensors = ['volt', 'rotate', 'pressure', 'vibration']
     fig = px.line(df_one, x=df_one.datetime, y=sensors,
@@ -734,7 +734,7 @@ each sensor, we observe very interesting patterns.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_one_daily = df_one.set_index('datetime').resample('1d').mean()
     sensors = 'volt'
@@ -765,7 +765,7 @@ each sensor, we observe very interesting patterns.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_one_daily = df_one.set_index('datetime').resample('1d').mean()
     sensors = 'rotate'
@@ -796,7 +796,7 @@ each sensor, we observe very interesting patterns.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     df_one_daily = df_one.set_index('datetime').resample('1d').mean()
     sensors = 'vibration'
@@ -831,7 +831,7 @@ To confirm that these rules are applicable to entire dataset, let’s draw
 historam of each sensor using entire model3 machine dataset and see if
 those thresholds filter out reasonable amount of data.
 
-.. code:: ipython3
+.. code:: python
 
     df_model3['date'] = df_model3['datetime'].apply(lambda x: x.date())
 
@@ -848,11 +848,11 @@ those thresholds filter out reasonable amount of data.
     
 
 
-.. code:: ipython3
+.. code:: python
 
     df_model3_daily = df_model3.groupby(['date', 'machineID']).agg('mean')
 
-.. code:: ipython3
+.. code:: python
 
     df_model3_daily.head()
 
@@ -944,7 +944,7 @@ those thresholds filter out reasonable amount of data.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
@@ -996,7 +996,7 @@ those thresholds filter out reasonable amount of data.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     from scipy import stats
     percentile1 = stats.percentileofscore(df_model3_daily['volt'], 180)
@@ -1030,7 +1030,7 @@ features are the columns that will be used to build models - class_map:
 class_map will map the faulty component string (ex: ‘comp1’) to integer.
 ‘non-failure’ will be mapped to integer 0.
 
-.. code:: ipython3
+.. code:: python
 
     keys = ['machineID', 'date']
     features = ['volt', 'rotate', 'pressure', 'vibration']
@@ -1038,7 +1038,7 @@ class_map will map the faulty component string (ex: ‘comp1’) to integer.
 
 Remove 2016-01-01 because machine has only one hour data on this date.
 
-.. code:: ipython3
+.. code:: python
 
     import datetime
     
@@ -1057,7 +1057,7 @@ Remove 2016-01-01 because machine has only one hour data on this date.
 Split the entire dataset into Training and Test datasets with
 split_ratio 4:3
 
-.. code:: ipython3
+.. code:: python
 
     import numpy as np
     
@@ -1069,7 +1069,7 @@ split_ratio 4:3
     model3_ids_for_train = model3_ids[n_split:]
     model3_ids_for_test = model3_ids[:n_split]
 
-.. code:: ipython3
+.. code:: python
 
     df_model3_train = df_model3[df_model3.machineID.isin(model3_ids_for_train)]
     df_model3_test = df_model3[df_model3.machineID.isin(model3_ids_for_test)]
@@ -1085,7 +1085,7 @@ Let’s check out how many datapoints we will have in train and test
 dataset. Again, each datapoint will have (24, 4) shape which is (24
 hours and 4 features).
 
-.. code:: ipython3
+.. code:: python
 
     temp_gb = df_model3_train.groupby(keys)
     list_of_train_daily = [item for item in temp_gb]
@@ -1109,7 +1109,7 @@ say that there is a one day gap between machine failed date and repair
 date. So, we will use (recorded repair date - 1 day) as a ground truth
 date of machine failure.
 
-.. code:: ipython3
+.. code:: python
 
     from datetime import timedelta
     df_failures['datetime'] = pd.to_datetime(df_failures['datetime'])
@@ -1120,7 +1120,7 @@ Generate ground truth label for train and test datasets. In some failure
 cases, one machine can have n number of faulty components and, in that
 case, we generated n datapoints with n different kinds of labels.
 
-.. code:: ipython3
+.. code:: python
 
     df_failures[(df_failures.machineID==1)]
 
@@ -1217,7 +1217,7 @@ case, we generated n datapoints with n different kinds of labels.
 
 
 
-.. code:: ipython3
+.. code:: python
 
     x_train_list = []
     y_train_list = []
@@ -1240,7 +1240,7 @@ case, we generated n datapoints with n different kinds of labels.
     # x_whole = np.stack(x_list, 0)
     # y_whole = np.array(y_true_list)
 
-.. code:: ipython3
+.. code:: python
 
     print('len(x_train_list):', len(x_train_list), x_train_list[0].shape)
     print('len(y_train_list):', len(y_train_list))
@@ -1252,7 +1252,7 @@ case, we generated n datapoints with n different kinds of labels.
     len(y_train_list): 7667
 
 
-.. code:: ipython3
+.. code:: python
 
     x_test_list = []
     y_test_list = []
@@ -1275,7 +1275,7 @@ case, we generated n datapoints with n different kinds of labels.
     # x_whole = np.stack(x_list, 0)
     # y_whole = np.array(y_true_list)
 
-.. code:: ipython3
+.. code:: python
 
     print('len(x_test_list):', len(x_test_list), x_test_list[0].shape)
     print('len(y_test_list):', len(y_test_list))
@@ -1290,7 +1290,7 @@ case, we generated n datapoints with n different kinds of labels.
 Check out the distribution of ground truth labels in test dataset. In
 ideal case, dataset should have a balanced classes.
 
-.. code:: ipython3
+.. code:: python
 
     unique, counts = np.unique(y_train_list, return_counts=True)
     print(np.asarray((unique, counts)).T)
@@ -1304,7 +1304,7 @@ ideal case, dataset should have a balanced classes.
      [   3   36]]
 
 
-.. code:: ipython3
+.. code:: python
 
     unique, counts = np.unique(y_test_list, return_counts=True)
     print(np.asarray((unique, counts)).T)
@@ -1338,7 +1338,7 @@ Now, using these three rules, let’s build a simple rule-based model that
 can classify three different kinds of component failures of model3
 machines.
 
-.. code:: ipython3
+.. code:: python
 
     from dataclasses import dataclass 
     
@@ -1369,11 +1369,11 @@ machines.
 Using the test dataset we generated in #3.2, let’s evaluate the
 performance of rule-based Fault Predictor
 
-.. code:: ipython3
+.. code:: python
 
     rule_model = RuleModel()
 
-.. code:: ipython3
+.. code:: python
 
     y_rule_model_list = []
     for x_test in x_test_list:
@@ -1382,12 +1382,12 @@ performance of rule-based Fault Predictor
         })['predictions']
         y_rule_model_list.append(rule_model_pred)
 
-.. code:: ipython3
+.. code:: python
 
     from sklearn import metrics
     cm_rule_based = metrics.confusion_matrix(y_test_list, y_rule_model_list)
 
-.. code:: ipython3
+.. code:: python
 
     cm_rule_based
 
@@ -1403,7 +1403,7 @@ performance of rule-based Fault Predictor
 
 
 
-.. code:: ipython3
+.. code:: python
 
     f1_micro_rule_model = metrics.f1_score(y_test_list, y_rule_model_list, average='micro')
     f1_macro_rule_model = metrics.f1_score(y_test_list, y_rule_model_list, average='macro')
@@ -1416,7 +1416,7 @@ performance of rule-based Fault Predictor
     f1_micro_rule_model: 0.898 f1_macro_rule_model: 0.405
 
 
-.. code:: ipython3
+.. code:: python
 
     def get_precision_n_recall_per_class(cm, n_class):
         list_f1 = []
@@ -1428,7 +1428,7 @@ performance of rule-based Fault Predictor
             print(f"class: {cls}, precision: {precision:.3f}, recall: {recall:.3f}, f1_score: {f1:.3f}")
         print(f"Average F1 Score: {sum(list_f1)/len(list_f1):.3f}")
 
-.. code:: ipython3
+.. code:: python
 
     get_precision_n_recall_per_class(cm_rule_based, n_class=4)
 
@@ -1454,19 +1454,19 @@ machines (gives many false alarm).
 5.1 Build an Oracle from a rule-based Fault Predictor
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: ipython3
+.. code:: python
 
     import sys
     sys.path.insert(0, '/Users/arimo/src/github.com/h1st-ai/h1st/')
 
 
-.. code:: ipython3
+.. code:: python
 
     from h1st.model.oracle.ts_oracle import TimeSeriesOracle
     
     oracle = TimeSeriesOracle(knowledge_model=RuleModel())
 
-.. code:: ipython3
+.. code:: python
 
     data = {'X': df_model3_train[keys+features]}
     oracle.build(data, id_col='machineID', ts_col='date')
@@ -1474,7 +1474,7 @@ machines (gives many false alarm).
 5.2 Evaluate the performance of Oracle and compare it with that of rule-based model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: ipython3
+.. code:: python
 
     y_oracle_list = []
     for x_test in x_test_list:
@@ -1483,12 +1483,12 @@ machines (gives many false alarm).
         })['predictions'][0]
         y_oracle_list.append(oracle_pred)
 
-.. code:: ipython3
+.. code:: python
 
     from sklearn import metrics
     cm_oracle = metrics.confusion_matrix(y_test_list, y_oracle_list)
 
-.. code:: ipython3
+.. code:: python
 
     cm_oracle
 
@@ -1504,7 +1504,7 @@ machines (gives many false alarm).
 
 
 
-.. code:: ipython3
+.. code:: python
 
     get_precision_n_recall_per_class(cm_oracle, n_class=4)
 
@@ -1518,7 +1518,7 @@ machines (gives many false alarm).
     Average F1 Score: 0.427
 
 
-.. code:: ipython3
+.. code:: python
 
     f1_micro_oracle = metrics.f1_score(y_test_list, y_oracle_list, average='micro')
     f1_macro_oracle = metrics.f1_score(y_test_list, y_oracle_list, average='macro')
@@ -1531,7 +1531,7 @@ machines (gives many false alarm).
     f1_micro_oracle: 0.920 f1_macro_oracle: 0.427
 
 
-.. code:: ipython3
+.. code:: python
 
     print(f'f1_micro_rule_model: {f1_micro_rule_model:.3f}', f'f1_macro_rule_model: {f1_macro_rule_model:.3f}')
 
@@ -1548,7 +1548,7 @@ f1_micro and f1_macro around 2.4% and 5.4% compared to the f1 score of rule-base
 Test out if a persisted Oracle can be loaded and give the same
 predictions as the original Oracle object.
 
-.. code:: ipython3
+.. code:: python
 
     import os
     import tempfile
@@ -1560,7 +1560,7 @@ predictions as the original Oracle object.
         oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
         oracle_2.load_params(version)
 
-.. code:: ipython3
+.. code:: python
 
     y_oracle_loaded_list = []
     for x_test in x_test_list:
@@ -1569,7 +1569,7 @@ predictions as the original Oracle object.
         })['predictions'][0]
         y_oracle_loaded_list.append(oracle_pred)
 
-.. code:: ipython3
+.. code:: python
 
     f1_micro_oracle_loaded = metrics.f1_score(y_test_list, y_oracle_loaded_list, average='micro')
     f1_macro_oracle_loaded = metrics.f1_score(y_test_list, y_oracle_loaded_list, average='macro')
