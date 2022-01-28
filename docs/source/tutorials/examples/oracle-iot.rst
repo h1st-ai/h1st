@@ -29,10 +29,10 @@ performance of Oracle and compare it with that of rule-based model
 
 `6. Summary <#summary>`__
 
-H1st Oracle
+1. H1st Oracle
 -----------
 
-What is H1st Oracle ?
+1.1 What is H1st Oracle ?
 ~~~~~~~~~~~~~~~~~~~~~
 
 Oracle is a special form of Knowledge-First AI in
@@ -48,20 +48,28 @@ existing rules (of course you can update and add more rules, but you
 don’t need to). Lastly, if you already have some labeled data, you can
 use them as well to build a more powerful Oracle.
 
-Architeture of Oracle
+1.2 Architeture of Oracle
 ~~~~~~~~~~~~~~~~~~~~~
 
+Oracle consists of one Teacher (RuleBasedModel), multiple Students 
+(ML Generalizer), and one Ensemble. 
+
+  .. image:: h1st-oracle.jpg
+    :width: 522px
+    :align: center
+    :alt: H1st Oracle Architecture
 
 
-Additionally: \* To learn more about H1st framework, please visit
-`h1st.ai <https://h1st.readthedocs.io/en/latest/README.html>`__ \* You
-can also check out the `H1st API
-documentation <https://h1st.readthedocs.io/en/latest/api/README.html>`__
+Additionally: 
 
-Setup an Experiment
+\* To learn more about H1st framework, please visit `h1st.ai <https://h1st.readthedocs.io/en/latest/README.html>`__ 
+
+\* You can also check out the `H1st API documentation <https://h1st.readthedocs.io/en/latest/api/README.html>`__
+
+2. Setup an Experiment
 -------------------
 
-Define the problem we solve in this tutorial
+2.1 Define the problem we solve in this tutorial
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this tutorial, we want to solve Predictive Maintenance problem.
@@ -82,7 +90,7 @@ detecting component failure. If we had domain knowledge on this
 Microsoft Azure equipments, we wouldn’t have used any labeled data to
 create rules.
 
-Experiment Process
+2.2 Experiment Process
 ~~~~~~~~~~~~~~~~~~
 
 The experiment process will be like the following. - Through data
@@ -93,7 +101,7 @@ Oracle using the rule-based model and training set (without label) -
 Evaluate the Oracle using test set. - Compare the evaluation results of
 rule-based model and Oracle
 
-Microsoft Azure Predictive Maintenance dataset
+3. Microsoft Azure Predictive Maintenance dataset
 ----------------------------------------------
 
 In this section, we will do basic Exploratory Data Analysis (EDA) to
@@ -147,7 +155,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_maint.csv
 https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_failures.csv
 https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
-Exploratory Data Analysis (EDA)
+3.1 Exploratory Data Analysis (EDA)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -959,7 +967,7 @@ those thresholds filter out reasonable amount of data.
 From the above histograms, we could confirm that the thresholds we used
 detect reasonably small portion of dataset as failures.
 
-Create training / test dataset
+3.2 Create training / test dataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We want to create a training and test dataset in this section. We will
@@ -1260,10 +1268,10 @@ ideal case, dataset should have a balanced classes.
      [   3   28]]
 
 
-Build a rule-based model
+4. Build a rule-based model
 ------------------------
 
-Build a rule-based model that can predict the faulty component of a machine
+4.1 Build a rule-based model that can predict the faulty component of a machine
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the previous section, we have found following rules that can detect
@@ -1306,7 +1314,7 @@ machines.
                 results['predictions'] = 3            
             return results
 
-Evaluate the performance of the rule-based model
+4.2 Evaluate the performance of the rule-based model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using the test dataset we generated in #3.2, let’s evaluate the
@@ -1391,10 +1399,10 @@ recalls. We can also find that the precision of this model is very low
 and we can say this model detects many of normal machine as failed
 machines (gives many false alarm).
 
-Build an Oracle using H1st.TimeSeriesOracle
+5. Build an Oracle using H1st.TimeSeriesOracle
 -------------------------------------------
 
-Build an Oracle from a rule-based Fault Predictor
+5.1 Build an Oracle from a rule-based Fault Predictor
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -1414,7 +1422,7 @@ Build an Oracle from a rule-based Fault Predictor
     data = {'X': df_model3_train[keys+features]}
     oracle.build(data, id_col='machineID', ts_col='date')
 
-Evaluate the performance of Oracle and compare it with that of rule-based model
+5.2 Evaluate the performance of Oracle and compare it with that of rule-based model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -1526,7 +1534,7 @@ Oracle provides the same results. Using this .persist() and .load()
 mechanism, you can easily reuse the built Oracle in real-world
 applications.
 
-Summary
+6. Summary
 -------
 
 In this tutorial, we have achieved the following: 1. We could understand
