@@ -1,0 +1,32 @@
+Oracle
+######
+
+The Oracle can be simply created as follow
+
+.. code-block:: python
+
+    from h1st.oracle.example.datasets import load_oracle_tutorial_data
+    from h1st.oracle.example.teacher import DefaultTeacherModel
+    from h1st.oracle.oracle import Oracle
+
+    # For better tutorial, we provide example data and k_model
+    df = load_oracle_tutorial_data() # pd.read_csv('data_path')
+    my_k_model = DefaultTeacherModel()
+
+    # Instantiate oracle
+    oracle = Oracle()
+    oracle.build(
+        data={'X': df}
+        knowledge_model=my_k_model
+    )
+    oracle.persist('my_oracle_v1')
+
+
+
+And you can use the Oracle as follows:
+
+.. code-block:: python
+
+    from h1st.oracle.oracle import Oracle
+    my_oracle = Oracle().load('my_oracle_v1')
+    my_oracle.predict(data)

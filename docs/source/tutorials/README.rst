@@ -9,4 +9,5 @@ H1st Tutorials
     :maxdepth: 4
 
     quick-start/README.rst
+    examples/README.rst
     use-cases/README.rst
