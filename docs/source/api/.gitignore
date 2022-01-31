@@ -1,0 +1,3 @@
+# ignore generated API documentation
+*.rst
+!README.rst
