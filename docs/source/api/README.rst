@@ -1,5 +1,5 @@
-H1st API
-========
+H1st API Documentation
+======================
 
 .. toctree::
     :maxdepth: 9

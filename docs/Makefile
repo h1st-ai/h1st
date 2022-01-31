@@ -7,6 +7,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
+PYTHON        = python3
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -26,7 +27,7 @@ api:
 		../h1st
 	# Removing package suffix from module names
 	@echo "Cleaning up."
-	python adp.py
+	(cd source/api ; $(PYTHON) clean-up.py)
 	@echo "API documentation finished."
 
 # Catch-all target: route all unknown targets to Sphinx using the new
