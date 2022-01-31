@@ -23,6 +23,6 @@ How to Work on Docs
 
 - Run local web server to preview the docs::
   
-    % cd h1st/docs && run_local_server.sh
+    % cd h1st/docs && run-local-server.sh
 
 - Edit .rst doc files
