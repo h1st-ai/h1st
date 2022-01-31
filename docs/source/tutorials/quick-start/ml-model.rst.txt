@@ -1,4 +1,59 @@
 MLModeler and MLModel
 #####################
 
-[TO BE UPDATED]
+In `h1st`, we explicitly split the machine learning activities into two sets and assign them to `MLModeler` and `MLModel`. `MLModeler` is responsible for data loading, data exploration, data preparation and model training/building while `MLModel` generates predictions, persists and loads model parameters.
+
+Let's take a look at a simple example. We want to build `MLModel`s that is backed by `sklearn`'s `LogisticRegression`. The framework handles most of the work for you and you just need to write a custom `MLModeler` and override the `train_base_model` method to train an `sklearn`'s `LogisticRegression`.
+
+.. code-block:: python
+    :caption: Custom MLModeler and MLModel
+
+    import h1st as h1
+    from sklearn.datasets import load_iris
+    from sklearn.model_selection import train_test_split
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import accuracy_score
+
+    class MyMLModel(h1.model.model.MLModel):
+        pass
+
+    class MyMLModeler(h1.model.model.MLModeler):
+        def __init__(self):
+            self.model_class = MyMLModel
+
+        def train_base_model(self, prepared_data):
+            X, y = prepared_data['X'], prepared_data['y']
+            model = LogisticRegression(random_state=0)
+            model.fit(X, y)
+            return model
+
+By calling `MLModeler`'s `build_model` method, you get an instance of `MLModel` and are able to get prediction on new data and evaluate the model's accuracy.
+
+.. code-block:: python
+    :caption: Model training and prediction
+
+    X, y = load_iris(return_X_y=True)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    prepared_data = {'X': X_train, 'y': y_train}
+    my_modeler = MyMLModeler()
+    my_model = my_modeler.build_model(prepared_data)
+
+    y_pred = my_model.predict({'X': X_test})['predictions']
+    accuracy = accuracy_score(y_test, y_pred)
+    print("Accuracy (test): %0.1f%% " % (accuracy * 100))
+
+When you are satisfied with the model, you can persist its parameters for later usage such as model serving.
+
+.. code-block:: python
+    :caption: Model persistence and loading
+
+    my_model.persist('1st_version')
+
+    # Load the model from the repo
+    my_model_2 = MyMLModel()
+    my_model_2.load_params('1st_version')
+    y_pred = my_model_2.predict({'X': X_test})['predictions']
+    accuracy = accuracy_score(y_test, y_pred)
+    print("Accuracy (test): %0.1f%% " % (accuracy * 100))
+
+Pretty simple, isn't it. Enjoy building your machine learning models!!!
