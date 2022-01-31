@@ -1,9 +1,12 @@
 h1st.model.ensemble namespace
 =============================
 
+.. py:module:: h1st.model.ensemble
+
 
 
 .. toctree::
+   :maxdepth: 9
 
    h1st.model.ensemble.classifier_stack_ensemble
    h1st.model.ensemble.ensemble

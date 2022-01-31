@@ -1,15 +1,19 @@
 h1st.h1flow namespace
 =====================
 
+.. py:module:: h1st.h1flow
+
 
 
 .. toctree::
+   :maxdepth: 9
 
    h1st.h1flow.ui
 
 
 
 .. toctree::
+   :maxdepth: 9
 
    h1st.h1flow.h1flow
    h1st.h1flow.h1step
