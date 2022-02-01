@@ -1,9 +1,9 @@
-numpy
-pandas
-s3fs
-shap
-sklearn
-ulid
-sphinx_rtd_theme
+numpy==1.22.1
+pandas==1.4.0
+s3fs==2022.1.0
+shap==0.40.0
+sklearn==1.0.2
+ulid===1.1.0
+sphinx_rtd_theme===1.0.0
 h1st
 sphinx-autoapi==1.8.4
