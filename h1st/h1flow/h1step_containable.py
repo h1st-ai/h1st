@@ -9,21 +9,20 @@ class NodeContainable(Trustable):
     """
     Type of an instance to be added to a graph as a node must be the subclass of NodeContainable.
     .. code-block:: python
-            :caption: Example of using NodeContainable
+        :caption: Example of using NodeContainable
 
-            import h1st.core as h1
+        import h1st.core as h1
 
-            class GenerateWindowEvents(h1.NodeContainable):
-                def call(self, command, inputs):
-                    ...
+        class GenerateWindowEvents(h1.NodeContainable):
+            def call(self, command, inputs):
+                ...
 
-            class MyGraph(h1.Graph):
-                def __init__(self):
-                    self
-                        .start()
-                        .add(GenerateWindowEvents())
-                        .end()
-        """
+        class MyGraph(h1.Graph):
+            def __init__(self):
+                self.start()
+                    .add(GenerateWindowEvents())
+                    .end()
+    """
     def __init__(self):
         self._node = None
         
