@@ -11,6 +11,12 @@ class Student(MLModel):
     Knowledge Generalization Model
     """
     def predict(self, input_data: Dict) -> Dict:
+        """
+        Implement logic to generate prediction from data
+
+        :params input_data: an dictionary with key `X` containing the data to get predictions.
+        :returns: a dictionary with key `predictions` containing the predictions
+        """
         return {'predictions': self.base_model.predict(input_data['X'])}
 
 
