@@ -1,181 +1,141 @@
 MLModeler and MLModel
 #####################
 
-In `h1st`, we explicitly split the machine learning activities into two sets and assign them to `MLModeler` and `MLModel`. `MLModeler` is responsible for data loading, data exploration, data preparation and model training/building while `MLModel` generates predictions, persists and loads model parameters.
+In `h1st`, we explicitly split the machine learning activities into two categories
+and assign them to `MLModeler` and `MLModel`. `MLModeler` is responsible for
+data loading, data exploration, data preparation and model training/building
+while `MLModel` generates predictions, persists and loads model parameters.
 
-The easiest way to understand H1st Model is as a standardized format for writing information processing nodes. Furthermore, the root H1st Model class already handles most of the functionality needed to manage the full life-cycle of the model from peristing, loading, and version control. For machine-learning models or any model that requires fitting of parameters or various processes for model creation, the H1st system highly recommends the creation of an accompanying H1st Modeler. This is because model fitting lies outside of the operational cycle. In this way, to implement an H1st Model all you really need is to implement the "process" function. A Modeler will implement activites such as model training/building/evaluation, data loading, data preparation, and data exploration.
+The easiest way to understand H1st `Model` is as a standardized format for
+writing information processing nodes. Furthermore, the root H1st `Model` class
+already handles most of the functionality needed to manage the full life-cycle
+of the model from peristing, loading, and version control. For machine-learning
+models or any model that requires the fitting of parameters or various processes
+for model creation, the H1st system highly recommends the creation of an
+accompanying H1st Modeler. This is because Model creation lies outside of the
+operational cycle. In this way, to implement an H1st Model all you really need
+is to implement the `process` function. A `Modeler` will implement activites such
+as model training/building/evaluation, data loading, data preparation, and data
+exploration.
 
-Below is an example of an H1st Model and Modeler that utilize an underlying Scikit-learn LinearRegrssion model. Note that while MLModel's have a "predict" function, this function simply is an alias for the Model.process function, so only "process" need be implemented.
+The `MLModel` class adds on to the base `Model` by adding a `predict` method
+which aliases the `process` method to support traditional ML design flows.
+Additionally, the `MLModel` help clarify in complex systems which components
+are powered by machine-learning and which are not, since many types of `Model`s
+in an H1st AI system can act on data through rules, logic or analysis. 
+
+Below is an example of an H1st MLModel and MLModeler that utilize an underlying
+Scikit-learn LinearRegrssion model. Note that while MLModel's have a `predict`
+function, this function simply is an alias for the `Model.process` function, so
+only `process` need be implemented.
 
 .. code-block:: python
     :caption: Custom MLModeler and MLModel
 
-    import h1st as h1
     from sklearn.datasets import load_iris
     from sklearn.model_selection import train_test_split
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import accuracy_score
 
-    class MyMLModel(h1.model.model.MLModel):
-        pass
+    from h1st.model.ml_model import MLModel
+    from h1st.model.ml_modeler import MLModeler
+
+    class MyMLModel(MLModel):
+        def process(self, data: dict) -> dict:
+            """Run model inference on incoming data and return predictions in a
+               dictionary. 
+               Input data should have key 'X' with data values
+            """
+            predictions = self.base_model.predict(data['X'])
+            return {'predictions': predictions}
+            
 
     class MyMLModeler(h1.model.model.MLModeler):
         def __init__(self):
+            super().__init__()
             self.model_class = MyMLModel
 
         def train_base_model(self, prepared_data):
-            X, y = prepared_data['X'], prepared_data['y']
+            """trains and returns the base ML model that will be wrapped by the
+               H1st MyMLModel
+            """
+            X, y = prepared_data['x_train'], prepared_data['y_train']
             model = LogisticRegression(random_state=0)
             model.fit(X, y)
             return model
 
-By calling `MLModeler`'s `build_model` method, you get an instance of `MLModel` and are able to get prediction on new data and evaluate the model's accuracy.
+        def load_data(self):
+            """Implementing this function is optional, alternatively data can
+               be passed directly to the build_model function
+            """
+            pass
+
+        def  evaluate_model(self, data: dict, ml_model: MLModel) -> dict:
+            """Optional, if implemented then metrics will be attached to the
+               trained model created by the build_model method, and can be
+               persisted along with the model
+            """
+            x_test = {'X': data['x_test']}
+            y_test = data['y_test']
+            y_pred = ml_model.predict(x_test)['predictions']
+            accuracy = accuracy_score(y_test, y_pred)
+            return {'accuracy_score': accuracy}
+            
+
+By calling `MLModeler`'s `build_model` method, you get an instance of `MLModel`
+and are able to run inference on new data and evaluate the model's accuracy.
 
 .. code-block:: python
     :caption: Model training and prediction
 
     X, y = load_iris(return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-    prepared_data = {'X': X_train, 'y': y_train}
+    prepared_data = {'x_train': x_train, 'y': y_train,
+                     'x_test': x_test, 'y_test': y_test}
     my_modeler = MyMLModeler()
     my_model = my_modeler.build_model(prepared_data)
-
-    y_pred = my_model.predict({'X': X_test})['predictions']
-    accuracy = accuracy_score(y_test, y_pred)
-    print("Accuracy (test): %0.1f%% " % (accuracy * 100))
+    accuracy = my_model.metrics['accuracy_score'] * 100
+    print(f"Accuracy (test): {accuracy:.1f}%")
 
 When you are satisfied with the model, you can persist its parameters for later usage such as model serving.
 
 .. code-block:: python
     :caption: Model persistence and loading
 
-    my_model.persist('1st_version')
+    # This saves the model in the the model repository, auto-generating the
+    # latest version number
+    version = model.persist()
+    # Alternatively, a specific verion can be specified with model.persist(<version>)
 
-    # Load the model from the repo
-    my_model_2 = MyMLModel()
-    my_model_2.load_params('1st_version')
+    # This loads the latest version of the model from the model repository
+    my_model_2 = MyMLModel().load_params()
+    # Alternatively, a specific version can be loaded with:
+    # my_model_2 = MyMLModel.load_params(<version>)
+
+    # Now you can run your predictions
     y_pred = my_model_2.predict({'X': X_test})['predictions']
     accuracy = accuracy_score(y_test, y_pred)
     print("Accuracy (test): %0.1f%% " % (accuracy * 100))
 
+    # Additionally, any stats and metrics set during model creation were also
+    # persisted
+    accuracy = my_model_2.metrics['accuracy_score'] * 100
+    print(f"Stored Accuracy (test): {accuracy:.1f}%")
+
+
+So each of your model classes only needs the `process` method to be implemented
+and should extend the appropriate H1st model. Each of your modelers, only needs
+the `model_class` attribute defined (either in the __init__ or as a class var)
+and neeeds the `train_base_model` method implemented. Optionally, you can
+implement `load_data` and `evaluate_model` methods for enhanced functionality,
+but everything else is taken care of by the framework. 
+
+For automation of model persistance and loading you only need to set the
+environment variable `H1ST_MODEL_REPO_PATH` or define `MODEL_REPO_PATH` in your
+`config.py` file (see Installation section). The framework uses this to
+automate either local storage or storage in an S3 bucket.  Currently, the H1st
+framework supports easy persistance and loading of any Model to a model
+repository as long as the base_model is serializable.
+
 Pretty simple, isn't it. Enjoy building your machine learning models!!!
-
-=======
-
-  from sklearn import svm, datasets, metrics
-  from h1st.model.ml_model import MLModel
-  from h1.model.ml_modeler import MLModeler
-
-  class MyMLModeler(MLModeler):
-      def __init__(self):
-          super().__init__()
-          self.model_class = MyMLModel
-          self.stats = {'gamma': 0.001, 'C': 100.}
-
-      def get_data(self):
-          """load dataset to train model on""" 
-          digits = datasets.load_digits()
-          return {
-              "x": digits.data,
-              "y": digits.target
-          }
-
-      def prep(self, data):
-          """Split data to prepare for model training and evaluation"""
-          x = data["x"]
-          y = data["y"]
-          num_tests = 10
-          return {
-              "train_x": x[num_tests:],
-              "train_y": y[num_tests:],
-              "test_x": x[0:num_tests],
-              "test_y": y[0:num_tests]
-          }
-
-      def train(self, prepared_data):
-          """Train and return the base model which underlies the H1st ML Model"""
-          model = svm.SVC(gamma=self.stats['gamma'], C=self.stats['C'])
-          model.fit(prepared_data["train_x"], prepared_data["train_y"])
-          return model
-
-      def evaluate(self, model, data):
-          """Evaluate the trained model for performance"""
-          pred_y = model.predict({"x": data["test_x"]})
-          metrics = metrics.accuracy_score(data["test_y"], pred_y['predictions'])
-          return metrics
-
-      def build(self):
-          """load data, train and evaluate a new H1st Model"""
-          data = self.get_data()
-          prepared_data = self.prep(data)
-          base_model = self.train(prepared_data)
-          h1_model = self.model_class(base_model)
-          if hasattr(self, 'stats'):
-              # stats and metrics are H1st Model attributes that are persisted
-              # along with the base_model. Stats should contain information
-              # relevant to model creation, including paramters or scaling
-              # models for data normalization before inference
-              h1_model.stats = self.stats
-
-          # metrics should contain information about model performance/accuracy
-          metrics = self.evaluate(h1_model, prepared_data)
-          h1_model.metrics = metrics
-          return h1_model
-
-
-  class MyMLModel(MLModel):
-      def __init__(self, base_model):
-          super().__init__()
-          self.base_model = base_model
-
-      def process(self, input_data: dict) -> dict:
-          """
-          We expect an array of input data rows in the "x" field of the input_data dict
-          """
-          predictions = self.base_model.predict(input_data["x"])
-          return {'predictions': predictions}
-
-So each Model class should have the process method implemented and should extend the appropriate H1st model. The implementation of the init method shown here is optional, instead the Modeler could set the base_model attributes after instantiating MyMLModel. 
-
-The h1st.model.model.Model superclass has persist and load_params methods that automate storage, versioning and loading of models, and easily enables switching from Local model storage to an S3 bucket if needed. 
-
-
-Basic Usage
-###########
-When using the H1st framework, model storage, loading and versioning is handled by the framework, but you still need to designate where the models will be stored. This is done in one of 2-ways. First, you can set the H1ST_MODEL_REPO_PATH environment variable, and this will point to either a local storage repository or an S3 bucket. Alternatively, this can be set within a config.py file # TODO: how to use config file??
-
-**Model Creation**
-
-.. code-block:: python
-  
-  modeler = MyMLModeler()
-  model = modeler.build()
-
-  # This save the model in the the model repository, auto-generating the latest
-  # version number
-  version = model.persist()
-  # Alternatively, a specific verion can be specified with model.persist(<version>)
-
-.. code-block::
-
-  2020-09-30 00:34:46,129 INFO h1st.model_repository.model_repository: Saving metrics property...
-  2020-09-30 00:34:46,131 INFO h1st.model_repository.model_repository: Saving model property...
-
-**Model Inference**
-
-.. code-block:: python
-
-  # This loads the latest version of the model from the model repository
-  model = MyMLModel().load_params()
-  raw_data = load_some_data_from_somewhere()
-  predictions = model.process({"x": raw_data})
-
-.. code-block::
-
-  2020-09-30 00:34:48,722 INFO h1st.model_repository.model_repository: Loading version 01EKEYYQKGY5FJ8BFE90KY2A01 ....
-  accuracy_score of loaded model = 0.9000
-
-The beauty of this API is that we can keep same workflow steps for all kinds of models, whether they are boolean/fuzzy logic or ML models! Currently, the H1st framework supports easy persistance and loading of any Model to a model repository as long as the base_model is serializable.
-
-By standardizing the Model interface, many different types of modeling components can be easily placed into complex workflows through Graphs, Ensembles or Oracles. 
 

@@ -7,7 +7,7 @@ Graph
 #####
 An H1st Graph is essentially a flowchart, modeling a real-world workflow. It is a directed graph describing an execution flow (and not a data flow). There may be conditionals and loops in an H1st Graph.
 
-H1st Graphs describe both high-level business workflows, as well as low-level model-to-model execution flow.
+H1st Graphs can describe both high-level business workflows, as well as low-level model-to-model execution flow.
 
 Node
 ####
@@ -15,11 +15,11 @@ Nodes are elements that connect to form a Graph. An H1st Node has inputs, output
 
 NodeContainable
 ###############
-NodeContainables are anything that might be contained within a Node. Most often, what we see contained is a Model. A Graph is also a NodeContainables, so that H1st Graphs are hierarchical: a Graph may contain a sub-Graph and so on.
+NodeContainables are anything that might be contained within a Node. Most often, what we see contained is a Model. A Graph is also a NodeContainable, so that H1st Graphs are hierarchical: a Graph may contain a sub-Graph and so on.
 
 Model
 #####
-H1st Models are the workhorse of the entire framework. At the base, a Model is the simplest unit that “models” a behavior that takes some inputs, processes them, and emits some outputs.
+H1st Models are the workhorse of the entire framework. At the base, a Model is the simplest unit that “models” a behavior. That is, it takes some input, processes, analyzes or transforms that input, and emits some output.
 
 ProcessModel
 ############
@@ -27,11 +27,11 @@ A ProcessModel mainly exists to distinguish between predictive and non-predictiv
 
 DataAnnotatingModel
 ###################
-A DataAnnotatingModel takes some data as inputs and annotates or labels them. They are mainly used to process training data for PredictiveModels.
+A DataAnnotatingModel takes in some data and outputs annotation or labels. They are mainly used to process training data for MLModels.
 
 DataGeneratingModel
 ###################
-A DataGeneratingModel takes some parameters as inputs, and outputs data used as training data for PredictiveModels.
+A DataGeneratingModel takes some parameters as inputs, and outputs synthetic data that can be used as training data for PredictiveModels or MLModels.
 
 DataAugmentingModel
 ###################
@@ -39,23 +39,27 @@ A DataAugmentingModel is like a DataGeneratingModel, but used in the context of 
 
 PredictiveModel
 ###############
-A PredictiveModel Is a Model that interpolates or extrapolates, more generally, it outputs inferences based on the parameters within it. The parameters may be externally set, or automatically learned from the data.
+A PredictiveModel is a Model that interpolates or extrapolates, more generally, outputs inferences based on the parameters within it. The parameters may be externally set, implemented as rules within the Model, or automatically learned from the data. It extends the root Model adding in a predict() function to support standard inference schema, but this function simply aliases the Model.process() function, which should to implemented by the user to enable Model functionality.
 
 MLModel
 #######
-An MLModel Is a PredictiveModel that gets its parameters via machine learning. It has a standardized API including methods such as load_data(), explore(), train(), predict(), evaluate() etc.
+An MLModel is a PredictiveModel that gets its parameters via machine learning. It provides a standardized API with predict(), persist() and load_param() functions. User's extending the MLModel need only implment a process() function, and the framework with enable model storage and loading. These models also have `stats` and `metrics` attributes which are persisted along with the model and store model metadata and evaluation metrics.
 
 RuleBasedModel
 ##############
-A RuleBasedModel Is a PredictiveModel that follows Boolean logic at its core.
+A RuleBasedModel is a PredictiveModel that follows Boolean logic at its core.
 
 FuzzyLogicModel
 ###############
-A FuzzyLogicModel Is a PredictiveModel that uses fuzzy logic for its outputs.
+A FuzzyLogicModel is a PredictiveModel that uses fuzzy logic for its outputs.
 
 KalmanFilterModel
 #################
-A FuzzyLogicModel Is a PredictiveModel that uses Kalman filters for its inferences.
+A FuzzyLogicModel is a PredictiveModel that uses Kalman filters for its inferences.
+
+Modeler
+#######
+Many models, especially those who parameters are inferred from data, require training in order to reach a usuable form. These models should have an accompanying Modeler to handle all processes related to Model creation. In the simplest case a modeler must implement a build() function which outputs a trained H1st Model, but can also include processes sucha as data loading, preprocessing, train-test splits, and model evaluation. In this way, the Operation and Creation processes are kept distinctly separate, and as new data is generated, Modelers can update Model in separate production processes so as not to interfere with system operation. 
 
 H1st Object Capabilities
 ########################
