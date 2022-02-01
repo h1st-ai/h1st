@@ -17,24 +17,28 @@ Human-First AI (`H1st` AI) solves three critical challenges in real-world data s
 
 
 ## Get started
-`H1st` runs on Python 3.7 or above. Install with `pip3 install h1st`. For Windows, please use 64bit version and install [VS Build Tools](https://visualstudio.microsoft.com/downloads/) before installing H1st.
+`H1st` runs on Python 3.7 or above. Install with 
+```
+pip3 install h1st
+```
+For Windows, please use 64bit version and install [VS Build Tools](https://visualstudio.microsoft.com/downloads/) before installing H1st.
 
-See the [examples/HelloWorld folder](examples/HelloWorld) for simple "Hello world" examples of using 
-[H1st rule-based](examples/HelloWorld/rule_based_model.py) & [machine-learned models](examples/HelloWorld/ml_model.py) and using [H1st Graph](examples/HelloWorld/graph.py).
+Start by reading about our [philosophy](https://h1st.readthedocs.io/en/latest/manifesto/README.html) and [Object Model](https://h1st.readthedocs.io/en/latest/concepts/object-model.html)
 
-For a simple real-world data science example using H1st Model API, take a look at the [forecasting example](examples/Forecasting).
-
-To fully understand H1st philosophy and power, check out the [H1st Automotive Cybersecurity Tutorial](https://h1st.ai).
+See the [Quick Start](examples/HelloWorld) for simple "Hello world" examples of using [H1st rule-based model](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#rule-based-model) & [H1st ML model](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#mlmodeler-and-mlmodel) and using [H1st Graph](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#h1st-graph).
 
 
-## Read the Tutorials, Wiki, and API Documentation
-We highly recommend following the [H1st Automotive Cybersecurity Tutorial](https://h1st.ai) as well as the quick-start examples in the [h1st-examples folder](https://github.com/h1st-ai/h1st-examples).
+## Read the Documentation, Tutorials, and API Documentation
 
-See the wiki for design consideration e.g. [H1st.AI Model Explained](../../wiki/Human-First-AI-Graph-Explained), [H1st.AI Graph Explained](../../wiki/Human-First-AI-Graph-Explained).
+Go over [the Concepts](https://h1st.readthedocs.io/en/latest/concepts/README.html)
 
-Our full API Documentation is at [docs.h1st.ai](https://docs.h1st.ai/).
+For a simple real-world data science example using H1st Modeler and Model API, take a look at
+- [Modeler and Model with Iris dataset](https://h1st.readthedocs.io/en/latest/tutorials/examples/modeler-model.html).
+- [H1st Oracle: Combine Encoded Domain Knowledge with Machine Learning]() in which we used Microsoft Azure Predictive Maintenance dataset to demonstrate the power of the Oracle.
 
-See our public [H1st.AI's roadmap](../../wiki/Human-First-AI-Roadmap).
+To fully understand H1st philosophy and power, check out the [Use-case examples](https://h1st.readthedocs.io/en/latest/tutorials/use-cases/README.html).
+
+For a deep dive into the components, please refer to our full [API Documentation](https://h1st.readthedocs.io/en/latest/api/README.html).
 
 ## Join and Learn from Our Open-Source Community
 We are collaborating with the open-source community. For Arimo-Panasonic, use cases include industrial applications such as Cybersecurity, Predictive Maintenance, Fault Prediction, Home Automation, Avionic & Automotive Experience Management, etc.
