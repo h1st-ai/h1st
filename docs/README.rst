@@ -12,6 +12,9 @@ How to Work on Docs
     % pip install sphinx sphinx-rtd-theme
     % sudo apt install python3-sphinx python3-sphinx-rtd-theme # on Ubuntu
 
+- Install auto api 
+    % pip install sphinx-autoapi
+
 - Build the Concepts & Tutorials docs::
 
     % cd h1st/docs && make html
