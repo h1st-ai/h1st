@@ -3,27 +3,34 @@ MLModeler and MLModel
 
 In `h1st`, we explicitly split the machine learning activities into two sets and assign them to `MLModeler` and `MLModel`. `MLModeler` is responsible for data loading, data exploration, data preparation and model training/building while `MLModel` generates predictions, persists and loads model parameters.
 
-Let's take a look at a simple example. We want to build `MLModel`s that is backed by `sklearn`'s `LogisticRegression`. The framework handles most of the work for you and you just need to write a custom `MLModeler` and override the `train_base_model` method to train an `sklearn`'s `LogisticRegression`.
+Let's take a look at a simple example. We want to build `MLModel`s that is backed by `sklearn`'s `RandomForestClassifier`. The framework handles most of the work for you and you just need to do two things:
+  - Write a custom `MLModel` and implement the `predict` method which invokes its `sklearn` base_model's `predict` method.
+  - Write a custom `MLModeler` and implement the `train_base_model` method to train an `sklearn`'s `RandomForestClassifier`.
 
 .. code-block:: python
     :caption: Custom MLModeler and MLModel
 
-    import h1st as h1
+    import os
+    import tempfile
+    from typing import Any, Dict
+    from h1st.model.ml_model import MLModel
+    from h1st.model.ml_modeler import MLModeler
     from sklearn.datasets import load_iris
     from sklearn.model_selection import train_test_split
-    from sklearn.linear_model import LogisticRegression
+    from sklearn.ensemble import RandomForestClassifier
     from sklearn.metrics import accuracy_score
 
-    class MyMLModel(h1.model.model.MLModel):
-        pass
+    class MyMLModel(MLModel):
+        def predict(self, input_data: Dict) -> Dict:
+            return {'predictions': self.base_model.predict(input_data['X'])}
 
-    class MyMLModeler(h1.model.model.MLModeler):
+    class MyMLModeler(MLModeler):
         def __init__(self):
             self.model_class = MyMLModel
 
-        def train_base_model(self, prepared_data):
+        def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
             X, y = prepared_data['X'], prepared_data['y']
-            model = LogisticRegression(random_state=0)
+            model = RandomForestClassifier(random_state=0)
             model.fit(X, y)
             return model
 
@@ -47,13 +54,16 @@ When you are satisfied with the model, you can persist its parameters for later 
 .. code-block:: python
     :caption: Model persistence and loading
 
-    my_model.persist('1st_version')
+    with tempfile.TemporaryDirectory() as path:
+        # Set the model repository to the temporary directory
+        os.environ['H1ST_MODEL_REPO_PATH'] = path
+        my_model.persist('1st_version')
 
-    # Load the model from the repo
-    my_model_2 = MyMLModel()
-    my_model_2.load_params('1st_version')
-    y_pred = my_model_2.predict({'X': X_test})['predictions']
-    accuracy = accuracy_score(y_test, y_pred)
-    print("Accuracy (test): %0.1f%% " % (accuracy * 100))
+        # Load the model from the repo
+        my_model_2 = MyMLModel()
+        my_model_2.load_params('1st_version')
+        y_pred = my_model_2.predict({'X': X_test})['predictions']
+        accuracy = accuracy_score(y_test, y_pred)
+        print("Accuracy (test): %0.1f%% " % (accuracy * 100))
 
 Pretty simple, isn't it. Enjoy building your machine learning models!!!
