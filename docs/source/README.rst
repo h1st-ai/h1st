@@ -37,7 +37,7 @@ It is maintained by Aitomatic and other contributors. The repository can be foun
 
     manifesto/README.rst
     concepts/README.rst
-    api/README.rst
+    autoapi/index.rst
     tutorials/README.rst
 
 ..  [#] H1st is pronounced “H-first”

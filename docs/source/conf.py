@@ -7,7 +7,7 @@ import sys
 
 # include h1st package in build path
 sys.path.insert(0, os.path.abspath('./../..'))
-sys.path.insert(0, os.path.abspath('./../../h1st'))
+sys.path.insert(0, os.path.abspath('./../h1st'))
 
 PACKAGE_NAMESPACE = 'h1st'
 METADATA_FILE_NAME = 'metadata.json'
@@ -34,9 +34,11 @@ source_suffix = '.rst'
 extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'autoapi.extension'
 ]
+
+autoapi_dirs = [os.path.abspath('./../../h1st')]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
