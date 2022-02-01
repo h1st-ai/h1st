@@ -5,7 +5,8 @@ In this tutorial, we will demonstrate the end-to-end process of building
 Oracle, from raw data to Oracle model, using Microsoft Azure Predictive
 Maintenance dataset. Through this tutorial, you will learn 1. how to
 build rule-based model through data analysis 2. how to build Oracle from
-this rule-based model.
+this rule-based model and your unlabeled data. You can find the notebook 
+version of this tutorial `here <https://github.com/h1st-ai/h1st/blob/main/user/tutorials/oracle/oracle_with_multivariate_timeseries_data.ipynb>`__. 
 
 This tutorial has the following contents.
 
@@ -1456,20 +1457,15 @@ machines (gives many false alarm).
 
 .. code:: python
 
-    import sys
-    sys.path.insert(0, '/Users/arimo/src/github.com/h1st-ai/h1st/')
-
-
-.. code:: python
-
-    from h1st.model.oracle.ts_oracle import TimeSeriesOracle
+    from h1st.model.oracle import TimeSeriesOracle
     
-    oracle = TimeSeriesOracle(knowledge_model=RuleModel())
+    oracle = TimeSeriesOracle(teacher=RuleModel())
+    oracle.build(
+        data={'X': df_model3_train[keys+features]}, 
+        id_col='machineID', 
+        ts_col='date'
+    )
 
-.. code:: python
-
-    data = {'X': df_model3_train[keys+features]}
-    oracle.build(data, id_col='machineID', ts_col='date')
 
 5.2 Evaluate the performance of Oracle and compare it with that of rule-based model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1599,7 +1595,9 @@ data to build Oracle. This is because Oracle includes discriminative
 models that can generalize the encoded rules of rule-based model and,
 furthermore, combine their intelligence through ensemble.
 
-We hope you enjoyed this tutorial. To find more information about H1st,
+We hope you enjoyed this tutorial. You can find the notebook 
+version of this tutorial `here <https://github.com/h1st-ai/h1st/blob/main/user/tutorials/oracle/oracle_with_multivariate_timeseries_data.ipynb>`__. 
+To find more information about H1st,
 please visit our `h1st
 website <https://h1st.readthedocs.io/en/latest/README.html>`__ or check
 out our `h1st github repository <https://github.com/h1st-ai/h1st>`__.

@@ -1,32 +1,48 @@
 Oracle
 ######
 
-The Oracle can be simply created as follow
+The Oracle can be created like the following.
 
 .. code-block:: python
 
-    from h1st.oracle.example.datasets import load_oracle_tutorial_data
-    from h1st.oracle.example.teacher import DefaultTeacherModel
-    from h1st.oracle.oracle import Oracle
+    from h1st.model.oracle import Oracle
+    from sklearn.datasets import load_iris
 
-    # For better tutorial, we provide example data and k_model
-    df = load_oracle_tutorial_data() # pd.read_csv('data_path')
-    my_k_model = DefaultTeacherModel()
+    class IrisRuleModel():
+        sepal_length_max: float = 6.0
+        sepal_length_min: float = 4.0
+        sepal_width_min: float = 3.0
+        sepal_width_max: float = 4.6
+        
+        def predict(self, data):
+            df = data['X']
+            return {
+                'predictions': pd.Series(map(
+                    self.predict_setosa, df['sepal_length'], df['sepal_width']
+                ))}
 
-    # Instantiate oracle
-    oracle = Oracle()
+        
+        def predict_setosa(self, sepal_length, sepal_width):
+            return 0 if (self.sepal_length_min <= sepal_length <= self.sepal_length_max) \
+                    & (self.sepal_width_min <= sepal_width <= self.sepal_width_max) \
+                else 1        
+
+    # Load data
+    df_X, y = load_iris(as_frame=True, return_X_y=True)
+    df_X.columns = ['sepal_length','sepal_width','petal_length','petal_width']
+
+    # Build oracle
+    oracle = Oracle(teacher=IrisRuleModel())
     oracle.build(
-        data={'X': df}
-        knowledge_model=my_k_model
+        data={'X': df_X},
+        features=['sepal_length','sepal_width']
     )
-    oracle.persist('my_oracle_v1')
+    oracle.persist('iris_oracle_v1')
 
 
-
-And you can use the Oracle as follows:
+And you can use persisted Oracle for inference like the following.
 
 .. code-block:: python
-
-    from h1st.oracle.oracle import Oracle
-    my_oracle = Oracle().load('my_oracle_v1')
-    my_oracle.predict(data)
+    
+    my_oracle = Oracle(teacher=IrisRuleModel()).load('iris_oracle_v1')
+    my_oracle.predict({'X': df_X[['sepal_length','sepal_width']]})
