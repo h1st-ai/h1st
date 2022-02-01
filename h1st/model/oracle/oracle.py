@@ -68,15 +68,15 @@ class Oracle(PredictiveModel):
     """
     Oracle Model in Oracle framework
     """
-    def __init__(self, knowledge_model: PredictiveModel,
+    def __init__(self, teacher: PredictiveModel,
                 student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
                 ensemble: Ensemble = Ensemble):
         '''
-        :param knowledge_model: The knowledge model.
+        :param teacher: The knowledge model.
         :param student_modelers: The student modelers.
         :param ensemble: The ensemble model class.
         '''
-        self.teacher = knowledge_model
+        self.teacher = teacher
         self.student_modelers = student_modelers
         self.ensemble = ensemble()
         self.stats = {}

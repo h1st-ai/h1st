@@ -6,10 +6,10 @@ from .student import RandomForestModeler, AdaBoostModeler
 from .ensemble import Ensemble
 
 class TimeSeriesOracle(Oracle):
-    def __init__(self, knowledge_model: PredictiveModel,
+    def __init__(self, teacher: PredictiveModel,
                 student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
                 ensemble: Ensemble = Ensemble):
-        super().__init__(knowledge_model, student_modelers, ensemble)
+        super().__init__(teacher, student_modelers, ensemble)
         self.stats = {}
 
     def generate_features(self, data: Dict):
