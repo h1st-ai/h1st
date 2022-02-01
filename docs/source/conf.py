@@ -26,6 +26,7 @@ release = _metadata['release']
 version = _metadata['version']
 
 master_doc = 'README'
+source_suffix = '.rst'
 
 # -- General configuration
 
