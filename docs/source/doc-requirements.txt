@@ -6,3 +6,4 @@ sklearn
 ulid
 sphinx_rtd_theme
 h1st
+sphinx-autoapi==1.8.4
