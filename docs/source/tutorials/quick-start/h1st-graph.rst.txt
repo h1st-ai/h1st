@@ -1,16 +1,26 @@
 H1st Graph
 ##########
 
-An H1st Graph object encapsulates an execution flow chart that allows Models and Actions to be smoothly tied together. This structure enables both ML and Human-knowledge models to be incorporated into a seemless data processing and inference pipeline.
+An H1st Graph object encapsulates an execution flow chart that allows Models
+and Actions to be smoothly tied together. This structure enables both ML and
+Human-knowledge models to be incorporated into a seemless data processing and
+inference pipeline.
 
-This is an example of a very simple graph which prints hello for each even number x in the input stream, using a conditional RuleBasedModel. The rule-based models extends the h1st Model class implying that it processes the incoming data to produce some prediction, transformation or analysis on that data. The HelloPrinter class extends the h1st Action class implying that it performs a simple action in response to some input.
+This is an example of a very simple graph which prints hello for each even
+number x in the input stream, using a conditional RuleBasedModel. The
+rule-based model extends the h1st Model class implying that it processes the
+incoming data to produce some prediction, transformation or analysis on that
+data. The HelloPrinter class extends the h1st Action class implying that it
+performs a simple action in response to some input.
 
+In this case the model determines whether or not the input data is an even
+number. The Action HelloPrinter is only passed the even-number data where the
+model returned True. 
 
 .. code-block:: python
 
   from h1st.model.model import Model
-  from h1st.h1flow.h1flow import Action, Graph
-  from h1st.h1flow.h1step import Action, Descision ## Why is Action ins h1step and h1flow?
+  from h1st.h1flow.h1step import Action
 
   class RuleBasedModel(Model):
       """
@@ -34,23 +44,38 @@ The H1st graph itself is created by adding nodes incrementally.
 .. code-block:: python
 
   from h1st.h1flow.h1flow import Graph
-  from h1st.h1flow.h1step import Action, Decision, NoOp
+  from h1st.h1flow.h1step import Decision, NoOp
 
   g = Graph()
   g.start()
-  g.add(h1.Decision(RuleBasedModel(), result_field="predictions"))
+
+  # In the first Node, the data is passed to the RuleBasedModel's "process"
+  # method and a Decision is rendered from model output.
+  g.add(h1.Decision(RuleBasedModel(),
+                    result_field="predictions",
+                    decision_field="prediction"))
+
+  # In the second Node, if the True or "yes" data is passed to HelloPrinter's
+  # "call" function, and the False or "no" data is passed to NoOp's "call"
+  # function. NoOp is default null Action and nothing happens. 
   g.add(yes=HelloPrinter(), no=NoOp())
   g.end()
 
+  # Now that the graph is built, we run pass input data through that graph
   results = g.predict({"values": range(6)})
 
-Note that the first branch is an h1st Decision which redirects the data flow into the later yes and no nodes based on the RuleBasedModel’s predictions.
+Note that the first Node is an h1st Decision which redirects the data flow
+into the later yes and no nodes based on the RuleBasedModel’s predictions.
+Inference is done in batch-mode so first the RuleBasedModel predicts for all
+input values, then the "yes" or True values are passed to the HelloPrinter
+action while the "no" or False values go to the NoOp null Action.
 
-In terms of data flow, the input to the Graph predict method is passed to the RuleBasedModel's process function which in turn produces a dict. The Decision object forwards a dict containing the result_field "predictions" to the HelloPrinter's call function if the Decision is True and does nothing if the decision is false. In this way, the Graph simplifies the construction of complex action and information relay flows.
-
-H1st Graphs, by default, operate in batch mode; meaning that H1st Decisions looks at {"predictions": [{"prediciton": True, ...}, {"prediction": False, }]} and redirect True/False decision points to the to the right yes/no branch as a list.
-
-# TODO: Fix this last statement, this means that Decision is being told to look at the "predictions" field but has no reference to the "prediction" field. It also means that the output of the Model class must operate in batch-mode and return a dict with a field that has a list of dicts with "prediction" fields. This is way too complicated and makes very little sense. It also deviates from a lot more inutitive schema already implemented elsewhere. Instead the model "process" or "predict" method should operate on a single data point and return a dict with a result_field. The Graph should run each data point through that process function and compile a list of Decisions by extracting that result_field and then proceed through the rest of the graph.  
+In terms of data flow, the input to the Graph predict method is passed to the
+RuleBasedModel's process function which in turn produces a dict. The Decision
+object forwards a dict containing the result_field "predictions" to the
+HelloPrinter's call function if the Decision is True and does nothing (NoOp) if
+the decision is False. In this way, the Graph simplifies the construction of
+complex action and information relay flows.
 
 .. code-block::
 
