@@ -9,7 +9,8 @@ for file in src_dir.iterdir():
     with open(file, "r") as f:
         lines = f.read()
 
-    junk_strs = ["Submodules\n----------", "Subpackages\n-----------"]
+    junk_strs = ["Submodules\n----------", "Subpackages\n-----------", 
+                 "namespace"]
 
     for junk in junk_strs:
         lines = lines.replace(junk, "")
