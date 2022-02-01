@@ -17,15 +17,16 @@ Human-First AI (`H1st` AI) solves three critical challenges in real-world data s
 
 
 ## Get started
-`H1st` runs on Python 3.7 or above. Install with 
+`H1st` runs on Python 3.8 or above. Install with 
 ```
+pip install --upgrade pip
 pip3 install h1st
 ```
 For Windows, please use 64bit version and install [VS Build Tools](https://visualstudio.microsoft.com/downloads/) before installing H1st.
 
 Start by reading about our [philosophy](https://h1st.readthedocs.io/en/latest/manifesto/README.html) and [Object Model](https://h1st.readthedocs.io/en/latest/concepts/object-model.html)
 
-See the [Quick Start](examples/HelloWorld) for simple "Hello world" examples of using [H1st rule-based model](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#rule-based-model) & [H1st ML model](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#mlmodeler-and-mlmodel) and using [H1st Graph](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#h1st-graph).
+See the [Quick Start](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html) for simple "Hello world" examples of using [H1st rule-based model](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#rule-based-model) & [H1st ML model](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#mlmodeler-and-mlmodel) and using [H1st Graph](https://h1st.readthedocs.io/en/latest/tutorials/quick-start/README.html#h1st-graph).
 
 
 ## Read the Documentation, Tutorials, and API Documentation
@@ -34,7 +35,7 @@ Go over [the Concepts](https://h1st.readthedocs.io/en/latest/concepts/README.htm
 
 For a simple real-world data science example using H1st Modeler and Model API, take a look at
 - [Modeler and Model with Iris dataset](https://h1st.readthedocs.io/en/latest/tutorials/examples/modeler-model.html).
-- [H1st Oracle: Combine Encoded Domain Knowledge with Machine Learning]() in which we used Microsoft Azure Predictive Maintenance dataset to demonstrate the power of the Oracle.
+- [H1st Oracle: Combine Encoded Domain Knowledge with Machine Learning](https://h1st.readthedocs.io/en/latest/tutorials/examples/oracle-iot.html) in which we used Microsoft Azure Predictive Maintenance dataset to demonstrate the power of the Oracle.
 
 To fully understand H1st philosophy and power, check out the [Use-case examples](https://h1st.readthedocs.io/en/latest/tutorials/use-cases/README.html).
 
