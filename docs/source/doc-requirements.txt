@@ -4,3 +4,4 @@ s3fs
 shap
 sklearn
 ulid
+sphinx_rtd_theme

@@ -37,6 +37,7 @@ The Oracle can be created like the following.
         data={'X': df_X},
         features=['sepal_length','sepal_width']
     )
+    oracle.predict({'X': df_X[['sepal_length','sepal_width']]})
     oracle.persist('iris_oracle_v1')
 
 
@@ -44,5 +45,5 @@ And you can use persisted Oracle for inference like the following.
 
 .. code-block:: python
     
-    my_oracle = Oracle(teacher=IrisRuleModel()).load('iris_oracle_v1')
-    my_oracle.predict({'X': df_X[['sepal_length','sepal_width']]})
+    oracle = Oracle(teacher=IrisRuleModel()).load('iris_oracle_v1')
+    oracle.predict({'X': df_X[['sepal_length','sepal_width']]})

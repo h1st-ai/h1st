@@ -1,7 +1,10 @@
-h1st.model.oracle namespace
-===========================
+h1st.model.oracle package
+=========================
 
-.. py:module:: h1st.model.oracle
+.. automodule:: h1st.model.oracle
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 
 
