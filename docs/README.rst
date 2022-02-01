@@ -6,7 +6,6 @@ How to Work on Docs
     % pip install docutils
     % sudo apt install python3-docutils # on Ubuntu
 
-
 - Install sphinx (see, e.g., https://www.sphinx-doc.org/en/master/usage/installation.html)::
 
     % pip install sphinx sphinx-rtd-theme
@@ -18,11 +17,6 @@ How to Work on Docs
 - Build the Concepts & Tutorials docs::
 
     % cd h1st/docs && make html
-
-- Build the API docs:: 
-
-    % cd h1st/docs && make api
-
 
 - Run local web server to preview the docs::
   

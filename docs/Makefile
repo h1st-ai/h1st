@@ -15,21 +15,6 @@ help:
 
 .PHONY: help Makefile
 
-# Build the api
-api:
-	sphinx-apidoc \
-  		--force \
-  		--implicit-namespaces \
-  		--maxdepth 9 \
-  		--separate \
-  		--module-first \
-		--output-dir source/api \
-		../h1st
-	# Removing package suffix from module names
-	@echo "Cleaning up."
-	(cd source/api ; $(PYTHON) clean-up.py)
-	@echo "API documentation finished."
-
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
