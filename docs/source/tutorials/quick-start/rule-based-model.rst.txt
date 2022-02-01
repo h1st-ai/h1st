@@ -3,12 +3,12 @@ Rule-Based Model
 
 A rule-based model is an example of applying human knowledge to solve a
 problem. You could use boolean logic or fuzzy logic and make decisions based on
-statistcs or myriad other ways that humans do to solve problems.
+statistics or myriad other ways that humans do to solve problems.
 
 A rule-based model is very useful for solving the cold start problem, where
 data is not available.
 
-In the H1st framework, a human rule model can be implemented by subclassing the
+In the H1st framework, a human rule model can be implemented by sub-classing the
 h1st `Model` class or `PredictiveModel` class and implementing only the
 process() function. Basically, it’s a just a model with no training (though
 training is not forbidden and is sometimes is useful for human models too).

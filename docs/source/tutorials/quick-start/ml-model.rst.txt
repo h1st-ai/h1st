@@ -9,12 +9,12 @@ while `MLModel` generates predictions, persists and loads model parameters.
 The easiest way to understand H1st `Model` is as a standardized format for
 writing information processing nodes. Furthermore, the root H1st `Model` class
 already handles most of the functionality needed to manage the full life-cycle
-of the model from peristing, loading, and version control. For machine-learning
+of the model from persisting, loading, and version control. For machine-learning
 models or any model that requires the fitting of parameters or various processes
 for model creation, the H1st system highly recommends the creation of an
 accompanying H1st Modeler. This is because Model creation lies outside of the
 operational cycle. In this way, to implement an H1st Model all you really need
-is to implement the `process` function. A `Modeler` will implement activites such
+is to implement the `process` function. A `Modeler` will implement activities such
 as model training/building/evaluation, data loading, data preparation, and data
 exploration.
 
@@ -25,7 +25,7 @@ are powered by machine-learning and which are not, since many types of `Model`s
 in an H1st AI system can act on data through rules, logic or analysis. 
 
 Below is an example of an H1st MLModel and MLModeler that utilize an underlying
-Scikit-learn RandomForestClassifier model. Note that while MLModel's have a `predict`
+scikit-learn RandomForestClassifier model. Note that while MLModel's have a `predict`
 function, this function simply is an alias for the `Model.process` function, so
 only `process` need be implemented.
 
@@ -127,7 +127,7 @@ When you are satisfied with the model, you can persist its parameters for later 
 So each of your model classes only needs the `process` method to be implemented
 and should extend the appropriate H1st model. Each of your modelers, only needs
 the `model_class` attribute defined (either in the __init__ or as a class var)
-and neeeds the `train_base_model` method implemented. Optionally, you can
+and needs the `train_base_model` method implemented. Optionally, you can
 implement `load_data` and `evaluate_model` methods for enhanced functionality,
 but everything else is taken care of by the framework. 
 
