@@ -55,7 +55,7 @@ class TestTimeSeriesOracle:
     def test_azure_iot(self):
         data = self.load_data()
 
-        oracle = TimeSeriesOracle(knowledge_model=RuleModel())
+        oracle = TimeSeriesOracle(teacher=RuleModel())
         oracle.build(data['training_data'], id_col='machineID', ts_col='date')
 
         training_data = oracle.generate_data(data['training_data'])
@@ -67,7 +67,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
+            oracle_2 = TimeSeriesOracle(teacher=RuleModel())
             oracle_2.load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
@@ -79,7 +79,7 @@ class TestTimeSeriesOracle:
     def test_azure_iot_with_features(self):
         data = self.load_data()
 
-        oracle = TimeSeriesOracle(knowledge_model=RuleModel())
+        oracle = TimeSeriesOracle(teacher=RuleModel())
         oracle.build(data['training_data'],
                     id_col='machineID',
                     ts_col='date',
@@ -95,7 +95,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
+            oracle_2 = TimeSeriesOracle(teacher=RuleModel())
             oracle_2.load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
@@ -107,7 +107,7 @@ class TestTimeSeriesOracle:
     def test_azure_iot_one_equipment(self):
         data = self.load_data()
         data['training_data']['X'].drop('machineID', axis=1, inplace=True)
-        oracle = TimeSeriesOracle(knowledge_model=RuleModel())
+        oracle = TimeSeriesOracle(teacher=RuleModel())
         oracle.build(data['training_data'], ts_col='date')
 
         training_data = oracle.generate_data(data['training_data'])
@@ -119,7 +119,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
+            oracle_2 = TimeSeriesOracle(teacher=RuleModel())
             oracle_2.load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
