@@ -117,6 +117,12 @@ class Oracle(PredictiveModel):
         return {'X': df.copy(), 'y': pd.Series(teacher_pred['predictions'])}
 
     def predict(self, input_data: Dict) -> Dict:
+        """
+        Implement logic to generate prediction from data. The Oracle expects the same features provided during `build` phase to be in the provided data. It automatically process the data the same way to that of the `build` phase.
+
+        :params input_data: an dictionary with key `X` containing the data to get predictions.
+        :returns: a dictionary with key `predictions` containing the predictions
+        """
         if not hasattr(self, 'students'):
             raise RuntimeError('No student built')
 

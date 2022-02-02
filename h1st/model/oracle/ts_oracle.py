@@ -79,10 +79,19 @@ class TimeSeriesOracle(Oracle):
         Build the oracle
         :param data: a dictionary {'X': ...}
         :param id_col: id column that contains entity ids such as `equipment_id`
-        :param ts_col: time-granuality column to group the data
+        :param ts_col: time-granularity column to group the data
         '''
         
         self.stats['id_col'] = id_col
         self.stats['ts_col'] = ts_col
         
         super().build(data, features)
+
+    def predict(self, input_data: Dict) -> Dict:
+        '''
+        Implement logic to generate prediction from data. The TimeSeries Oracle expects the same `id_col`, `ts_col` and features provided during `build` phase to be in the provided data. It automatically process the data the same way to that of the `build` phase.
+        :params input_data: an dictionary with key `X` containing the data to get predictions.
+        :returns: a dictionary with key `predictions` containing the predictions
+        """
+        '''
+        return super().predict(input_data)
