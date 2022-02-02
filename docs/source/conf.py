@@ -6,8 +6,7 @@ import os
 import sys
 
 # include h1st package in build path
-sys.path.insert(0, os.path.abspath('./../..'))
-sys.path.insert(0, os.path.abspath('./../h1st'))
+sys.path.insert(0, os.path.abspath('./../../h1st'))
 
 PACKAGE_NAMESPACE = 'h1st'
 METADATA_FILE_NAME = 'metadata.json'
