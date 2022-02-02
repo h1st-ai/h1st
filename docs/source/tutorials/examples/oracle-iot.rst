@@ -5,11 +5,12 @@ In this tutorial, we will demonstrate the end-to-end process of building
 Oracle, from raw data to Oracle model, using Microsoft Azure Predictive
 Maintenance dataset. Through this tutorial, you will learn 1. how to
 build rule-based model through data analysis 2. how to build Oracle from
-this rule-based model.
+this rule-based model and your unlabeled data. You can find the notebook 
+version of this tutorial `here <https://github.com/h1st-ai/h1st/blob/main/user/tutorials/oracle/oracle_with_multivariate_timeseries_data.ipynb>`__. 
 
 This tutorial has the following contents.
 
-`1. H1st Oracle <#h1st-oracle>`__ - What is H1st Oracle? - Architeture
+`1. H1st Oracle <#h1st-oracle>`__ - What is H1st Oracle? - Architecture
 of Oracle
 
 `2. Setup an Experiment <#experiment>`__ - Define the problem we solve
@@ -48,7 +49,7 @@ existing rules (of course you can update and add more rules, but you
 don’t need to). Lastly, if you already have some labeled data, you can
 use them as well to build a more powerful Oracle.
 
-1.2 Architeture of Oracle
+1.2 Architecture of Oracle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Oracle consists of one Teacher (RuleBasedModel), multiple Students 
@@ -73,7 +74,7 @@ Additionally:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this tutorial, we want to solve Predictive Maintenance problem.
-Predictive Maintenacne is to help determine the codition of operating
+Predictive Maintenance is to help determine the condition of operating
 equipments and proactively suggest when and what parts of equipment
 require maintenance work. In this tutorial, we will narrow down the
 problem and focus on identifying what part of equipment is going to fail
@@ -559,7 +560,7 @@ https://azuremlsampleexperiments.blob.core.windows.net/datasets/PdM_machines.csv
 
 
 
-We can confirm that there are 100 unqiue machineID
+We can confirm that there are 100 unique machineID
 
 .. code:: python
 
@@ -722,7 +723,7 @@ characteristics of dataset in details.
     :alt: Time Series Plot of MachineID: 1
 
 
-From the following timeseries plot where we ploted daily mean value of
+From the following time-series plot where we plotted daily mean value of
 each sensor, we observe very interesting patterns. 
 
 1. “comp1” failure can be detected when the daily average of “volt” goes above 180 
@@ -828,7 +829,7 @@ each sensor, we observe very interesting patterns.
 
 
 To confirm that these rules are applicable to entire dataset, let’s draw
-historam of each sensor using entire model3 machine dataset and see if
+histogram of each sensor using entire model3 machine dataset and see if
 those thresholds filter out reasonable amount of data.
 
 .. code:: python
@@ -1021,11 +1022,11 @@ detect reasonably small portion of dataset as failures.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We want to create a training and test dataset in this section. We will
-define one datapoint as (24,4) array which consists of 4 sensors for 24
+define one data point as (24,4) array which consists of 4 sensors for 24
 hours (daily). We will split training and test data using machineID.
 
 We will use the following three variables in the following sections. -
-keys: keys will be used to groupb_by the whole dataset - features:
+keys: keys will be used to group_by the whole dataset - features:
 features are the columns that will be used to build models - class_map:
 class_map will map the faulty component string (ex: ‘comp1’) to integer.
 ‘non-failure’ will be mapped to integer 0.
@@ -1081,8 +1082,8 @@ split_ratio 4:3
     (183960, 9) (122640, 9)
 
 
-Let’s check out how many datapoints we will have in train and test
-dataset. Again, each datapoint will have (24, 4) shape which is (24
+Let’s check out how many data points we will have in train and test
+dataset. Again, each data point will have (24, 4) shape which is (24
 hours and 4 features).
 
 .. code:: python
@@ -1093,14 +1094,14 @@ hours and 4 features).
     temp_gb = df_model3_test.groupby(keys)
     list_of_test_daily = [item for item in temp_gb]
     
-    print(f'number of datapoints in train dataset: {len(list_of_train_daily)}')
-    print(f'number of datapoints in test dataset: {len(list_of_test_daily)}')
+    print(f'number of data points in train dataset: {len(list_of_train_daily)}')
+    print(f'number of data points in test dataset: {len(list_of_test_daily)}')
 
 
 .. parsed-literal::
 
-    number of datapoints in train dataset: 7665
-    number of datapoints in test dataset: 5110
+    number of data points in train dataset: 7665
+    number of data points in test dataset: 5110
 
 
 From the above EDA, we found that failures can be detected one~two days
@@ -1118,7 +1119,7 @@ date of machine failure.
 
 Generate ground truth label for train and test datasets. In some failure
 cases, one machine can have n number of faulty components and, in that
-case, we generated n datapoints with n different kinds of labels.
+case, we generated n data points with n different kinds of labels.
 
 .. code:: python
 
@@ -1456,20 +1457,15 @@ machines (gives many false alarm).
 
 .. code:: python
 
-    import sys
-    sys.path.insert(0, '/Users/arimo/src/github.com/h1st-ai/h1st/')
-
-
-.. code:: python
-
-    from h1st.model.oracle.ts_oracle import TimeSeriesOracle
+    from h1st.model.oracle import TimeSeriesOracle
     
-    oracle = TimeSeriesOracle(knowledge_model=RuleModel())
+    oracle = TimeSeriesOracle(teacher=RuleModel())
+    oracle.build(
+        data={'X': df_model3_train[keys+features]}, 
+        id_col='machineID', 
+        ts_col='date'
+    )
 
-.. code:: python
-
-    data = {'X': df_model3_train[keys+features]}
-    oracle.build(data, id_col='machineID', ts_col='date')
 
 5.2 Evaluate the performance of Oracle and compare it with that of rule-based model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1592,14 +1588,16 @@ applications.
 
 In this tutorial, we have achieved the following: 1. We could understand
 what is H1st Oracle and how to build it from Rule-based Model (encoding
-expert knowledge) and unlabeled data. 2. We could evalute the
+expert knowledge) and unlabeled data. 2. We could evaluate the
 performance of H1st Oracle and rule-based Model and found that Oracle
 outperforms the rule-based model even though we haven’t used any labeled
 data to build Oracle. This is because Oracle includes discriminative
 models that can generalize the encoded rules of rule-based model and,
 furthermore, combine their intelligence through ensemble.
 
-We hope you enjoyed this tutorial. To find more information about H1st,
+We hope you enjoyed this tutorial. You can find the notebook 
+version of this tutorial `here <https://github.com/h1st-ai/h1st/blob/main/user/tutorials/oracle/oracle_with_multivariate_timeseries_data.ipynb>`__. 
+To find more information about H1st,
 please visit our `h1st
 website <https://h1st.readthedocs.io/en/latest/README.html>`__ or check
 out our `h1st github repository <https://github.com/h1st-ai/h1st>`__.

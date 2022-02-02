@@ -68,15 +68,15 @@ class Oracle(PredictiveModel):
     """
     Oracle Model in Oracle framework
     """
-    def __init__(self, knowledge_model: PredictiveModel,
+    def __init__(self, teacher: PredictiveModel,
                 student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
                 ensemble: Ensemble = Ensemble):
         '''
-        :param knowledge_model: The knowledge model.
+        :param teacher: The knowledge model.
         :param student_modelers: The student modelers.
         :param ensemble: The ensemble model class.
         '''
-        self.teacher = knowledge_model
+        self.teacher = teacher
         self.student_modelers = student_modelers
         self.ensemble = ensemble()
         self.stats = {}
@@ -117,6 +117,12 @@ class Oracle(PredictiveModel):
         return {'X': df.copy(), 'y': pd.Series(teacher_pred['predictions'])}
 
     def predict(self, input_data: Dict) -> Dict:
+        """
+        Implement logic to generate prediction from data. The Oracle expects the same features provided during `build` phase to be in the provided data. It automatically process the data the same way to that of the `build` phase.
+
+        :params input_data: an dictionary with key `X` containing the data to get predictions.
+        :returns: a dictionary with key `predictions` containing the predictions
+        """
         if not hasattr(self, 'students'):
             raise RuntimeError('No student built')
 

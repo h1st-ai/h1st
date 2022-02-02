@@ -1,10 +1,22 @@
 Installation
 ############
 
-H1st runs on Python 3.7 or above. Install via pip:
+H1st runs on Python 3.8 or above. Install via pip:
 
 .. code-block:: 
 
+    pip install --upgrade pip
     pip3 install h1st
 
 For Windows, please use 64bit version and install VS Build Tools before installing H1st.
+
+Model Repository
+################
+When using the H1st framework, for machine-learning models, storage, loading
+and versioning is handled by the framework, but you still need to designate
+where the models will be stored.
+
+This is done in one of 2-ways:
+* Set the `H1ST_MODEL_REPO_PATH` environment variable. This can either point to
+a local storage repository or an S3 bucket.
+* Create a `config.py` file in the same directory as your model module, and define `MODEL_REPO_PATH = '/path/to/model/repo/'`

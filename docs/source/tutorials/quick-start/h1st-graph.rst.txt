@@ -1,24 +1,36 @@
 H1st Graph
 ##########
 
-H1st Graph is an execution flow chart that allows the incorporation of ML as well as human expert models.
+An H1st Graph object encapsulates an execution flow chart that allows Models
+and Actions to be smoothly tied together. This structure enables both ML and
+Human-knowledge models to be incorporated into a seamless data processing and
+inference pipeline.
 
-This is an example of a very simple graph which prints hello for each even number x in the input stream, using a conditional RuleBasedModel which is a h1.Model node and a HelloPrinter which is a h1.Action node.
+This is an example of a very simple graph which prints hello for each even
+number x in the input stream, using a conditional RuleBasedModel. The
+rule-based model extends the h1st Model class implying that it processes the
+incoming data to produce some prediction, transformation or analysis on that
+data. The HelloPrinter class extends the h1st Action class implying that it
+performs a simple action in response to some input.
 
+In this case the model determines whether or not the input data is an even
+number. The Action HelloPrinter is only passed the even-number data where the
+model returned True. 
 
 .. code-block:: python
 
-  import h1st as h1
+  from h1st.model.model import Model
+  from h1st.h1flow.h1step import Action
 
-  class RuleBasedModel(h1.Model):
+  class RuleBasedModel(Model):
       """
       Simple rule-based model that "predicts" if a given value is an even number
       """
-      def predict(self, input_data: dict) -> dict:
+      def process(self, input_data: dict) -> dict:
           predictions = [{'prediction': x % 2 == 0, 'value': x} for x in input_data["values"]]
           return {"predictions": predictions}
 
-  class HelloPrinter(h1.Action):
+  class HelloPrinter(Action):
       """Print hello to the inputs value"""
       def call(self, command, inputs):
           # Note that H1st does the conditional/filtering orchestration already.
@@ -27,24 +39,43 @@ This is an example of a very simple graph which prints hello for each even numbe
               print("Hello world {}!".format(d["value"]))
 
 
-The H1st graph itself is created by add()ing nodes incrementally.
-
-Note that the first branch is a h1.Decision which redirects the data flow into the later yes and no nodes based on the RuleBasedModel’s predictions`.
-
-In terms of data flow, the RuleBasedModel node produces a dict of which is then used by h1.Decision to redirect the data stream by looking at the result_field=predictions dict key.
-
-H1st graph by default operates in batch mode, meaning that h1.Decision looks at {"predictions": [{"prediciton": True, ...}, {"prediction": False, }]} and redirect True/False decision points to the to the right yes/no branch as a list.
-
+The H1st graph itself is created by adding nodes incrementally.
 
 .. code-block:: python
 
+  from h1st.h1flow.h1flow import Graph
+  from h1st.h1flow.h1step import Decision, NoOp
+
+  g = Graph()
   g.start()
-  g.add(h1.Decision(RuleBasedModel(), result_field="predictions"))
-  g.add(yes=HelloPrinter(), no=h1.NoOp())
+
+  # In the first Node, the data is passed to the RuleBasedModel's "process"
+  # method and a Decision is rendered from model output.
+  g.add(h1.Decision(RuleBasedModel(),
+                    result_field="predictions",
+                    decision_field="prediction"))
+
+  # In the second Node, if the True or "yes" data is passed to HelloPrinter's
+  # "call" function, and the False or "no" data is passed to NoOp's "call"
+  # function. NoOp is default null Action and nothing happens. 
+  g.add(yes=HelloPrinter(), no=NoOp())
   g.end()
 
+  # Now that the graph is built, we run pass input data through that graph
   results = g.predict({"values": range(6)})
 
+Note that the first Node is an h1st Decision which redirects the data flow
+into the later yes and no nodes based on the RuleBasedModel’s predictions.
+Inference is done in batch-mode so first the RuleBasedModel predicts for all
+input values, then the "yes" or True values are passed to the HelloPrinter
+action while the "no" or False values go to the NoOp null Action.
+
+In terms of data flow, the input to the Graph predict method is passed to the
+RuleBasedModel's process function which in turn produces a dict. The Decision
+object forwards a dict containing the result_field "predictions" to the
+HelloPrinter's call function if the Decision is True and does nothing (NoOp) if
+the decision is False. In this way, the Graph simplifies the construction of
+complex action and information relay flows.
 
 .. code-block::
 

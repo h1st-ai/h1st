@@ -44,7 +44,7 @@ class TestOracle:
 
     def test_iris(self):
         data = self.load_data()
-        oracle = Oracle(knowledge_model=RuleModel())
+        oracle = Oracle(teacher=RuleModel())
         oracle.build(data['training_data'])
 
         pred = oracle.predict(data['test_data'])['predictions']
@@ -55,7 +55,7 @@ class TestOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = Oracle(knowledge_model=RuleModel())
+            oracle_2 = Oracle(teacher=RuleModel())
             oracle_2.load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
@@ -66,7 +66,7 @@ class TestOracle:
 
     def test_iris_one_student(self):
         data = self.load_data()
-        oracle = Oracle(knowledge_model=RuleModel(), student_modelers=[RandomForestModeler()])
+        oracle = Oracle(teacher=RuleModel(), student_modelers=[RandomForestModeler()])
         oracle.build(data['training_data'])
 
         pred = oracle.predict(data['test_data'])['predictions']
@@ -78,7 +78,7 @@ class TestOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = Oracle(knowledge_model=RuleModel(), student_modelers=[RandomForestModeler()])
+            oracle_2 = Oracle(teacher=RuleModel(), student_modelers=[RandomForestModeler()])
             oracle_2.load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))

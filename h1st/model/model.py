@@ -90,7 +90,7 @@ class Model(NodeContainable, Trustable, Modelable):
         """
         Implement logic to process data
 
-        :params data: data to process
+        :params input_data: data to process
         :returns: processing result as a dictionary
         """
         # not raise NotImplementedError so the initial model created by integrator will just work 
