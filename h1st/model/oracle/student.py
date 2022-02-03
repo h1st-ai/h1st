@@ -10,6 +10,7 @@ class Student(MLModel):
     """
     Knowledge Generalization Model
     """
+
     def predict(self, input_data: Dict) -> Dict:
         """
         Implement logic to generate prediction from data
@@ -24,6 +25,7 @@ class StudentModeler(MLModeler):
     """
     Knowledge Generalization Modeler
     """
+
     def __init__(self, base_model=LogisticRegression()):
         self.model_class = Student
         self.base_model = base_model
@@ -32,19 +34,23 @@ class StudentModeler(MLModeler):
         self.base_model.fit(prepared_data['X'], prepared_data['y'])
         return deepcopy(self.base_model)
 
+
 class RandomForestModel(Student):
     """
     Knowledge Generalization Model backed by a RandomForest algorithm
     """
     pass
 
+
 class RandomForestModeler(StudentModeler):
     """
     Knowledge Generalization Modeler backed by a RandomForest algorithm.
     """
+
     def __init__(self, base_model=RandomForestClassifier()):
         super().__init__(base_model=base_model)
         self.model_class = RandomForestModel
+
 
 class AdaBoostModel(Student):
     """
@@ -52,12 +58,12 @@ class AdaBoostModel(Student):
     """
     pass
 
+
 class AdaBoostModeler(StudentModeler):
     """
     Knowledge Generalization Modeler backed by a AdaBoost algorithm.
     """
+
     def __init__(self, base_model=AdaBoostClassifier()):
         super().__init__(base_model=base_model)
         self.model_class = AdaBoostModel
-
-

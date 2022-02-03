@@ -11,7 +11,7 @@ class Describer:
         self.shap_describer = None
         self.data_description(h1stmodel)
         self.model_description(h1stmodel)
-        
+
     def data_description(self, h1stmodel):
         self.h1stmodel = h1stmodel
         _dict = {}

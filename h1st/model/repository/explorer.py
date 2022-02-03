@@ -75,6 +75,7 @@ class ModelExplorer:
     """
     Utility class to discover model class in a project
     """
+
     def __init__(self, cwd=None):
         self.cwd = cwd
 

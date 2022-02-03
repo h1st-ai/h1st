@@ -25,7 +25,7 @@ class Modeler(NodeContainable):
                    ...
 
            class MyModel(h1st.model.Model):
-               
+
 
 
            my_modeler = MyModeler()
@@ -40,6 +40,7 @@ class Modeler(NodeContainable):
            my_model_2 = MyModel()
            my_model_2.load_params('1st_version')
     """
+
     @property
     def model_class(self) -> Any:
         return getattr(self, "__model_class", None)
@@ -65,7 +66,7 @@ class Modeler(NodeContainable):
     @metrics.setter
     def metrics(self, value) -> Dict:
         setattr(self, '__metrics__', value)
-    
+
     def load_data(self) -> Dict:
         """
         Implement logic of load data from data source
@@ -89,9 +90,9 @@ class Modeler(NodeContainable):
         """
         if type(model) != self.model_class:
             raise ValueError('The provided model is not a %s' % self.model_class.__name__)
-        
+
         return None
-    
+
     def build_model(self) -> Modelable:
         """
         Implement logic to create the corresponding Model object

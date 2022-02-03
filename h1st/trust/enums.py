@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Constituency(Enum):
     """
     A Constituency is the party that is asking for an explanation. This is important to recognize,
@@ -16,6 +17,7 @@ class Constituency(Enum):
     LEGISLATOR = 70
     ANY = 99
     OTHER = 100
+
 
 class Aspect(Enum):
     """

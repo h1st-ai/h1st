@@ -10,6 +10,7 @@ class LocalStorage(Storage):
     """
     Provide data storage on top of local file system
     """
+
     def __init__(self, storage_path=None):
         self.storage_path = storage_path
 
