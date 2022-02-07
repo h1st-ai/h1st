@@ -26,6 +26,9 @@ jobs:
       - name: Validate poetry configuration
         run: poetry check
 
+      - name: Validate styling
+        run: poetry run pylint **/*.py
+
       - name: Run tests
         run: poetry run pytest
 

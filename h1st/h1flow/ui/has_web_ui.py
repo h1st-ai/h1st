@@ -10,10 +10,10 @@ class HasWebUI():
             return self.handle_post(req)
         else:
             return self.handle_default(req)
-    
+
     def handle_get(self, req):
         raise NotImplementedError('Please implement get method handler')
-    
+
     def handle_post(self, req):
         raise NotImplementedError('Please implement post method handler')
 
@@ -22,6 +22,6 @@ class HasWebUI():
 
     def handle_delete(self, req):
         raise NotImplementedError('Please implement delete method handler')
-    
+
     def handle_default(self, req):
         raise NotImplementedError('Method is not supported')

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h1st"
-version = "0.1.5"
+version = "0.1.6"
 description = "Human-First AI (H1ST)"
 authors = ["h1st-ai <engineering@aitomatic.com>"]
 license = "Apache-2.0"
@@ -29,7 +29,12 @@ pytest = "^6.2.5"
 tensorflow = "^2.7.0"
 Sphinx = "^4.4.0"
 sphinx-rtd-theme = "^1.0.0"
+pylint = "^2.12.2"
 
 [build-system]
 requires = ["poetry-core >= 1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.format]
+# Maximum number of characters on a single line.
+max-line-length = 120

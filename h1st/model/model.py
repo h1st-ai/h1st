@@ -28,7 +28,7 @@ class Model(NodeContainable, Trustable, Modelable):
                    ...
 
            class MyModel(h1st.model.Model):
-               
+
 
 
            my_modeler = MyModeler()
@@ -85,7 +85,7 @@ class Model(NodeContainable, Trustable, Modelable):
         repo.load(model=self, version=version)
 
         return self
-        
+
     def process(self, input_data: Dict) -> Dict:
         """
         Implement logic to process data
@@ -93,5 +93,5 @@ class Model(NodeContainable, Trustable, Modelable):
         :params input_data: data to process
         :returns: processing result as a dictionary
         """
-        # not raise NotImplementedError so the initial model created by integrator will just work 
+        # not raise NotImplementedError so the initial model created by integrator will just work
         return input_data

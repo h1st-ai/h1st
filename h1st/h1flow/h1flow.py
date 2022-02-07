@@ -30,7 +30,7 @@ class Graph(NodeContainable, Trustable):
 
         # map { node's id: number} to trake the used ids.
         # with number=0 if id is manual provided, number=1 if id is generated
-        self._used_node_ids = {} 
+        self._used_node_ids = {}
 
     @property
     def nodes(self) -> SimpleNamespace:
@@ -47,12 +47,12 @@ class Graph(NodeContainable, Trustable):
         """
         return self.add(Action(id='start'))
 
-    def add( self,
-        node: Union[Node, NodeContainable, None] = None,
-        yes: Union[Node, NodeContainable, None] = None,
-        no: Union[Node, NodeContainable, None] = None,
-        id: str = None
-     ) -> Union[Node, List[Node]]:        
+    def add(self,
+            node: Union[Node, NodeContainable, None] = None,
+            yes: Union[Node, NodeContainable, None] = None,
+            no: Union[Node, NodeContainable, None] = None,
+            id: str = None
+            ) -> Union[Node, List[Node]]:
         """
         Adds a new Node or NodeContainable to this graph. Period keeps a running preference to the current possition in the graph to be added
         If the object to be added is a NodeContainable then a new node will be automatically instanciated to contain that object and the node is added to this graph.
@@ -191,11 +191,11 @@ class Graph(NodeContainable, Trustable):
             node = Action(containable)
 
         id = id or node.id
-        if id: # manual provided id
+        if id:  # manual provided id
             self._used_node_ids[id] = 0
-        else: # automatic id
+        else:  # automatic id
             id = self._generate_id(node)
-            self._used_node_ids[id] = 1 
+            self._used_node_ids[id] = 1
 
         node._id = id
         node.graph = self
@@ -254,13 +254,13 @@ class Graph(NodeContainable, Trustable):
 
         return output
 
-    def _add_and_connect( self,
-        node: Union[Node, NodeContainable, None] = None,
-        yes: Union[Node, NodeContainable, None] = None,
-        no: Union[Node, NodeContainable, None] = None,        
-        id: str = None,
-        from_: Union[Node, None] = None
-     ) -> Union[Node, List[Node]]:
+    def _add_and_connect(self,
+                         node: Union[Node, NodeContainable, None] = None,
+                         yes: Union[Node, NodeContainable, None] = None,
+                         no: Union[Node, NodeContainable, None] = None,
+                         id: str = None,
+                         from_: Union[Node, None] = None
+                         ) -> Union[Node, List[Node]]:
         """
         Adds node/yes/no nodes to self.nodes and connect from_node to newly added nodes
         """
@@ -268,7 +268,7 @@ class Graph(NodeContainable, Trustable):
             raise GraphException('Graph.start() may only be called once')
 
         if id == 'end' and hasattr(self.nodes, 'end'):
-            raise GraphException('Graph.end() may only be called once')        
+            raise GraphException('Graph.end() may only be called once')
 
         if hasattr(self.nodes, 'end'):
             raise GraphException('not allow to add a node after Graph.end()')
