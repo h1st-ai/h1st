@@ -4,4 +4,4 @@ class Debiasable:
     """
 
     def debias(self, decisions):
-        pass # to be implemented
+        pass  # to be implemented

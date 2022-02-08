@@ -5,6 +5,7 @@ import logging
 
 from h1st.model.repository.model_repository import ModelRepository
 
+
 class Context:
     def __init__(self):
         pass
@@ -53,6 +54,8 @@ def discover_h1st_project(cwd=None) -> tuple:
 
 
 _stream_handler = None
+
+
 def setup_logger():
     global _stream_handler
 

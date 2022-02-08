@@ -1,5 +1,6 @@
 import shap
 
+
 class SHAPModelDescriber:
     def __init__(self, model, data):
         self.model = model

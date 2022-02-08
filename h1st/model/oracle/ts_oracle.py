@@ -5,10 +5,11 @@ from .oracle import Oracle
 from .student import RandomForestModeler, AdaBoostModeler
 from .ensemble import Ensemble
 
+
 class TimeSeriesOracle(Oracle):
     def __init__(self, teacher: PredictiveModel,
-                student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
-                ensemble: Ensemble = Ensemble):
+                 student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
+                 ensemble: Ensemble = Ensemble):
         super().__init__(teacher, student_modelers, ensemble)
         self.stats = {}
 
@@ -20,7 +21,7 @@ class TimeSeriesOracle(Oracle):
         :param data: grouped dataframe.
         '''
         df = data['data']
-        ret = pd.DataFrame(df.values.reshape(1, df.shape[0]*df.shape[1]))
+        ret = pd.DataFrame(df.values.reshape(1, df.shape[0] * df.shape[1]))
         return ret
 
     def generate_data(self, data: Dict) -> Dict:
@@ -31,7 +32,7 @@ class TimeSeriesOracle(Oracle):
         '''
         if 'X' not in data:
             raise ValueError('Please provide data in form of {\'X\': pd.DataFrame}')
-        
+
         df = data['X']
 
         id_col = self.stats['id_col']
@@ -57,13 +58,13 @@ class TimeSeriesOracle(Oracle):
                 group_df.drop(groupby_cols, axis=1, inplace=True)
                 if features is not None:
                     group_df = group_df[features]
-                
+
                 teacher_pred = self.teacher.predict({'X': group_df})
                 if 'predictions' not in teacher_pred:
                     raise KeyError('Teacher\'s output must contain a key named `predictions`')
 
                 teacher_preds.append(teacher_pred['predictions'])
-                
+
                 features_list.append(self.generate_features({'data': group_df}))
             df_features = pd.concat(features_list).fillna(0)
         else:
@@ -74,17 +75,17 @@ class TimeSeriesOracle(Oracle):
 
         return {'X': df_features, 'y': pd.Series(teacher_preds)}
 
-    def build(self, data: Dict, id_col: str=None, ts_col: str=None, features: List=None) -> NoReturn:
+    def build(self, data: Dict, id_col: str = None, ts_col: str = None, features: List = None) -> NoReturn:
         '''
         Build the oracle
         :param data: a dictionary {'X': ...}
         :param id_col: id column that contains entity ids such as `equipment_id`
         :param ts_col: time-granularity column to group the data
         '''
-        
+
         self.stats['id_col'] = id_col
         self.stats['ts_col'] = ts_col
-        
+
         super().build(data, features)
 
     def predict(self, input_data: Dict) -> Dict:

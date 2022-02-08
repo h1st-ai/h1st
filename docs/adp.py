@@ -1,4 +1,4 @@
-# This script remove submodules and subpackages 
+# This script remove submodules and subpackages
 # from the documentation title
 
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 src_dir = Path("source/api")
 for file in src_dir.iterdir():
     print("Processed RST file:", file)
-    with open(file, "r") as f:
+    with open(file, "r", encoding="utf-8") as f:
         lines = f.read()
 
     junk_strs = ["Submodules\n----------", "Subpackages\n-----------"]
@@ -16,5 +16,5 @@ for file in src_dir.iterdir():
 
     lines = lines.replace(" module\n=", "\n")
 
-    with open(file, "w") as f:
+    with open(file, "w", encoding="utf-8") as f:
         f.write(lines)

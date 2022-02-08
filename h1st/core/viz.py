@@ -17,6 +17,7 @@ __theme__ = {
 
 theme = SimpleNamespace(**__theme__)
 
+
 class DotGraphVisualizer:
     def __init__(self, graph: 'Graph'):
         self.graph = graph
@@ -36,7 +37,7 @@ class DotGraphVisualizer:
             self.nodes.append(new_node)
             self.clusterize_node(new_node)
 
-            #special handling for Decision node
+            # special handling for Decision node
             edge_constraint = 'true'
             compass_point = None
 
@@ -56,7 +57,7 @@ class DotGraphVisualizer:
             #         'compass_point': compass_point,
             #     })
 
-            #connect edges
+            # connect edges
             seen = set()
             for ns in n.edges:
                 if ns[0].rank is None:
@@ -75,7 +76,7 @@ class DotGraphVisualizer:
                 self.clusterize_node(connected_node)
 
                 self.edges.append({
-                    'from': new_node['name'], 
+                    'from': new_node['name'],
                     'to': connected_node['name'],
                     'label': ns[1],
                     'constraint': edge_constraint,
@@ -110,21 +111,21 @@ class DotGraphVisualizer:
         )
 
         mg.attr('node',
-            color=theme.text_color,
-            fillcolor=theme.fill_color,
-            fontname=theme.font_name,
-            fontsize=theme.font_size,
-            shape=theme.default_shape,
-            style=theme.default_style
-        )
+                color=theme.text_color,
+                fillcolor=theme.fill_color,
+                fontname=theme.font_name,
+                fontsize=theme.font_size,
+                shape=theme.default_shape,
+                style=theme.default_style
+                )
 
         mg.attr('edge',
-            color=theme.edge_color,
-            arrowsize=theme.arrow_size,
-            fontname=theme.font_name,
-            fontsize=theme.font_size,
-            rank='same'
-        )
+                color=theme.edge_color,
+                arrowsize=theme.arrow_size,
+                fontname=theme.font_name,
+                fontsize=theme.font_size,
+                rank='same'
+                )
 
         # mg.node(name='start', label='Start', shape='circle')
 
@@ -187,7 +188,6 @@ class DotGraphVisualizer:
             raise EngineNotAvailableException()
 
         return dot
-
 
     def _repr_svg_(self):
         dot = self.to_dot()
