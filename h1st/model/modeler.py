@@ -4,6 +4,7 @@ from h1st.h1flow.h1step_containable import NodeContainable
 
 from .modelable import Modelable
 
+from .repository.model_repository import ModelRepository
 
 class Modeler(NodeContainable):
     """
@@ -68,6 +69,13 @@ class Modeler(NodeContainable):
     @metrics.setter
     def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
+
+    def load_data(self) -> Modelable:
+        """
+        Implement logic of to load model
+
+        :returns: modelable
+        """
     
     def load_data(self) -> dict:
         """
@@ -97,3 +105,21 @@ class Modeler(NodeContainable):
         """
         Implement logic to create the corresponding Model object
         """
+
+    def build(self, data, teacher) -> Modelable:
+        """
+        Implement logic to create the corresponding Model object
+        """
+    
+    def persist(self, modelable, version=None) -> None:
+        """
+        Persist this modelable's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
+
+        `modelable` property could be single model, list or dict of models
+        Currently, only sklearn and tensorflow-keras are supported.
+
+        :param version: model version, leave blank for autogeneration
+        :returns: model version
+        """
+        repo = ModelRepository.get_model_repo(modelable)
+        return repo.persist(model=modelable, version=version)
