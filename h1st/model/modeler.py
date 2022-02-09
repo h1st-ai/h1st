@@ -70,7 +70,7 @@ class Modeler(NodeContainable):
     def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
 
-    def load_data(self) -> Modelable:
+    def load(self) -> Modelable:
         """
         Implement logic of to load model
 
