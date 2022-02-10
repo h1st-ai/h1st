@@ -5,6 +5,8 @@ from typing import Union, Optional, Callable, List, NoReturn, Any, Dict, Tuple
 from h1st.exceptions.exception import GraphException
 from h1st.model.model import Model
 from h1st.h1flow.h1step_containable import NodeContainable
+
+
 # from h1st.schema import SchemaValidator
 
 class Node:
@@ -19,11 +21,11 @@ class Node:
         """
         if containable:
             containable._node = self
-        
+
         self._id = id
         self._containable = containable
         self._graph = None
-        self._edges = []        
+        self._edges = []
 
         self._transform_input = None
         self._transform_output = None
@@ -40,7 +42,7 @@ class Node:
         """
         :returns: list of tuple(next_node, edge_label) which next_node is connected from this node
             edge_label = 'yes'/'no' in case of condition nodes
-            edge_label = None in case of normal nodes            
+            edge_label = None in case of normal nodes
         """
         return self._edges
 
@@ -115,18 +117,18 @@ class Node:
                     return {
                         'result': inputs['xxx']
                     }
-        """        
+        """
         self._transform_output = value
 
     def add(
-        self,
-        node: Union['Node', NodeContainable, None] = None,
-        yes: Union['Node', NodeContainable, None] = None,
-        no: Union['Node', NodeContainable, None] = None,
-        id: str = None
-     ) -> Union['Node', List['Node']]:
+            self,
+            node: Union['Node', NodeContainable, None] = None,
+            yes: Union['Node', NodeContainable, None] = None,
+            no: Union['Node', NodeContainable, None] = None,
+            id: str = None
+    ) -> Union['Node', List['Node']]:
         """
-        The bridge function to add nodes to a graph. This will invoke the Graph.add() function and 
+        The bridge function to add nodes to a graph. This will invoke the Graph.add() function and
         will then connect this node to newly added nodes.
         """
         return self._graph._add_and_connect(node, yes, no, id, self)
@@ -145,7 +147,7 @@ class Node:
         if callable(self.transform_input):
             inputs = self.transform_input(inputs)
 
-        # execute        
+        # execute
         node_output = self.call(command, inputs)
 
         # transform output
@@ -166,7 +168,7 @@ class Node:
             edge_data = self._get_edge_data(edge, node_output)
 
             # data is available to execute the next node
-            if edge_data is not None:                
+            if edge_data is not None:
                 next_node = edge[0]
                 next_inputs = {**inputs, **edge_data}
                 next_node._execute(command, next_inputs, state)
@@ -186,7 +188,7 @@ class Node:
     def to_dot_node(self, visitor):
         """Subclass will need to implement this function to construct and return the graphviz compatible node"""
 
-    def validate_output(self, input_data: dict = None, schema=None, command='predict'):
+    def validate_output(self, input_data: Dict = None, schema=None, command='predict'):
         """
         Invokes the call function the node with given input data, then verifies if output of the node conforming with the output schema of this node.
         Framework will look up the output schema for this node in the schemas object loaded by the graph from schemas.py using id of this node.
@@ -228,7 +230,7 @@ class Action(Node):
                         yes = h1.Action(Model2(), id="model2"), # with an id
                         no = Model3()                           # without an id
                     )
-                
+
                 yes.add(Model4())
                 no.add(Model5())
 
@@ -242,6 +244,7 @@ class Action(Node):
 
 class NoOp(Action):
     """A do-nothing action."""
+
     def call(self, command, inputs):
         pass
 
@@ -266,7 +269,7 @@ class Decision(Action):
 
                 yes.add(Model4())
                 no.add(Model5())
-                
+
                 self.end()
 
     .. code-block:: python
@@ -295,11 +298,12 @@ class Decision(Action):
 
                 yes.add(Model4())
                 no.add(Model5())
-                
+
                 self.end()
     """
 
-    def __init__(self, containable: NodeContainable = None, id: str = None, result_field='results', decision_field='prediction'):
+    def __init__(self, containable: NodeContainable = None, id: str = None, result_field='results',
+                 decision_field='prediction'):
         """
         :param containable: instance of subclass of NodeContainable to attach to the node
         :param id: the node's id
@@ -332,10 +336,10 @@ class Decision(Action):
     def _validate_output(self, node_output) -> bool:
         """
         This will ensure the result's structure is valid for decision node.
-        
+
         node_output must be a dictionary containing 'results' key and each item will have a field whose name = 'prediction'
         with bool value to decide whether the item belongs to yes or no branch
-            { 
+            {
                 'results': [{ 'prediction': True/False, ...}],
                 'other_key': ...,
             }
@@ -345,7 +349,9 @@ class Decision(Action):
                 'your_key': [{ 'prediction': True/False, ...}]
             }
         """
-        if not isinstance(node_output, dict) or ((self._result_field not in node_output) and len(node_output.keys()) != 1):
-            raise GraphException(f'output of {type(self._containable)} must be a dict containing "results" field or only one key')
-        
+        if not isinstance(node_output, dict) or (
+                (self._result_field not in node_output) and len(node_output.keys()) != 1):
+            raise GraphException(
+                f'output of {type(self._containable)} must be a dict containing "results" field or only one key')
+
         return True

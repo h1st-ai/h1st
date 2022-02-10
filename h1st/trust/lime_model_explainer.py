@@ -1,6 +1,7 @@
 import numpy as np
 import lime.lime_tabular as lt
 
+
 class LIMEModelExplainer:
     def __init__(self, decision, model, data):
         self.model = model

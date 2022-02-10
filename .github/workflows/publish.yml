@@ -26,6 +26,9 @@ jobs:
       - name: Validate poetry configuration
         run: poetry check
 
+      - name: Validate styling
+        run: poetry run pylint **/*.py
+
       - name: Run tests
         run: poetry run pytest
 
@@ -37,8 +40,21 @@ jobs:
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
-#      TODO - tag release using actions before this step
+          
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Set version
+        run: |
+          echo "H1ST_VERSION=$(poetry version -s)" >> $GITHUB_ENV
+        
+      - name: Create tag using environment variable for version
+        uses: julb/action-manage-tag@v1
+        with:
+          name: ${{ env.H1ST_VERSION }}
+          state: present
+          from: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

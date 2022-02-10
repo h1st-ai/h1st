@@ -3,6 +3,11 @@
 from datetime import date
 import json
 import os
+import sys
+
+# include h1st package in build path
+sys.path.insert(0, os.path.abspath('./../../h1st'))
+
 PACKAGE_NAMESPACE = 'h1st'
 METADATA_FILE_NAME = 'metadata.json'
 _metadata = json.load(open(os.path.join(
@@ -20,15 +25,19 @@ copyright = f'{date.today().year}, {author}'
 release = _metadata['release']
 version = _metadata['version']
 
+master_doc = 'README'
+source_suffix = '.rst'
+
 # -- General configuration
 
 extensions = [
-    'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'autoapi.extension'
 ]
+
+autoapi_dirs = [os.path.abspath('./../../h1st')]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),

@@ -4,7 +4,7 @@ class HasWebUI():
             return self.handle_get(req)
         else:
             return self.handle_post(req)
-    
+
     def handle_post(self, req):
         raise NotImplementedError('Please implement post method handler')
 

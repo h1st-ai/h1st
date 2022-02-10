@@ -6,6 +6,7 @@ class Storage(ABC):
     """
     Base class for storage
     """
+
     @abstractmethod
     def get_obj(self, name: str) -> Any:
         ...

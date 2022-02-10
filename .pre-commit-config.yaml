@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-docstring-first
+      - id: check-json
+      - id: pretty-format-json
+        args: ['--autofix']
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: pyproject
+        name: Validate pyproject.toml
+        entry: poetry check
+        pass_filenames: false
+        language: system
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.17.6
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

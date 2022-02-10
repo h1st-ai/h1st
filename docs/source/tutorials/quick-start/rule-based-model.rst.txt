@@ -1,0 +1,44 @@
+Rule-Based Model
+################
+
+A rule-based model is an example of applying human knowledge to solve a
+problem. You could use boolean logic or fuzzy logic and make decisions based on
+statistics or myriad other ways that humans do to solve problems.
+
+A rule-based model is very useful for solving the cold start problem, where
+data is not available.
+
+In the H1st framework, a human rule model can be implemented by sub-classing the
+h1st `Model` class or `PredictiveModel` class and implementing only the
+process() function. Basically, it’s a just a model with no training (though
+training is not forbidden and is sometimes is useful for human models too).
+
+If for some reason your rule model does require training or parameter tuning,
+then you can implement a `Modeler` in the same way as the `MLModeler` except
+just extending the H1st `Modeler` class.
+
+This particular simple model “predicts” if each given value in a stream is an
+even number or not.
+
+.. code-block:: python
+
+  from h1st.model.model import Model
+
+  class RuleBasedModel(Model):
+      """
+      Simple rule-based model that "predicts" if a given value is an even number
+      """
+      def predict(self, input_data: dict) -> dict:
+          predictions = [x % 2 == 0 for x in input_data["values"]]
+          return {"predictions": predictions}
+
+  m = RuleBasedModel()
+  xs = list(range(6))
+  results = m.predict({"values": xs})
+  predictions = results["predictions"]
+  print(f"RuleBasedModel's predictions for {xs} are {predictions}")
+
+
+.. code-block::
+
+  RuleBasedModel's predictions for [0, 1, 2, 3, 4, 5] are [True, False, True, False, True, False]

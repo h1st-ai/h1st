@@ -1,5 +1,5 @@
 import logging
-from typing import Any, NoReturn
+from typing import Dict, NoReturn
 
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
@@ -7,9 +7,9 @@ from skfuzzy.control.term import Term
 
 from h1st.model.rule_based_model import RuleBasedModel
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class FuzzyLogicModel(RuleBasedModel):
     """
@@ -19,6 +19,7 @@ class FuzzyLogicModel(RuleBasedModel):
 
 
     """
+
     def __init__(self):
         self.consequents = []
         self.rules = {}
@@ -94,7 +95,7 @@ class FuzzyLogicModel(RuleBasedModel):
 
     def remove_rule(self, name: str) -> NoReturn:
         if name in self.rules:
-            del self.rules[name]           
+            del self.rules[name]
 
     def add_variable(self, range_: list, name: str, membership_funcs: list, type_: str) -> NoReturn:
         """
@@ -121,7 +122,7 @@ class FuzzyLogicModel(RuleBasedModel):
                 type_='antecedent'
             )
         """
-        
+
         if type_ == 'antecedent':
             variable = ctrl.Antecedent(range_, name)
         elif type_ == 'consequent':
@@ -152,7 +153,7 @@ class FuzzyLogicModel(RuleBasedModel):
         else:
             logger.warning(f"{variable_name} not found")
 
-    def predict(self, input_data: dict) -> dict:
+    def predict(self, input_data: Dict) -> Dict:
         for key, value in input_data.items():
             self.css.input[key] = value
 

@@ -1,0 +1,68 @@
+Oracle
+######
+
+The `Oracle` is a key component of the H1st framework, and automates the
+creation of K1st Predictive Nodes from just a **Teacher** model containing
+human knowledge, and unlabelled data. Below is an example of how to use the
+`Oracle` class to create a full predictive ensemble (rule-based + ML) for
+predicting setosa iris's with the iris dataset. 
+
+.. code-block:: python
+
+    from h1st.mode.predictive_model import PredictiveModel
+    from h1st.model.oracle import Oracle
+    from sklearn.datasets import load_iris
+
+    class IrisRuleModel(PredictiveModel):
+        sepal_length_max: float = 6.0
+        sepal_length_min: float = 4.0
+        sepal_width_min: float = 3.0
+        sepal_width_max: float = 4.6
+        
+        def process(self, data: data) -> dict:
+            """define a process method to take the input data and output a
+               'prediction'
+            """
+            df = data['X']
+            return {
+                'predictions': pd.Series(map(
+                    self.predict_setosa, df['sepal_length'], df['sepal_width']
+                ))}
+
+        
+        def predict_setosa(self, sepal_length, sepal_width):
+            """Just a helper function"""
+            return 0 if (self.sepal_length_min <= sepal_length <= self.sepal_length_max) \
+                    & (self.sepal_width_min <= sepal_width <= self.sepal_width_max) \
+                else 1        
+
+    # Load data
+    df_X, y = load_iris(as_frame=True, return_X_y=True)
+    df_X.columns = ['sepal_length','sepal_width','petal_length','petal_width']
+
+    # Build the Oracle
+    oracle = Oracle(teacher=IrisRuleModel())
+    oracle.build(
+        data={'X': df_X},
+        features=['sepal_length','sepal_width']
+    )
+    # This seems simple, but behind the scenes this system has used your
+    # IrisRuleModel to generate data labels and train an ML model which
+    # generalizes the knowledge laid out in your Rule Model
+
+    # Now your trained Oracle can be used for inference
+    # Behind the scenes prediction is being done by both the Teacher (rule
+    # model) and Student (ML model) and both of these predictions are being
+    # taken into consideration for final oracle prediction output
+    oracle.predict({'X': df_X[['sepal_length','sepal_width']]})
+
+    # If you've setup a path for the model repo (see Installation), then
+    # you can persist this built oracle for use later
+    oracle.persist('iris_oracle_v1')
+
+
+    # Finally, you can load this created oracle for use in inference later:
+    oracle_2 = Oracle(teacher=IrisRuleModel()).load('iris_oracle_v1')
+    oracle_2.predict({'X': df_X[['sepal_length','sepal_width']]})
+
+Enjoy developing your AI systems!

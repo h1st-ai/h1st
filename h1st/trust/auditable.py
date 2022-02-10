@@ -16,11 +16,11 @@ class Auditable:
         setattr(self, "__audit_trailing", value)
 
     def audit_trail_get(self, key):
-        pass # to be implemented
+        pass  # to be implemented
 
     def audit_trail_set(self, key, value):
         if not self.audit_trailing: return
         # to be implemented
 
     def audit_trail_delete(self, key):
-        pass # to be implemented
+        pass  # to be implemented

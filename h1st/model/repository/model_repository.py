@@ -115,13 +115,14 @@ class ModelSerDe:
 
         elif not isinstance(model, RuleBasedModel):
             pass
-        elif hasattr(model, 'base_model'):            
+        elif hasattr(model, 'base_model'):
             logger.warning('Your .base_model will not be persisted. If you want to persist your .base_model, \
                             must inherit from h1st.MLModel instead of h1st.Model.')
 
         if len(meta_info) == 0:
             logger.info('Model persistence currently supports only stats, model and metrics properties.')
-            logger.info('Make sure you store stastistic in stats property, models in model property and model metrics in metrics one.')
+            logger.info(
+                'Make sure you store stastistic in stats property, models in model property and model metrics in metrics one.')
 
         with open(os.path.join(path, self.METAINFO_FILE), 'w') as file:
             yaml.dump(meta_info, file)
@@ -161,7 +162,8 @@ class ModelSerDe:
                     for i, model_info in enumerate(model_infos):
                         model_type = model_info['model_type']
                         model_path = model_info['model_path']
-                        model.base_model.append(self._deserialize_single_model(org_model[i], path, model_type, model_path))
+                        model.base_model.append(
+                            self._deserialize_single_model(org_model[i], path, model_type, model_path))
 
             elif type(model_infos) == dict:
                 # A dict of models
@@ -170,7 +172,8 @@ class ModelSerDe:
                 for model_name, model_info in model_infos.items():
                     model_type = model_info['model_type']
                     model_path = model_info['model_path']
-                    model.base_model[model_name] = self._deserialize_single_model(org_model[model_name], path, model_type, model_path)
+                    model.base_model[model_name] = self._deserialize_single_model(org_model[model_name], path,
+                                                                                  model_type, model_path)
             else:
                 raise ValueError('Not a valid H1ST Model METAINFO file!')
 
@@ -270,8 +273,8 @@ class ModelRepository:
             model.version = version
         finally:
             # We get error from Tensorflow telling that it could not find the folder
-            # Unsuccessful TensorSliceReader constructor: Failed to get matching files on 
-            # /var/folders/wb/40304xlx477cfjzbk386l2gr0000gn/T/tmpwcrvm2e2/model/weights: 
+            # Unsuccessful TensorSliceReader constructor: Failed to get matching files on
+            # /var/folders/wb/40304xlx477cfjzbk386l2gr0000gn/T/tmpwcrvm2e2/model/weights:
             # Not found: /var/folders/wb/40304xlx477cfjzbk386l2gr0000gn/T/tmpwcrvm2e2/model; No such file or directory [Op:RestoreV2]
             #
             # dir_util.remove_tree(tmpdir)
@@ -336,12 +339,12 @@ class ModelRepository:
         :param ref: target model
         :returns: Model repository instance
         """
-        if not hasattr(cls, 'MODEL_REPO'):   # global ModelRepository.MODEL_REPO
+        if not hasattr(cls, 'MODEL_REPO'):  # global ModelRepository.MODEL_REPO
             repo_path = None
             if ref is not None:
                 # root module
                 root_module_name = ''
-                
+
                 # find the first folder containing config.py to get MODEL_REPO_PATH
                 for sub in ref.__class__.__module__.split('.'):
                     root_module_name = sub if not root_module_name else root_module_name + '.' + sub
