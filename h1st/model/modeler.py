@@ -105,11 +105,6 @@ class Modeler(NodeContainable):
         """
         Implement logic to create the corresponding Model object
         """
-
-    def build(self, data, teacher) -> Modelable:
-        """
-        Implement logic to create the corresponding Model object
-        """
     
     def persist(self, modelable, version=None) -> None:
         """
