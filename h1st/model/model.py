@@ -1,10 +1,12 @@
 from typing import Any, NoReturn
 
+#from .modeler import Modeler
+
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
 from .repository.model_repository import ModelRepository
-from .modeler import Modelable
+from .modelable import Modelable
 
 
 class Model(NodeContainable, Trustable, Modelable):
@@ -46,6 +48,11 @@ class Model(NodeContainable, Trustable, Modelable):
            my_model_2 = MyModel()
            my_model_2.load_params('1st_version')
     """
+
+    @classmethod
+    def get_modeler(cls):
+        return Modeler(cls)
+
 
     ## TODO: Need a better naming and the definition of the property
     @property

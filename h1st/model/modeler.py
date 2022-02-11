@@ -1,3 +1,4 @@
+from h1st.model.model import Model
 from typing import Any
 
 from h1st.h1flow.h1step_containable import NodeContainable
@@ -44,6 +45,11 @@ class Modeler(NodeContainable):
            my_model_2 = MyModel()
            my_model_2.load_params('1st_version')
     """
+
+    def __init__(self, model_class):
+        super().__init__()
+        self.model_class = model_class
+
     @property
     def model_class(self) -> Any:
         return getattr(self, "__model_class", None)
@@ -70,7 +76,7 @@ class Modeler(NodeContainable):
     def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
 
-    def load(self) -> Modelable:
+    def load_model(self) -> Modelable:
         """
         Implement logic of to load model
 
@@ -105,13 +111,9 @@ class Modeler(NodeContainable):
         """
         Implement logic to create the corresponding Model object
         """
+        return self.model_class()
 
-    def build(self, data, teacher) -> Modelable:
-        """
-        Implement logic to create the corresponding Model object
-        """
-    
-    def persist(self, modelable, version=None) -> None:
+    def persist_model(self, modelable, version=None) -> None:
         """
         Persist this modelable's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
