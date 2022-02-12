@@ -4,16 +4,16 @@ import numpy as np
 from sklearn.preprocessing import RobustScaler
 
 from h1st.exceptions.exception import ModelException
-from h1st.model.ensemble.ensemble import Ensemble
-from h1st.model.model import Model
+from h1st.model.ensemble.ensemble import MLEnsemble
+from h1st.model.predictive_model import PredictiveModel
 
 
-class StackEnsemble(Ensemble):
+class StackEnsemble(MLEnsemble):
     """
     Base StackEnsemble class to implement StackEnsemble classifiers or regressors.
     """
 
-    def __init__(self, ensembler, sub_models: List[Model], **kwargs):
+    def __init__(self, ensembler, sub_models: List[PredictiveModel], **kwargs):
         """
         :param **kwargs: StackEnsemble use h1st models as submodels and the predict function of
         h1st model receives a dictionary and returns a dictionary. users can set the key of these
@@ -26,45 +26,35 @@ class StackEnsemble(Ensemble):
         self._submodel_predict_input_key = kwargs.get('submodel_predict_input_key', 'X')
         self._submodel_predict_output_key = kwargs.get('submodel_predict_output_key', 'predictions')
 
-    def _preprocess(self, X: Any) -> Any:
+    @classmethod
+    def preprocess(cls, sub_models: List[PredictiveModel], submodel_predict_input_key: str, submodel_predict_output_key: str, X: Any) -> Any:
         """
         Predicts all sub models then merge input raw data with predictions for ensembler's training or prediction
         :param X: raw input data
         """
         if isinstance(X, list):
-            predictions = [self._get_submodels_prediction(x) for x in X]
+            predictions = [StackEnsemble.get_submodels_prediction(sub_models,
+                                                                  submodel_predict_input_key,
+                                                                  submodel_predict_output_key, x)
+                                                                for x in X]
             return np.vstack(predictions)
         else:
-            return self._get_submodels_prediction(X)
+            return StackEnsemble.get_submodels_prediction(sub_models,
+                                                        submodel_predict_input_key,
+                                                        submodel_predict_output_key,
+                                                        X
+                                                        )
 
-    def _get_submodels_prediction(self, X: Any) -> Any:
+    @classmethod
+    def get_submodels_prediction(cls, sub_models: List[PredictiveModel], submodel_predict_input_key: str, submodel_predict_output_key: str, X: Any) -> Any:
         preds = []
-        for m in self._sub_models:
-            pred = m.predict({self._submodel_predict_input_key: X})
-            output_key = pred.get(self._submodel_predict_output_key)
+        for m in sub_models:
+            pred = m.predict({submodel_predict_input_key: X})
+            output_key = pred.get(submodel_predict_output_key)
             if output_key is not None:
-                preds.append(output_key)
+                preds.append(output_key.reshape(-1,1))
+
         return np.hstack(preds)
-
-    def train(self, prepared_data: Dict):
-        """
-        Trains ensembler with input is merging raw data 'X_train' and predictions of sub models, with targets 'y_train'
-        'X_train' is supposed to be numeric.
-        :param prepared_data: output of prep() implemented in subclass of StackEnsemble, its structure must be this dictionary
-            {
-                'X_train': ...,
-                'X_test': ...,
-                'y_train': ...,
-                'y_test': ...
-            }
-        """
-        X_train, y_train = (prepared_data['X_train'], prepared_data['y_train'])
-        X_train = self._preprocess(X_train)
-        scaler = RobustScaler(quantile_range=(5.0, 95.0), with_centering=False)
-        self.stats = scaler.fit(X_train)
-        X_train = self.stats.transform(X_train)
-
-        self.base_model.fit(X_train, y_train)
 
     def predict(self, data: Dict) -> Dict:
         """
@@ -79,6 +69,10 @@ class StackEnsemble(Ensemble):
         if not self.stats:
             raise ModelException('This model has not been trained')
 
-        X = self._preprocess(data['X'])
-        X = self.stats.transform(X)
+        X = StackEnsemble.preprocess(self._sub_models,
+                                     self._submodel_predict_input_key,
+                                     self._submodel_predict_output_key,
+                                     data['X']
+                                    )
+        X = self.stats['scaler'].transform(X)
         return {'predictions': self.base_model.predict(X)}
