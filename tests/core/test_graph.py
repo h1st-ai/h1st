@@ -9,13 +9,13 @@ from h1st.core.node import Node
 
 class SomeNode(Node):
 
-    def execute(self, *previous_output: Any):
+    def execute(self, previous_output: Any):
         print("hello")
 
 
 class DataNode(Node):
 
-    def execute(self, *previous_output: Any):
+    def execute(self, previous_output: Any):
         return [random(), random(), random()]
 
 

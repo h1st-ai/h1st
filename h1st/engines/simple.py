@@ -6,8 +6,6 @@ from h1st.core.node import Node
 class SimpleExecutionEngine(ExecutionEngine):
 
     def _linear_exec(self, node: Node, adj: dict, previous_output=None):
-        if previous_output is None:
-            previous_output = {}
         next_nodes = adj[node]
         result = node.execute(previous_output)
         if next_nodes:

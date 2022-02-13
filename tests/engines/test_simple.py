@@ -8,16 +8,15 @@ from h1st.core.node import Node
 
 
 class DataNode(Node):
-    def execute(self, *previous_output: Any):
+    def execute(self, previous_output: Any):
         return [3, 11, 37, 101]
 
 
 class TransformNode(Node):
-    def execute(self, *previous_output: Any):
+    def execute(self, previous_output: Any):
         result = []
-        for out in previous_output:
-            if isinstance(out, list):
-                result = list(map(lambda x: x + 10, out))
+        if isinstance(previous_output, list):
+            result = list(map(lambda x: x + 10, previous_output))
         return result
 
 

@@ -1,6 +1,4 @@
-import sys
-from types import SimpleNamespace
-from typing import List, Union, Any, NoReturn, Dict
+from typing import List, Union, Dict, Any
 
 from h1st.core.graph import Graph as CoreGraph
 from h1st.core.node import Node
@@ -89,7 +87,7 @@ class Graph:
         if no is not None:
             self.__internal_graph.add(no, after=[node])
 
-    def execute(self, data: Union[Dict, List[Dict]]) -> Union[Dict, List[Dict]]:
+    def execute(self, data: Any) -> Union[Dict, List[Dict]]:
         """
         The graph will scan through nodes to invoke appropriate node's function with name = value of command
         parameter. Everytime the graph invokes the appropriate function of the node, it will passing an accumulated
@@ -131,8 +129,6 @@ class Graph:
             g = MyGraph()
             result = g.execute(command='predict', data={'df': my_dataframe})
         """
-        if isinstance(data, list):
-            return [self.__internal_graph.execute(item) for item in data]
 
         return self.__internal_graph.execute(data)
 

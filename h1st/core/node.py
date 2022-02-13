@@ -9,7 +9,7 @@ class Node(abc.ABC):
         self.__attributes = attr
 
     @abc.abstractmethod
-    def execute(self, *previous_output: Any):
+    def execute(self, previous_output: Any = None):
         pass
 
     @property
