@@ -3,7 +3,6 @@ from typing import Dict
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
-from .repository.model_repository import ModelRepository
 from .modeler import Modelable
 
 
@@ -73,8 +72,6 @@ class Model(NodeContainable, Trustable, Modelable):
         :param version: model version, leave blank for autogeneration
         :returns: model version
         """
-        repo = ModelRepository.get_model_repo(self)
-        return repo.persist(model=self, version=version)
 
     def load_params(self, version: str = None) -> None:
         """
