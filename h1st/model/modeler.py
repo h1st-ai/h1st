@@ -1,10 +1,11 @@
-from typing import Any, Dict
+from h1st.model.model import Model
+from typing import Any
 
 from h1st.h1flow.h1step_containable import NodeContainable
-from .repository.model_repository import ModelRepository
 
 from .modelable import Modelable
 
+from .repository.model_repository import ModelRepository
 
 class Modeler(NodeContainable):
     """
@@ -13,8 +14,8 @@ class Modeler(NodeContainable):
     To create your own modeller, inherit `Modeler` class and implement `load_data`, `explore`, `train`,
     `evaluate and `build` accordingly. Please refer to Tutorial for more details how to create a model.
     The framework allows you to persist and load model to the model repository.
-    To persist the model, you can call `persist()`, and then `load_params` to retrieve the model.
-    See `persist()` and `load_params()` document for more detail.
+    To persist the model, you can call `persist()`, and then `load` to retrieve the model.
+    See `persist()` and `load()` document for more detail.
 
         .. code-block:: python
            :caption: Model Persistence and Loading Example
@@ -22,11 +23,14 @@ class Modeler(NodeContainable):
            import h1st
 
            class MyModeler(h1st.model.Modeler):
-               def build_model(self):
+               def train(self, prepared_data):
+                   X, y = prepared_data['X'], prepared_data['y']
+                   ...
+               def build(self):
                    ...
 
            class MyModel(h1st.model.Model):
-
+               
 
 
            my_modeler = MyModeler()
@@ -42,6 +46,10 @@ class Modeler(NodeContainable):
            my_model_2.load_params('1st_version')
     """
 
+    def __init__(self, model_class):
+        super().__init__()
+        self.model_class = model_class
+
     @property
     def model_class(self) -> Any:
         return getattr(self, "__model_class", None)
@@ -55,7 +63,7 @@ class Modeler(NodeContainable):
         return getattr(self, '__stats__', None)
 
     @stats.setter
-    def stats(self, value) -> Dict:
+    def stats(self, value) -> dict:
         setattr(self, '__stats__', value)
 
     @property
@@ -65,50 +73,55 @@ class Modeler(NodeContainable):
         return getattr(self, '__metrics__')
 
     @metrics.setter
-    def metrics(self, value) -> Dict:
+    def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
 
-    def load_data(self) -> Dict:
+    def load_model(self) -> Modelable:
+        """
+        Implement logic of to load model
+
+        :returns: modelable
+        """
+    
+    def load_data(self) -> dict:
         """
         Implement logic of load data from data source
 
         :returns: loaded data
         """
 
-    def explore_data(self, loaded_data: Dict) -> None:
+    def explore_data(self, loaded_data: dict) -> None:
         """
         Implement logic to explore data from loaded data
-        :param loaded_data: the data loaded using `load_data`.
         """
 
-    def evaluate_model(self, prepared_data: Dict, model: Modelable) -> Dict:
+    def evaluate_model(self, prepared_data: dict, model: Modelable) -> dict:
         """
         Implement logic to evaluate the model using the prepared_data
         This function will calculate model metrics and store it into self.metrics
 
-        :param prepared_data: the prepared data
-        :param model: the corresponding h1st `Model` to evaluate against.
+        :param data: loaded data
         """
         if type(model) != self.model_class:
             raise ValueError('The provided model is not a %s' % self.model_class.__name__)
-
+        
         return None
-
+    
     def build_model(self) -> Modelable:
         """
         Implement logic to create the corresponding Model object
-        :returns: the corresponding `Model`.
         """
+        return self.model_class()
 
-    def persist(self, model, version=None) -> None:
+    def persist_model(self, modelable, version=None) -> None:
         """
-        Persist a model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
+        Persist this modelable's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
-        `model` property could be single model, list or dict of models
+        `modelable` property could be single model, list or dict of models
         Currently, only sklearn and tensorflow-keras are supported.
 
         :param version: model version, leave blank for autogeneration
         :returns: model version
         """
-        repo = ModelRepository.get_model_repo(model)
-        return repo.persist(model=model, version=version)
+        repo = ModelRepository.get_model_repo(modelable)
+        return repo.persist(model=modelable, version=version)
