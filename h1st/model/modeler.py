@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from h1st.h1flow.h1step_containable import NodeContainable
+from .repository.model_repository import ModelRepository
 
 from .modelable import Modelable
 
@@ -98,3 +99,16 @@ class Modeler(NodeContainable):
         Implement logic to create the corresponding Model object
         :returns: the corresponding `Model`.
         """
+
+    def persist(self, model, version=None) -> None:
+        """
+        Persist a model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
+
+        `model` property could be single model, list or dict of models
+        Currently, only sklearn and tensorflow-keras are supported.
+
+        :param version: model version, leave blank for autogeneration
+        :returns: model version
+        """
+        repo = ModelRepository.get_model_repo(model)
+        return repo.persist(model=model, version=version)
