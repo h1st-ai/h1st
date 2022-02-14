@@ -9,14 +9,14 @@ class MyModel(Model):
 
 if __name__ == "__main__":
     modeler = MyModel.get_modeler()
-    model = modeler.build()
+    model = modeler.build_model()
     
-    modeler.persist(model, 'my_model_id')
+    # modeler.persist_model(model, 'my_model_id')
 
     result = model.process()
     print(result)
 
-    model = modeler.load_model('my_model_id')
+    # model = modeler.load_model('my_model_id')
 
-    result = model.process()
-    print(result)
+    # result = model.process()
+    # print(result)

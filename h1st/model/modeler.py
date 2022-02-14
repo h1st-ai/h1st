@@ -1,4 +1,3 @@
-from h1st.model.model import Model
 from typing import Any
 
 from h1st.h1flow.h1step_containable import NodeContainable
@@ -113,7 +112,7 @@ class Modeler(NodeContainable):
         """
         return self.model_class()
 
-    def persist_model(self, modelable, version=None) -> None:
+    def persist_model(self, modelable, version=None, repository_path=None) -> None:
         """
         Persist this modelable's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
@@ -123,5 +122,5 @@ class Modeler(NodeContainable):
         :param version: model version, leave blank for autogeneration
         :returns: model version
         """
-        repo = ModelRepository.get_model_repo(modelable)
+        repo = ModelRepository.get_model_repo(modelable, repository_path)
         return repo.persist(model=modelable, version=version)

@@ -4,6 +4,7 @@ from typing import Any, NoReturn
 
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
+from h1st.model.modeler import Modeler
 
 from .repository.model_repository import ModelRepository
 from .modelable import Modelable
