@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from h1st.h1flow.h1step_containable import NodeContainable
 
@@ -75,12 +75,16 @@ class Modeler(NodeContainable):
     def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
 
-    def load_model(self) -> Modelable:
+    def load_model(self, model_id=None,repository_path=None) -> Modelable:
         """
         Implement logic of to load model
 
         :returns: modelable
         """
+        # TODO use modelable instead of model in the ModelRepository class
+        modelable = self.model_class()
+        # TODO get_model_repo should not depend on model class
+        return ModelRepository.get_instance(repository_path=repository_path).load(modelable, model_id)
     
     def load_data(self) -> dict:
         """
@@ -106,9 +110,10 @@ class Modeler(NodeContainable):
         
         return None
     
-    def build_model(self) -> Modelable:
+    def build_model(self, data: Dict = None) -> Modelable:
         """
-        Implement logic to create the corresponding Model object
+        Base implementation simply instantiates an instance of the `model_class`.
+        Override to implement your own model-building logic.
         """
         return self.model_class()
 
@@ -122,5 +127,5 @@ class Modeler(NodeContainable):
         :param version: model version, leave blank for autogeneration
         :returns: model version
         """
-        repo = ModelRepository.get_model_repo(modelable, repository_path)
+        repo = ModelRepository.get_instance(repository_path=repository_path)
         return repo.persist(model=modelable, version=version)

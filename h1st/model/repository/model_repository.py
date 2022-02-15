@@ -332,29 +332,31 @@ class ModelRepository:
         return key
 
     @classmethod
-    def get_model_repo(cls, ref=None):
+    def get_instance(cls, ref=None, repository_path=None):
         """
         Retrieve the default model repository for the project
 
         :param ref: target model
+        :param repository_path: repository path to save the model
         :returns: Model repository instance
         """
         if not hasattr(cls, 'MODEL_REPO'):  # global ModelRepository.MODEL_REPO
-            repo_path = None
-            if ref is not None:
-                # root module
-                root_module_name = ''
+            repo_path = repository_path
+            if not repo_path:
+                if ref is not None:
+                    # root module
+                    root_module_name = ''
 
-                # find the first folder containing config.py to get MODEL_REPO_PATH
-                for sub in ref.__class__.__module__.split('.'):
-                    root_module_name = sub if not root_module_name else root_module_name + '.' + sub
+                    # find the first folder containing config.py to get MODEL_REPO_PATH
+                    for sub in ref.__class__.__module__.split('.'):
+                        root_module_name = sub if not root_module_name else root_module_name + '.' + sub
 
-                    try:
-                        module = importlib.import_module(root_module_name + ".config")
-                        repo_path = getattr(module, 'MODEL_REPO_PATH', None)
-                        break
-                    except ModuleNotFoundError:
-                        repo_path = None
+                        try:
+                            module = importlib.import_module(root_module_name + ".config")
+                            repo_path = getattr(module, 'MODEL_REPO_PATH', None)
+                            break
+                        except ModuleNotFoundError:
+                            repo_path = None
 
             # in the new structure, the config file may be at root folder
             if not repo_path:

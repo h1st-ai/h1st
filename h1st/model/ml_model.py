@@ -1,9 +1,12 @@
-from typing import Any
+from typing import Any, Dict
+
+from h1st.model.ml_modeler import MLModeler
+from h1st.model.modelable import MLModelable
 
 from .predictive_model import PredictiveModel
 
 
-class MLModel(PredictiveModel):
+class MLModel(MLModelable, PredictiveModel):
     """
     Base class for H1st Model.
 
@@ -64,6 +67,13 @@ class MLModel(PredictiveModel):
                 print("Accuracy (test): %0.1f%% " % (accuracy * 100))
     """
 
+    def __init__(self, base_model: Any = None):
+        self.base_model = base_model
+
+    @classmethod
+    def get_modeler(cls, base_model: Any) -> MLModeler:
+        return MLModeler(cls, base_model)
+
     @property
     def base_model(self) -> Any:
         return getattr(self, "__base_model", None)
@@ -71,3 +81,10 @@ class MLModel(PredictiveModel):
     @base_model.setter
     def base_model(self, value):
         setattr(self, "__base_model", value)
+
+    def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
+        self.base_model.fit(prepared_data['features'], prepared_data['label'])
+        return self.base_model
+
+    def predict(self, data:dict = None) -> dict:
+        return self.base_model.predict(data['features'])
