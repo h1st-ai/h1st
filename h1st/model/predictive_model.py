@@ -1,9 +1,10 @@
 from typing import Dict
+from abc import ABC, abstractclassmethod
 
 from .model import Model
 
 
-class PredictiveModel(Model):
+class PredictiveModel(Model, ABC):
     """
     Base class for all predictive models.
     """

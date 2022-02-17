@@ -1,6 +1,6 @@
 from typing import Any, NoReturn
 
-#from .modeler import Modeler
+from .modeler import Modeler
 
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
@@ -52,6 +52,7 @@ class Model(NodeContainable, Trustable, Modelable):
 
     @classmethod
     def get_modeler(cls):
+        print(cls)
         return Modeler(cls)
 
 

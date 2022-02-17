@@ -57,6 +57,7 @@ class Modeler(NodeContainable):
     def model_class(self, value):
         setattr(self, "__model_class", value)
 
+    # FIXME: stats belong to the Model, not the Modeler
     @property
     def stats(self):
         return getattr(self, '__stats__', None)
@@ -65,6 +66,7 @@ class Modeler(NodeContainable):
     def stats(self, value) -> dict:
         setattr(self, '__stats__', value)
 
+    # FIXME: metrics belong to the Model, not the Modeler
     @property
     def metrics(self):
         if not hasattr(self, '__metrics__'):
@@ -75,7 +77,7 @@ class Modeler(NodeContainable):
     def metrics(self, value) -> dict:
         setattr(self, '__metrics__', value)
 
-    def load_model(self, model_id=None,repository_path=None) -> Modelable:
+    def load_model(self, model_id = None, repository_path = None) -> Modelable:
         """
         Implement logic of to load model
 
@@ -117,7 +119,7 @@ class Modeler(NodeContainable):
         """
         return self.model_class()
 
-    def persist_model(self, modelable, version=None, repository_path=None) -> None:
+    def persist_model(self, modelable, version = None, repository_path = None) -> None:
         """
         Persist this modelable's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 

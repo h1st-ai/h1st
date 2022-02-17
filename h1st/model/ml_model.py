@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from h1st.model.ml_modeler import MLModeler
+from h1st.model.ml_modeler import BaseModelType, MLModeler
 from h1st.model.modelable import MLModelable
 
 from .predictive_model import PredictiveModel
@@ -71,20 +71,24 @@ class MLModel(MLModelable, PredictiveModel):
         self.base_model = base_model
 
     @classmethod
-    def get_modeler(cls, base_model: Any) -> MLModeler:
+    def get_modeler(cls, base_model: Any = None) -> MLModeler:
         return MLModeler(cls, base_model)
 
-    @property
-    def base_model(self) -> Any:
-        return getattr(self, "__base_model", None)
+#    def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
+#        self.base_model.fit(prepared_data['features'], prepared_data['label'])
+#        return self.base_model
 
-    @base_model.setter
-    def base_model(self, value):
-        setattr(self, "__base_model", value)
+    def predict(self, data: Dict = None) -> Dict:
+        base_model_type = self.get_modeler().get_base_model_type(self)
 
-    def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
-        self.base_model.fit(prepared_data['features'], prepared_data['label'])
-        return self.base_model
+        if base_model_type == BaseModelType.SCIKITLEARN:
+            return self.base_model.predict(data['features'])
+        
+        elif base_model_type == BaseModelType.PYTORCH:
+            pass
+        
+        elif base_model_type == BaseModelType.TENSORFLOW:
+            pass
 
-    def predict(self, data:dict = None) -> dict:
-        return self.base_model.predict(data['features'])
+        else:
+            pass
