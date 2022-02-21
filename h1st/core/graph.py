@@ -1,4 +1,5 @@
 import collections
+from typing import Any
 
 from h1st.core import NodeInfo, GraphInfo
 from h1st.core.execution import ExecutionManager
@@ -67,12 +68,12 @@ class Graph:
         is_linear = is_linear and len(list(filtered)) == 0
         return GraphInfo(nodes, edges, adjacency_list, self.__root_nodes, is_linear)
 
-    def execute(self):
+    def execute(self, data: Any = None):
         graph_info = self.get_info()
-        return ExecutionManager.execute_with_engine(graph_info)
+        return ExecutionManager.execute_with_engine(graph_info, data=data)
 
     def add(self, node: Node, after: list[Node] = None):
-        if after is None:
+        if not after:
             if self.__last_updated_node is None:
                 self.add_node(node)
             else:

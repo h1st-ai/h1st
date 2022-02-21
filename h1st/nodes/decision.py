@@ -1,6 +1,9 @@
-from typing import Any
+from typing import Any, Final
 
 from h1st.core.node import Node
+
+YES_RESULT_FIELD: Final = "yes_result"
+NO_RESULT_FIELD: Final = "no_result"
 
 
 class Decision(Node):
@@ -71,5 +74,5 @@ class Decision(Node):
         yes_result, no_result = [], []
         for x in results:
             (no_result, yes_result)[x[decision_field]].append(x)
-
-        return yes_result, no_result
+        decision_results = {YES_RESULT_FIELD: yes_result, NO_RESULT_FIELD: no_result}
+        return decision_results

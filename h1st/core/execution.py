@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from h1st.core.engine import ExecutionEngine
 from h1st.core.graph import GraphInfo
@@ -18,10 +19,10 @@ class ExecutionManager(object):
             raise ImportError(engine_name)
 
     @staticmethod
-    def execute_with_engine(graph: GraphInfo, engine_class: str = None):
+    def execute_with_engine(graph: GraphInfo, engine_class: str = None, data: Any = None):
         if engine_class is None:
             engine_name = os.environ["H1ST_ENGINE"]
         else:
             engine_name = engine_class
         engine = ExecutionManager.get_engine(engine_name)
-        return engine.execute(graph)
+        return engine.execute(graph, data)

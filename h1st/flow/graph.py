@@ -1,8 +1,43 @@
+from dataclasses import dataclass
 from typing import List, Union, Dict, Any
 
 from h1st.core.graph import Graph as CoreGraph
 from h1st.core.node import Node
-from h1st.flow import GraphNode
+from h1st.nodes.decision import YES_RESULT_FIELD, NO_RESULT_FIELD
+from h1st.nodes.filter_key import FilterByKey
+
+
+@dataclass
+class GraphNode:
+    node: Node
+    graph: CoreGraph
+
+    def add(self,
+            node: Node = None,
+            yes: Node = None,
+            no: Node = None
+            ):
+
+        add_after_node = self.node
+        if node is not None:
+            self.graph.add(node)
+            add_after_node = node
+        if yes is not None:
+            node_for_yes = FilterByKey(YES_RESULT_FIELD)
+            self.graph.add(node_for_yes, after=[add_after_node])
+            self.graph.add(yes, after=[node_for_yes])
+        if no is not None:
+            node_for_no = FilterByKey(NO_RESULT_FIELD)
+            self.graph.add(node_for_no, after=[add_after_node])
+            self.graph.add(no, after=[node_for_no])
+        if yes is not None and no is not None:
+            return GraphNode(yes, self.graph), GraphNode(no, self.graph)
+        elif yes is not None:
+            return GraphNode(yes, self.graph)
+        elif no is not None:
+            return GraphNode(no, self.graph)
+        else:
+            return GraphNode(node, self.graph)
 
 
 class Graph:
@@ -34,8 +69,7 @@ class Graph:
     def add(self,
             node: Node = None,
             yes: Node = None,
-            no: Node = None,
-            after: list[Node] = None
+            no: Node = None
             ) -> Union[GraphNode, List[GraphNode]]:
         """
         Adds a new Node or NodeContainable to this graph. Period keeps a running preference to the current position
@@ -80,12 +114,11 @@ class Graph:
                     self.end()
 
         """
-        self.__internal_graph.add(node)
-        # n = GraphNode(node, graph=self)
-        if yes is not None:
-            self.__internal_graph.add(yes)
-        if no is not None:
-            self.__internal_graph.add(no, after=[node])
+        graph_node = GraphNode(self._last_added_node, self.__internal_graph)
+        result = graph_node.add(node, yes, no)
+        if node is not None:
+            self._last_added_node = node
+        return result
 
     def execute(self, data: Any) -> Union[Dict, List[Dict]]:
         """
@@ -129,10 +162,8 @@ class Graph:
             g = MyGraph()
             result = g.execute(command='predict', data={'df': my_dataframe})
         """
-
         return self.__internal_graph.execute(data)
 
     def visualize(self):
         """Visualizes the flowchart for this graph"""
         return self.__internal_graph.show()
-
