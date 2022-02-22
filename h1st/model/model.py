@@ -1,4 +1,4 @@
-from typing import Any, NoReturn
+from typing import Any, NoReturn, Dict
 
 from .modeler import Modeler
 
@@ -98,7 +98,7 @@ class Model(NodeContainable, Trustable, Modelable):
 
         return self
         
-    def process(self, input_data: dict) -> Any:
+    def process(self, data: Dict = None) -> Any:
         """
         Implement logic to process data
 

@@ -19,8 +19,6 @@ TeacherModeler -down-> Teacher : builds
 StudentModeler -down-> Student : builds
 Teacher .right.> Student : teaches
 
-
-
 Teacher -down-> Ensemble : trains
 Student -down-> Ensemble : trains
 

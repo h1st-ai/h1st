@@ -8,19 +8,19 @@ from h1st.h1flow.h1flow import Graph
 from student import MyStudentModeler, MyStudent
 from ensemble import EnsembleModeler, MyEnsemble
 from oracle import MyOracle
-import __init__
-from h1st.h1flow.h1flow import Graph
-
 
 
 class MyOracleBuilder:
+    def __init__(self) -> None:
+        self.feature_list = ['feature_1', 'feature_2']
+        super.__init__()
+
     def load_data(self) -> Dict:
         path_to_data = ""
         df_data = pd.read_parquet(path_to_data)
-        self.feature_list = ['feature_1', 'feature_2']
         return {
             'df_data': df_data[self.feature_list]
-        }    
+        }
 
     def build(self, data: Dict, my_knowledge_model: RuleBasedModel) -> Graph:
         df_data = data['df_data']
@@ -64,4 +64,3 @@ class MyOracle(Graph):
         self.add([k_model, k_gen])
         self.add(ensemble)
         self.end()
-
