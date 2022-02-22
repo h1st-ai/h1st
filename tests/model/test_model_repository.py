@@ -32,7 +32,7 @@ class ModelRepositoryTestCase(TestCase):
 
         model = my_modeler.build_model()
         with tempfile.TemporaryDirectory() as path:
-            mm = ModelRepository(storage=LocalStorage(storage_path=path))
+            mm = ModelRepository(repository_path=LocalStorage(storage_path=path))
             version = mm.persist(model=model)
 
             model_2 = MyModel()

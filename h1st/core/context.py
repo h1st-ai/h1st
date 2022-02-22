@@ -13,7 +13,7 @@ class Context:
     @classmethod
     def init_model_repo(cls, repo_path):
         if not hasattr(ModelRepository, 'MODEL_REPO'):
-            setattr(ModelRepository, 'MODEL_REPO', ModelRepository(storage=repo_path))
+            setattr(ModelRepository, 'MODEL_REPO', ModelRepository(repository_path=repo_path))
 
 
 def init(address=None, MODEL_REPO_PATH=None):

@@ -59,7 +59,8 @@ class MLModeler(Modeler):
 
         return ml_model.base_model
     
-    def get_base_model_type(self, ml_model: MLModelable) -> BaseModelType:
+    @classmethod
+    def get_base_model_type(cls, ml_model: MLModelable) -> BaseModelType:
         module_name = ml_model.base_model.__module__.split(".")[0]
 
         if module_name == "sklearn":

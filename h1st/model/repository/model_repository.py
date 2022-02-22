@@ -7,182 +7,21 @@ from distutils import dir_util
 
 import yaml
 import ulid
+from h1st.model.modelable import Modelable
 
 from h1st.model.repository.storage.s3 import S3Storage
 from h1st.model.repository.storage.local import LocalStorage
+from h1st.model.repository.model_serdes import ModelSerDes
 
 SEP = "::"
 logger = logging.getLogger(__name__)
-
-
-class ModelSerDe:
-    STATS_PATH = 'stats.joblib'
-    METRICS_PATH = 'metrics.joblib'
-    METAINFO_FILE = 'METAINFO.yaml'
-
-    def _serialize_dict(self, d, path, dict_file):
-        import joblib
-        joblib.dump(d, path + '/%s' % dict_file)
-
-    def _deserialize_dict(self, path, dict_file):
-        import joblib
-        return joblib.load(path + '/%s' % dict_file)
-
-    def _get_model_type(self, model):
-        import tensorflow
-        import sklearn
-
-        if isinstance(model, sklearn.base.BaseEstimator):
-            return 'sklearn'
-        if isinstance(model, tensorflow.keras.Model):
-            return 'tensorflow-keras'
-        if model is None:
-            return 'custom'
-
-    def _serialize_single_model(self, model, path, model_name='model'):
-        model_type = self._get_model_type(model)
-
-        if model_type == 'sklearn':
-            # This is a sklearn model
-            import joblib
-            model_path = '%s.joblib' % model_name
-            joblib.dump(model, path + '/%s' % model_path)
-        elif model_type == 'tensorflow-keras':
-            model_path = model_name
-            os.makedirs(path + '/%s' % model_path, exist_ok=True)
-            model.save_weights(path + '/%s/weights' % model_path)
-        elif model_type == 'custom':
-            model_path = model_name  # XXX
-        else:
-            raise ValueError('Unsupported model!!!')
-
-        return model_type, model_path
-
-    def _deserialize_single_model(self, model, path, model_type, model_path):
-        if model_type == 'sklearn':
-            # This is a sklearn model
-            import joblib
-            model = joblib.load(path + '/%s' % model_path)
-            # print(str(type(model)))
-        elif model_type == 'tensorflow-keras':
-            model.load_weights(path + '/%s/weights' % model_path).expect_partial()
-        elif model_type == 'custom':
-            model = None
-
-        return model
-
-    def serialize(self, model, path):
-        """
-        Serialize a H1ST model's model property to disk.
-
-        :param model: H1ST Model
-        :param path: path to save models to
-        """
-        from h1st.model.ml_model import MLModel
-        from h1st.model.rule_based_model import RuleBasedModel
-
-        meta_info = {}
-
-        if model.metrics:
-            logger.info('Saving metrics property...')
-            meta_info['metrics'] = self.METRICS_PATH
-            self._serialize_dict(model.metrics, path, self.METRICS_PATH)
-
-        if model.stats is not None:
-            logger.info('Saving stats property...')
-            meta_info['stats'] = self.STATS_PATH
-            self._serialize_dict(model.stats, path, self.STATS_PATH)
-
-        if isinstance(model, MLModel):
-            if model.base_model:
-                logger.info('Saving model property...')
-                if type(model.base_model) == list:
-                    meta_info['models'] = []
-                    for i, model in enumerate(model.base_model):
-                        model_type, model_path = self._serialize_single_model(model, path, 'model_%d' % i)
-                        meta_info['models'].append({'model_type': model_type, 'model_path': model_path})
-                elif type(model.base_model) == dict:
-                    meta_info['models'] = {}
-                    for k, model in model.base_model.items():
-                        model_type, model_path = self._serialize_single_model(model, path, 'model_%s' % k)
-                        meta_info['models'][k] = {'model_type': model_type, 'model_path': model_path}
-                else:
-                    # this is a single model
-                    model_type, model_path = self._serialize_single_model(model.base_model, path)
-                    meta_info['models'] = [{'model_type': model_type, 'model_path': model_path}]
-            else:
-                logger.error('.base_model was not assigned.')
-
-        elif not isinstance(model, RuleBasedModel):
-            pass
-        elif hasattr(model, 'base_model'):
-            logger.warning('Your .base_model will not be persisted. If you want to persist your .base_model, \
-                            must inherit from h1st.MLModel instead of h1st.Model.')
-
-        if len(meta_info) == 0:
-            logger.info('Model persistence currently supports only stats, model and metrics properties.')
-            logger.info(
-                'Make sure you store stastistic in stats property, models in model property and model metrics in metrics one.')
-
-        with open(os.path.join(path, self.METAINFO_FILE), 'w') as file:
-            yaml.dump(meta_info, file)
-
-    def deserialize(self, model, path):
-        """
-        Populate a H1ST model's model property with saved atomic models.
-
-        :param model: H1ST Model
-        :param path: path to model folder
-        """
-        # Read METAINFO
-        with open(os.path.join(path, self.METAINFO_FILE), 'r') as file:
-            meta_info = yaml.load(file, Loader=yaml.Loader)
-
-        if 'metrics' in meta_info.keys():
-            model.metrics = self._deserialize_dict(path, self.METRICS_PATH)
-
-        if 'stats' in meta_info.keys():
-            model.stats = self._deserialize_dict(path, self.STATS_PATH)
-
-        if 'models' in meta_info.keys():
-            model_infos = meta_info['models']
-            org_model = model.base_model  # original model object from Model class
-            if type(model_infos) == list:
-                if len(model_infos) == 1:
-                    # Single model
-                    model_info = model_infos[0]
-                    # print(model_info)
-                    model_type = model_info['model_type']
-                    model_path = model_info['model_path']
-                    model.base_model = self._deserialize_single_model(org_model, path, model_type, model_path)
-                else:
-                    # A list of models
-                    model.base_model = []
-                    org_model = org_model or [None for _ in range(len(model_infos))]
-                    for i, model_info in enumerate(model_infos):
-                        model_type = model_info['model_type']
-                        model_path = model_info['model_path']
-                        model.base_model.append(
-                            self._deserialize_single_model(org_model[i], path, model_type, model_path))
-
-            elif type(model_infos) == dict:
-                # A dict of models
-                model.base_model = {}
-                org_model = org_model or {k: None for k in model_infos.keys()}
-                for model_name, model_info in model_infos.items():
-                    model_type = model_info['model_type']
-                    model_path = model_info['model_path']
-                    model.base_model[model_name] = self._deserialize_single_model(org_model[model_name], path,
-                                                                                  model_type, model_path)
-            else:
-                raise ValueError('Not a valid H1ST Model METAINFO file!')
 
 
 class ModelRepository:
     """
     Model repository allows user to persist and load model to different storage system.
 
-    Model repository uses ``ModelSerDer`` to serialize a model into a temporary folder
+    Model repository uses ``ModelSerDes`` to serialize a model into a temporary folder
     and then create a tar archive to store on storage. For loading, the repo retrieve
     the tar archive from the storage and then extract to temporary folder for restoring
     the model object.
@@ -192,136 +31,146 @@ class ModelRepository:
 
     _DEFAULT_STORAGE = S3Storage
 
-    def __init__(self, storage=None):
-        if isinstance(storage, str) and "s3://" in storage:
-            storage = storage.replace("s3://", "").strip("/") + "/"
-            bucket, prefix = storage.split("/", 1)
-            storage = S3Storage(bucket, prefix.strip("/"))
+    _singleton = None
+
+    def __init__(self, repository_path = None):
+        if isinstance(repository_path, str):
             self._NAMESPACE = ""
-        elif isinstance(storage, str):  # local folder
-            storage = LocalStorage(storage)
-            self._NAMESPACE = ""
+            if  "s3://" in repository_path:
+                repository_path = repository_path.replace("s3://", "").strip("/") + "/"
+                bucket, prefix = repository_path.split("/", 1)
+                storage = S3Storage(bucket, prefix.strip("/"))
+            else:
+                storage = LocalStorage(repository_path)
 
         self._storage = storage or ModelRepository._DEFAULT_STORAGE()
-        self._serder = ModelSerDe()
+        self._serdes = ModelSerDes()
 
-    def persist(self, model, version=None):
+    def persist_model(self, model_object, version=None) -> str:
         """
         Save a model to the model repository
 
-        :param model: target model
+        :param model_object:
         :param version: version name, leave blank for autogeneration
-        :returns: model version
+        :return: model version
+        :rypte: str
         """
         # assert isinstance(model, Model)
         # TODO: use version format: v_20200714-1203
+        if not model_object:
+            return None
+        model_class = model_object.__class__
         version = version or str(ulid.new())
 
         try:
-            # serialize a model to a temporary folder and then clean up later
-            tmpdir = tempfile.mkdtemp()
-            serialized_dir = os.path.join(tmpdir, 'serialized')
-            tar_file = os.path.join(tmpdir, 'model.tar')
-            os.makedirs(serialized_dir)
+            # serialize the model_object to a temporary folder and then clean up later
+            temp_dir, serdes_dir, tar_file = _make_temp_serdes_dir()
 
-            self._serder.serialize(model, serialized_dir)
-            _tar_create(tar_file, serialized_dir)
+            self._serdes.serialize(model_object, serdes_dir)
+            _tar_create(tar_file, serdes_dir)
 
+            # copy serialized bytes from temp to permanent storage
             with open(tar_file, mode='rb') as f:
                 self._storage.set_bytes(
-                    self._get_key(model, version),
+                    self._get_key(model_object, version),
                     f.read(),
                 )
 
                 self._storage.set_obj(
-                    self._get_key(model, 'latest'),
+                    self._get_key(model_object, 'latest'),
                     version,
                 )
 
-                model.version = version
         finally:
-            dir_util.remove_tree(tmpdir)
+            model_object.version = version
+            # clean up temp
+            dir_util.remove_tree(temp_dir)
 
-        return version
+        return model_object.version
 
-    def load(self, model, version=None):
+    def load_model(self, model_class, version=None) -> Modelable:
         """
         Restore the model from the model repository
 
-        :param model: target model
+        :param model_class: class of model to be loaded
         :param version: version name, leave blank to load the latest version
+        :return: loaded Modelable object
+        :rtype: Modelable
         """
         # assert isinstance(model, Model)
-        if version is None:
-            version = self._storage.get_obj(self._get_key(model, 'latest'))
+        if not version:
+            version = self._storage.get_obj(self._get_key(model_class, 'latest'))
 
-        logger.info('Loading version %s ....' % version)
+        logger.info('Loading model class %s version %s ....' % model_class, version)
 
         try:
-            tmpdir = tempfile.mkdtemp()
-            serialized_dir = os.path.join(tmpdir, 'serialized')
-            tar_file = os.path.join(tmpdir, 'model.tar')
-            os.makedirs(serialized_dir)
+            temp_dir, serdes_dir, tar_file = _make_temp_serdes_dir()
 
             with open(tar_file, 'wb') as f:
                 f.write(self._storage.get_bytes(
-                    self._get_key(model, version)
+                    self._get_key(model_class, version)
                 ))
 
-            _tar_extract(tar_file, serialized_dir)
-            self._serder.deserialize(model, serialized_dir)
-            model.version = version
+            _tar_extract(tar_file, serdes_dir)
+            model_object = self._serdes.deserialize(model_class, serdes_dir)
+            model_object.version = version
         finally:
             # We get error from Tensorflow telling that it could not find the folder
             # Unsuccessful TensorSliceReader constructor: Failed to get matching files on
             # /var/folders/wb/40304xlx477cfjzbk386l2gr0000gn/T/tmpwcrvm2e2/model/weights:
             # Not found: /var/folders/wb/40304xlx477cfjzbk386l2gr0000gn/T/tmpwcrvm2e2/model; No such file or directory [Op:RestoreV2]
             #
-            # dir_util.remove_tree(tmpdir)
+            # dir_util.remove_tree(temp_dir)
 
             # instead, register the function to clean it up when the interpreter quits
             import atexit
 
-            def clean_tmpdir(tmpdir):
-                # print('Clean up %s'  % tmpdir)
-                dir_util.remove_tree(tmpdir)
+            def clean_temp_dir(temp_dir):
+                # print('Clean up %s'  % temp_dir)
+                dir_util.remove_tree(temp_dir)
 
-            atexit.register(clean_tmpdir, tmpdir=tmpdir)
+            atexit.register(clean_temp_dir, temp_dir=temp_dir)
+        
+        return model_object
 
-    def delete(self, model, version):
+    def delete_model(self, model_class, version):
         """
         Delete a model from model repository
 
-        :param model: model instance or the model class
+        :param model_class:
         :param version: target version
         """
         # assert isinstance(model, Model) or isinstance(model, type)
         assert version != 'latest'  # magic key
-        self._storage.delete(self._get_key(model, version))
+        self._storage.delete(self._get_key(model_class, version))
 
-    def download(self, model, version, path):
+    def download_model(self, model_class, version, target_path):
         """
-        Download a model archive to local disk
+        Download a model archive (e.g., from S3) to local disk
 
-        :param model: model instance or model class
+        :param model_class: 
         :param version: version name
-        :param path: target folder to extract the model archive
+        :param target_path: target folder to extract the model archive
         """
         with tempfile.NamedTemporaryFile(mode="wb") as f:
             f.write(self._storage.get_bytes(
-                self._get_key(model, version)
+                self._get_key(model_class, version)
             ))
             f.flush()
             f.seek(0)
 
-            _tar_extract(f.name, path)
+            _tar_extract(f.name, target_path)
 
-        return path
+        return target_path
 
     # TODO: list all versions
 
-    def _get_key(self, model, version):
-        model_class = model if isinstance(model, type) else model.__class__
+    def _get_key(self, model_class, version) -> str:
+        """
+        Generate a unique key string for the given 'model_class' and 'version'
+
+        :rtype: str
+        """
         model_name = model_class.__module__ + '.' + model_class.__name__
 
         key = f"{model_name}{SEP}{version}"
@@ -332,49 +181,51 @@ class ModelRepository:
         return key
 
     @classmethod
-    def get_instance(cls, ref=None, repository_path=None):
+    def get_instance(cls, repository_path=None):
         """
-        Retrieve the default model repository for the project
+        Retrieve the model repository
 
-        :param ref: target model
-        :param repository_path: repository path to save the model
-        :returns: Model repository instance
+        :param repository_path: repository path to persist models. Ignored if instance already exists.
+        :returns: Model repository singleton instance
         """
-        if not hasattr(cls, 'MODEL_REPO'):  # global ModelRepository.MODEL_REPO
-            repo_path = repository_path
-            if not repo_path:
-                if ref is not None:
-                    # root module
-                    root_module_name = ''
 
-                    # find the first folder containing config.py to get MODEL_REPO_PATH
-                    for sub in ref.__class__.__module__.split('.'):
-                        root_module_name = sub if not root_module_name else root_module_name + '.' + sub
+        if ModelRepository._singleton:
+            return ModelRepository._singleton
 
-                        try:
-                            module = importlib.import_module(root_module_name + ".config")
-                            repo_path = getattr(module, 'MODEL_REPO_PATH', None)
-                            break
-                        except ModuleNotFoundError:
-                            repo_path = None
+        # Check environment variable
+        if not repository_path:
+            repository_path = os.environ.get('H1ST_MODEL_REPOSITORY_PATH', '')
 
-            # in the new structure, the config file may be at root folder
-            if not repo_path:
+        # Check config file at root folder
+        if not repository_path:
+            try:
+                import config
+                repository_path = config.MODEL_REPOSITORY_PATH
+            except ModuleNotFoundError:
+                repository_path = None
+    
+        # Check config file somewhere in module path
+        if not repository_path:
+            # root module
+            root_module_name = ''
+
+            # find the first folder containing config.py to get MODEL_REPO_PATH
+            for sub in ModelRepository.__class__.__module__.split('.'):
+                root_module_name = sub if not root_module_name else root_module_name + '.' + sub
+    
                 try:
-                    import config
-                    repo_path = config.MODEL_REPO_PATH
+                    module = importlib.import_module(root_module_name + ".config")
+                    repository_path = getattr(module, 'MODEL_REPOSITORY_PATH', None)
+                    break
                 except ModuleNotFoundError:
-                    repo_path = None
+                    repository_path = None
+    
+        if not repository_path:
+            raise RuntimeError('Please set H1ST_MODE_REPOSITORY_PATH env variable, or MODEL_REPOSITORY_PATH in config.py')
 
-            if not repo_path:
-                repo_path = os.environ.get('H1ST_MODEL_REPO_PATH', '')
+        ModelRepository._singleton = ModelRepository(repository_path = repository_path)
 
-            if not repo_path:
-                raise RuntimeError('Please set MODEL_REPO_PATH in config.py')
-
-            setattr(cls, 'MODEL_REPO', ModelRepository(storage=repo_path))
-
-        return getattr(cls, 'MODEL_REPO')
+        return ModelRepository._singleton
 
 
 def _tar_create(target, source):
@@ -393,3 +244,10 @@ def _tar_extract(source, target):
     """
     with tarfile.open(source) as tf:
         tf.extractall(target)
+
+def _make_temp_serdes_dir():
+    temp_dir = tempfile.mkdtemp()
+    tar_file = os.path.join(temp_dir, 'model.tar')
+    serdes_dir = os.path.join(temp_dir, 'serialized')
+    os.makedirs(serdes_dir)
+    return temp_dir, serdes_dir, tar_file

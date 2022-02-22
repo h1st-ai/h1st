@@ -131,3 +131,6 @@ class Modeler(NodeContainable):
         """
         repo = ModelRepository.get_instance(repository_path=repository_path)
         return repo.persist(model=modelable, version=version)
+    
+    def set_repository_path(repository_path: str):
+        ModelRepository.set_path(repository_path)
