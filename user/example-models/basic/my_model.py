@@ -14,11 +14,9 @@ if __name__ == "__main__":
     result = model.process()
     print(result)
 
-    modeler.set_repository_path("/tmp/my_repository")
+    modeler.persist_model(model, 'my_model_id', "/tmp/my_repository")
 
-    modeler.persist_model(model, 'my_model_id')
-
-    loaded_model = modeler.load_model('my_model_id')
+    loaded_model = modeler.load_model('my_model_id') # repository path already set in persist_model() call
 
     result = loaded_model.process()
     print(result)
