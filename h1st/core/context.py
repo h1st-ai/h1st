@@ -3,7 +3,7 @@ import os
 import pathlib
 import logging
 
-from h1st.model.repository.model_repository import ModelRepository
+from ..model.repository.model_repository import ModelRepository
 
 
 class Context:

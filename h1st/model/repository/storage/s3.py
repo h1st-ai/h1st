@@ -1,7 +1,7 @@
 from typing import Any, NoReturn
 import cloudpickle
 import s3fs
-from h1st.model.repository.storage.base import Storage
+from .base import Storage
 
 
 class S3Storage(Storage):

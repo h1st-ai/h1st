@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from h1st.h1flow.h1step_containable import NodeContainable
+from ..h1flow.h1step_containable import NodeContainable
 
 from .modelable import Modelable
 
@@ -132,5 +132,5 @@ class Modeler(NodeContainable):
         repo = ModelRepository.get_instance(repository_path=repository_path)
         return repo.persist(model=modelable, version=version)
     
-    def set_repository_path(repository_path: str):
+    def set_repository_path(self, repository_path: str):
         ModelRepository.set_path(repository_path)

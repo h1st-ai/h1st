@@ -1,9 +1,8 @@
 from typing import Any, Dict
 from enum import Enum
 
-from h1st.model.modelable import MLModelable
-from .modeler import Modeler
-
+from .modelable import MLModelable
+# from .modeler import Modeler
 
 class BaseModelType(Enum):
     SCIKITLEARN = 1
@@ -12,7 +11,8 @@ class BaseModelType(Enum):
     UNKNOWN = 99
 
     
-class MLModeler(Modeler):
+# class MLModeler(Modeler):
+class MLModeler():
     """
     Base class for H1st ML Modelers. Has capabilities that are specific to MLModels.
     """

@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
-from h1st.model.ml_modeler import BaseModelType, MLModeler
-from h1st.model.modelable import MLModelable
+from .ml_modeler import BaseModelType, MLModeler
+from .modelable import MLModelable
 
 from .predictive_model import PredictiveModel
 

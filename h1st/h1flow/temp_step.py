@@ -1,4 +1,4 @@
-from h1st.h1flow.ui.has_web_ui import HasWebUI
+from ..h1flow.ui.has_web_ui import HasWebUI
 
 
 # __TODO__ remove this file

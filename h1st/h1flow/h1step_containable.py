@@ -1,6 +1,6 @@
 from typing import Dict
-from h1st.exceptions.exception import GraphException
-from h1st.trust.trustable import Trustable
+from ..exceptions.exception import GraphException
+from ..trust.trustable import Trustable
 
 
 # from h1st.schema.schema_validator import SchemaValidator

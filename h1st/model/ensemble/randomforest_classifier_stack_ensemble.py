@@ -2,8 +2,8 @@ from typing import List
 
 from sklearn.ensemble import RandomForestClassifier
 
-from h1st.model.ensemble.classifier_stack_ensemble import ClassifierStackEnsemble
-from h1st.model.model import Model
+from ..ensemble.classifier_stack_ensemble import ClassifierStackEnsemble
+from ..model import Model
 
 
 class RandomForestClassifierStackEnsemble(ClassifierStackEnsemble):

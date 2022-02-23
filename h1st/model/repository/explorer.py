@@ -8,7 +8,7 @@ import logging
 
 from concurrent.futures import ProcessPoolExecutor
 from h1st.core.context import discover_h1st_project
-from h1st.model.model import Model
+from ..model import Model
 
 logger = logging.getLogger(__name__)
 MODEL_FILE_NAME = re.compile(r"^[^_].*_(classifier|detector|model).py$")

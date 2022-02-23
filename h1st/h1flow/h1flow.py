@@ -4,9 +4,9 @@ from typing import List, Union, Any, NoReturn, Dict
 
 from .h1step import Node, Action
 from .h1step_containable import NodeContainable
-from h1st.exceptions.exception import GraphException
-from h1st.core.viz import DotGraphVisualizer
-from h1st.trust.trustable import Trustable
+from ..exceptions.exception import GraphException
+from ..core.viz import DotGraphVisualizer
+from ..trust.trustable import Trustable
 
 
 # __TODO__: refactor to Flows and Steps

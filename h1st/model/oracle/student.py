@@ -2,8 +2,8 @@ from typing import Any, Dict
 from copy import deepcopy
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from h1st.model.ml_model import MLModel
-from h1st.model.ml_modeler import MLModeler
+from ..ml_model import MLModel
+from ..ml_modeler import MLModeler
 
 
 class Student(MLModel):

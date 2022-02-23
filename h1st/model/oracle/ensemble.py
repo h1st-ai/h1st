@@ -1,6 +1,6 @@
 from typing import Dict
 import pandas as pd
-from h1st.model.predictive_model import PredictiveModel
+from ..predictive_model import PredictiveModel
 
 
 class Ensemble(PredictiveModel):

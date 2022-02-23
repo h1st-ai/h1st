@@ -3,7 +3,7 @@ import pathlib
 from typing import Any, NoReturn
 import cloudpickle
 from distutils import dir_util
-from h1st.model.repository.storage.base import Storage
+from .base import Storage
 
 
 class LocalStorage(Storage):

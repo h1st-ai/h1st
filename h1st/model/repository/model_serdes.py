@@ -8,12 +8,8 @@ from typing import Any
 
 import yaml
 import ulid
-from h1st.model.ml_modeler import BaseModelType, MLModeler
-from h1st.model.modelable import Modelable
-from h1st.model.modeler import Modeler
-
-from h1st.model.repository.storage.s3 import S3Storage
-from h1st.model.repository.storage.local import LocalStorage
+from ..ml_modeler import BaseModelType, MLModeler
+from ..modelable import Modelable
 
 SEP = "::"
 logger = logging.getLogger(__name__)

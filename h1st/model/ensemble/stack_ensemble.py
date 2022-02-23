@@ -3,9 +3,9 @@ from typing import Dict, List, Any
 import numpy as np
 from sklearn.preprocessing import RobustScaler
 
-from h1st.exceptions.exception import ModelException
-from h1st.model.ensemble.ensemble import Ensemble
-from h1st.model.model import Model
+from ...exceptions.exception import ModelException
+from ..ensemble.ensemble import Ensemble
+from ..model import Model
 
 
 class StackEnsemble(Ensemble):

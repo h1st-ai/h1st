@@ -5,13 +5,12 @@ import logging
 import importlib
 from distutils import dir_util
 
-import yaml
 import ulid
-from h1st.model.modelable import Modelable
+from ..modelable import Modelable
 
-from h1st.model.repository.storage.s3 import S3Storage
-from h1st.model.repository.storage.local import LocalStorage
-from h1st.model.repository.model_serdes import ModelSerDes
+from ..repository.storage.s3 import S3Storage
+from ..repository.storage.local import LocalStorage
+from ..repository.model_serdes import ModelSerDes
 
 SEP = "::"
 logger = logging.getLogger(__name__)

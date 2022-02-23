@@ -1,4 +1,4 @@
-from h1st.model.model import Model
+from .model import Model
 from .predictive_model import PredictiveModel
 
 

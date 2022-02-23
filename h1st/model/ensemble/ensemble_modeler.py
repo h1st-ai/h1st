@@ -1,4 +1,4 @@
-from h1st.model.ml_modeler import MLModeler
+from ..ml_modeler import MLModeler
 
 
 class EnsembleModeler(MLModeler):
