@@ -71,12 +71,12 @@ class ModelRepository:
             # copy serialized bytes from temp to permanent storage
             with open(tar_file, mode='rb') as f:
                 self._storage.set_bytes(
-                    self._get_key(model_object, version),
+                    self._get_key(model_class, version),
                     f.read(),
                 )
 
                 self._storage.set_obj(
-                    self._get_key(model_object, 'latest'),
+                    self._get_key(model_class, 'latest'),
                     version,
                 )
 
@@ -100,7 +100,7 @@ class ModelRepository:
         if not version:
             version = self._storage.get_obj(self._get_key(model_class, 'latest'))
 
-        logger.info('Loading model class %s version %s ....' % model_class, version)
+        logger.info("Loading model class {} version {} ....".format(model_class.__name__, version))
 
         try:
             temp_dir, serdes_dir, tar_file = _make_temp_serdes_dir()
