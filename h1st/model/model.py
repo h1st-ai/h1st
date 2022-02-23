@@ -50,7 +50,6 @@ class Model(NodeContainable, Trustable, Modelable):
 
     @classmethod
     def get_modeler(cls):
-        print(cls)
         return Modeler(cls)
 
 
