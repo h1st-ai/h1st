@@ -83,10 +83,7 @@ class Modeler(NodeContainable):
 
         :returns: modelable
         """
-        # TODO use modelable instead of model in the ModelRepository class
-        modelable = self.model_class()
-        # TODO get_model_repo should not depend on model class
-        return ModelRepository.get_instance(repository_path=repository_path).load(modelable, model_id)
+        return ModelRepository.get_instance(repository_path = repository_path).load_model(self.model_class, model_id)
     
     def load_data(self) -> dict:
         """
@@ -130,7 +127,4 @@ class Modeler(NodeContainable):
         :returns: model version
         """
         repo = ModelRepository.get_instance(repository_path=repository_path)
-        return repo.persist(model=modelable, version=version)
-    
-    def set_repository_path(self, repository_path: str):
-        ModelRepository.set_path(repository_path)
+        return repo.persist_model(modelable, version = version)

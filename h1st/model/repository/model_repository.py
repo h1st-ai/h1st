@@ -180,7 +180,7 @@ class ModelRepository:
         return key
 
     @classmethod
-    def get_instance(cls, repository_path=None):
+    def get_instance(cls, repository_path=None) -> 'ModelRepository':
         """
         Retrieve the model repository
 
