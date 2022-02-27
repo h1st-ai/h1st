@@ -22,7 +22,7 @@ class Serializable(ABC):
         # TODO: implement
         pass
 
-    def to_file(self) -> str:
+    def to_file(self) -> Any:
         """
         :returns: filename containing serialized object
         """

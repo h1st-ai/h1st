@@ -40,10 +40,14 @@ class JobLibSerDes(SerDes):
         :returns: deserialized object
         """
         # Read from file object, e.g., spooled in RAM
-        obj = joblib.load(src_file_object)
+        if hasattr(src_file_object, "name") and not src_file_object.name.endswith(".gz"):
+            src_file_object.name += ".gz"
+
+        obj = joblib.load(src_file_object) 
 
         # Read from temporary file
         #import os
         #fn = os.path.abspath(src_file_object.name)
         #obj = joblib.load(fn)
+
         return obj
