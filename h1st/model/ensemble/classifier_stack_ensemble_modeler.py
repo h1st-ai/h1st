@@ -15,8 +15,8 @@ class ClassifierStackEnsembleModeler(StackEnsembleModeler):
     This is the base class for stack ensemble classifiers
     """
 
-    def __init__(self, ensembler, sub_models: List[Model], **kwargs):
-        super().__init__(ensembler, sub_models, **kwargs)
+    def __init__(self, ensembler_modeler, sub_models: List[Model], **kwargs):
+        super().__init__(ensembler_modeler, sub_models, **kwargs)
         self.model_class = ClassifierStackEnsemble
 
     def evaluate_model(self, prepared_data: Dict, model: Modelable, metrics: List[str] = None) -> NoReturn:
