@@ -55,12 +55,10 @@ end Note
 @enduml
 """
 
-from typing import Dict, NoReturn, List
+from typing import Dict, List
 import pandas as pd
+from h1st.model.ensemble.stack_ensemble import StackEnsemble
 from h1st.model.predictive_model import PredictiveModel
-
-from .student import RandomForestModeler, AdaBoostModeler
-from .ensemble import Ensemble
 
 
 class Oracle(PredictiveModel):
@@ -69,32 +67,24 @@ class Oracle(PredictiveModel):
     """
 
     def __init__(self, teacher: PredictiveModel,
-                 student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
-                 ensemble: Ensemble = Ensemble):
+                 students,
+                 ensembler):
         """
         :param teacher: The knowledge model.
         :param student_modelers: The student modelers.
         :param ensemble: The ensemble model class.
         """
         self.teacher = teacher
-        self.student_modelers = student_modelers
-        self.ensemble = ensemble()
+        self.students = students
+        self.ensembler = ensembler
         self.stats = {}
 
-    def build(self, data: Dict, features: List = None) -> NoReturn:
-        """
-        Build the student and ensemble components.
-        :param data: Unlabeled data.
-        """
-        self.stats['features'] = features
-        # Generate features to get students' predictions
-        train_data = self.generate_data(data)
+    @classmethod
+    def generate_features(cls, data: Dict):
+        return {'data': data['data'].copy()}
 
-        # Train the student model
-        self.students = [student_modeler.build_model(train_data)
-                         for student_modeler in self.student_modelers]
-
-    def generate_data(self, data: Dict) -> Dict:
+    @classmethod
+    def generate_data(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
         """
         Generate data to train Student models.
         Return a copy of the provided data by default.
@@ -107,11 +97,13 @@ class Oracle(PredictiveModel):
 
         df = data['X']
 
-        features = self.stats['features']
+        features = stats['features']
         if features is not None:
             df = df[features]
 
-        teacher_pred = self.teacher.predict({'X': df})
+        df = cls.generate_features({'data': df})['data']
+
+        teacher_pred = teacher.predict({'X': df})
         if 'predictions' not in teacher_pred:
             raise KeyError('Teacher\'s output must contain a key named `predictions`')
         return {'X': df.copy(), 'y': pd.Series(teacher_pred['predictions'])}
@@ -127,25 +119,22 @@ class Oracle(PredictiveModel):
             raise RuntimeError('No student built')
 
         # Generate features to get students' predictions
-        predict_data = self.generate_data(input_data)
+        predict_data = self.__class__.generate_data(input_data, self.teacher, self.stats)
 
         # Generate student models' predictions
-        student_preds = [student.predict(predict_data)['predictions'] for student in self.students]
+        student_preds = [pd.Series(student.predict(predict_data)['predictions']) for student in self.students]
 
-        return self.ensemble.predict({'teacher_pred': predict_data['y'], 'student_preds': student_preds})
+        return self.ensembler.predict({'X': pd.concat(student_preds + [predict_data['y']], axis=1)})
 
     def persist(self, version=None):
-        if not hasattr(self, 'students'):
-            raise RuntimeError('No student built')
+        version = self.ensembler.persist(version)
 
         for student in self.students:
             version = student.persist(version)
         super().persist(version)
 
     def load_params(self, version: str = None) -> None:
-        self.students = []
-        for student_modeler in self.student_modelers:
-            student = student_modeler.model_class()
-            student.load_params(version)
-            self.students.append(student)
+        self.ensembler.load_params(version)
+        for student in self.students:
+            student.load_params(self.ensembler.version)
         super().load_params(version)

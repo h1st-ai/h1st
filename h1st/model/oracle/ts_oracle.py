@@ -8,23 +8,25 @@ from .ensemble import Ensemble
 
 class TimeSeriesOracle(Oracle):
     def __init__(self, teacher: PredictiveModel,
-                 student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
-                 ensemble: Ensemble = Ensemble):
-        super().__init__(teacher, student_modelers, ensemble)
+                 students,
+                 ensembler):
+        super().__init__(teacher, students, ensembler)
         self.stats = {}
 
-    def generate_features(self, data: Dict):
+    @classmethod
+    def generate_features(cls, data: Dict):
         '''
         Generate features to train the Student model.
         By default, we flatten all data points of the grouped dataframe.
         Overwrite this method to do custom featurization work.
-        :param data: grouped dataframe.
+        :param data: a dictionary of a grouped dataframe.
         '''
         df = data['data']
         ret = pd.DataFrame(df.values.reshape(1, df.shape[0] * df.shape[1]))
-        return ret
+        return {'data': ret}
 
-    def generate_data(self, data: Dict) -> Dict:
+    @classmethod
+    def generate_data(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
         '''
         Generate data to train the Student model
         :param data: unlabelled data in form of {'X': pd.DataFrame}
@@ -35,9 +37,9 @@ class TimeSeriesOracle(Oracle):
 
         df = data['X']
 
-        id_col = self.stats['id_col']
-        ts_col = self.stats['ts_col']
-        features = self.stats['features']
+        id_col = stats['id_col']
+        ts_col = stats['ts_col']
+        features = stats['features']
 
         if id_col is not None and id_col not in df.columns:
             raise ValueError(f'{id_col} does not exist')
@@ -59,34 +61,21 @@ class TimeSeriesOracle(Oracle):
                 if features is not None:
                     group_df = group_df[features]
 
-                teacher_pred = self.teacher.predict({'X': group_df})
+                teacher_pred = teacher.predict({'X': group_df})
                 if 'predictions' not in teacher_pred:
                     raise KeyError('Teacher\'s output must contain a key named `predictions`')
 
                 teacher_preds.append(teacher_pred['predictions'])
 
-                features_list.append(self.generate_features({'data': group_df}))
+                features_list.append(cls.generate_features({'data': group_df})['data'])
             df_features = pd.concat(features_list).fillna(0)
         else:
             if features is not None:
                 df = df[features]
-            teacher_preds = self.teacher.predict({'X': df})['predictions']
-            df_features = self.generate_features({'data': df})
+            teacher_preds = teacher.predict({'X': df})['predictions']
+            df_features = cls.generate_features({'data': df})
 
         return {'X': df_features, 'y': pd.Series(teacher_preds)}
-
-    def build(self, data: Dict, id_col: str = None, ts_col: str = None, features: List = None) -> NoReturn:
-        '''
-        Build the oracle
-        :param data: a dictionary {'X': ...}
-        :param id_col: id column that contains entity ids such as `equipment_id`
-        :param ts_col: time-granularity column to group the data
-        '''
-
-        self.stats['id_col'] = id_col
-        self.stats['ts_col'] = ts_col
-
-        super().build(data, features)
 
     def predict(self, input_data: Dict) -> Dict:
         '''

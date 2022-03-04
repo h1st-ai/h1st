@@ -93,8 +93,9 @@ class Modeler(NodeContainable):
 
         return None
 
-    def build_model(self) -> Modelable:
+    def build_model(self, data: Dict[str, Any] = None) -> Modelable:
         """
         Implement logic to create the corresponding Model object
         :returns: the corresponding `Model`.
         """
+        raise NotImplementedError('Inherit and implement this method')
