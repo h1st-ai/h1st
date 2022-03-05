@@ -1,10 +1,8 @@
 import os
-from pyexpat import model
 from typing import Any, Dict
 import tempfile
 import pandas as pd
 from sklearn import datasets
-from sklearn import ensemble
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import r2_score
