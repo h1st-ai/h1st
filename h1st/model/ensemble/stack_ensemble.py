@@ -1,18 +1,13 @@
 from typing import Dict, List, Any
-
 import numpy as np
-from sklearn.preprocessing import RobustScaler
-
-from h1st.exceptions.exception import ModelException
-from h1st.model.ensemble.ensemble import MLEnsemble
+from h1st.model.ensemble.ensemble import Ensemble
 from h1st.model.predictive_model import PredictiveModel
 
 
-class StackEnsemble(MLEnsemble):
+class StackEnsemble(Ensemble):
     """
     Base StackEnsemble class to implement StackEnsemble classifiers or regressors.
     """
-
     def __init__(self, ensembler, sub_models: List[PredictiveModel], **kwargs):
         """
         :param **kwargs: StackEnsemble use h1st models as submodels and the predict function of
@@ -22,28 +17,32 @@ class StackEnsemble(MLEnsemble):
             **submodel_predict_input_key (str): the default value of submodel_input_key is 'X' \n
             **submodel_predict_output_key (str): the default value of submodel_output_key is 'predictions'
         """
-        super().__init__(ensembler, sub_models)
+        self.ensembler = ensembler
+        self._sub_models = sub_models
         self._submodel_predict_input_key = kwargs.get('submodel_predict_input_key', 'X')
         self._submodel_predict_output_key = kwargs.get('submodel_predict_output_key', 'predictions')
 
     @classmethod
-    def preprocess(cls, sub_models: List[PredictiveModel], submodel_predict_input_key: str, submodel_predict_output_key: str, X: Any) -> Any:
+    def preprocess(cls, sub_models: List[PredictiveModel],
+                        submodel_predict_input_key: str,
+                        submodel_predict_output_key: str,
+                        X: Any) -> Any:
         """
         Predicts all sub models then merge input raw data with predictions for ensembler's training or prediction
         :param X: raw input data
         """
         if isinstance(X, list):
-            predictions = [StackEnsemble.get_submodels_prediction(sub_models,
+            predictions = [np.hstack((x, StackEnsemble.get_submodels_prediction(sub_models,
                                                                   submodel_predict_input_key,
-                                                                  submodel_predict_output_key, x)
+                                                                  submodel_predict_output_key, x)))
                                                                 for x in X]
             return np.vstack(predictions)
         else:
-            return StackEnsemble.get_submodels_prediction(sub_models,
+            return np.hstack((X, StackEnsemble.get_submodels_prediction(sub_models,
                                                         submodel_predict_input_key,
                                                         submodel_predict_output_key,
                                                         X
-                                                        )
+                                                        )))
 
     @classmethod
     def get_submodels_prediction(cls, sub_models: List[PredictiveModel], submodel_predict_input_key: str, submodel_predict_output_key: str, X: Any) -> Any:
@@ -53,7 +52,6 @@ class StackEnsemble(MLEnsemble):
             output_key = pred.get(submodel_predict_output_key)
             if output_key is not None:
                 preds.append(output_key.reshape(-1,1))
-
         return np.hstack(preds)
 
     def predict(self, data: Dict) -> Dict:
@@ -66,13 +64,18 @@ class StackEnsemble(MLEnsemble):
         :return:
             output will be a dictionary {'predictions': ....}
         """
-        if not self.stats:
-            raise ModelException('This model has not been trained')
-
         X = StackEnsemble.preprocess(self._sub_models,
                                      self._submodel_predict_input_key,
                                      self._submodel_predict_output_key,
                                      data['X']
                                     )
-        X = self.stats['scaler'].transform(X)
-        return {'predictions': self.base_model.predict(X)}
+        return {'predictions': self.ensembler.predict({'X': X})['predictions']}
+
+    def persist(self, version=None):
+        version = self.ensembler.persist(version)
+        version = super().persist(version)
+        return version
+
+    def load_params(self, version: str = None) -> None:
+        self.ensembler.load_params(version)
+        super().load_params(self.ensembler.version)
