@@ -23,23 +23,26 @@ class StackEnsemble(Ensemble):
         self._submodel_predict_output_key = kwargs.get('submodel_predict_output_key', 'predictions')
 
     @classmethod
-    def preprocess(cls, sub_models: List[PredictiveModel], submodel_predict_input_key: str, submodel_predict_output_key: str, X: Any) -> Any:
+    def preprocess(cls, sub_models: List[PredictiveModel],
+                        submodel_predict_input_key: str,
+                        submodel_predict_output_key: str,
+                        X: Any) -> Any:
         """
         Predicts all sub models then merge input raw data with predictions for ensembler's training or prediction
         :param X: raw input data
         """
         if isinstance(X, list):
-            predictions = [StackEnsemble.get_submodels_prediction(sub_models,
+            predictions = [np.hstack((x, StackEnsemble.get_submodels_prediction(sub_models,
                                                                   submodel_predict_input_key,
-                                                                  submodel_predict_output_key, x)
+                                                                  submodel_predict_output_key, x)))
                                                                 for x in X]
             return np.vstack(predictions)
         else:
-            return StackEnsemble.get_submodels_prediction(sub_models,
+            return np.hstack((X, StackEnsemble.get_submodels_prediction(sub_models,
                                                         submodel_predict_input_key,
                                                         submodel_predict_output_key,
                                                         X
-                                                        )
+                                                        )))
 
     @classmethod
     def get_submodels_prediction(cls, sub_models: List[PredictiveModel], submodel_predict_input_key: str, submodel_predict_output_key: str, X: Any) -> Any:
