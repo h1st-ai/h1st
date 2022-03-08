@@ -54,8 +54,8 @@ class OracleModeler(Modeler):
         else:
             ensembler_data = None
 
-        ensembler_model = self.ensembler_modeler.build_model(ensembler_data)
-        oracle = self.model_class(self.teacher, self.students, ensembler_model)
+        ensembler = self.ensembler_modeler.build_model(ensembler_data)
+        oracle = self.model_class(self.teacher, self.students, ensembler)
         # Pass stats to the model
         if self.stats is not None:
             oracle.stats = self.stats.copy()
