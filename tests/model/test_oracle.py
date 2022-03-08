@@ -78,7 +78,7 @@ class TestOracle:
         oracle_modeler = OracleModeler(teacher=RuleModel(),
                                        student_modelers = [RandomForestModeler(), AdaBoostModeler()],
                                        ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabelled_data': data['training_data']['X']})
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']})
 
         pred = oracle.predict(data['test_data'])['predictions']
         assert len(pred) == len(data['test_data']['y'])
@@ -103,7 +103,7 @@ class TestOracle:
         oracle_modeler = OracleModeler(teacher=RuleModel(),
                                        student_modelers = [RandomForestModeler()],
                                        ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabelled_data': data['training_data']['X']})
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']})
 
         pred = oracle.predict(data['test_data'])['predictions']
         assert len(pred) == len(data['test_data']['y'])
@@ -129,8 +129,8 @@ class TestOracle:
         oracle_modeler = OracleModeler(teacher=RuleModel(),
                                        student_modelers = [RandomForestModeler(), AdaBoostModeler()],
                                        ensembler_modeler=MyMLModeler())
-        oracle = oracle_modeler.build_model({'unlabelled_data': data['training_data']['X'],
-                                             'labelled_data': {'X_train': data['training_data']['X'],
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X'],
+                                             'labeled_data': {'X_train': data['training_data']['X'],
                                                                'y_train': data['training_data']['y'],
                                                                'X_test': data['test_data']['X'],
                                                                'y_test': data['test_data']['y'],

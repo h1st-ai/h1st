@@ -27,29 +27,29 @@ class OracleModeler(Modeler):
         """
         self.stats['features'] = features
         # Generate features to get students' predictions
-        train_data = self.model_class.generate_data({'X': data['unlabelled_data']}, self.teacher, self.stats)
+        train_data = self.model_class.generate_data({'X': data['unlabeled_data']}, self.teacher, self.stats)
 
         # Train the student model
         self.students = [student_modeler.build_model(train_data)
                          for student_modeler in self.student_modelers]
 
         # Train the ensembler
-        labelled_data = data.get('labelled_data', None)
+        labeled_data = data.get('labeled_data', None)
 
-        if isinstance(self.ensembler_modeler, MLModeler) and labelled_data is None:
+        if isinstance(self.ensembler_modeler, MLModeler) and labeled_data is None:
             raise ValueError('No data to train the machine-learning-based ensemble')
 
-        if labelled_data is not None:
-            ensembler_train_data = self.model_class.generate_data({'X': labelled_data['X_train']}, self.teacher, self.stats)
-            ensembler_test_data = self.model_class.generate_data({'X': labelled_data['X_test']}, self.teacher, self.stats)
+        if labeled_data is not None:
+            ensembler_train_data = self.model_class.generate_data({'X': labeled_data['X_train']}, self.teacher, self.stats)
+            ensembler_test_data = self.model_class.generate_data({'X': labeled_data['X_test']}, self.teacher, self.stats)
             student_preds_train_data = [pd.Series(student.predict(ensembler_train_data)['predictions']) for student in self.students]
             student_preds_test_data = [pd.Series(student.predict(ensembler_test_data)['predictions']) for student in self.students]
             ensembler_data = {'X_train': pd.concat(student_preds_train_data + 
                                                 [ensembler_train_data['y']], axis=1),
-                                    'y_train': labelled_data['y_train'],
+                                    'y_train': labeled_data['y_train'],
                                     'X_test': pd.concat(student_preds_test_data + 
                                                 [ensembler_test_data['y']], axis=1),
-                                    'y_test': labelled_data['y_test'],
+                                    'y_test': labeled_data['y_test'],
                                     }
         else:
             ensembler_data = None

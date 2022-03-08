@@ -88,7 +88,7 @@ class TestTimeSeriesOracle:
                                         student_modelers = [RandomForestModeler(),
                                                             AdaBoostModeler()],
                                         ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabelled_data': data['training_data']['X']},
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']},
                                             id_col='machineID', ts_col='date')
 
         pred = oracle.predict(data['training_data'])['predictions']
@@ -114,7 +114,7 @@ class TestTimeSeriesOracle:
         oracle_modeler = TimeseriesOracleModeler(teacher=RuleModel(),
                                         student_modelers = [RandomForestModeler(), AdaBoostModeler()],
                                         ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabelled_data': data['training_data']['X']},
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']},
                                       id_col='machineID',
                                       ts_col='date',
                                       features=['volt', 'rotate', 'vibration']
@@ -143,7 +143,7 @@ class TestTimeSeriesOracle:
         oracle_modeler = TimeseriesOracleModeler(teacher=RuleModel(),
                                         student_modelers = [RandomForestModeler(), AdaBoostModeler()],
                                         ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabelled_data': data['training_data']['X']},
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']},
                                             ts_col='date')
 
         pred = oracle.predict(data['training_data'])['predictions']
@@ -173,8 +173,8 @@ class TestTimeSeriesOracle:
 
         num_samples = 366
         pseudo_y = np.random.randint(4, size=num_samples)
-        oracle = oracle_modeler.build_model({'unlabelled_data': data['training_data']['X'],
-                                             'labelled_data': {'X_train': data['training_data']['X'],
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X'],
+                                             'labeled_data': {'X_train': data['training_data']['X'],
                                                                'y_train': pseudo_y,
                                                                'X_test': data['training_data']['X'],
                                                                'y_test': pseudo_y

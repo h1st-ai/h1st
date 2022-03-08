@@ -29,7 +29,7 @@ class TimeSeriesOracle(Oracle):
     def generate_data(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
         '''
         Generate data to train the Student model
-        :param data: unlabelled data in form of {'X': pd.DataFrame}
+        :param data: unlabeled data in form of {'X': pd.DataFrame}
         :returns: a dictionary of features and teacher's prediction.
         '''
         if 'X' not in data:

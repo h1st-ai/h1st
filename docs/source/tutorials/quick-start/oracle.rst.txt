@@ -3,7 +3,7 @@ Oracle
 
 The `Oracle` is a key component of the H1st framework, and automates the
 creation of K1st Predictive Nodes from just a **Teacher** model containing
-human knowledge, and unlabelled data. Below is an example of how to use the
+human knowledge, and unlabeled data. Below is an example of how to use the
 `Oracle` class to create a full predictive ensemble (rule-based + ML) for
 predicting setosa iris's with the iris dataset. 
 
