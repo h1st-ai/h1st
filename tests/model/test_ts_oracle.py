@@ -63,20 +63,31 @@ class MyMLModeler(MLModeler):
 
 class TestTimeSeriesOracle:
     def load_data(self):
-        path = f'{dir_path}/data/'
-        if not os.path.exists(path):
-            path = 'https://azuremlsampleexperiments.blob.core.windows.net/datasets/'
-        telemetry_url = 'PdM_telemetry.csv'
-        df = pd.read_csv(path + 'PdM_telemetry.csv')
-        df.loc[:, 'datetime'] = pd.to_datetime(df['datetime'])
-        df.loc[:, 'datetime'] = df['datetime'] - pd.Timedelta(hours=6)
+        # path = f'{dir_path}/data/'
+        # if not os.path.exists(path):
+        #     path = 'https://azuremlsampleexperiments.blob.core.windows.net/datasets/'
+        # telemetry_url = 'PdM_telemetry.csv'
+        # df = pd.read_csv(path + 'PdM_telemetry.csv')
+        # df.loc[:, 'datetime'] = pd.to_datetime(df['datetime'])
+        # df.loc[:, 'datetime'] = df['datetime'] - pd.Timedelta(hours=6)
 
-        df_machines = pd.read_csv(path + 'PdM_machines.csv')
-        df = df.join(df_machines.set_index('machineID'), on='machineID')
+        # df_machines = pd.read_csv(path + 'PdM_machines.csv')
+        # df = df.join(df_machines.set_index('machineID'), on='machineID')
 
-        df.loc[:, 'date'] = df['datetime'].dt.date
+        # df.loc[:, 'date'] = df['datetime'].dt.date
 
+        # df.sort_values(['machineID', 'datetime'], inplace=True)
+
+        df = pd.DataFrame({
+            'datetime': ['2015-01-01 06:00:00', '2015-01-01 07:00:00', '2015-01-01 08:00:00', '2015-01-01 09:00:00', '2015-01-01 10:00:00'],
+            'machineID': [1, 1 , 1, 1, 1],
+            'volt': [176.21785302, 162.8792229 , 170.98990241, 162.46283326, 157.61002119],
+            'rotate': [418.50407822, 402.74748957, 527.34982545, 346.14933504, 435.37687302],
+            'pressure': [113.07793546,  95.46052538,  75.23790486, 109.24856128, 111.88664821],
+            'vibration':[45.08768576, 43.41397268, 34.17884712, 41.12214409, 25.990511]
+        })
         df.sort_values(['machineID', 'datetime'], inplace=True)
+        df.loc[:, 'date'] = df['datetime'].dt.date
 
         return {'training_data': {'X': df.loc[df.machineID==1, ['machineID', 'date', 'volt', 'rotate', 'pressure', 'vibration']]}}
         
