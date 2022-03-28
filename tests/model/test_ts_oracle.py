@@ -105,7 +105,7 @@ class TestTimeSeriesOracle:
                                             id_col='machineID', ts_col='date')
 
         pred = oracle.predict(data['training_data'])['predictions']
-        assert len(pred) == 366
+        assert len(pred) == 1
 
         with tempfile.TemporaryDirectory() as path:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
@@ -134,7 +134,7 @@ class TestTimeSeriesOracle:
                                       )
 
         pred = oracle.predict(data['training_data'])['predictions']
-        assert len(pred) == 366
+        assert len(pred) == 1
 
         with tempfile.TemporaryDirectory() as path:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
@@ -160,7 +160,7 @@ class TestTimeSeriesOracle:
                                             ts_col='date')
 
         pred = oracle.predict(data['training_data'])['predictions']
-        assert len(pred) == 366
+        assert len(pred) == 1
 
         with tempfile.TemporaryDirectory() as path:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
@@ -184,7 +184,7 @@ class TestTimeSeriesOracle:
                                                             AdaBoostModeler()],
                                         ensembler_modeler=MyMLModeler())
 
-        num_samples = 366
+        num_samples = 1
         pseudo_y = np.random.randint(4, size=num_samples)
         oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X'],
                                              'labeled_data': {'X_train': data['training_data']['X'],
