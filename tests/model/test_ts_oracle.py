@@ -86,6 +86,8 @@ class TestTimeSeriesOracle:
             'pressure': [113.07793546,  95.46052538,  75.23790486, 109.24856128, 111.88664821],
             'vibration':[45.08768576, 43.41397268, 34.17884712, 41.12214409, 25.990511]
         })
+        df.loc[:, 'datetime'] = pd.to_datetime(df['datetime'])
+        df.loc[:, 'datetime'] = df['datetime'] - pd.Timedelta(hours=6)        
         df.sort_values(['machineID', 'datetime'], inplace=True)
         df.loc[:, 'date'] = df['datetime'].dt.date
 
