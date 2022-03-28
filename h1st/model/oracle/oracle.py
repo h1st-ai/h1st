@@ -66,9 +66,10 @@ class Oracle(PredictiveModel):
     Oracle Model in Oracle framework
     """
 
-    def __init__(self, teacher: PredictiveModel,
-                 students,
-                 ensembler):
+    def __init__(self, 
+                 teacher: PredictiveModel,
+                 students: PredictiveModel,
+                 ensembler: PredictiveModel):
         """
         :param teacher: The knowledge model.
         :param student_modelers: The student modelers.
