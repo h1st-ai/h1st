@@ -50,7 +50,7 @@ User should implement the following two methods
     inside Ensemble itself, then you don't need to implement this method. 
 '''
 class MySegmentor(Model):
-    def segment(data: Union[pd.DataFrame, Dict]) -> Tuple[Dict]:
+    def process(data: Union[pd.DataFrame, Dict]) -> Tuple[Dict]:
         segmentation_results = {
             'segment_0': data_segment_0,
             'segment_1': data_segment_1
