@@ -79,7 +79,6 @@ ensemble_modeler:
     User can use their own ensemble modeler, or use pre-built modeler, 
     such as MajorityVotingEnsembleModeler.
 segmentor:
-
 '''
 kswe = kswe_modeler.build_model(
     input_data=data,

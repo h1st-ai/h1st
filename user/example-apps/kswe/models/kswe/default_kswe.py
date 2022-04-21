@@ -8,15 +8,10 @@ as a default Segmentor. The overall process is like the following.
 1. load data
 2. provide segmentation_features that explains what features users want to
   use to generate data segments from the original data
-3. build sub_model_modeler and ensemble_modeler or just use pre-built
-  modelers from h1st
-4. Pass them to KSWEModeler.build_model() method. 
-5. Check (auto-generated) evaluation results and persist KSWE if the evaluation
+3. Pass them to KSWEModeler.build_model() method. 
+4. Check (auto-generated) evaluation results and persist KSWE if the evaluation
     results is good enough. Otherwise, iterate the fine-tuning process. 
-6. Load and use KSWE in inference application
-
-
-
+5. Load and use KSWE in inference application
 '''
 ### 1. Load Data
 data = utils.load_data() 
@@ -42,36 +37,37 @@ kswe_modeler = KSWEModeler()
 
 ### 4. Build KSWE
 '''
+Build KSWE model with data and knowledge. By default, it will use 
+RandomForestClassifier and MajorityVotingEnsemble for building classifier
+and RandomForestRegressor and AveragingEnsemble for building regressor.
+After building KSWE, you will get the evaluation results for KSWE and 
+sub_models.
+
 input_data: Dict 
-    Entire data for training/evaluating the sub_models and ensembles of KSWE. 
+    Data for training and evaluating sub_models and ensembles of KSWE. 
 segmentation_features: Dict
-    Explained above. 
-min_segment_size: 
-    Number of data points in each segment should be larger than this value. 
-    If not, ignore that segment or auto-merge it into other segment so that
-    the total number data points in a merged segment is larger than min_segment_size.  
-sub_model_modeler:  
-    User can use their own sub_model modeler, or use pre-built modeler, 
-    such as RandomForestClassifierModeler.
-ensemble_modeler:
-    User can use their own ensemble modeler, or use pre-built modeler, 
-    such as MajorityVotingEnsembleModeler.
+    Domain knowledge that will be used for segmenting data and build KSWE.
+type: int
+    This value shows if the model is classifier or regressor
 '''
 kswe = kswe_modeler.build_model(
     input_data=data,
     segmentation_features=segmentation_features,
-    min_segment_size=50, 
-    sub_model_modeler=RandomForestClassifierModeler,
-    ensemble_modeler=MajorityVotingEnsembleModeler
+    type=KSWE.Classifier
 )
 
-### 5. Check evalutaion results
-print(kswe.metrics)
+# or 
 
-### 6. Persist KSWE
+kswe = kswe_modeler.build_classification_model(
+    input_data=data,
+    segmentation_features=segmentation_features
+)
+
+
+### 5. Persist KSWE
 kswe.persist(kswe, 'my_version')
 
-### 7. Reload KSWE in Application
+### 6. Reload KSWE in Application
 kswe = KSWE().load_param('my_version')
 kswe.predict(data)
 
