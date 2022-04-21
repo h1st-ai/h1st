@@ -9,8 +9,8 @@ from h1st.model.model import Model
 '''
 This is the user code of custom KSWEModeler. We demonstrate here how users can 
 fully customize the segmentor for segmenting data and use it in KSWEModeler. 
-If users want to use custom SubModel and Ensemble, they can use their
-customized SubModelModeler and EnsembleModeler and we will show you how to use
+If users want to customize SubModel and Ensemble, they can use their
+customized SubModelModeler, and EnsembleModeler. We will show you how to use
 them in KSWE as well. 
 In Summary, overall process is like the following. 
 1. Load entire data
