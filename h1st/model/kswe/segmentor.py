@@ -36,8 +36,18 @@ class CombinationSegmentor(Model):
         
         by_key = list(by.keys())
         if 'dataframe' in input_data:
+            data = {}
+            if 'X_train' in input_data['dataframe']:
+                data['X'] = input_data['dataframe']['X_train']
+                data['y'] = input_data['dataframe']['y_train']
             segmentation_results = self.get_segments_from_dataframe(
-                input_data['dataframe'], segmentation_logics, by_key)
+                data, segmentation_logics, by_key)
+            if 'X_train' in input_data['dataframe']:
+                for name, segmentation_result in segmentation_results.items():
+                    segmentation_result['X_train'] = segmentation_result['X']
+                    del segmentation_result['X']
+                    segmentation_result['y_train'] = segmentation_result['y']
+                    del segmentation_result['y']
         elif 'json' in input_data:
             segmentation_results = self.get_segments_from_json(input_data['json'], segmentation_logics)
         else:
@@ -113,11 +123,9 @@ class CombinationSegmentor(Model):
         return filter.values
 
     def get_segments_from_dataframe(self, dataframe, segmentation_logics, segmentation_features_key):
-        X, y = dataframe['X'], dataframe['y']
+        X = dataframe['X']
         X_features = list(X.columns)
         for item in segmentation_features_key: X_features.remove(item)
-        # if y.name in segmentation_features_key:
-        #     pass
 
         segments = {}
         for segment_name, comb in segmentation_logics.items():
@@ -126,17 +134,16 @@ class CombinationSegmentor(Model):
                 filtered_indices = self.get_filtered_indices(X, feature, filter)
                 list_filtered_indices.append(filtered_indices)
             segment_indices = np.column_stack(list_filtered_indices).all(axis=1)
-            segments[segment_name] = {
-                'X': X.loc[segment_indices, X_features], 
-                'y': y.loc[segment_indices]
-            }
+            segments[segment_name] = {'X': X.loc[segment_indices, X_features]}
+            if 'y' in dataframe:
+                segments[segment_name]['y'] = dataframe['y'].loc[segment_indices]
         return segments
 
     def filter_small_segments(self, segments, min_data_size):
         res = {}
         for segment_name, segment in segments.items():
-            if segment['X'].shape[0] < min_data_size:
-                logger.info(f'{segment_name} has {segment["X"].shape[0]} number of data points,\
+            if segment['X_train'].shape[0] < min_data_size:
+                logger.info(f'{segment_name} has {segment["X_train"].shape[0]} number of data points,\
                             which is smaller than min_data_size: {min_data_size}')
                 continue
             res[segment_name] = segment
