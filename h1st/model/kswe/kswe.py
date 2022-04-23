@@ -37,7 +37,6 @@ class KSWE(PredictiveModel):
         self.ensemble.persist(version+'_ensemble')
         sub_model_names = []
         for name, sub_model in self.sub_models.items():
-            print(version+f'_{name}')
             sub_model.persist(version+f'_{name}')
             sub_model_names.append(name)
         self.stats['sub_model_names'] = sub_model_names
@@ -52,18 +51,6 @@ class KSWE(PredictiveModel):
             sub_model = self.sub_model_class().load_params(version+f'_{name}')
             sub_models[name] = sub_model
         self.sub_models = sub_models
-
-    # def persist(self, version=None):
-    #     for name, sub_model in self.sub_models:
-    #         sub_model.persist(version)
-    #     self.ensemble.persist(version)
-    #     super().persist(version)
-
-    # def load_params(self, version: str = None) -> None:
-    #     self.ensemble.load_params(version)
-    #     for sub_model in self.sub_models:
-    #         sub_model.load_params(self.ensembler.version)
-    #     super().load_params(version)
 
     # WIP: Switching model based on data segment
     def predict2(self, input_data: Dict):
@@ -81,7 +68,7 @@ class KSWE(PredictiveModel):
         return {
             'predictions': final_predictions
         }
-        # print('kswe-temp.shape:', temp.shape)
+        
         
         # final_predictions = self.ensemble.predict({'X': pd.concat(sub_model_predictions, axis=1)})
         # # print('kswe-final_predictions.shape:', final_predictions.shape)
