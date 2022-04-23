@@ -21,18 +21,36 @@ class CombinationSegmentor(Model):
         self, 
         input_data: Dict, 
         by: Dict, 
-        levels: List,
+        segmentation_levels: List,
         min_data_size: int
     ) -> Tuple[Dict]:
         """
         Create all combination 
         :param input_data: Input data for training and inference.
         :param by: Utilize this value to segment input_data.
+        :param segmentation_levels: List
+            Number of features being used to create each segment. If level=1, then
+            take a filter from only one featrue to create a segment. If level=2, then 
+            take a filter from each feature and create a combined filter to create a 
+            segment. To create a combined filter, do and operation between two filters.
+            
+            For example, given an above segmentation_features, if level=3, then you will
+            have the following 4 segments.
+                segment_1: (sepal_size, (None, 18.5)) & (sepal_aspect_ratio, (0, 0.65)) & (species, [0, 1])
+                segment_2: (sepal_size, (None, 18.5)) & (sepal_aspect_ratio, (0.65, 1)) & (species, [0, 1])
+                segment_3: (sepal_size, (18.5, None)) & (sepal_aspect_ratio, (0, 0.65)) & (species, [0, 1])
+                segment_4: (sepal_size, (18.5, None)) & (sepal_aspect_ratio, (0.65, 1)) & (species, [0, 1])
+            If level=1, then you will have the following 5 segments.
+                segment_1: (sepal_aspect_ratio, (0, 0.65))
+                segment_2: (sepal_aspect_ratio, (0.65, 1))
+                segment_3: (sepal_size, (None, 18.5))
+                segment_4: (sepal_size, (18.5, None))
+                segment_5: (species, [0, 1])
         :param min_data_size: Minimum number of data points per segment. 
             If the number of data point in a segment is less than this value, 
             then, merge the small segment with other close segments.
         """
-        segmentation_logics = self.create_filter_combinations(by, levels)
+        segmentation_logics = self.create_filter_combinations(by, segmentation_levels)
         
         by_key = list(by.keys())
         if 'dataframe' in input_data:
@@ -148,9 +166,3 @@ class CombinationSegmentor(Model):
                 continue
             res[segment_name] = segment
         return res
-
-
-
-# TODO: Given x, which model should we use ? or give more weights ? 
-# TODO: Need to develop a method called find_group(x) -> group_name
-

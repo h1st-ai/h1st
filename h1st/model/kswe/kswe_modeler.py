@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, List
 
 from sklearn.model_selection import train_test_split as sk_train_test_split
@@ -30,6 +31,24 @@ class KSWEModeler(Modeler):
         segmentation_features: Dict = None, 
         min_data_size: int = 50
     ):
+        '''
+        min_segment_size: 
+            Number of data points in each segment should be larger than this value. 
+            If not, ignore that segment or auto-merge it into other segment so that
+            the total number data points in a merged segment is larger than min_segment_size.  
+        sub_model_modeler:  
+            User can use their own sub_model modeler, or use pre-built modeler, 
+            such as RandomForestClassifierModeler.
+        ensemble_modeler:
+            User can use their own ensemble modeler, or use pre-built modeler, 
+            such as MajorityVotingEnsembleModeler.        
+        input_data: Dict 
+            Data for training and evaluating sub_models and ensembles of KSWE. 
+        segmentation_features: Dict
+            Domain knowledge that will be used for segmenting data and build KSWE.        
+        
+        '''
+
         # Check if data is in correct format
         if isinstance(segmentor, CombinationSegmentor):
             if 'dataframe' not in input_data and 'json' not in input_data:
@@ -54,9 +73,9 @@ class KSWEModeler(Modeler):
                 input_data, 
                 by=segmentation_features, 
                 min_data_size=min_data_size, 
-                levels=list(range(1, len(segmentation_features)+1))
+                segmentation_levels=list(range(1, len(segmentation_features)+1))
             )
-            
+
             if 'json' in input_data:
                 pass 
             # If X is Dict (JSON), then we need to load Image and Label information from X
@@ -66,6 +85,7 @@ class KSWEModeler(Modeler):
             if 'dataframe' in input_data:
                 X_features = list(input_data['dataframe']['X_train'].columns)
                 for item in segmentation_features.keys(): X_features.remove(item)
+                self.stats['X_features'] = X_features
                 input_data['X_train'] = input_data['dataframe']['X_train'][X_features]
                 input_data['y_train'] = input_data['dataframe']['y_train']
                 input_data['X_test'] = input_data['dataframe']['X_test'][X_features]
@@ -73,7 +93,6 @@ class KSWEModeler(Modeler):
         else:
             segmented_data, segmentation_logics = segmentor.process(input_data)
 
-        
 
         # Train sub_models (TODO: make it parallelized)
         sub_models = {name: sub_model_modeler.train_model(data) \
@@ -81,18 +100,18 @@ class KSWEModeler(Modeler):
 
         # Show the evaluation results of sub_models
         for name, model in sub_models.items():
-            print(f'sub model {name} training resluts based on {segmented_data[name]["X_train"].shape[0]} samples: {model.metrics}')
+            logging.info(f'sub model {name} training resluts based on {segmented_data[name]["X_train"].shape[0]} samples: {model.metrics}')
             metrics = sub_model_modeler.evaluate_model(input_data, model)
-            print(f'sub model {name} test resluts based on {input_data["X_test"].shape[0]} samples: {metrics}')
+            logging.info(f'sub model {name} test resluts based on {input_data["X_test"].shape[0]} samples: {metrics}')
 
         # Save segmentation_logics in self.stats. We will use this in KSWE predict method.
         self.stats['segmentation_logics'] = segmentation_logics
 
         # Prepare training data for Ensemble
         # Depending on the ensemble strategy, we should prepare the training data differently
-        sub_model_predictions = [pd.Series(sub_model.predict({'X': input_data['X_train']})['predictions']) 
+        sub_model_predictions = [pd.Series(sub_model.predict({'X': input_data['X_train']})['predictions'])
                                 for _, sub_model in sub_models.items()]
-        
+
         # Build Ensemble
         ensemble_data = {
             'X_train': pd.concat(sub_model_predictions, axis=1),
@@ -101,7 +120,12 @@ class KSWEModeler(Modeler):
         ensemble = ensemble_modeler.build_model(ensemble_data)
 
         # Build KSWE
-        kswe = self.model_class(segmentor, sub_models, ensemble)
+        kswe = self.model_class(
+            segmentor=segmentor, 
+            sub_models=sub_models, 
+            ensemble=ensemble
+        )
+
         kswe.metrics = sub_model_modeler.evaluate_model(input_data, kswe)
 
         # Show the evaluation results of KSWE
