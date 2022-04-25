@@ -49,6 +49,7 @@ class CombinationSegmentor(Model):
         :param min_data_size: Minimum number of data points per segment. 
             If the number of data point in a segment is less than this value, 
             then, merge the small segment with other close segments.
+
         """
         segmentation_logics = self.create_filter_combinations(by, segmentation_levels)
         
