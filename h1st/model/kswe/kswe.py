@@ -2,6 +2,7 @@ from typing import Dict, List
 from datetime import datetime
 import ulid
 
+import numpy as np
 import pandas as pd
 
 from h1st.model.predictive_model import PredictiveModel
@@ -16,14 +17,30 @@ class KSWE(PredictiveModel):
         self.ensemble = None
 
     def predict(self, input_data: Dict):
+        
         # Segment data
+        if isinstance(input_data['X'], pd.DataFrame):
+            input_data['X'].reset_index(inplace=True, drop=True)
         segmented_data = self.segmentor.process(input_data)['segment_data']
 
-        # Generate sub_models' prediction
-        sub_model_predictions = {
-            name: sub_model.predict({'X': segmented_data[name]})['predictions']
-            for name, sub_model in self.sub_models.items()
-        }
+        sub_model_predictions = {}
+        for name, sub_model in self.sub_models.items():
+            # generate predictions from submodels
+            predictions = sub_model.predict(
+                {'X': segmented_data[name]})['predictions']
+
+            # create a fixed length array with max index val
+            pred_w_index = np.empty(input_data['X'].shape[0]) 
+            pred_w_index[:] = np.nan
+
+            # put predictions in indices
+            np.put(pred_w_index, segmented_data[name].index, predictions)
+            
+            sub_model_predictions[name] = {
+                'index': segmented_data[name].index, 
+                'predictions': predictions,
+                'predictions_w_index': pred_w_index
+            }
 
         # Generage ensemble's prediction
         final_predictions = self.ensemble.predict(sub_model_predictions)
@@ -37,9 +54,9 @@ class KSWE(PredictiveModel):
             version = f'{str(ulid.new())[:4]}-{now_str}'
 
         self.stats['version'] = version
-        self.stats['ensemble_version'] = self.ensemble.persist(version)
+        self.stats['ensemble_version'] = self.ensemble.persist(version+'_ensemble')
         self.stats['ensemble_class'] = self.ensemble.__class__
-        self.stats['segmentor_version'] = self.segmentor.persist(version)
+        self.stats['segmentor_version'] = self.segmentor.persist(version+'_segmentor')
         self.stats['segmentor_class'] = self.segmentor.__class__
 
         sub_model_info = {}

@@ -1,18 +1,16 @@
+from copy import deepcopy
 import json
 import logging
 from typing import Dict, List
-from copy import deepcopy
 
-from sklearn.model_selection import train_test_split as sk_train_test_split
 import pandas as pd
+from sklearn.model_selection import train_test_split as sk_train_test_split
 
-from h1st.model.model import Model
+from ensemble import MajorityVotingEnsemble, MajorityVotingEnsembleV2
 from h1st.model.modeler import Modeler
-from h1st.model.ml_modeler import MLModeler
-from segmentor import CombinationSegmentor
 from kswe import KSWE
+from segmentor import CombinationSegmentor, MaxSegmentationModeler
 from sub_model_modeler import RandomForestClassifierModeler
-from ensemble import MajorityVotingEnsemble
 
 
 class KSWEModeler(Modeler):
@@ -27,13 +25,14 @@ class KSWEModeler(Modeler):
     def build_model(
         self,
         input_data: Dict, 
-        sub_model_modeler: MLModeler,
-        ensemble_modeler: Modeler,
-        segmentor: Model = CombinationSegmentor(),
+        sub_model_modeler: Modeler,
+        ensemble_modeler: Modeler = MajorityVotingEnsembleV2(),
+        # segmentor: Model = CombinationSegmentor(),
+        segmentor_modeler: Modeler = MaxSegmentationModeler(),
         segmentation_config: Dict = None, 
     ):
         '''
-        :param input_data: Dict
+        :param input_data: 
             Data for training and evaluating sub_models and ensembles of KSWE.
         :param sub_model_modeler:
             User can use their own sub_model modeler, or use pre-built modeler,
@@ -43,7 +42,7 @@ class KSWEModeler(Modeler):
             such as MajorityVotingEnsembleModeler.
         :param segmentor:
             Segment data into segmented data based on segmentation_configs
-        :param segmentation_configs:
+        :param segmentation_config:
             Domain knowledge that will be used for segmenting data and build KSWE.
             Either a dict where each key is a column to segment on and the
             value is a list[list], each level 0 list item represents a bin and
@@ -54,7 +53,6 @@ class KSWEModeler(Modeler):
                 'depth': [[(0, 50), (75,100)], [(51, 74)]]}
             Alternatively, this can be string path to config file, see example for format.
         '''
-        
         if 'X_train' not in input_data or 'X_test' not in input_data:
             raise KeyError('key "X_train" or "X_test" are not in your input_data')            
         if 'y_train' not in input_data or 'y_test' not in input_data: 
@@ -65,9 +63,9 @@ class KSWEModeler(Modeler):
         if (input_data['X_train'].shape[0] != input_data['y_train'].shape[0]) \
             or (input_data['X_test'].shape[0] != input_data['y_test'].shape[0]):
             raise ValueError('The length of "X" and "y" are different.')
+        # self.stats['segmentation_features'] = list(segmentation_config.keys())
 
-        self.stats['segmentation_features'] = list(segmentation_config.keys())
-        segmentor.stats['segmentation_config'] = segmentation_config
+        segmentor = segmentor_modeler.build_model(input_data, segmentation_config)
         segmentor_output = segmentor.process({'X': input_data['X_train']})
 
         sub_models = {}
@@ -78,16 +76,20 @@ class KSWEModeler(Modeler):
         }
         for name, X_train in segmentor_output['segment_data'].items():
             y_train = input_data['y_train'].loc[X_train.index]
+            if y_train.nunique() == 1:
+                logging.info(f'Skip the Training of sub_model {name} because '
+                             'there is only one y class.')
+                continue
             train_test_data['X_train'] = X_train
             train_test_data['y_train'] = y_train
             segmented_data[name] = {'X_train': X_train, 'y_train': y_train}
             logging.info(f'Training sub_model {name} based on '
                          f'{X_train.shape[0]} samples')
-            sub_model = sub_model_modeler.train_model(train_test_data)
+            sub_model = sub_model_modeler.build_model(train_test_data)
             sub_model.stats['segment_info'] = segmentor_output['segment_info'][name]
             sub_models[name] = sub_model
             logging.info(f'Metrics for trained submodel {name}:\n'
-                         f'{json.dumps(sub_model.metrics, index=4)}')
+                         f'{json.dumps(sub_model.metrics)}')
 
         # Save segmentation_logics in self.stats. We will use this in KSWE predict method.
         self.stats['segment_info'] = segmentor_output['segment_info']
