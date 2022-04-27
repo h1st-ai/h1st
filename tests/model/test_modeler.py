@@ -76,7 +76,7 @@ class MyMLModel(MLModel):
             'X': self.stats['scaler'].transform(raw_data)
         }
 
-    def process(self, input_data: Dict) -> Dict:
+    def predict(self, input_data: Dict) -> Dict:
         preprocess_data = self.preprocess(input_data)
         y = self.base_model.predict(preprocess_data['X'])
         return {'species': [self.stats['targets'][item] for item in y]}

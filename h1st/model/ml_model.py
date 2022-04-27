@@ -28,7 +28,7 @@ class MLModel(PredictiveModel):
             from sklearn.ensemble import RandomForestClassifie
 
             class MyMLModel(MLModel):
-                def process(self, input_data: Dict) -> Dict:
+                def predict(self, input_data: Dict) -> Dict:
             return {'predictions': self.base_model.predict(input_data['X'])}
 
             class MyMLModeler(MLModeler):

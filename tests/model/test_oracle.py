@@ -23,14 +23,13 @@ class RuleModel:
         return {'predictions': pd.Series(map(self.predict_setosa, df['sepal_length'], df['sepal_width']), 
                          name='predictions').values}
 
-    
     def predict_setosa(self, sepal_length, sepal_width):
         return 0 if (self.sepal_length_min <= sepal_length <= self.sepal_length_max) \
                   & (self.sepal_width_min <= sepal_width <= self.sepal_width_max) \
                else 1
 
 class MyMLModel(MLModel):
-    def process(self, input_data: Dict) -> Dict:
+    def predict(self, input_data: Dict) -> Dict:
         y = self.base_model.predict(input_data['X'])
         return {'predictions': y}
 
@@ -92,7 +91,7 @@ class TestOracle:
                               students= [RandomForestModel(), AdaBoostModel()],
                               ensembler=RuleBasedClassificationModel())
             oracle_2.load_params(version)
-            
+
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['test_data'])['predictions']
             pred_df = pd.DataFrame({'pred': pred, 'pred_2': pred_2})

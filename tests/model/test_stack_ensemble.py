@@ -15,7 +15,7 @@ from h1st.model.ml_model import MLModel
 from h1st.model.rule_based_model import RuleBasedClassificationModel
 
 class MyMLModel(MLModel):
-    def process(self, input_data: Dict) -> Dict:
+    def predict(self, input_data: Dict) -> Dict:
         y = self.base_model.predict(input_data['X'])
         return {'predictions': y}
 
@@ -60,7 +60,7 @@ class MyMLModeler2(MyMLModeler):
         return model
 
 class MyMLModel(MLModel):
-    def process(self, input_data: Dict) -> Dict:
+    def predict(self, input_data: Dict) -> Dict:
         y = self.base_model.predict(input_data['X'])
         return {'predictions': y}
 
