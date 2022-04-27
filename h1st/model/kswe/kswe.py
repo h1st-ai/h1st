@@ -9,6 +9,7 @@ import pandas as pd
 from h1st.model.predictive_model import PredictiveModel
 from h1st.model.model import Model
 
+
 class KSWE(PredictiveModel):
     def __init__(self):
         super().__init__()
@@ -34,7 +35,7 @@ class KSWE(PredictiveModel):
                 nan_output[:] = np.nan
                 predictions = nan_output
             else:
-                # generate predictions from submodels
+                # generate predictions from sub_models
                 predictions = self.sub_models[name].predict(
                     {'X': data})['predictions']
 

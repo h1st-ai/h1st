@@ -8,14 +8,10 @@ from sklearn.model_selection import train_test_split as sk_train_test_split
 
 from h1st.model.modeler import Modeler
 from h1st.model.rule_based_modeler import RuleBasedModeler
-# from .ensemble import MajorityVotingEnsemble
-# from .kswe import KSWE
-# from .segmentor import CombinationSegmentor, MaxSegmentationModeler
-# from .sub_model_modeler import RandomForestClassifierModeler
-from ensemble import MajorityVotingEnsemble
-from kswe import KSWE
-from segmentor import CombinationSegmentor, MaxSegmentationModeler
-from sub_model_modeler import RandomForestClassifierModeler
+from .ensemble import MajorityVotingEnsemble
+from .kswe import KSWE
+from .segmentor import CombinationSegmentor, MaxSegmentationModeler
+from .sub_model_modeler import RandomForestClassifierModeler
 
 
 class KSWEModeler(Modeler):
