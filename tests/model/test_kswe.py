@@ -61,9 +61,9 @@ class TestKSWE:
             'y_test': y_test,
         }
     
-    def test_default_segmentor_and_ensemble(self):
+    def test_max_segmentor_n_sklearn_sub_model_n_rule_based_ensemble(self):
         data = self.load_data()
-        
+
         segmentation_features = {
             'min_segment_size': 10,
             'features': ['sepal_size', 'sepal_aspect_ratio'],
