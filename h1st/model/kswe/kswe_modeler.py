@@ -6,11 +6,13 @@ from typing import Dict, List
 import pandas as pd
 from sklearn.model_selection import train_test_split as sk_train_test_split
 
-from ensemble import MajorityVotingEnsemble, MajorityVotingEnsembleV2
+
 from h1st.model.modeler import Modeler
-from kswe import KSWE
-from segmentor import CombinationSegmentor, MaxSegmentationModeler
-from sub_model_modeler import RandomForestClassifierModeler
+from h1st.model.rule_based_modeler import RuleBasedModeler
+from .ensemble import MajorityVotingEnsemble
+from .kswe import KSWE
+from .segmentor import CombinationSegmentor, MaxSegmentationModeler
+from .sub_model_modeler import RandomForestClassifierModeler
 
 
 class KSWEModeler(Modeler):
@@ -25,9 +27,8 @@ class KSWEModeler(Modeler):
     def build_model(
         self,
         input_data: Dict, 
-        sub_model_modeler: Modeler,
-        ensemble_modeler: Modeler = MajorityVotingEnsembleV2(),
-        # segmentor: Model = CombinationSegmentor(),
+        sub_model_modeler: Modeler = RandomForestClassifierModeler(),
+        ensemble_modeler: Modeler = RuleBasedModeler(model_class=MajorityVotingEnsemble),
         segmentor_modeler: Modeler = MaxSegmentationModeler(),
         segmentation_config: Dict = None, 
     ):
@@ -74,6 +75,7 @@ class KSWEModeler(Modeler):
         segmentor = segmentor_modeler.build_model(input_data, segmentation_config)
         segmentor_output = segmentor.process({'X': input_data['X_train']})
 
+        # Train sub_models
         sub_models = {}
         segmented_data = {}
         for name, segmented_X_train in segmentor_output['segment_data'].items():

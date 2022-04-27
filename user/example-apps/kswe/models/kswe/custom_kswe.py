@@ -43,11 +43,11 @@ User should implement the following two methods
             If start or end is None, that means no lower or upper boundary in a range.
     The example of them are provided in MySegmentor class. 
 
-2. identify_segment(data, segmentation_logics):
-    This method finds the proper segment of provided data and return its
-    segment_name. When you use KSWE in inference phase, based on this segment info, 
-    you can select or give more weight on relevant models. If you implement this logic
-    inside Ensemble itself, then you don't need to implement this method. 
+# 2. identify_segment(data, segmentation_logics):
+#     This method finds the proper segment of provided data and return its
+#     segment_name. When you use KSWE in inference phase, based on this segment info, 
+#     you can select or give more weight on relevant models. If you implement this logic
+#     inside Ensemble itself, then you don't need to implement this method. 
 '''
 class MySegmentor(Model):
     def process(data: Union[pd.DataFrame, Dict]) -> Tuple[Dict]:
@@ -55,15 +55,41 @@ class MySegmentor(Model):
             'segment_0': data_segment_0,
             'segment_1': data_segment_1
         }
+        segmentation_results = {
+            'segment_0': {
+                'X_train': 'list of TRAIN_IMAGE',
+                'y_train': 'TRAIN_ANNOTATION.json',
+                'X_test': 'list of TEST_IMAGE',
+                'y_test': 'TEST_ANNOTATION.json',
+            },
+            'segment_1': {
+                'X_train': 'list of TRAIN_IMAGE',
+                'y_train': 'TRAIN_ANNOTATION.json',
+                'X_test': 'list of TEST_IMAGE',
+                'y_test': 'TEST_ANNOTATION.json',
+            }
+        }
+        segmentation_results = {
+            'segment_0': {
+                'X': 'list of TRAIN_IMAGE',
+                'y': 'ANNOTATION.json',
+            },
+            'segment_1': {
+                'X_train': 'list of TRAIN_IMAGE',
+                'y_train': 'TRAIN_ANNOTATION.json',
+                'X_test': 'list of TEST_IMAGE',
+                'y_test': 'TEST_ANNOTATION.json',
+            }
+        }
         segmentation_logics = {
             'segment_0': [('sepal_size', (2, 18.5)),('species', [0, 1])],
             'segment_1': [('sepal_size', (18.5, 30)),('species', [0, 1])],
         }
         return (segmentation_results, segmentation_logics)
 
-    def identify_segment(data: Union[pd.DataFrame, Dict], segmentation_logics: Dict) -> List:
-        segment_names = ['segment_0']
-        return segment_names
+    # def identify_segment(data: Union[pd.DataFrame, Dict], segmentation_logics: Dict) -> List:
+    #     segment_names = ['segment_0']
+    #     return segment_names
 
 ### 3. Instantiate KSWEModeler
 kswe_modeler = KSWEModeler()
@@ -96,7 +122,6 @@ kswe.persist(kswe, 'my_version')
 ### 7. Reload KSWE in Application
 kswe = KSWE().load_param('my_version')
 kswe.predict(data)
-
 
 # ============= After merging model-refactoring branch into main branch
 

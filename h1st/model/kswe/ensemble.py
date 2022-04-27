@@ -33,35 +33,6 @@ class MajorityVotingEnsemble(PredictiveModel):
         return predictions
 
     def predict(self, input_data: Dict) -> Dict:
-        # df_sub_model_predictions = pd.DataFrame(
-        #     {f'sub_model_pred_{i}': sub_model_pred \
-        #         for i, sub_model_pred in enumerate(input_data['sub_model_predictions'])}
-        # )
-        
-        return {
-            'predictions': self.vote_on(input_data['X'])
-        }
-
-
-class MajorityVotingEnsembleV2(PredictiveModel):
-    """
-    Ensemble Model in Oracle framework
-    """
-    def vote_on(self, df_sub_model_predictions):
-        '''
-        Do majority voting on sub models' prediction to get the final classificiation result
-
-        :param df_sub_model_predictions: Pandas DataFrame including sum model's prediction in each column
-        :returns: a dictionary with key `predictions` and value containing the predictions in numpy array
-        '''
-        if df_sub_model_predictions.shape[1] == 1:
-            predictions = df_sub_model_predictions.iloc[:, 0]
-        else:
-            predictions = df_sub_model_predictions.mode(axis='columns', numeric_only=True)[0]
-
-        return predictions
-
-    def predict(self, input_data: Dict) -> Dict:
         df_sub_model_predictions = pd.DataFrame({
             name: data['predictions_w_index'] for name, data in input_data.items()
         })

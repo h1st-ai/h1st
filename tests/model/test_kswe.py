@@ -13,7 +13,7 @@ from h1st.model.model import Model
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.rule_based_modeler import RuleBasedModeler
-from h1st.model.kswe import KSWE, KSWEModeler, MaxSegmentationModeler, MajorityVotingEnsembleV2
+from h1st.model.kswe import KSWE, KSWEModeler, MaxSegmentationModeler, MajorityVotingEnsemble
 
 
 class MySubModel(MLModel):
@@ -43,9 +43,7 @@ class MySubModelModeler(MLModeler):
         model.fit(X, y)
         return model
 
-
-class TestKSWE:
-    def load_data(self):
+def load_data():
         df_raw = datasets.load_iris(as_frame=True).frame
         df_raw.columns = ['sepal_length','sepal_width','petal_length','petal_width', 'species']
         df_raw['sepal_size'] = df_raw['sepal_length'] * df_raw['sepal_width']
@@ -60,11 +58,12 @@ class TestKSWE:
             'X_test': X_test,
             'y_test': y_test,
         }
-    
-    def test_max_segmentor_n_sklearn_sub_model_n_rule_based_ensemble(self):
-        data = self.load_data()
 
-        segmentation_features = {
+class TestKSWE:
+    def test_max_segmentor_n_sklearn_sub_model_n_rule_based_ensemble(self):
+        data = load_data()
+
+        segmentation_config = {
             'min_segment_size': 10,
             'features': ['sepal_size', 'sepal_aspect_ratio'],
             'custom_bins':{
@@ -78,11 +77,10 @@ class TestKSWE:
         kswe_modeler = KSWEModeler()
         kswe = kswe_modeler.build_model(
             input_data=data,
-            segmentation_config=segmentation_features, 
-            sub_model_modeler=MySubModelModeler(),
-            ensemble_modeler=RuleBasedModeler(model_class=MajorityVotingEnsembleV2)
+            segmentation_config=segmentation_config, 
+            sub_model_modeler=MySubModelModeler()
         )
-        
+
         def test_kswe(kswe, data):
             X, y_true = data['X_test'], data['y_test']
             y_pred = pd.Series(kswe.predict({'X': X})['predictions'])

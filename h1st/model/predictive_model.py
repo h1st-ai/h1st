@@ -7,12 +7,17 @@ class PredictiveModel(Model):
     """
     Base class for all predictive models.
     """
-
     def predict(self, input_data: Dict) -> Dict:
         """
         Implement logic to generate prediction from data
 
-        :params input_data: data for prediction
+        :params input_data is input data for prediction
         :returns: a dictionary with key `predictions` containing the predictions
         """
-        return self.process(input_data=input_data)
+        return {'predictions': None}
+
+    def process(self, input_data: Dict) -> Dict:
+        """
+        Implement logic to generate prediction from data
+        """
+        return self.predict(input_data=input_data)
