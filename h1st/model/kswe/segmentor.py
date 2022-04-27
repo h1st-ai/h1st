@@ -244,7 +244,7 @@ class MaxSegmentationModeler(Modeler):
         if config is not None:
             self._load_config(config)
             
-         if self.config is None:
+        if self.config is None:
             raise ValueError('Must provide config or initialize with config')
 
         # combine X_train and X_test to create full dataframe to create groups
