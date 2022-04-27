@@ -56,7 +56,7 @@ class KSWEModeler(Modeler):
         if 'X_train' not in input_data or 'X_test' not in input_data:
             raise KeyError('key "X_train" or "X_test" are not in your input_data')
 
-        if not (bool('y_train' in input_data) ^ bool('y_test' in input_data)): 
+        if (bool('y_train' in input_data) ^ bool('y_test' in input_data)): 
             raise KeyError('key "y_train" or "y_test" are not in your input_data')
 
         if not isinstance(input_data['X_train'], pd.DataFrame):
