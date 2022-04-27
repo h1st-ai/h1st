@@ -29,13 +29,21 @@ class MajorityVotingEnsemble(PredictiveModel):
             predictions = df_sub_model_predictions.iloc[:, 0]
         else:
             predictions = df_sub_model_predictions.mode(axis='columns', numeric_only=True)[0]
-
+            
         return predictions
 
     def predict(self, input_data: Dict) -> Dict:
-        df_sub_model_predictions = pd.DataFrame({
-            name: data['predictions_w_index'] for name, data in input_data.items()
-        })
+        sub_model_predictions = {}
+        for name, data in input_data.items():
+            # create a fixed length array with max index val
+            pred_w_index = np.empty(data['num_of_data']) 
+            pred_w_index[:] = np.nan    
+
+            # put predictions in indices
+            np.put(pred_w_index, data['index'], data['predictions'])
+            sub_model_predictions[name] = pred_w_index
+        df_sub_model_predictions = pd.DataFrame(sub_model_predictions)
+
         return {
             'predictions': self.vote_on(df_sub_model_predictions)
         }

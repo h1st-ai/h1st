@@ -6,13 +6,16 @@ from typing import Dict, List
 import pandas as pd
 from sklearn.model_selection import train_test_split as sk_train_test_split
 
-
 from h1st.model.modeler import Modeler
 from h1st.model.rule_based_modeler import RuleBasedModeler
-from .ensemble import MajorityVotingEnsemble
-from .kswe import KSWE
-from .segmentor import CombinationSegmentor, MaxSegmentationModeler
-from .sub_model_modeler import RandomForestClassifierModeler
+# from .ensemble import MajorityVotingEnsemble
+# from .kswe import KSWE
+# from .segmentor import CombinationSegmentor, MaxSegmentationModeler
+# from .sub_model_modeler import RandomForestClassifierModeler
+from ensemble import MajorityVotingEnsemble
+from kswe import KSWE
+from segmentor import CombinationSegmentor, MaxSegmentationModeler
+from sub_model_modeler import RandomForestClassifierModeler
 
 
 class KSWEModeler(Modeler):
@@ -75,6 +78,9 @@ class KSWEModeler(Modeler):
         segmentor = segmentor_modeler.build_model(input_data, segmentation_config)
         segmentor_output = segmentor.process({'X': input_data['X_train']})
 
+        print('segmentor.stats[segment_info]')
+        print(segmentor.stats['segment_info'])
+
         # Train sub_models
         sub_models = {}
         segmented_data = {}
@@ -84,7 +90,10 @@ class KSWEModeler(Modeler):
             if ('y_train' in train_test_data) and (train_test_data['y_train'].nunique() == 1):
                 logging.info(f'Skip the Training of sub_model {name} because '
                              'there is only one y class or one constant value.')
+                # remove this data segment from segmentor
+                del segmentor.stats['segment_info'][name]
                 continue
+
             segmented_data[name] = train_test_data
             logging.info(f'Training sub_model {name} based on '
                          f'{segmented_X_train.shape[0]} samples')

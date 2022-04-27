@@ -1,5 +1,6 @@
-from typing import Dict, List
 from datetime import datetime
+import logging
+from typing import Dict, List
 import ulid
 
 import numpy as np
@@ -17,29 +18,30 @@ class KSWE(PredictiveModel):
         self.ensemble = None
 
     def predict(self, input_data: Dict):
-        
+
         # Segment data
         if isinstance(input_data['X'], pd.DataFrame):
             input_data['X'].reset_index(inplace=True, drop=True)
         segmented_data = self.segmentor.process(input_data)['segment_data']
 
+        # Generate sub_model predictions
         sub_model_predictions = {}
-        for name, sub_model in self.sub_models.items():
-            # generate predictions from submodels
-            predictions = sub_model.predict(
-                {'X': segmented_data[name]})['predictions']
+        for name, data in segmented_data.items():
+            if name not in self.sub_models:
+                logging.info('There is no model for this data segment.'
+                             'Generate the output as NaN for this data segment.') 
+                nan_output = np.empty(data.shape[0]) 
+                nan_output[:] = np.nan
+                predictions = nan_output
+            else:
+                # generate predictions from submodels
+                predictions = self.sub_models[name].predict(
+                    {'X': data})['predictions']
 
-            # create a fixed length array with max index val
-            pred_w_index = np.empty(input_data['X'].shape[0]) 
-            pred_w_index[:] = np.nan
-
-            # put predictions in indices
-            np.put(pred_w_index, segmented_data[name].index, predictions)
-            
             sub_model_predictions[name] = {
-                'index': segmented_data[name].index, 
+                'index': data.index, 
                 'predictions': predictions,
-                'predictions_w_index': pred_w_index
+                'num_of_data':input_data['X'].shape[0],
             }
 
         # Generage ensemble's prediction
