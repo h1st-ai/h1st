@@ -40,7 +40,7 @@ class RuleModel:
         return {'predictions': pred}
 
 class MyMLModel(MLModel):
-    def process(self, input_data: Dict) -> Dict:
+    def predict(self, input_data: Dict) -> Dict:
         y = self.base_model.predict(input_data['X'])
         return {'predictions': y}
 
