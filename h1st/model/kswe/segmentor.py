@@ -234,13 +234,18 @@ class MaxSegmentationModeler(Modeler):
             self._load_config_file(config)
         elif isinstance(config, dict):
             self._load_config_dict(config)
+        elif config is None:
+            self.config = None
         else:
             raise TypeError('Config must be path to config file or dict of '
                             'segmentation features')
 
-    def build_model(self, input_data: dict, config=None):
+    def build_model(self, input_data: dict, config: Union[dict, str]=None):
         if config is not None:
             self._load_config(config)
+            
+         if self.config is None:
+            raise ValueError('Must provide config or initialize with config')
 
         # combine X_train and X_test to create full dataframe to create groups
         # X_test is optional
@@ -444,13 +449,11 @@ class MaxSegmentationModeler(Modeler):
             'features': feats,
         }
         if config.has_section('custom_bins'):
-            tmp = {k: config['custom_bins'].get(k)}
-            tmp = {k: eval(v) for k,v in tmp.items() if v is not None}
+            tmp = {k: eval(v) for k,v in config['custom_bins'].items()}
             config_dict['custom_bins'] = tmp
 
         if config.has_section('n_bins'):
-            tmp = {k: config['n_bins'].get(k)}
-            tmp = {k: int(v) for k,v in tmp.items() if v is not None}
+            tmp = {k: int(v) for k,v in config['n_bins'].items()}
             config_dict['n_bins'] = tmp
 
         self._load_config_dict(config_dict)
