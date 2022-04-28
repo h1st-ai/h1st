@@ -77,7 +77,7 @@ This tutorial shows how you can create Modeler and Model using the iris dataset 
         return {'micro_f1_score': f1_score(y_true, y_pred, average='micro')
 
 
-Here, we define a MLModel with process method which will be used to generate prediction.
+Here, we define a MLModel with predict method which will be used to generate prediction.
 
 .. code-block:: python
 
@@ -88,7 +88,7 @@ Here, we define a MLModel with process method which will be used to generate pre
                 'X': self.stats['scaler'].transform(raw_data)
             }
 
-        def process(self, input_data: dict) -> dict:
+        def predict(self, input_data: dict) -> dict:
             preprocess_data = self.preprocess(input_data)
             y = self.base_model.predict(preprocess_data['X'])
             return {'species': [self.stats['targets'][item] for item in y]}

@@ -41,7 +41,7 @@ only `process` need be implemented.
     from h1st.model.ml_modeler import MLModeler
 
     class MyMLModel(MLModel):
-        def process(self, data: dict) -> dict:
+        def predict(self, data: dict) -> dict:
             """Run model inference on incoming data and return predictions in a
                dictionary. 
                Input data should have key 'X' with data values
