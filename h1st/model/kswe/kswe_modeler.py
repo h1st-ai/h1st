@@ -56,7 +56,7 @@ class KSWEModeler(Modeler):
         if 'X_train' not in input_data or 'X_test' not in input_data:
             raise KeyError('key "X_train" or "X_test" are not in your input_data')
 
-        if bool('y_train' in input_data) ^ bool('y_test' in input_data): 
+        if (bool('y_train' in input_data) ^ bool('y_test' in input_data)): 
             raise KeyError('key "y_train" or "y_test" are not in your input_data')
 
         if not isinstance(input_data['X_train'], pd.DataFrame):
@@ -83,6 +83,8 @@ class KSWEModeler(Modeler):
         for name, segmented_X_train in segmentor_output['segment_data'].items():
             train_test_data = self.prepare_sub_model_train_test_data(
                 name, segmented_X_train, input_data)
+            
+            # TODO: Mode this validation into segmentor_modeler
             if ('y_train' in train_test_data) and (train_test_data['y_train'].nunique() == 1):
                 logging.info(f'Skip the Training of sub_model {name} because '
                              'there is only one y class or one constant value.')
