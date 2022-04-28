@@ -281,12 +281,13 @@ class MaxSegmentationModeler(Modeler):
     def evaluate_model(self, input_data: dict, model: Model):
         X_train = input_data['X_train']
         X_test = input_data.get('X_test')
+         
         train_segments = model.process({'X': X_train})['segment_data']
         if X_test is not None:
             test_segments = model.process({'X': X_test})['segment_data']
         else:
             test_segments = {}
-            
+
         metrics = {}
         all_groups = set([*train_segments.keys(), *test_segments.keys()])
         for name in all_groups:
