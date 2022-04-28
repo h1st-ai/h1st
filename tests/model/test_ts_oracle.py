@@ -259,12 +259,11 @@ class TestTimeSeriesOracle:
         )
 
         num_samples = 2
-        pseudo_y = np.random.randint(4, size=num_samples)
         oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X'],
                                              'labeled_data': {'X_train': data['training_data']['X'],
-                                                              'y_train': pseudo_y,
+                                                              'y_train': np.array(range(num_samples)),
                                                               'X_test': data['training_data']['X'],
-                                                              'y_test': pseudo_y
+                                                              'y_test': np.array(range(num_samples))
                                              }
                                             },
                                             id_col='machineID', ts_col='date')
