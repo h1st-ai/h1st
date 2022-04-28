@@ -74,9 +74,6 @@ class KSWEModeler(Modeler):
         segmentor = segmentor_modeler.build_model(input_data, segmentation_config)
         segmentor_output = segmentor.process({'X': input_data['X_train']})
 
-        print('segmentor.stats[segment_info]')
-        print(segmentor.stats['segment_info'])
-
         # Train sub_models
         sub_models = {}
         segmented_data = {}
@@ -84,7 +81,7 @@ class KSWEModeler(Modeler):
             train_test_data = self.prepare_sub_model_train_test_data(
                 name, segmented_X_train, input_data)
             
-            # TODO: Mode this validation into segmentor_modeler
+            # TODO: Move this validation into segmentor_modeler
             if ('y_train' in train_test_data) and (train_test_data['y_train'].nunique() == 1):
                 logging.info(f'Skip the Training of sub_model {name} because '
                              'there is only one y class or one constant value.')
@@ -130,12 +127,15 @@ class KSWEModeler(Modeler):
             # Generate sub_model predictions
             sub_model_pred = sub_model.predict(
                 {'X': data_segment['X_train']})['predictions']
-            ensemble_training_data[name] = {'X_train': sub_model_pred}
-            
+            ensemble_training_data[name] = {
+                'X_train': data_segment['X_train'],
+                'y_pred_sub_model': sub_model_pred
+            }
+
             # If y_train exists, add it in training data
             if 'y_train' in data_segment:
-                ensemble_training_data[name] = {'y_train': data_segment['y_train']}
-        
+                ensemble_training_data[name]['y_train'] = data_segment['y_train']
+
         # Build Ensemble            
         ensemble = ensemble_modeler.build_model(ensemble_training_data)
         return ensemble
