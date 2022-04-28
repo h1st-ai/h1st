@@ -16,6 +16,7 @@ logger.setLevel(logging.INFO)
 
 CLASSES_DTYPES = [str, object, bool, pd.CategoricalDtype]
 
+
 class CombinationSegmentor(Model):
     def __init__(self):
         super().__init__()
@@ -280,7 +281,7 @@ class MaxSegmentationModeler(Modeler):
             test_segments = model.process({'X': X_test})['segment_data']
         else:
             test_segments = {}
-
+            
         metrics = {}
         all_groups = set([*train_segments.keys(), *test_segments.keys()])
         for name in all_groups:
