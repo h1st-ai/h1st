@@ -1025,11 +1025,14 @@ We want to create a training and test dataset in this section. We will
 define one data point as (24,4) array which consists of 4 sensors for 24
 hours (daily). We will split training and test data using machineID.
 
-We will use the following three variables in the following sections. -
-keys: keys will be used to group_by the whole dataset - features:
-features are the columns that will be used to build models - class_map:
-class_map will map the faulty component string (ex: ‘comp1’) to integer.
-‘non-failure’ will be mapped to integer 0.
+We will use the following three variables in the following sections:
+
+-  keys: keys will be used to group_by the whole dataset
+
+-  features: features are the columns that will be used to build models
+
+-  class_map: class_map will map the faulty component string (ex: ‘comp1’) to integer.
+   ‘non-failure’ will be mapped to integer 0.
 
 .. code:: python
 
@@ -1056,7 +1059,7 @@ Remove 2016-01-01 because machine has only one hour data on this date.
 
 
 Split the entire dataset into Training and Test datasets with
-split_ratio 4:3
+split_ratio 3:2
 
 .. code:: python
 
@@ -1065,7 +1068,9 @@ split_ratio 4:3
     test_ratio = 0.4
     n_split = int(df_model3.machineID.nunique() * test_ratio)
     model3_ids = df_model3.machineID.unique()
-    np.random.shuffle(model3_ids)
+    rng = np.random.default_rng(42)
+    rng.shuffle(model3_ids)
+
     
     model3_ids_for_train = model3_ids[n_split:]
     model3_ids_for_test = model3_ids[:n_split]
@@ -1457,12 +1462,19 @@ machines (gives many false alarm).
 
 .. code:: python
 
-    from h1st.model.oracle import TimeSeriesOracle
-    
-    oracle = TimeSeriesOracle(teacher=RuleModel())
-    oracle.build(
-        data={'x': df_model3_train[keys+features]}, 
-        id_col='machineID', 
+    from h1st.model.oracle.ts_oracle_modeler import TimeseriesOracleModeler
+    from h1st.model.oracle.student import RandomForestModeler, AdaBoostModeler
+    from h1st.model.rule_based_modeler import RuleBasedModeler
+    from h1st.model.rule_based_model import RuleBasedClassificationModel
+
+    oracle_modeler = TimeseriesOracleModeler(teacher=RuleModel(),
+        student_modelers = [RandomForestModeler(), AdaBoostModeler()],
+        ensembler_modeler = RuleBasedModeler(model_class=RuleBasedClassificationModel)
+        )
+
+    oracle = oracle_modeler.build_model(
+        data={'unlabeled_data': df_model3_train[keys+features]},
+        id_col='machineID',
         ts_col='date'
     )
 
@@ -1538,7 +1550,7 @@ machines (gives many false alarm).
 
 
 From the above test results, we can see that Oracle made improvement in both 
-f1_micro and f1_macro around 2.4% and 5.4% compared to the f1 score of rule-based model. 
+f1_micro and f1_macro around 2.3% and 3.4% compared to the f1 score of rule-based model. 
 
 
 Test out if a persisted Oracle can be loaded and give the same
@@ -1548,13 +1560,18 @@ predictions as the original Oracle object.
 
     import os
     import tempfile
-    
+
+    from h1st.model.oracle import TimeSeriesOracle
+    from h1st.model.oracle.student import RandomForestModel, AdaBoostModel
+
     with tempfile.TemporaryDirectory() as path:
         os.environ['H1ST_MODEL_REPO_PATH'] = path
         version = oracle.persist()
-    
-        oracle_2 = TimeSeriesOracle(knowledge_model=RuleModel())
-        oracle_2.load_params(version)
+
+    oracle_2 = TimeSeriesOracle(teacher=RuleModel(),
+                                students= [RandomForestModel(), AdaBoostModel()],
+                                ensembler=RuleBasedClassificationModel())
+    oracle_2.load_params(version)
 
 .. code:: python
 
