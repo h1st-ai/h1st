@@ -113,7 +113,7 @@ class KSWEModeler(Modeler):
             ensemble=ensemble
         )
         kswe.stats.update(self.stats)
-        kswe.metrics = sub_model_modeler.evaluate_model(input_data, kswe)
+        kswe.metrics = self.evaluate_model(input_data, kswe)
 
         # Show the evaluation results of KSWE
         print('kswe test results:', kswe.metrics)
