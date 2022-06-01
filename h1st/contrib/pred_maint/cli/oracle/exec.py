@@ -16,11 +16,11 @@ from typing import Optional
 import click
 from pandas import Series
 
-from h1st_contrib.pred_maint.models import (BaseFaultPredictor,
+from h1st.contrib.pred_maint.models import (BaseFaultPredictor,
                                             H1ST_BATCH_OUTPUT_S3_DIR_PATH)
 
-import h1st_contrib.utils.debug
-from h1st_contrib.utils.path import add_cwd_to_py_path
+import h1st.contrib.utils.debug
+from h1st.contrib.utils.path import add_cwd_to_py_path
 
 
 @click.command(name='predict-faults',
@@ -134,7 +134,7 @@ def predict_faults(
         debug: bool = False):
     """Batch-predict equipment faults."""
     if debug:
-        h1st_contrib.utils.debug.ON = True
+        h1st.contrib.utils.debug.ON = True
 
     # load model
     add_cwd_to_py_path()

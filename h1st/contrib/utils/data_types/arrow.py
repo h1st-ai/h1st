@@ -56,7 +56,7 @@ from pyarrow.types import (   # noqa: F401
     is_dictionary,
 )
 
-from h1st_contrib.utils.data_types.spark_sql import (   # noqa: F401
+from h1st.contrib.utils.data_types.spark_sql import (   # noqa: F401
     _NULL_TYPE,
     _BOOL_TYPE,
     _STR_TYPE,

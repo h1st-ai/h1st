@@ -10,7 +10,7 @@ from pandas import DataFrame
 
 from h1st.model.oracle.teacher import Teacher
 
-from h1st_contrib.pred_maint.models.base import BaseFaultPredictor
+from h1st.contrib.pred_maint.models.base import BaseFaultPredictor
 
 
 class BaseFaultPredTeacher(BaseFaultPredictor, Teacher):

@@ -21,19 +21,19 @@ from ruamel import yaml
 
 from h1st.model.oracle.student import StudentModeler, Student
 
-from h1st_contrib.utils.data_proc import (PandasFlatteningSubsampler,
+from h1st.contrib.utils.data_proc import (PandasFlatteningSubsampler,
                                           PandasMLPreprocessor,
                                           ParquetDataset)
-from h1st_contrib.utils.data_proc._abstract import ColsType
-from h1st_contrib.utils.iter import to_iterable
-from h1st_contrib.utils.path import add_cwd_to_py_path
-from h1st_contrib.utils import s3
+from h1st.contrib.utils.data_proc._abstract import ColsType
+from h1st.contrib.utils.iter import to_iterable
+from h1st.contrib.utils.path import add_cwd_to_py_path
+from h1st.contrib.utils import s3
 
-from h1st_contrib.pred_maint.data_mgmt import (EquipmentParquetDataSet,
+from h1st.contrib.pred_maint.data_mgmt import (EquipmentParquetDataSet,
                                                EQUIPMENT_INSTANCE_ID_COL, DATE_COL)   # noqa: E501
-from h1st_contrib.pred_maint.models.base import (BaseFaultPredictor,
+from h1st.contrib.pred_maint.models.base import (BaseFaultPredictor,
                                                  H1ST_MODELS_S3_DIR_PATH)
-from h1st_contrib.pred_maint.models.oracle.teacher.base import BaseFaultPredTeacher   # noqa: E501
+from h1st.contrib.pred_maint.models.oracle.teacher.base import BaseFaultPredTeacher   # noqa: E501
 
 
 N_MINUTES_PER_DAY: int = 24 * 60

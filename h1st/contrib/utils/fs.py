@@ -11,7 +11,7 @@ from typing import Union
 
 from pyarrow.hdfs import HadoopFileSystem
 
-from h1st_contrib.utils.log import STDOUT_HANDLER
+from h1st.contrib.utils.log import STDOUT_HANDLER
 
 
 __all__ = (

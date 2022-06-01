@@ -13,9 +13,9 @@ from typing import Tuple   # Python 3.9+: use built-ins/collections.abc
 
 import click
 
-from h1st_contrib.pred_maint.models import TimeSeriesDLFaultPredStudent
+from h1st.contrib.pred_maint.models import TimeSeriesDLFaultPredStudent
 
-import h1st_contrib.utils.debug
+import h1st.contrib.utils.debug
 
 
 @click.command(name='tune-fault-pred-student-decision-threshold',
@@ -89,7 +89,7 @@ def tune_fault_pred_student_decision_threshold(student_version: str,
                                                debug: bool = False):
     """Tune a Knowledge Generalizer ("Student") model's decision threshold."""
     if debug:
-        h1st_contrib.utils.debug.ON = True
+        h1st.contrib.utils.debug.ON = True
 
     # load Student model
     student: TimeSeriesDLFaultPredStudent = \

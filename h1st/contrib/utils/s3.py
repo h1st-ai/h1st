@@ -9,9 +9,9 @@ from typing import Optional
 import botocore
 import boto3
 
-from h1st_contrib.utils.fs import PathType
-from h1st_contrib.utils.iter import to_iterable
-from h1st_contrib.utils.log import STDOUT_HANDLER
+from h1st.contrib.utils.fs import PathType
+from h1st.contrib.utils.iter import to_iterable
+from h1st.contrib.utils.log import STDOUT_HANDLER
 
 
 __all__ = 'client', 'cp', 'mv', 'rm', 'sync'

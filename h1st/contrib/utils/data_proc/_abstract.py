@@ -12,9 +12,9 @@ from typing import Collection, Dict, Set, Tuple   # Py3.9+: built-ins
 from numpy import ndarray
 from pandas import DataFrame, Series
 
-from h1st_contrib.utils import debug
-from h1st_contrib.utils.log import STDOUT_HANDLER
-from h1st_contrib.utils.namespace import Namespace
+from h1st.contrib.utils import debug
+from h1st.contrib.utils.log import STDOUT_HANDLER
+from h1st.contrib.utils.namespace import Namespace
 
 
 __all__ = (

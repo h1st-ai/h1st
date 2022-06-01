@@ -12,7 +12,7 @@ from typing import List   # Py3.9+: use built-ins
 from dotenv.main import load_dotenv
 from pandas import DataFrame
 
-from h1st_contrib.utils.data_proc import ParquetDataset
+from h1st.contrib.utils.data_proc import ParquetDataset
 
 
 load_dotenv(dotenv_path='.env',

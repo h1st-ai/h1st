@@ -17,11 +17,11 @@ from pandas import DataFrame, Series
 
 from h1st.model.model import Model
 
-from h1st_contrib.utils.data_proc import ParquetDataset
-from h1st_contrib.utils.log import STDOUT_HANDLER
-from h1st_contrib.utils import s3
+from h1st.contrib.utils.data_proc import ParquetDataset
+from h1st.contrib.utils.log import STDOUT_HANDLER
+from h1st.contrib.utils import s3
 
-from h1st_contrib.pred_maint.data_mgmt import (EquipmentParquetDataSet,
+from h1st.contrib.pred_maint.data_mgmt import (EquipmentParquetDataSet,
                                                EQUIPMENT_INSTANCE_ID_COL, DATE_COL)   # noqa: E501
 
 
