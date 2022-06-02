@@ -52,7 +52,6 @@ Sphinx-RtD-Theme = '^1.0.0'
 
 [tool.poetry.scripts]
 h1st = 'h1st.contrib.cli:h1st_cli'
-aito = 'h1st.contrib.cli:h1st_cli'
 
 
 [build-system]
