@@ -15,7 +15,7 @@ import click
 
 from h1st.contrib.pred_maint.models import TimeSeriesDLFaultPredStudent
 
-import h1st.contrib.utils.debug
+import h1st.utils.debug
 
 
 @click.command(name='tune-fault-pred-student-decision-threshold',
@@ -89,7 +89,7 @@ def tune_fault_pred_student_decision_threshold(student_version: str,
                                                debug: bool = False):
     """Tune a Knowledge Generalizer ("Student") model's decision threshold."""
     if debug:
-        h1st.contrib.utils.debug.ON = True
+        h1st.utils.debug.ON = True
 
     # load Student model
     student: TimeSeriesDLFaultPredStudent = \

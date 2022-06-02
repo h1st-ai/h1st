@@ -19,8 +19,8 @@ from pandas import Series
 from h1st.contrib.pred_maint.models import (BaseFaultPredictor,
                                             H1ST_BATCH_OUTPUT_S3_DIR_PATH)
 
-import h1st.contrib.utils.debug
-from h1st.contrib.utils.path import add_cwd_to_py_path
+import h1st.utils.debug
+from h1st.utils.path import add_cwd_to_py_path
 
 
 @click.command(name='predict-faults',
@@ -134,7 +134,7 @@ def predict_faults(
         debug: bool = False):
     """Batch-predict equipment faults."""
     if debug:
-        h1st.contrib.utils.debug.ON = True
+        h1st.utils.debug.ON = True
 
     # load model
     add_cwd_to_py_path()

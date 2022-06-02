@@ -14,11 +14,11 @@ from pandas import concat, DataFrame, Series
 from pandas._libs.missing import NA   # pylint: disable=no-name-in-module
 from sklearn.preprocessing import MaxAbsScaler, MinMaxScaler, StandardScaler
 
-from h1st.contrib.utils.data_types.python import PyPossibleFeatureType
-from h1st.contrib.utils.data_types.spark_sql import _STR_TYPE
-from h1st.contrib.utils.fs import PathType
-from h1st.contrib.utils.iter import to_iterable
-from h1st.contrib.utils.namespace import Namespace, DICT_OR_NAMESPACE_TYPES
+from h1st.utils.data_types.python import PyPossibleFeatureType
+from h1st.utils.data_types.spark_sql import _STR_TYPE
+from h1st.utils.fs import PathType
+from h1st.utils.iter import to_iterable
+from h1st.utils.namespace import Namespace, DICT_OR_NAMESPACE_TYPES
 
 
 __all__ = (

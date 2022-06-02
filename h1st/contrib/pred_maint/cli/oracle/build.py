@@ -24,8 +24,8 @@ from h1st.contrib.pred_maint.models import (BaseFaultPredTeacher,
 from h1st.contrib.pred_maint.models.oracle.student.timeseries_dl import (
     N_MINUTES_PER_DAY)
 
-import h1st.contrib.utils.debug
-from h1st.contrib.utils.path import add_cwd_to_py_path
+import h1st.utils.debug
+from h1st.utils.path import add_cwd_to_py_path
 
 
 @click.command(name='oraclize-fault-pred-teacher',
@@ -269,7 +269,7 @@ def oraclize_fault_pred_teacher(teacher_class_name: str, teacher_version: str,
     input_num_cols: List[str] = input_num_cols.split(sep=',', maxsplit=-1)
 
     if debug:
-        h1st.contrib.utils.debug.ON = True
+        h1st.utils.debug.ON = True
 
     # load Teacher model
     add_cwd_to_py_path()

@@ -11,7 +11,7 @@ from h1st.model.modeler import Modeler
 from h1st.model.oracle.ensemble import Ensemble
 from h1st.model.oracle.oracle import Oracle
 
-from h1st.contrib.utils.data_proc import ParquetDataset
+from h1st.utils.data_proc import ParquetDataset
 
 from h1st.contrib.pred_maint.models.base import BaseFaultPredictor
 from .teacher.base import BaseFaultPredTeacher
