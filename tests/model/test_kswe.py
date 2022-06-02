@@ -44,20 +44,20 @@ class MySubModelModeler(MLModeler):
         return model
 
 def load_data():
-        df_raw = datasets.load_iris(as_frame=True).frame
-        df_raw.columns = ['sepal_length','sepal_width','petal_length','petal_width', 'species']
-        df_raw['sepal_size'] = df_raw['sepal_length'] * df_raw['sepal_width']
-        df_raw['sepal_aspect_ratio'] =  df_raw['sepal_width'] / df_raw['sepal_length'] 
-        X_cols = list(df_raw.columns)
-        X_cols.remove('species')
-        X_train, X_test, y_train, y_test = train_test_split(
-            df_raw[X_cols], df_raw['species'], test_size=0.4, random_state=1)
-        return {
-            'X_train': X_train, 
-            'y_train': y_train, 
-            'X_test': X_test,
-            'y_test': y_test,
-        }
+    df_raw = datasets.load_iris(as_frame=True).frame
+    df_raw.columns = ['sepal_length','sepal_width','petal_length','petal_width', 'species']
+    df_raw['sepal_size'] = df_raw['sepal_length'] * df_raw['sepal_width']
+    df_raw['sepal_aspect_ratio'] =  df_raw['sepal_width'] / df_raw['sepal_length'] 
+    X_cols = list(df_raw.columns)
+    X_cols.remove('species')
+    X_train, X_test, y_train, y_test = train_test_split(
+        df_raw[X_cols], df_raw['species'], test_size=0.4, random_state=1)
+    return {
+        'X_train': X_train, 
+        'y_train': y_train, 
+        'X_test': X_test,
+        'y_test': y_test,
+    }
 
 class TestKSWE:
     def test_max_segmentor_n_sklearn_sub_model_n_rule_based_ensemble(self):
