@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h1st"
-version = "0.1.10"
+version = "0.1.11"
 description = "Human-First AI (H1ST)"
 authors = ["h1st-ai <engineering@aitomatic.com>"]
 license = "Apache-2.0"
@@ -17,16 +17,16 @@ graphviz = "^0.19.1"
 lime = "^0.2.0.1"
 s3fs = "^2022.1.0"
 scikit-fuzzy = "^0.4.2"
-scikit-learn = "^1.0.2"
-shap = "^0.40.0"
+scikit-learn = ">=0.24.0"
+shap = ">=0.36.0"
 ulid-py = "^1.1.0"
 pyyaml = "^6.0"
+tensorflow = "^2.8.0"
 
 [tool.poetry.dev-dependencies]
 commitizen = "^2.20.5"
 pre-commit = "^2.17.0"
 pytest = "^7.0.0"
-tensorflow = "^2.8.0"
 sphinx = "^4.4.0"
 sphinx-rtd-theme = "^1.0.0"
 pylint = "^2.12.2"
