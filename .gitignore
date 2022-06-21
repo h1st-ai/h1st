@@ -138,6 +138,8 @@ dmypy.json
 .vscode/
 *.code-workspace
 
+.prospector.yaml
+
 
 # local scratchpad
 /scratch
