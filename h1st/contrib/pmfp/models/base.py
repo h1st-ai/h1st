@@ -6,6 +6,7 @@ from __future__ import annotations
 from functools import cached_property
 from logging import getLogger, Logger, DEBUG
 import os
+from pathlib import Path
 from random import random
 import time
 from typing import Literal, Optional, Union
@@ -26,7 +27,7 @@ from h1st.contrib.pmfp.data_mgmt import (EquipmentParquetDataSet,
 
 
 __all__ = (
-    'H1ST_MODELS_S3_DIR_PATH', 'H1ST_BATCH_OUTPUT_S3_DIR_PATH',
+    'H1ST_MODELS_DIR_PATH', 'H1ST_BATCH_OUTPUT_DIR_PATH',
 
     'BaseFaultPredictor',
 )
@@ -40,14 +41,22 @@ load_dotenv(dotenv_path='.env',
             encoding='utf-8')
 
 
-_S3_BUCKET: Optional[str] = os.environ.get('H1ST_PMFP_S3_BUCKET')
+S3_BUCKET: Optional[str] = os.environ.get('H1ST_PMFP_S3_BUCKET')
+LOCAL_HOME_DIR_PATH = Path.home()
 
+H1ST_MODEL_DIR_NAME: str = '.h1st/models'
+H1ST_MODELS_DIR_PATH: Union[str, Path] = (
+    f's3://{S3_BUCKET}/{H1ST_MODEL_DIR_NAME}'
+    if S3_BUCKET
+    else (LOCAL_HOME_DIR_PATH / H1ST_MODEL_DIR_NAME)
+)
 
-MODELS_S3_PREFIX: str = '.h1st/models'
-H1ST_MODELS_S3_DIR_PATH: str = f's3://{_S3_BUCKET}/{MODELS_S3_PREFIX}'
-
-BATCH_OUTPUT_S3_PREFIX: str = '.h1st/batch-output'
-H1ST_BATCH_OUTPUT_S3_DIR_PATH: str = f's3://{_S3_BUCKET}/{BATCH_OUTPUT_S3_PREFIX}'   # noqa: E501
+BATCH_OUTPUT_DIR_NAME: str = '.h1st/batch-output'
+H1ST_BATCH_OUTPUT_DIR_PATH: Union[str, Path] = (
+    f's3://{S3_BUCKET}/{BATCH_OUTPUT_DIR_NAME}'
+    if S3_BUCKET
+    else (LOCAL_HOME_DIR_PATH / BATCH_OUTPUT_DIR_NAME)
+)
 
 
 class BaseFaultPredictor(Model):
@@ -99,12 +108,9 @@ class BaseFaultPredictor(Model):
     @classmethod
     def list_versions(cls) -> List[str]:
         """List model versions."""
-        assert _S3_BUCKET, \
-            EnvironmentError('*** H1ST_PMFP_S3_BUCKET env var not set ***')
+        prefix_len: int = len(prefix := f'{H1ST_MODEL_DIR_NAME}/{cls.__name__}/')
 
-        prefix_len: int = len(prefix := f'{MODELS_S3_PREFIX}/{cls.__name__}/')
-
-        results: dict = s3.client().list_objects_v2(Bucket=_S3_BUCKET,
+        results: dict = s3.client().list_objects_v2(Bucket=S3_BUCKET,
                                                     Delimiter='/',
                                                     EncodingType='url',
                                                     MaxKeys=10 ** 3,

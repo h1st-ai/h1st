@@ -16,7 +16,7 @@ from typing import Optional
 import click
 from pandas import Series
 
-from h1st.contrib.pmfp.models import BaseFaultPredictor, H1ST_BATCH_OUTPUT_S3_DIR_PATH   # noqa: E501
+from h1st.contrib.pmfp.models import BaseFaultPredictor, H1ST_BATCH_OUTPUT_DIR_PATH   # noqa: E501
 
 import h1st.utils.debug
 from h1st.utils.path import add_cwd_to_py_path
@@ -156,7 +156,7 @@ def predict_faults(
 
     # save
     fault_preds.to_csv(
-        output_path := (f'{H1ST_BATCH_OUTPUT_S3_DIR_PATH}/'
+        output_path := (f'{H1ST_BATCH_OUTPUT_DIR_PATH}/'
                         f'{model_class_name}/{model_version}/'
                         f'{date}-to-{to_date}.csv'),
         header=True, index=True)

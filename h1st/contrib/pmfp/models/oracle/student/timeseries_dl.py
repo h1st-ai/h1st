@@ -27,11 +27,11 @@ from h1st.utils.data_proc import (PandasFlatteningSubsampler,
 from h1st.utils.data_proc._abstract import ColsType
 from h1st.utils.iter import to_iterable
 from h1st.utils.path import add_cwd_to_py_path
-from h1st.utils import s3
+from h1st.utils import fs, s3
 
 from h1st.contrib.pmfp.data_mgmt import (EquipmentParquetDataSet,
                                          EQUIPMENT_INSTANCE_ID_COL, DATE_COL)
-from h1st.contrib.pmfp.models.base import BaseFaultPredictor, H1ST_MODELS_S3_DIR_PATH   # noqa: E501
+from h1st.contrib.pmfp.models.base import BaseFaultPredictor, H1ST_MODELS_DIR_PATH   # noqa: E501
 from h1st.contrib.pmfp.models.oracle.teacher.base import BaseFaultPredTeacher
 
 
@@ -395,7 +395,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
     @cached_property
     def class_url(self) -> str:
         """Return model class's global dir URL."""
-        return f'{H1ST_MODELS_S3_DIR_PATH}/{type(self).__name__}'
+        return f'{H1ST_MODELS_DIR_PATH}/{type(self).__name__}'
 
     @cached_property
     def instance_url(self) -> str:

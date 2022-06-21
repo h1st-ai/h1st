@@ -23,12 +23,12 @@ load_dotenv(dotenv_path='.env',
             encoding='utf-8')
 
 
-_AWS_REGION: Optional[str] = os.environ.get('H1ST_PMFP_AWS_REGION')
-_AWS_ACCESS_KEY: Optional[str] = os.environ.get('AWS_ACCESS_KEY_ID')
-_AWS_SECRET_KEY: Optional[str] = os.environ.get('AWS_SECRET_ACCESS_KEY')
-_EQUIPMENT_DATA_S3_PARENT_DIR_PATH: Optional[str] = \
-    os.environ.get('H1ST_PMFP_EQUIPMENT_DATA_S3_PARENT_DIR_PATH')
-_EQUIPMENT_DATA_TIMEZONE: Optional[str] = \
+AWS_REGION: Optional[str] = os.environ.get('H1ST_PMFP_AWS_REGION')
+AWS_ACCESS_KEY: Optional[str] = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_KEY: Optional[str] = os.environ.get('AWS_SECRET_ACCESS_KEY')
+EQUIPMENT_DATA_PARENT_DIR_PATH: Optional[str] = \
+    os.environ.get('H1ST_PMFP_EQUIPMENT_DATA_PARENT_DIR_PATH')
+EQUIPMENT_DATA_TIMEZONE: Optional[str] = \
     os.environ.get('H1ST_PMFP_EQUIPMENT_DATA_TIMEZONE')
 
 
@@ -57,11 +57,11 @@ class EquipmentParquetDataSet:
     @cached_property
     def url(self) -> str:
         """Get URL of data set."""
-        assert _EQUIPMENT_DATA_S3_PARENT_DIR_PATH, \
+        assert EQUIPMENT_DATA_PARENT_DIR_PATH, \
             EnvironmentError(
-                '*** H1ST_PMFP_EQUIPMENT_DATA_S3_PARENT_DIR_PATH env var not set ***')  # noqa: E501
+                '*** H1ST_PMFP_EQUIPMENT_DATA_PARENT_DIR_PATH env var not set ***')  # noqa: E501
 
-        return f'{_EQUIPMENT_DATA_S3_PARENT_DIR_PATH}/{self.name}.parquet'
+        return f'{EQUIPMENT_DATA_PARENT_DIR_PATH}/{self.name}.parquet'
 
     def __repr__(self) -> str:
         """Return string representation."""
@@ -70,13 +70,14 @@ class EquipmentParquetDataSet:
     @lru_cache(maxsize=None, typed=False)
     def load(self) -> ParquetDataset:
         """Load as a Parquet Data Feeder."""
-        assert _AWS_REGION, \
-            EnvironmentError('*** H1ST_PMFP_AWS_REGION env var not set ***')
+        if EQUIPMENT_DATA_PARENT_DIR_PATH.startswith('s3://'):
+            assert AWS_REGION, \
+                EnvironmentError('*** H1ST_PMFP_AWS_REGION envvar not set ***')
 
         return ParquetDataset(
             path=self.url,
-            awsRegion=_AWS_REGION,   # default is location-dependent
-            accessKey=_AWS_ACCESS_KEY, secretKey=_AWS_SECRET_KEY,
+            awsRegion=AWS_REGION,   # default is location-dependent
+            accessKey=AWS_ACCESS_KEY, secretKey=AWS_SECRET_KEY,
             iCol=EQUIPMENT_INSTANCE_ID_COL, tCol=DATE_TIME_COL
         ).castType(**{EQUIPMENT_INSTANCE_ID_COL: str})
 
@@ -131,7 +132,7 @@ class EquipmentParquetDataSet:
             equipment_instance_id: str,
             date: str, to_date: Optional[str] = None) -> DataFrame:
         """Load equipment data by equipment instance ID and date(s)."""
-        assert _EQUIPMENT_DATA_TIMEZONE, \
+        assert EQUIPMENT_DATA_TIMEZONE, \
             EnvironmentError(
                 '*** H1ST_PMFP_EQUIPMENT_DATA_TIMEZONE env var not set ***')
 
@@ -161,5 +162,5 @@ class EquipmentParquetDataSet:
                            inplace=False,
                            verify_integrity=True)
                 .tz_localize('UTC')
-                .tz_convert(_EQUIPMENT_DATA_TIMEZONE)
+                .tz_convert(EQUIPMENT_DATA_TIMEZONE)
                 .tz_localize(None))
