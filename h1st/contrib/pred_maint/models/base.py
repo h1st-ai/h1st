@@ -123,10 +123,10 @@ class BaseFaultPredictor(Model):
         return random()
 
     def batch_predict(self,
-                      s3_parquet_ds: ParquetDataset, /,
+                      parquet_ds: ParquetDataset, /,
                       **predict_kwargs) -> Series:
         """Batch predict."""
-        return s3_parquet_ds.map(
+        return parquet_ds.map(
             lambda df: (df.groupby(by=[EQUIPMENT_INSTANCE_ID_COL, DATE_COL],
                                    axis='index',
                                    level=None,
@@ -148,7 +148,7 @@ class BaseFaultPredictor(Model):
         # pylint: disable=too-many-locals
         """(Bulk-)Process data to predict fault per equipment unit per date."""
         try:
-            s3_parquet_ds: ParquetDataset = (
+            parquet_ds: ParquetDataset = (
                 EquipmentParquetDataSet(general_type=self.general_type,
                                         unique_type_group=self.unique_type_group)   # noqa: E501
                 .load_by_date(date=date, to_date=to_date,
@@ -167,13 +167,13 @@ class BaseFaultPredictor(Model):
                                      verify_integrity=True,
                                      inplace=False)))
 
-        s3_parquet_ds.cacheLocally()
+        parquet_ds.cacheLocally()
 
         self.logger.info(
-            msg=(msg := f'Batch-Processing {s3_parquet_ds.__shortRepr__}...'))
+            msg=(msg := f'Batch-Processing {parquet_ds.__shortRepr__}...'))
         tic: float = time.time()
 
-        fault_preds: Series = (self.batch_predict(s3_parquet_ds, **predict_kwargs)  # noqa: E501
+        fault_preds: Series = (self.batch_predict(parquet_ds, **predict_kwargs)  # noqa: E501
                                # sort index to make output order consistent
                                .sort_index(axis='index',
                                            level=None,

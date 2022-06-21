@@ -86,21 +86,21 @@ class EquipmentParquetDataSet:
             date: Optional[str] = None, to_date: Optional[str] = None) \
             -> List[str]:
         """Get equipment instance IDs by date(s)."""
-        s3_parquet_ds: ParquetDataset = self.load()
+        parquet_ds: ParquetDataset = self.load()
 
         if date:
             try:
-                s3_parquet_ds: ParquetDataset = \
-                    s3_parquet_ds.filterByPartitionKeys((DATE_COL, date, to_date)   # noqa: E501
-                                                        if to_date
-                                                        else (DATE_COL, date))
+                parquet_ds: ParquetDataset = \
+                    parquet_ds.filterByPartitionKeys((DATE_COL, date, to_date)
+                                                     if to_date
+                                                     else (DATE_COL, date))
 
             except Exception as err:   # pylint: disable=broad-except
                 print(f'*** {err} ***')
                 return []
 
         return [str(i) for i in
-                sorted(s3_parquet_ds.collect(EQUIPMENT_INSTANCE_ID_COL)
+                sorted(parquet_ds.collect(EQUIPMENT_INSTANCE_ID_COL)
                        [EQUIPMENT_INSTANCE_ID_COL].unique())]
 
     def load_by_date(self,
@@ -108,23 +108,23 @@ class EquipmentParquetDataSet:
                      equipment_instance_id: Optional[str] = None) \
             -> ParquetDataset:
         """Load equipment data by date(s)."""
-        s3_parquet_ds: ParquetDataset = self.load()
+        parquet_ds: ParquetDataset = self.load()
 
         try:
-            s3_parquet_ds: ParquetDataset = \
-                s3_parquet_ds.filterByPartitionKeys((DATE_COL, date, to_date)
-                                                    if to_date
-                                                    else (DATE_COL, date))
+            parquet_ds: ParquetDataset = \
+                parquet_ds.filterByPartitionKeys((DATE_COL, date, to_date)
+                                                 if to_date
+                                                 else (DATE_COL, date))
 
         except Exception as err:   # pylint: disable=broad-except
             ParquetDataset.classStdOutLogger().error(msg=str(err))
 
         if equipment_instance_id:
-            s3_parquet_ds: ParquetDataset = \
-                s3_parquet_ds.filter(f'{EQUIPMENT_INSTANCE_ID_COL} == '
-                                     f'"{equipment_instance_id}"')
+            parquet_ds: ParquetDataset = \
+                parquet_ds.filter(f'{EQUIPMENT_INSTANCE_ID_COL} == '
+                                  f'"{equipment_instance_id}"')
 
-        return s3_parquet_ds
+        return parquet_ds
 
     def load_by_equipment_instance_id_by_date(
             self,
@@ -135,17 +135,17 @@ class EquipmentParquetDataSet:
             EnvironmentError(
                 '*** H1ST_PMFP_EQUIPMENT_DATA_TIMEZONE env var not set ***')
 
-        s3_parquet_ds: ParquetDataset = \
+        parquet_ds: ParquetDataset = \
             self.load().filter(f'{EQUIPMENT_INSTANCE_ID_COL} == '
                                f'"{equipment_instance_id}"')
 
         if date:
-            s3_parquet_ds: ParquetDataset = \
-                s3_parquet_ds.filterByPartitionKeys((DATE_COL, date, to_date)
-                                                    if to_date
-                                                    else (DATE_COL, date))
+            parquet_ds: ParquetDataset = \
+                parquet_ds.filterByPartitionKeys((DATE_COL, date, to_date)
+                                                 if to_date
+                                                 else (DATE_COL, date))
 
-        return (s3_parquet_ds.collect()
+        return (parquet_ds.collect()
                 .drop(columns=[EQUIPMENT_INSTANCE_ID_COL, DATE_COL],
                       inplace=False,
                       errors='raise')

@@ -111,12 +111,12 @@ class FaultPredOracle(BaseFaultPredictor, Oracle):
             self.ensemble.predict(teacher_pred=teacher_pred,
                                   student_pred=student_pred))
 
-    def batch_predict(self, s3_parquet_ds: ParquetDataset) -> Series:
+    def batch_predict(self, parquet_ds: ParquetDataset) -> Series:
         """Batch-Predict faults."""
         return Series(
             data=zip(
-                teacher_preds := self.teacher.batch_predict(s3_parquet_ds),
-                student_preds := self.student.batch_predict(s3_parquet_ds,
+                teacher_preds := self.teacher.batch_predict(parquet_ds),
+                student_preds := self.student.batch_predict(parquet_ds,
                                                             return_binary=True),   # noqa: E501
                 ensemble_preds := self.ensemble.batch_predict(
                     teacher_preds=teacher_preds, student_preds=student_preds)),
