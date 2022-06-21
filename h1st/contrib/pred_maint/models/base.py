@@ -51,6 +51,7 @@ H1ST_BATCH_OUTPUT_S3_DIR_PATH: str = f's3://{_S3_BUCKET}/{BATCH_OUTPUT_S3_PREFIX
 
 
 class BaseFaultPredictor(Model):
+    # pylint: disable=too-many-ancestors
     """Base Fault Prediction model class."""
 
     def __init__(self,

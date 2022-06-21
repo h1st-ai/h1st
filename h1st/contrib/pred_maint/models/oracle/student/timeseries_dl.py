@@ -346,6 +346,7 @@ class TimeSeriesDLFaultPredStudentModeler(StudentModeler):
 
 
 class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
+    # pylint: disable=too-many-ancestors
     """Time-Series-DL-based knowledge generalizer ("student") model class."""
 
     def __init__(self, teacher: BaseFaultPredTeacher,
@@ -660,6 +661,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
     def predict(self,
                 df_for_1_equipment_unit_for_1_day: DataFrame, /,
                 return_binary: bool = True) -> Union[bool, float]:
+        # pylint: disable=arguments-differ
         """Predict fault."""
         prob: float = self.native_obj.predict_proba(
             X=expand_dims(
