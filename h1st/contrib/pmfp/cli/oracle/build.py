@@ -19,10 +19,8 @@ from typing import List, Tuple   # Py3.9+: use built-ins/collections.abc
 
 import click
 
-from h1st.contrib.pred_maint.models import (BaseFaultPredTeacher,
-                                            FaultPredOracleModeler)
-from h1st.contrib.pred_maint.models.oracle.student.timeseries_dl import (
-    N_MINUTES_PER_DAY)
+from h1st.contrib.pmfp.models import BaseFaultPredTeacher, FaultPredOracleModeler   # noqa: E501
+from h1st.contrib.pmfp.models.oracle.student.timeseries_dl import N_MINUTES_PER_DAY   # noqa: E501
 
 import h1st.utils.debug
 from h1st.utils.path import add_cwd_to_py_path

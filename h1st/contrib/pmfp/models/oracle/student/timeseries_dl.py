@@ -29,11 +29,10 @@ from h1st.utils.iter import to_iterable
 from h1st.utils.path import add_cwd_to_py_path
 from h1st.utils import s3
 
-from h1st.contrib.pred_maint.data_mgmt import (EquipmentParquetDataSet,
-                                               EQUIPMENT_INSTANCE_ID_COL, DATE_COL)   # noqa: E501
-from h1st.contrib.pred_maint.models.base import (BaseFaultPredictor,
-                                                 H1ST_MODELS_S3_DIR_PATH)
-from h1st.contrib.pred_maint.models.oracle.teacher.base import BaseFaultPredTeacher   # noqa: E501
+from h1st.contrib.pmfp.data_mgmt import (EquipmentParquetDataSet,
+                                         EQUIPMENT_INSTANCE_ID_COL, DATE_COL)
+from h1st.contrib.pmfp.models.base import BaseFaultPredictor, H1ST_MODELS_S3_DIR_PATH   # noqa: E501
+from h1st.contrib.pmfp.models.oracle.teacher.base import BaseFaultPredTeacher
 
 
 N_MINUTES_PER_DAY: int = 24 * 60

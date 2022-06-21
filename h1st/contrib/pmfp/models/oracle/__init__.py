@@ -13,7 +13,7 @@ from h1st.model.oracle.oracle import Oracle
 
 from h1st.utils.data_proc import ParquetDataset
 
-from h1st.contrib.pred_maint.models.base import BaseFaultPredictor
+from h1st.contrib.pmfp.models.base import BaseFaultPredictor
 from .teacher.base import BaseFaultPredTeacher
 from .student.timeseries_dl import (TimeSeriesDLFaultPredStudentModeler,
                                     TimeSeriesDLFaultPredStudent)

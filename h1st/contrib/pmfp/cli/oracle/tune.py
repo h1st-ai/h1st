@@ -13,7 +13,7 @@ from typing import Tuple   # Python 3.9+: use built-ins/collections.abc
 
 import click
 
-from h1st.contrib.pred_maint.models import TimeSeriesDLFaultPredStudent
+from h1st.contrib.pmfp.models import TimeSeriesDLFaultPredStudent
 
 import h1st.utils.debug
 
