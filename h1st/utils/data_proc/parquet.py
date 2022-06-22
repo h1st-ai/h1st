@@ -115,11 +115,12 @@ class ParquetDataset(AbstractS3FileDataHandler):
         if verbose or debug.ON:
             logger: Logger = self.classStdOutLogger()
 
+        self.awsRegion: Optional[str] = awsRegion
+        self.accessKey: Optional[str] = accessKey
+        self.secretKey: Optional[str] = secretKey
+
         self.onS3: bool = path.startswith('s3://')
         if self.onS3:
-            self.awsRegion: Optional[str] = awsRegion
-            self.accessKey: Optional[str] = accessKey
-            self.secretKey: Optional[str] = secretKey
             self.s3Client = s3.client(region=awsRegion, access_key=accessKey, secret_key=secretKey)
 
         self.path: str = path if self.onS3 else os.path.expanduser(path)
