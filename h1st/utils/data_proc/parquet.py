@@ -16,11 +16,11 @@ from typing import Any, Optional, Union
 from typing import Collection, Dict, List, Set, Tuple   # Py3.9+: use built-ins
 from urllib.parse import ParseResult, urlparse
 from uuid import uuid4
-from warnings import simplefilter
+# from warnings import simplefilter
 
 from numpy import isfinite, ndarray, vstack
 from pandas import DataFrame, Series, concat, isnull, notnull, read_parquet
-from pandas.errors import PerformanceWarning
+# from pandas.errors import PerformanceWarning
 from pandas._libs.missing import NAType   # pylint: disable=no-name-in-module
 from tqdm import tqdm
 
@@ -35,7 +35,7 @@ from h1st.utils.data_types.arrow import (
     is_binary, is_boolean, is_num, is_possible_cat, is_possible_feature, is_string)
 from h1st.utils.data_types.numpy_pandas import NUMPY_FLOAT_TYPES, NUMPY_INT_TYPES
 from h1st.utils.data_types.python import (PY_NUM_TYPES, PyNumType,
-                                                  PyPossibleFeatureType, PY_LIST_OR_TUPLE)
+                                          PyPossibleFeatureType, PY_LIST_OR_TUPLE)
 from h1st.utils.default_dict import DefaultDict
 from h1st.utils.fs import mkdir
 from h1st.utils.iter import to_iterable
@@ -70,7 +70,7 @@ __all__ = ('ParquetDataset',)
 
 # TODO: revisit Pandas PeformanceWarning
 # github.com/twopirllc/pandas-ta/issues/340#issuecomment-879450854
-simplefilter(action="ignore", category=PerformanceWarning)
+# simplefilter(action='ignore', category=PerformanceWarning)
 
 
 def randomSample(population: Collection[Any], sampleSize: int,
