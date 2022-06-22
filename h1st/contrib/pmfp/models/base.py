@@ -108,16 +108,19 @@ class BaseFaultPredictor(Model):
     @classmethod
     def list_versions(cls) -> List[str]:
         """List model versions."""
-        prefix_len: int = len(prefix := f'{H1ST_MODEL_DIR_NAME}/{cls.__name__}/')
+        if S3_BUCKET:
+            prefix_len: int = len(prefix := f'{H1ST_MODEL_DIR_NAME}/{cls.__name__}/')   # noqa: E501
 
-        results: dict = s3.client().list_objects_v2(Bucket=S3_BUCKET,
-                                                    Delimiter='/',
-                                                    EncodingType='url',
-                                                    MaxKeys=10 ** 3,
-                                                    Prefix=prefix)
+            results: dict = s3.client().list_objects_v2(Bucket=S3_BUCKET,
+                                                        Delimiter='/',
+                                                        EncodingType='url',
+                                                        MaxKeys=10 ** 3,
+                                                        Prefix=prefix)
 
-        return [i['Prefix'][prefix_len:-1]
-                for i in results.get('CommonPrefixes', [])]
+            return [i['Prefix'][prefix_len:-1]
+                    for i in results.get('CommonPrefixes', [])]
+
+        return [str(i) for i in H1ST_MODELS_DIR_PATH.iterdir()]
 
     def predict(self, df_for_1_equipment_unit_for_1_day: DataFrame, /) \
             -> Union[bool, float]:

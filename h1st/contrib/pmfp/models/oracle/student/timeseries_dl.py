@@ -431,6 +431,8 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
 
     def save(self):
         """Save model params & native object."""
+        _on_s3: bool = H1ST_MODELS_DIR_PATH.startswith('s3://')
+
         # save input params
         with NamedTemporaryFile(mode='wt',
                                 buffering=-1,
@@ -458,11 +460,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                            width=100,
                            allow_unicode=True,
                            line_break=None)
+        if _on_s3:
+            s3.mv(from_path=input_params_tmp_file.name,
+                  to_path=self.input_params_url,
+                  is_dir=False, quiet=False)
 
-        s3.mv(from_path=input_params_tmp_file.name,
-              to_path=self.input_params_url,
-              is_dir=False,
-              quiet=False)
+        else:
+            fs.mv(from_path=input_params_tmp_file.name,
+                  to_path=self.input_params_url,
+                  hdfs=False, is_dir=False)
 
         # save preprocessing params
         with NamedTemporaryFile(mode='wb',
@@ -476,10 +482,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 errors=None) as preproc_params_tmp_file:
             self.preprocessor.to_yaml(path=preproc_params_tmp_file.name)
 
-        s3.mv(from_path=preproc_params_tmp_file.name,
-              to_path=self.preproc_params_url,
-              is_dir=False,
-              quiet=False)
+        if _on_s3:
+            s3.mv(from_path=preproc_params_tmp_file.name,
+                  to_path=self.preproc_params_url,
+                  is_dir=False, quiet=False)
+
+        else:
+            fs.mv(from_path=preproc_params_tmp_file.name,
+                  to_path=self.preproc_params_url,
+                  hdfs=False, is_dir=False)
 
         # save native object
         with NamedTemporaryFile(mode='wb',
@@ -497,10 +508,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                         protocol=pickle.HIGHEST_PROTOCOL,
                         cache_size=None)
 
-        s3.mv(from_path=native_obj_tmp_file.name,
-              to_path=self.native_obj_url,
-              is_dir=False,
-              quiet=False)
+        if _on_s3:
+            s3.mv(from_path=native_obj_tmp_file.name,
+                  to_path=self.native_obj_url,
+                  is_dir=False, quiet=False)
+
+        else:
+            fs.mv(from_path=native_obj_tmp_file.name,
+                  to_path=self.native_obj_url,
+                  hdfs=False, is_dir=False)
 
         # save postprocessing params
         with NamedTemporaryFile(mode='wt',
@@ -527,10 +543,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                            allow_unicode=True,
                            line_break=None)
 
-        s3.mv(from_path=postproc_params_tmp_file.name,
-              to_path=self.postproc_params_url,
-              is_dir=False,
-              quiet=False)
+        if _on_s3:
+            s3.mv(from_path=postproc_params_tmp_file.name,
+                  to_path=self.postproc_params_url,
+                  is_dir=False, quiet=False)
+
+        else:
+            fs.mv(from_path=postproc_params_tmp_file.name,
+                  to_path=self.postproc_params_url,
+                  hdfs=False, is_dir=False)
 
         print(f'SAVED: {self}')
 
@@ -564,6 +585,8 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
 
             _version=_student_version)
 
+        _on_s3: bool = H1ST_MODELS_DIR_PATH.startswith('s3://')
+
         # load input params
         with NamedTemporaryFile(mode='rt',
                                 buffering=-1,
@@ -574,10 +597,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as input_params_tmp_file:
-            s3.cp(from_path=student.input_params_url,
-                  to_path=input_params_tmp_file.name,
-                  is_dir=False,
-                  quiet=False)
+            if _on_s3:
+                s3.cp(from_path=student.input_params_url,
+                      to_path=input_params_tmp_file.name,
+                      is_dir=False, quiet=False)
+
+            else:
+                fs.cp(from_path=student.input_params_url,
+                      to_path=input_params_tmp_file.name,
+                      hdfs=False, is_dir=False)
 
             # pylint: disable=consider-using-with
             d: Dict[str, Union[List[str], int]] = \
@@ -600,10 +628,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as preproc_params_tmp_file:
-            s3.cp(from_path=student.preproc_params_url,
-                  to_path=preproc_params_tmp_file.name,
-                  is_dir=False,
-                  quiet=False)
+            if _on_s3:
+                s3.cp(from_path=student.preproc_params_url,
+                      to_path=preproc_params_tmp_file.name,
+                      is_dir=False, quiet=False)
+
+            else:
+                fs.cp(from_path=student.preproc_params_url,
+                      to_path=preproc_params_tmp_file.name,
+                      hdfs=False, is_dir=False)
 
             student.preprocessor = \
                 PandasMLPreprocessor.from_yaml(path=preproc_params_tmp_file.name)   # noqa: E501
@@ -618,10 +651,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as native_obj_tmp_file:
-            s3.cp(from_path=student.native_obj_url,
-                  to_path=native_obj_tmp_file.name,
-                  is_dir=False,
-                  quiet=False)
+            if _on_s3:
+                s3.cp(from_path=student.native_obj_url,
+                      to_path=native_obj_tmp_file.name,
+                      is_dir=False, quiet=False)
+
+            else:
+                fs.cp(from_path=student.native_obj_url,
+                      to_path=native_obj_tmp_file.name,
+                      hdfs=False, is_dir=False)
 
             student.native_obj = joblib.load(filename=native_obj_tmp_file.name)
 
@@ -634,10 +672,15 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as postproc_params_tmp_file:
-            s3.cp(from_path=student.postproc_params_url,
-                  to_path=postproc_params_tmp_file.name,
-                  is_dir=False,
-                  quiet=False)
+            if _on_s3:
+                s3.cp(from_path=student.postproc_params_url,
+                      to_path=postproc_params_tmp_file.name,
+                      is_dir=False, quiet=False)
+
+            else:
+                fs.cp(from_path=student.postproc_params_url,
+                      to_path=postproc_params_tmp_file.name,
+                      hdfs=False, is_dir=False)
 
             # pylint: disable=consider-using-with
             d: Dict[str, float] = yaml.safe_load(
