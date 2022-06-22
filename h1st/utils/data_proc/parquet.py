@@ -1031,7 +1031,7 @@ class ParquetDataset(AbstractS3FileDataHandler):
                 _uuid = uuid4()
                 subsetPath: str = (
                     f"s3://{self.s3Bucket}/{(subsetDirS3Key := f'{self._TMP_DIR_S3_KEY}/{_uuid}')}"
-                    if self.on3
+                    if self.onS3
                     else f'{self._LOCAL_CACHE_DIR_PATH}/{_uuid}')
 
                 if verbose:
