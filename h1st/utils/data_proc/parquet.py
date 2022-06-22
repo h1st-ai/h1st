@@ -25,11 +25,11 @@ from pandas._libs.missing import NAType   # pylint: disable=no-name-in-module
 from tqdm import tqdm
 
 from pyarrow.dataset import dataset
-from pyarrow.fs import S3FileSystem
+from pyarrow.fs import LocalFileSystem, S3FileSystem
 from pyarrow.lib import RecordBatch, Schema, Table   # pylint: disable=no-name-in-module
 from pyarrow.parquet import FileMetaData, read_metadata, read_schema, read_table
 
-from h1st.utils import debug, s3
+from h1st.utils import debug, fs, s3
 from h1st.utils.data_types.arrow import (
     DataType, _ARROW_STR_TYPE, _ARROW_DATE_TYPE,
     is_binary, is_boolean, is_num, is_possible_cat, is_possible_feature, is_string)
@@ -37,7 +37,6 @@ from h1st.utils.data_types.numpy_pandas import NUMPY_FLOAT_TYPES, NUMPY_INT_TYPE
 from h1st.utils.data_types.python import (PY_NUM_TYPES, PyNumType,
                                           PyPossibleFeatureType, PY_LIST_OR_TUPLE)
 from h1st.utils.default_dict import DefaultDict
-from h1st.utils.fs import mkdir
 from h1st.utils.iter import to_iterable
 from h1st.utils.namespace import Namespace, DICT_OR_NAMESPACE_TYPES
 
@@ -115,15 +114,14 @@ class ParquetDataset(AbstractS3FileDataHandler):
         if verbose or debug.ON:
             logger: Logger = self.classStdOutLogger()
 
-        assert isinstance(path, str) and path.startswith('s3://'), \
-            ValueError(f'*** {path} NOT AN S3 PATH ***')
         self.path: str = path
 
-        self.awsRegion: Optional[str] = awsRegion
-        self.accessKey: Optional[str] = accessKey
-        self.secretKey: Optional[str] = secretKey
-
-        self.s3Client = s3.client(region=awsRegion, access_key=accessKey, secret_key=secretKey)
+        self.onS3: bool = path.startswith('s3://')
+        if self.onS3:
+            self.awsRegion: Optional[str] = awsRegion
+            self.accessKey: Optional[str] = accessKey
+            self.secretKey: Optional[str] = secretKey
+            self.s3Client = s3.client(region=awsRegion, access_key=accessKey, secret_key=secretKey)
 
         if path in self._CACHE:
             _cache: Namespace = self._CACHE[path]
@@ -135,11 +133,10 @@ class ParquetDataset(AbstractS3FileDataHandler):
                 logger.debug(msg=f'*** RETRIEVING CACHE FOR "{path}" ***')
 
         else:
-            _parsedURL: ParseResult = urlparse(url=path, scheme='', allow_fragments=True)
-            _cache.s3Bucket = _parsedURL.netloc
-            _cache.pathS3Key = _parsedURL.path[1:]
-
-            _cache.tmpDirPath = f's3://{_cache.s3Bucket}/{self._TMP_DIR_S3_KEY}'
+            if self.onS3:
+                _parsedURL: ParseResult = urlparse(url=path, scheme='', allow_fragments=True)
+                _cache.s3Bucket = _parsedURL.netloc
+                _cache.pathS3Key = _parsedURL.path[1:]
 
             if path in self._FILE_CACHES:
                 _cache.nFiles = 1
@@ -150,18 +147,23 @@ class ParquetDataset(AbstractS3FileDataHandler):
                     logger.info(msg=(msg := f'Loading "{path}" by Arrow...'))
                     tic: float = time.time()
 
-                s3.rm(path=path,
-                      is_dir=True,
-                      globs='*_$folder$',   # redundant AWS EMR-generated files
-                      quiet=True,
-                      verbose=False)
+                if self.onS3:
+                    s3.rm(path=path,
+                          is_dir=True,
+                          globs='*_$folder$',   # redundant AWS EMR-generated files
+                          quiet=True,
+                          verbose=False)
 
-                _cache._srcArrowDS = dataset(source=path.replace('s3://', ''),
+                _cache._srcArrowDS = dataset(source=(path.replace('s3://', '')
+                                                     if self.onS3
+                                                     else path),
                                              schema=None,
                                              format='parquet',
-                                             filesystem=S3FileSystem(region=awsRegion,
-                                                                     access_key=accessKey,
-                                                                     secret_key=secretKey),
+                                             filesystem=(S3FileSystem(region=awsRegion,
+                                                                      access_key=accessKey,
+                                                                      secret_key=secretKey)
+                                                         if self.onS3
+                                                         else LocalFileSystem()),
                                              partitioning=None,
                                              partition_base_dir=None,
                                              exclude_invalid_files=None,
@@ -465,7 +467,7 @@ class ParquetDataset(AbstractS3FileDataHandler):
 
     def cacheLocally(self, verbose: bool = True):
         """Cache files to local disk."""
-        if not (_cache := self._CACHE[self.path]).cachedLocally:
+        if self.onS3 and (not (_cache := self._CACHE[self.path]).cachedLocally):
             if verbose:
                 self.stdOutLogger.info(msg=(msg := 'Caching Files to Local Disk...'))
                 tic: float = time.time()
@@ -488,31 +490,34 @@ class ParquetDataset(AbstractS3FileDataHandler):
 
     def fileLocalPath(self, filePath: str) -> Path:
         """Get local cache file path."""
-        if (filePath in self._FILE_CACHES) and self._FILE_CACHES[filePath].localPath:
-            return self._FILE_CACHES[filePath].localPath
+        if self.onS3:
+            if (filePath in self._FILE_CACHES) and self._FILE_CACHES[filePath].localPath:
+                return self._FILE_CACHES[filePath].localPath
 
-        parsedURL: ParseResult = urlparse(url=filePath, scheme='', allow_fragments=True)
+            parsedURL: ParseResult = urlparse(url=filePath, scheme='', allow_fragments=True)
 
-        localPath: Path = self._LOCAL_CACHE_DIR_PATH / parsedURL.netloc / parsedURL.path[1:]
+            localPath: Path = self._LOCAL_CACHE_DIR_PATH / parsedURL.netloc / parsedURL.path[1:]
 
-        localDirPath: Path = localPath.parent
-        mkdir(dir_path=localDirPath, hdfs=False)
-        # make sure the dir has been created
-        while not localDirPath.is_dir():
-            time.sleep(1)
+            localDirPath: Path = localPath.parent
+            fs.mkdir(dir_path=localDirPath, hdfs=False)
+            # make sure the dir has been created
+            while not localDirPath.is_dir():
+                time.sleep(1)
 
-        self.s3Client.download_file(Bucket=parsedURL.netloc,
-                                    Key=parsedURL.path[1:],
-                                    Filename=str(localPath))
-        # make sure AWS S3's asynchronous process has finished
-        # downloading a potentially large file
-        while not localPath.is_file():
-            time.sleep(1)
+            self.s3Client.download_file(Bucket=parsedURL.netloc,
+                                        Key=parsedURL.path[1:],
+                                        Filename=str(localPath))
+            # make sure AWS S3's asynchronous process has finished
+            # downloading a potentially large file
+            while not localPath.is_file():
+                time.sleep(1)
 
-        if filePath in self._FILE_CACHES:
-            self._FILE_CACHES[filePath].localPath = localPath
+            if filePath in self._FILE_CACHES:
+                self._FILE_CACHES[filePath].localPath = localPath
 
-        return localPath
+            return localPath
+
+        return filePath
 
     def cacheFileMetadataAndSchema(self, filePath: str) -> Namespace:
         """Cache file metadata and schema."""
@@ -1018,31 +1023,30 @@ class ParquetDataset(AbstractS3FileDataHandler):
             if nFilePaths > 1:
                 verbose: bool = kwargs.pop('verbose', True)
 
-                subsetDirS3Key: str = f'{self._TMP_DIR_S3_KEY}/{uuid4()}'
-
                 _pathPlusSepLen: int = len(self.path) + 1
+                fileSubPaths: List[str] = [filePath[_pathPlusSepLen:] for filePath in filePaths]
 
-                subsetPath: str = f's3://{self.s3Bucket}/{subsetDirS3Key}'
+                _uuid = uuid4()
+                subsetPath: str = (
+                    f"s3://{self.s3Bucket}/{(subsetDirS3Key := f'{self._TMP_DIR_S3_KEY}/{_uuid}')}"
+                    if self.on3
+                    else f'{self._LOCAL_CACHE_DIR_PATH}/{_uuid}')
 
                 if verbose:
                     self.stdOutLogger.info(
                         msg=(msg := f'Subsetting {len(filePaths):,} Files to "{subsetPath}"...'))
                     tic: float = time.time()
 
-                for filePath in (tqdm(filePaths) if verbose else filePaths):
-                    filePandasDFSubPath: str = filePath[_pathPlusSepLen:]
-
-                    _from_key: str = f'{self.pathS3Key}/{filePandasDFSubPath}'
-                    _to_key: str = f'{subsetDirS3Key}/{filePandasDFSubPath}'
-
-                    try:
-                        self.s3Client.copy(CopySource=dict(Bucket=self.s3Bucket, Key=_from_key),
+                for fileSubPath in (tqdm(fileSubPaths) if verbose else fileSubPaths):
+                    if self.onS3:
+                        self.s3Client.copy(CopySource=dict(Bucket=self.s3Bucket,
+                                                           Key=f'{self.pathS3Key}/{fileSubPath}'),
                                            Bucket=self.s3Bucket,
-                                           Key=_to_key)
-
-                    except Exception as err:
-                        print(f'*** FAILED TO COPY FROM "{_from_key}" TO "{_to_key}" ***')
-                        raise err
+                                           Key=f'{subsetDirS3Key}/{fileSubPath}')
+                    else:
+                        fs.cp(from_path=f'{self.path}/{fileSubPath}',
+                              to_path=f'{subsetPath}/{fileSubPath}',
+                              hdfs=False, is_dir=False)
 
                 if verbose:
                     toc: float = time.time()
