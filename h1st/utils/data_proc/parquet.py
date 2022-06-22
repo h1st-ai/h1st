@@ -1052,7 +1052,7 @@ class ParquetDataset(AbstractS3FileDataHandler):
 
                 if verbose:
                     toc: float = time.time()
-                    self.stdOutLogger.info(msg=f'{msg} done!   <{toc-tic:.1f}>')
+                    self.stdOutLogger.info(msg=f'{msg} done!   <{toc-tic:.1f} s>')
 
             else:
                 subsetPath: str = filePaths[0]
