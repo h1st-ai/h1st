@@ -19,7 +19,6 @@ Python = '>= 3.8, < 3.10'
 NumPy = '*'
 PyArrow = '^7.0.0'
 PySpark = '^3.3.0'
-S3FS = '^2022.5.0'
 
 # ML/DL
 Imbalanced-Learn = '^0.9.1'
@@ -31,6 +30,10 @@ TensorFlow = '^2.9.1'
 GraphViz = '^0.20'
 LIME = '^0.2.0.1'
 SHAP = '>= 0.36.0'   #  not latest, for compat w/ some other common deps
+
+# File Systems
+FSSpec = '^2022.5.0'
+S3FS = '^2022.5.0'
 
 # misc/other
 CLICK = '^8.1.3'
