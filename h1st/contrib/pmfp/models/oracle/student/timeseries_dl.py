@@ -38,6 +38,10 @@ from h1st.contrib.pmfp.models.oracle.teacher.base import BaseFaultPredTeacher
 N_MINUTES_PER_DAY: int = 24 * 60
 
 
+_ON_S3: bool = (isinstance(H1ST_MODELS_DIR_PATH, str) and
+                H1ST_MODELS_DIR_PATH.startswith('s3://'))
+
+
 class TimeSeriesDLFaultPredStudentModeler(StudentModeler):
     """Time-Series-DL-based Fault Prediction k-gen ("student") modeler."""
 
@@ -431,8 +435,6 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
 
     def save(self):
         """Save model params & native object."""
-        _on_s3: bool = H1ST_MODELS_DIR_PATH.startswith('s3://')
-
         # save input params
         with NamedTemporaryFile(mode='wt',
                                 buffering=-1,
@@ -460,7 +462,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                            width=100,
                            allow_unicode=True,
                            line_break=None)
-        if _on_s3:
+        if _ON_S3:
             s3.mv(from_path=input_params_tmp_file.name,
                   to_path=self.input_params_url,
                   is_dir=False, quiet=False)
@@ -482,7 +484,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 errors=None) as preproc_params_tmp_file:
             self.preprocessor.to_yaml(path=preproc_params_tmp_file.name)
 
-        if _on_s3:
+        if _ON_S3:
             s3.mv(from_path=preproc_params_tmp_file.name,
                   to_path=self.preproc_params_url,
                   is_dir=False, quiet=False)
@@ -508,7 +510,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                         protocol=pickle.HIGHEST_PROTOCOL,
                         cache_size=None)
 
-        if _on_s3:
+        if _ON_S3:
             s3.mv(from_path=native_obj_tmp_file.name,
                   to_path=self.native_obj_url,
                   is_dir=False, quiet=False)
@@ -543,7 +545,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                            allow_unicode=True,
                            line_break=None)
 
-        if _on_s3:
+        if _ON_S3:
             s3.mv(from_path=postproc_params_tmp_file.name,
                   to_path=self.postproc_params_url,
                   is_dir=False, quiet=False)
@@ -585,8 +587,6 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
 
             _version=_student_version)
 
-        _on_s3: bool = H1ST_MODELS_DIR_PATH.startswith('s3://')
-
         # load input params
         with NamedTemporaryFile(mode='rt',
                                 buffering=-1,
@@ -597,7 +597,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as input_params_tmp_file:
-            if _on_s3:
+            if _ON_S3:
                 s3.cp(from_path=student.input_params_url,
                       to_path=input_params_tmp_file.name,
                       is_dir=False, quiet=False)
@@ -628,7 +628,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as preproc_params_tmp_file:
-            if _on_s3:
+            if _ON_S3:
                 s3.cp(from_path=student.preproc_params_url,
                       to_path=preproc_params_tmp_file.name,
                       is_dir=False, quiet=False)
@@ -651,7 +651,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as native_obj_tmp_file:
-            if _on_s3:
+            if _ON_S3:
                 s3.cp(from_path=student.native_obj_url,
                       to_path=native_obj_tmp_file.name,
                       is_dir=False, quiet=False)
@@ -672,7 +672,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                                 dir=None,
                                 delete=True,
                                 errors=None) as postproc_params_tmp_file:
-            if _on_s3:
+            if _ON_S3:
                 s3.cp(from_path=student.postproc_params_url,
                       to_path=postproc_params_tmp_file.name,
                       is_dir=False, quiet=False)
