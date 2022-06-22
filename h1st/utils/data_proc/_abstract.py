@@ -511,7 +511,6 @@ class AbstractFileDataHandler(AbstractDataHandler):
     # local file cache dir
     _LOCAL_CACHE_DIR_PATH: Path = (Path(tempfile.gettempdir()).resolve(strict=True) /   # noqa: E501
                                    '.h1st/data-proc-cache')
-    _LOCAL_CACHE_DIR_PATH.mkdir(parents=True, exist_ok=True)
 
     # ====================================
     # MIN. NO. OF FILES FOR REPR. SAMPLING
