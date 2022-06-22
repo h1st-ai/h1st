@@ -117,7 +117,7 @@ def exist(path: PathType, *, hdfs: bool = False, is_dir: bool = False) -> bool:
                 if is_dir
                 else HDFS_CLIENT.isfile(path=path))
 
-    path: Path = Path(path).resolve(strict=True)
+    path: Path = Path(path).resolve(strict=False)
     return (path.is_dir()
             if is_dir
             else (path.is_file() or path.is_symlink()))
@@ -149,7 +149,7 @@ def rm(path: PathType, *, hdfs: bool = True, is_dir: bool = True,
                     f' -skipTrash "{path}"')
 
     else:
-        path: Path = Path(path).resolve(strict=True)
+        path: Path = Path(path).resolve(strict=False)
 
         if is_dir and path.is_dir():
             try:
@@ -184,7 +184,7 @@ def cp(from_path: PathType, to_path: PathType,
     """Copy directory or file."""
     rm(path=to_path, hdfs=hdfs, is_dir=is_dir, hadoop_home=hadoop_home)
 
-    to_path = Path(to_path).resolve(strict=True)
+    to_path = Path(to_path).resolve(strict=False)
     mkdir(dir_path=to_path.parent, hdfs=hdfs, hadoop_home=hadoop_home)
 
     if hdfs:
@@ -211,7 +211,7 @@ def mv(from_path: PathType, to_path: PathType,
     """Move directory or file."""
     rm(path=to_path, hdfs=hdfs, is_dir=is_dir, hadoop_home=hadoop_home)
 
-    to_path = Path(to_path).resolve(strict=True)
+    to_path = Path(to_path).resolve(strict=False)
     mkdir(dir_path=to_path.parent, hdfs=hdfs, hadoop_home=hadoop_home)
 
     if hdfs:
@@ -237,7 +237,7 @@ def get(from_hdfs: PathType, to_local: PathType,
         if overwrite:
             rm(path=to_local, hdfs=False, is_dir=is_dir)
 
-        to_local = Path(to_local).resolve(strict=True)
+        to_local = Path(to_local).resolve(strict=False)
 
         if overwrite or \
                 (is_dir and (not to_local.is_dir())) or \
@@ -259,7 +259,7 @@ def get(from_hdfs: PathType, to_local: PathType,
 
     if must_succeed:
         if isinstance(to_local, str):
-            to_local = Path(to_local).resolve(strict=True)
+            to_local = Path(to_local).resolve(strict=False)
 
         assert to_local.is_dir() if is_dir else to_local.is_file(), \
             OSError(f'*** FS.GET({from_hdfs} -> {to_local}) FAILED! ***')
@@ -272,7 +272,7 @@ def put(from_local: PathType, to_hdfs: PathType,
     if _ON_LINUX_CLUSTER_WITH_HDFS:
         rm(path=to_hdfs, hdfs=True, is_dir=is_dir, hadoop_home=hadoop_home)
 
-        to_hdfs = Path(to_hdfs).resolve(strict=True)
+        to_hdfs = Path(to_hdfs).resolve(strict=False)
         mkdir(dir_path=to_hdfs.parent, hdfs=True, hadoop_home=hadoop_home)
 
         os.system(command=f'{_hdfs_cmd(hadoop_home=hadoop_home)} dfs -put '
