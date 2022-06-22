@@ -9,6 +9,7 @@ from itertools import chain
 from logging import Logger
 import math
 from pathlib import Path
+import os
 import random
 import re
 import time
@@ -114,8 +115,6 @@ class ParquetDataset(AbstractS3FileDataHandler):
         if verbose or debug.ON:
             logger: Logger = self.classStdOutLogger()
 
-        self.path: str = path
-
         self.onS3: bool = path.startswith('s3://')
         if self.onS3:
             self.awsRegion: Optional[str] = awsRegion
@@ -123,14 +122,16 @@ class ParquetDataset(AbstractS3FileDataHandler):
             self.secretKey: Optional[str] = secretKey
             self.s3Client = s3.client(region=awsRegion, access_key=accessKey, secret_key=secretKey)
 
-        if path in self._CACHE:
-            _cache: Namespace = self._CACHE[path]
+        self.path: str = path if self.onS3 else os.path.expanduser(path)
+
+        if self.path in self._CACHE:
+            _cache: Namespace = self._CACHE[self.path]
         else:
-            self._CACHE[path] = _cache = Namespace()
+            self._CACHE[self.path] = _cache = Namespace()
 
         if _cache:
             if debug.ON:
-                logger.debug(msg=f'*** RETRIEVING CACHE FOR "{path}" ***')
+                logger.debug(msg=f'*** RETRIEVING CACHE FOR "{self.path}" ***')
 
         else:
             if self.onS3:
@@ -138,13 +139,13 @@ class ParquetDataset(AbstractS3FileDataHandler):
                 _cache.s3Bucket = _parsedURL.netloc
                 _cache.pathS3Key = _parsedURL.path[1:]
 
-            if path in self._FILE_CACHES:
+            if self.path in self._FILE_CACHES:
                 _cache.nFiles = 1
-                _cache.filePaths = {path}
+                _cache.filePaths = {self.path}
 
             else:
                 if verbose:
-                    logger.info(msg=(msg := f'Loading "{path}" by Arrow...'))
+                    logger.info(msg=(msg := f'Loading "{self.path}" by Arrow...'))
                     tic: float = time.time()
 
                 if self.onS3:
@@ -156,7 +157,7 @@ class ParquetDataset(AbstractS3FileDataHandler):
 
                 _cache._srcArrowDS = dataset(source=(path.replace('s3://', '')
                                                      if self.onS3
-                                                     else path),
+                                                     else self.path),
                                              schema=None,
                                              format='parquet',
                                              filesystem=(S3FileSystem(region=awsRegion,
@@ -174,14 +175,14 @@ class ParquetDataset(AbstractS3FileDataHandler):
                     logger.info(msg=f'{msg} done!   <{toc - tic:,.1f} s>')
 
                 if _filePaths := _cache._srcArrowDS.files:
-                    _cache.filePaths = {f's3://{filePath}'
+                    _cache.filePaths = {(f's3://{filePath}' if self.onS3 else filePath)
                                         for filePath in _filePaths
                                         if not filePath.endswith('_$folder$')}
                     _cache.nFiles = len(_cache.filePaths)
 
                 else:
                     _cache.nFiles = 1
-                    _cache.filePaths = {path}
+                    _cache.filePaths = {self.path}
 
             _cache.srcColsInclPartitionKVs = set()
             _cache.srcTypesInclPartitionKVs = Namespace()
@@ -251,7 +252,7 @@ class ParquetDataset(AbstractS3FileDataHandler):
                         nRows: int = metadata.num_rows
 
                     else:
-                        localPath: Optional[Path] = None
+                        localPath: Optional[Path] = None if self.onS3 else filePath
 
                         srcColsExclPartitionKVs: Optional[Set[str]] = None
 
