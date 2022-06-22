@@ -9,7 +9,7 @@ AWS_SECRET_ACCESS_KEY=<...aws-secret-access-key...> \
     --from-date 2016-09-01 --to-date 2022-02-22
 """
 
-
+from pathlib import Path
 from pprint import pprint
 from typing import Optional
 
@@ -155,11 +155,11 @@ def predict_faults(
     pprint(fault_preds.to_dict())
 
     # save
-    fault_preds.to_csv(
-        output_path := (f'{H1ST_BATCH_OUTPUT_DIR_PATH}/'
-                        f'{model_class_name}/{model_version}/'
-                        f'{date}-to-{to_date}.csv'),
-        header=True, index=True)
+    Path(output_path := (f'{H1ST_BATCH_OUTPUT_DIR_PATH}/'
+                         f'{model_class_name}/{model_version}/'
+                         f'{date}-to-{to_date}.csv')
+         ).parent.mkdir(parents=True, exist_ok=True)
+    fault_preds.to_csv(output_path, header=True, index=True)
     print(f'\n@ {output_path}')
 
     # summarize
