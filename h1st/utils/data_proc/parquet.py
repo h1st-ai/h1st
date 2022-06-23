@@ -1251,6 +1251,7 @@ class ParquetDataset(AbstractS3FileDataHandler):
     # count
     # nonNullProportion
     # distinct
+    # distinctPartitions
     # quantile
     # sampleStat
     # outlierRstStat / outlierRstMin / outlierRstMax
@@ -1424,6 +1425,11 @@ class ParquetDataset(AbstractS3FileDataHandler):
         return (Namespace(**{col: self._cache.distinct[col]})
                 if asDict
                 else self._cache.distinct[col])
+
+    def distinctPartitions(self, col: str, /) -> Set[str]:
+        """Return distinct values of a certain partition key."""
+        return {re.search(f'{col}=(.*?)/', filePath).group(1)
+                for filePath in self.filePaths}
 
     @lru_cache(maxsize=None, typed=False)   # computationally expensive, so cached
     def quantile(self, *cols: str, **kwargs: Any) -> Union[float, int,
