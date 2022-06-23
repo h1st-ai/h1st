@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'h1st'
-version = '0.1.12.dev7'
+version = '0.1.12.dev8'
 description = 'Human-First AI (H1st)'
 authors = ['Aitomatic, Inc. <engineering@aitomatic.com>']
 license = 'Apache-2.0'
@@ -54,7 +54,7 @@ Sphinx-RtD-Theme = '^1.0.0'
 
 
 [tool.poetry.scripts]
-h1st = 'h1st.cli:h1st_cli'
+h1st = 'h1st.utils:h1st_cli'
 
 
 [build-system]

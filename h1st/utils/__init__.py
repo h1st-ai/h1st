@@ -3,7 +3,7 @@
 
 import click
 
-from .pmfp import h1st_pmfp_cli
+from h1st.contrib.pmfp.tools import h1st_pmfp_cli
 
 
 @click.group(name='h1st',
