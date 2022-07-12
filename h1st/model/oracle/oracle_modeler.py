@@ -27,7 +27,9 @@ class OracleModeler(Modeler):
         """
         self.stats['features'] = features
         # Generate features to get students' predictions
-        train_data = self.model_class.generate_data({'X': data['unlabeled_data']}, self.teacher, self.stats)
+        train_data = self.model_class.generate_data(
+            {'X': data['unlabeled_data']}, self.teacher, self.stats
+        )
 
         # Train the student model
         self.students = [student_modeler.build_model(train_data)
@@ -40,24 +42,40 @@ class OracleModeler(Modeler):
             raise ValueError('No data to train the machine-learning-based ensemble')
 
         if labeled_data is not None:
-            ensembler_train_data = self.model_class.generate_data({'X': labeled_data['X_train']}, self.teacher, self.stats)
-            ensembler_test_data = self.model_class.generate_data({'X': labeled_data['X_test']}, self.teacher, self.stats)
-            student_preds_train_data = [pd.Series(student.predict(ensembler_train_data)['predictions']) for student in self.students]
-            student_preds_test_data = [pd.Series(student.predict(ensembler_test_data)['predictions']) for student in self.students]
+            ensembler_train_data = self.model_class.generate_data(
+                {'X': labeled_data['X_train']}, self.teacher, self.stats
+            )
+            ensembler_test_data = self.model_class.generate_data(
+                {'X': labeled_data['X_test']}, self.teacher, self.stats
+            )
+            student_preds_train_data = [
+                pd.Series(student.predict(ensembler_train_data)['predictions'])
+                for student in self.students
+            ]
+            student_preds_test_data = [
+                pd.Series(student.predict(ensembler_test_data)['predictions'])
+                for student in self.students
+            ]
             ensembler_data = {'X_train': pd.concat(student_preds_train_data + 
-                                                [ensembler_train_data['y']], axis=1),
-                                    'y_train': labeled_data['y_train'],
-                                    'X_test': pd.concat(student_preds_test_data + 
-                                                [ensembler_test_data['y']], axis=1),
-                                    'y_test': labeled_data['y_test'],
-                                    }
+                                                   [ensembler_train_data['y']], axis=1),
+                              'y_train': labeled_data['y_train'],
+                              'X_test': pd.concat(student_preds_test_data + 
+                                                  [ensembler_test_data['y']], axis=1),
+                              'y_test': labeled_data['y_test'],
+                              }
         else:
             ensembler_data = None
 
         ensembler = self.ensembler_modeler.build_model(ensembler_data)
-        oracle = self.model_class(self.teacher, self.students, ensembler)
+        oracle = self.model_class.create_oracle(self.teacher, self.students,
+                                                ensembler)
+
         # Pass stats to the model
         if self.stats is not None:
-            oracle.stats = self.stats.copy()
+            oracle.stats.update(self.stats.copy())
+
+        # Generate metrics
+        oracle.metrics = self.evaluate_model(data, oracle)
 
         return oracle
+

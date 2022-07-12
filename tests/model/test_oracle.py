@@ -4,6 +4,7 @@ from typing import Any, Dict
 import pandas as pd
 from sklearn import datasets, metrics
 from sklearn.linear_model import LogisticRegression
+from h1st.model.predictive_model import PredictiveModel
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.oracle.oracle import Oracle
@@ -12,7 +13,7 @@ from h1st.model.oracle.student import AdaBoostModel, AdaBoostModeler, RandomFore
 from h1st.model.rule_based_model import RuleBasedClassificationModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 
-class RuleModel:
+class RuleModel(PredictiveModel):
     sepal_length_max: float = 6.0
     sepal_length_min: float = 4.0
     sepal_width_min: float = 3.0
@@ -87,10 +88,7 @@ class TestOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = Oracle(teacher=RuleModel(),
-                              students= [RandomForestModel(), AdaBoostModel()],
-                              ensembler=RuleBasedClassificationModel())
-            oracle_2.load_params(version)
+            oracle_2 = Oracle().load_params(version)
 
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['test_data'])['predictions']
@@ -113,10 +111,7 @@ class TestOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = Oracle(teacher=RuleModel(),
-                              students= [RandomForestModel()],
-                              ensembler=RuleBasedClassificationModel())
-            oracle_2.load_params(version)
+            oracle_2 = Oracle().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['test_data'])['predictions']
@@ -144,10 +139,7 @@ class TestOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = Oracle(teacher=RuleModel(),
-                              students= [RandomForestModel(), AdaBoostModel()],
-                              ensembler=MyMLModel())
-            oracle_2.load_params(version)
+            oracle_2 = Oracle().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['test_data'])['predictions']

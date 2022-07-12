@@ -66,19 +66,26 @@ class Oracle(PredictiveModel):
     Oracle Model in Oracle framework
     """
 
-    def __init__(self, 
-                 teacher: PredictiveModel,
-                 students: PredictiveModel,
-                 ensembler: PredictiveModel):
+    def __init__(self):
+        """
+        """
+        self.stats = {}
+
+    @classmethod
+    def create_oracle(cls,
+                      teacher: PredictiveModel,
+                      students: list[PredictiveModel],
+                      ensembler: PredictiveModel):
         """
         :param teacher: The knowledge model.
         :param student_modelers: The student modelers.
         :param ensemble: The ensemble model class.
         """
-        self.teacher = teacher
-        self.students = students
-        self.ensembler = ensembler
-        self.stats = {}
+        model = cls()
+        model.teacher = teacher
+        model.students = students
+        model.ensembler = ensembler
+        return model
 
     @classmethod
     def generate_features(cls, data: Dict):
@@ -120,22 +127,63 @@ class Oracle(PredictiveModel):
             raise RuntimeError('No student built')
 
         # Generate features to get students' predictions
-        predict_data = self.__class__.generate_data(input_data, self.teacher, self.stats)
+        predict_data = self.__class__.generate_data(input_data, self.teacher,
+                                                    self.stats)
 
         # Generate student models' predictions
-        student_preds = [pd.Series(student.predict(predict_data)['predictions']) for student in self.students]
+        student_preds = [pd.Series(student.predict(predict_data)['predictions'])
+                         for student in self.students]
 
-        return self.ensembler.predict({'X': pd.concat(student_preds + [predict_data['y']], axis=1)})
+        out = self.ensembler.predict(
+            {'X': pd.concat(student_preds + [predict_data['y']], axis=1)}
+        )
+        return out
 
     def persist(self, version=None):
+        """
+        persist all pieces of oracle and store versions & classes
+        """
+        model_details = {}
         version = self.ensembler.persist(version)
+        model_details['ensembler_class'] = self.ensembler.__class__
+        model_details['ensembler_version'] = version
 
+        student_classes = []
+        student_versions = []
         for student in self.students:
             version = student.persist(version)
+            student_classes.append(student.__class__)
+            student_versions.append(version)
+
+        model_details['student_classes'] = student_classes
+        model_details['student_versions'] = student_versions
+        model_details['teacher_class'] = self.teacher.__class__
+        model_details['teacher_version'] = self.teacher.persist(version)
+        self.stats['model_details'] =  model_details
+
         super().persist(version)
+        return version
 
     def load_params(self, version: str = None) -> None:
-        self.ensembler.load_params(version)
-        for student in self.students:
-            student.load_params(self.ensembler.version)
+        """
+        load all pieces of oracle, return complete oracle
+        """
         super().load_params(version)
+        info = self.stats['model_details']
+        ensembler = info['ensembler_class']().load_params(
+            info['ensembler_version']
+        )
+        teacher = info['teacher_class']().load_params(
+            info['teacher_version']
+        )
+
+        students = []
+        for sclass, sversion in zip(info['student_classes'],
+                                    info['student_versions']):
+            students.append(sclass().load_params(sversion))
+
+        self.ensembler = ensembler
+        self.students = students
+        self.teacher = teacher
+        return self
+
