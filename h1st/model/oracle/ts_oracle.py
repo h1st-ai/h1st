@@ -7,11 +7,8 @@ from .ensemble import Ensemble
 
 
 class TimeSeriesOracle(Oracle):
-    def __init__(self, teacher: PredictiveModel,
-                 students,
-                 ensembler):
-        super().__init__(teacher, students, ensembler)
-        self.stats = {}
+    def __init__(self):
+        super().__init__()
 
     @classmethod
     def generate_features(cls, data: Dict):

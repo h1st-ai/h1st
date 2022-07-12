@@ -4,6 +4,7 @@ from typing import Any, Dict
 import pandas as pd
 from sklearn import datasets, metrics
 from sklearn.linear_model import LogisticRegression
+from h1st.model.predictive_model import PredictiveModel
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.oracle.oracle import Oracle
@@ -12,7 +13,7 @@ from h1st.model.oracle.student import AdaBoostModel, AdaBoostModeler, RandomFore
 from h1st.model.rule_based_model import RuleBasedClassificationModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 
-class RuleModel:
+class RuleModel(PredictiveModel):
     sepal_length_max: float = 6.0
     sepal_length_min: float = 4.0
     sepal_width_min: float = 3.0
