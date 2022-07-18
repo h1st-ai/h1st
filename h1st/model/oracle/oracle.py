@@ -57,7 +57,6 @@ end Note
 
 from typing import Dict, List
 import pandas as pd
-from h1st.model.ensemble.stack_ensemble import StackEnsemble
 from h1st.model.predictive_model import PredictiveModel
 
 
@@ -74,7 +73,7 @@ class Oracle(PredictiveModel):
     @classmethod
     def create_oracle(cls,
                       teacher: PredictiveModel,
-                      students: list[PredictiveModel],
+                      students: List[PredictiveModel],
                       ensembler: PredictiveModel):
         """
         :param teacher: The knowledge model.
