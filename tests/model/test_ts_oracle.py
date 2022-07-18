@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from sklearn import datasets, metrics
 from sklearn.linear_model import LogisticRegression
+from h1st.model.predictive_model import PredictiveModel
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.oracle.student import AdaBoostModel, AdaBoostModeler, RandomForestModel, RandomForestModeler
@@ -15,7 +16,7 @@ from h1st.model.rule_based_modeler import RuleBasedModeler
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-class RuleModel:
+class RuleModel(PredictiveModel):
     daily_thresholds = {
         'volt': 180, # >
         'rotate': 410, # <
@@ -184,10 +185,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle(teacher=RuleModel(),
-                                        students= [RandomForestModel(), AdaBoostModel()],
-                                        ensembler=RuleBasedClassificationModel())
-            oracle_2.load_params(version)
+            oracle_2 = TimeSeriesOracle().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']
@@ -213,10 +211,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle(teacher=RuleModel(),
-                                        students= [RandomForestModel(), AdaBoostModel()],
-                                        ensembler=RuleBasedClassificationModel())
-            oracle_2.load_params(version)
+            oracle_2 = TimeSeriesOracle().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']
@@ -239,10 +234,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle(teacher=RuleModel(),
-                                        students= [RandomForestModel(), AdaBoostModel()],
-                                        ensembler=RuleBasedClassificationModel())
-            oracle_2.load_params(version)
+            oracle_2 = TimeSeriesOracle().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']
@@ -275,10 +267,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle(teacher=RuleModel(),
-                                        students= [RandomForestModel(), AdaBoostModel()],
-                                        ensembler=MyMLModel())
-            oracle_2.load_params(version)
+            oracle_2 = TimeSeriesOracle().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']
