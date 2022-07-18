@@ -45,9 +45,9 @@ ULID-Py = '^1.1.0'
 
 
 [tool.poetry.dev-dependencies]
-Commitizen = '^2.27.1'
-Pre-Commit = '^2.19.0'
-PyLint = '^2.14.2'
+Commitizen = '^2.28.0'
+Pre-Commit = '^2.20.0'
+PyLint = '^2.14.5'
 PyTest = '^7.1.2'
 Sphinx = '^5.0.2'
 Sphinx-RtD-Theme = '^1.0.0'
