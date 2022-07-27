@@ -31,18 +31,21 @@ class ModelSerDe:
     def _get_model_type(self, model):
         import tensorflow
         import sklearn
+        import skfuzzy
 
         if isinstance(model, sklearn.base.BaseEstimator):
             return 'sklearn'
         if isinstance(model, tensorflow.keras.Model):
             return 'tensorflow-keras'
+        if isinstance(model, skfuzzy.control.ControlSystemSimulation):
+            return 'skfuzzy'
         if model is None:
             return 'custom'
 
     def _serialize_single_model(self, model, path, model_name='model'):
         model_type = self._get_model_type(model)
 
-        if model_type == 'sklearn':
+        if model_type == 'sklearn' or model_type == 'skfuzzy':
             # This is a sklearn model
             import joblib
             model_path = '%s.joblib' % model_name
