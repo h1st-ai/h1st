@@ -46,7 +46,6 @@ class ModelSerDe:
         model_type = self._get_model_type(model)
 
         if model_type == 'sklearn' or model_type == 'skfuzzy':
-            # This is a sklearn model
             import joblib
             model_path = '%s.joblib' % model_name
             joblib.dump(model, path + '/%s' % model_path)
