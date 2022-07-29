@@ -12,11 +12,11 @@ class RuleBasedModel(PredictiveModel):
     def rules(self, value):
         setattr(self, "__rules", value)
 
-    def evaluate_rules(self, input_data: Dict) -> Dict:
+    def execute_rules(self, input_data: Dict) -> Dict:
         return input_data
 
     def predict(self, input_data: Dict) -> Dict:
-        return self.evaluate_rules(input_data)
+        return self.execute_rules(input_data)
 
 
 class RuleBasedRegressionModel(RuleBasedModel):
