@@ -18,7 +18,16 @@ logger = logging.getLogger(__name__)
 class ModelSerDe:
     STATS_PATH = 'stats.joblib'
     METRICS_PATH = 'metrics.joblib'
+    RULES_PATH = 'rules.joblib'
     METAINFO_FILE = 'METAINFO.yaml'
+
+    def _serialize_basic_obj(self, d, path, list_file):
+        import joblib
+        joblib.dump(d, path + '/%s' % list_file)
+
+    def _serialize_basic_obj(self, path, list_file):
+        import joblib
+        return joblib.load(path + '/%s' % list_file)
 
     def _serialize_dict(self, d, path, dict_file):
         import joblib
@@ -28,24 +37,43 @@ class ModelSerDe:
         import joblib
         return joblib.load(path + '/%s' % dict_file)
 
+    def _get_rule_engine_type(self, rules):
+        import skfuzzy
+
+        if (isinstance(rules, skfuzzy.control.ControlSystemSimulation) 
+           or isinstance(rules, skfuzzy.control.controlsystem.ControlSystemSimulation)):
+            return 'skfuzzy'
+        
+        if rules is not None:
+            return 'custom'
+
     def _get_model_type(self, model):
         import tensorflow
         import sklearn
-        import skfuzzy
 
         if isinstance(model, sklearn.base.BaseEstimator):
             return 'sklearn'
         if isinstance(model, tensorflow.keras.Model):
             return 'tensorflow-keras'
-        if isinstance(model, skfuzzy.control.ControlSystemSimulation):
-            return 'skfuzzy'
         if model is None:
             return 'custom'
+
+    def _get_supported_rule_engines(self):
+        return set(['skfuzzy'])
+
+    def _serialize_rule_engine(self, rules, path, rules_file):
+        rule_engine_type = self._get_rule_engine_type(rules)
+
+        if rule_engine_type == 'skfuzzy':
+            import joblib
+            joblib.dump(rules, path + '/%s' % rules_file)
+        else:
+            raise ValueError('Unsupported model!!!')
 
     def _serialize_single_model(self, model, path, model_name='model'):
         model_type = self._get_model_type(model)
 
-        if model_type == 'sklearn' or model_type == 'skfuzzy':
+        if model_type == 'sklearn':
             import joblib
             model_path = '%s.joblib' % model_name
             joblib.dump(model, path + '/%s' % model_path)
@@ -61,7 +89,7 @@ class ModelSerDe:
         return model_type, model_path
 
     def _deserialize_single_model(self, model, path, model_type, model_path):
-        if model_type == 'sklearn':
+        if model_type == 'sklearn' or model_type == 'skfuzzy':
             # This is a sklearn model
             import joblib
             model = joblib.load(path + '/%s' % model_path)
@@ -115,11 +143,28 @@ class ModelSerDe:
             else:
                 logger.error('.base_model was not assigned.')
 
-        elif not isinstance(model, RuleBasedModel):
-            pass
+        elif isinstance(model, RuleBasedModel):
+            if model.rules:
+                logger.info('Saving rules property...')
+                meta_info['rules'] = {'rule_path': self.RULES_PATH}
+                if type(model.rules) in self._get_supported_rule_engines():
+                    rule_type = self._serialize_rule_engine(model.rules, path)
+                    meta_info['rules'].update({'rule_type': rule_type})
+                else:
+                    logging.warn(('This rule engine is custom, so may not work well with ' 
+                        'joblib which is the python package that we use to persist rules.'))
+                    self._serialize_basic_obj(model.rules, path, self.RULES_PATH)
+                    meta_info['rules'].update({'rule_type': type(model.rules)})
+            else:
+                logger.error('.rules was not assigned.')
+
         elif hasattr(model, 'base_model'):
-            logger.warning('Your .base_model will not be persisted. If you want to persist your .base_model, \
-                            must inherit from h1st.MLModel instead of h1st.Model.')
+            logger.warning(('Your .base_model will not be persisted. If you want to persist your .base_model, '
+                            'must inherit from h1st.MLModel.'))
+
+        elif hasattr(model, 'rules'):
+            logger.warning(('Your .rules will not be persisted. If you want to persist your .rules, '
+                            'must inherit from h1st.RuleBasedModel.'))
 
         if len(meta_info) == 0:
             logger.info('Model persistence currently supports only stats, model and metrics properties.')
