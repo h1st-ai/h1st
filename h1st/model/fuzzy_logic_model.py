@@ -6,12 +6,13 @@ from skfuzzy import control as ctrl
 from skfuzzy.control.term import Term
 
 from h1st.model.ml_model import MLModel
+from h1st.model.rule_based_model import RuleBasedModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class FuzzyLogicModel(MLModel):
+class FuzzyLogicModel(RuleBasedModel):
     """
     This FuzzyLogicModel is one kind of rule-based model. You can encode your
     rules in a fuzzy way using variables with membership functions.
@@ -24,21 +25,19 @@ class FuzzyLogicModel(MLModel):
     @classmethod
     def construct_model(
         cls, 
-        fuzzy_rules: list[skfuzzy.control.rule.Rule], 
-        consequents: list
+        fuzzy_rules: list[skfuzzy.control.rule.Rule]
+        # consequents: list
     ):
         model = cls()
-        ctrl_system = ctrl.ControlSystem(fuzzy_rules)
-        model.base_model = ctrl.ControlSystemSimulation(ctrl_system)
-        model.stats = {'consequents': consequents}
+        model.rules = ctrl.ControlSystemSimulation(ctrl.ControlSystem(fuzzy_rules))
         return model
 
-    def predict(self, input_data: Dict) -> Dict:
+    def evaluate_rules(self, input_data: Dict) -> Dict:
         for key, value in input_data.items():
-            self.base_model.input[key] = value
-        self.base_model.compute()
+            self.rules.input[key] = value
+        self.rules.compute()
 
         outputs = {}
-        for cls in self.stats['consequents']:
-            outputs[cls] = round(self.base_model.output[cls], 5)
+        for cls in self.rules.ctrl.consequents:
+            outputs[cls.label] = round(self.rules.output[cls.label], 5)
         return outputs

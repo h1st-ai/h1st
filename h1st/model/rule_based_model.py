@@ -1,10 +1,23 @@
-from typing import Dict
+from typing import Dict, Any
 import pandas as pd
-from .predictive_model import PredictiveModel
-
+from h1st.model.predictive_model import PredictiveModel
 
 class RuleBasedModel(PredictiveModel):
-    pass
+
+    @property
+    def rules(self) -> Any:
+        return getattr(self, "__rules", None)
+    
+    @rules.setter
+    def rules(self, value):
+        setattr(self, "__rules", value)
+
+    def evaluate_rules(self, input_data: Dict) -> Dict:
+        return input_data
+
+    def predict(self, input_data: Dict) -> Dict:
+        return self.evaluate_rules(input_data)
+
 
 class RuleBasedRegressionModel(RuleBasedModel):
     """
@@ -19,6 +32,7 @@ class RuleBasedRegressionModel(RuleBasedModel):
                                                     skipna=True,
                                                     numeric_only=True).values
         return {'predictions': predictions}
+
 
 class RuleBasedClassificationModel(RuleBasedModel):
     """

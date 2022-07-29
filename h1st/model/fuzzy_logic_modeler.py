@@ -6,8 +6,8 @@ from skfuzzy import control as ctrl
 from skfuzzy.control.term import Term
 
 from h1st.model.modeler import Modeler
-# from h1st.model.fuzzy_logic_model import FuzzyLogicModel
-from fuzzy_logic_model import FuzzyLogicModel
+from h1st.model.fuzzy_logic_model import FuzzyLogicModel
+# from fuzzy_logic_model import FuzzyLogicModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
