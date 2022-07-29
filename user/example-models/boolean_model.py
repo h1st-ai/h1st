@@ -4,7 +4,7 @@ from h1st.model.boolean_model import BooleanModel
 
 
 class UserBooleanModel(BooleanModel):
-    def process(self, input_data: Dict):
+    def predict(self, input_data: Dict):
         x = input_data["x"]
         if x > 0.5:
             return True
