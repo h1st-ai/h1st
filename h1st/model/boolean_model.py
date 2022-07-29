@@ -7,5 +7,5 @@ class BooleanModel(RuleBasedModel):
     "non-predictive" boolean model, since that is basically "just code".
     """
 
-    def evaluate_rules(self):
+    def execute_rules(self):
         pass
