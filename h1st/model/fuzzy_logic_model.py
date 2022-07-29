@@ -29,10 +29,11 @@ class FuzzyLogicModel(RuleBasedModel):
         # consequents: list
     ):
         model = cls()
-        model.rules = ctrl.ControlSystemSimulation(ctrl.ControlSystem(fuzzy_rules))
+        model.rules = ctrl.ControlSystemSimulation(
+            ctrl.ControlSystem(fuzzy_rules))
         return model
 
-    def evaluate_rules(self, input_data: Dict) -> Dict:
+    def execute_rules(self, input_data: Dict) -> Dict:
         for key, value in input_data.items():
             self.rules.input[key] = value
         self.rules.compute()
