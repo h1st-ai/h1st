@@ -61,7 +61,7 @@ import h1st.utils.debug
               show_default=True,
               prompt=False,
               confirmation_prompt=False,
-              prompt_required=True,
+              # prompt_required=True,
               hide_input=False,
               is_flag=True,
               flag_value=True,
