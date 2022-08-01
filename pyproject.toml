@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'h1st'
-version = '0.1.13.dev4'
+version = '0.1.13.dev5'
 description = 'Human-First AI (H1st)'
 authors = ['Aitomatic, Inc. <engineering@aitomatic.com>']
 license = 'Apache-2.0'
@@ -17,6 +17,7 @@ Python = '>= 3.8, < 3.10'
 
 # Data Processing
 NumPy = '^1.21.6'   # let higher dependencies figure
+Pandas = '^1.4.3'
 PyArrow = '^8.0.0'
 PySpark = '^3.3.0'
 
