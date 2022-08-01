@@ -44,7 +44,8 @@ import h1st.utils.debug
                 expose_value=True,
                 is_eager=False,
                 envvar=None,
-                shell_complete=None)
+                # shell_complete=None,
+)
 @click.argument('date_range',
                 type=str,
                 required=True,
@@ -56,7 +57,8 @@ import h1st.utils.debug
                 expose_value=True,
                 is_eager=False,
                 envvar=None,
-                shell_complete=None)
+                # shell_complete=None,
+)
 @click.option('--debug',
               show_default=True,
               prompt=False,
@@ -83,7 +85,8 @@ import h1st.utils.debug
               expose_value=True,
               is_eager=False,
               envvar=None,
-              shell_complete=None)
+              # shell_complete=None,
+)
 def tune_fault_pred_student_decision_threshold(student_version: str,
                                                date_range: Tuple[str, str],
                                                debug: bool = False):

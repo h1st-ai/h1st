@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'h1st'
-version = '0.1.13.dev2'
+version = '0.1.13.dev3'
 description = 'Human-First AI (H1st)'
 authors = ['Aitomatic, Inc. <engineering@aitomatic.com>']
 license = 'Apache-2.0'
