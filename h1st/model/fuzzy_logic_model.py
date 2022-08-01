@@ -34,6 +34,9 @@ class FuzzyLogicModel(RuleBasedModel):
         return model
 
     def execute_rules(self, input_data: Dict) -> Dict:
+        if self.rules is None:
+            raise ValueError(('Property rules is None. Please load your rules '
+                              'to run this method.'))
         for key, value in input_data.items():
             self.rules.input[key] = value
         self.rules.compute()
