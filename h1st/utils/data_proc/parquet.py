@@ -774,9 +774,10 @@ class ParquetDataset(AbstractS3FileDataHandler):
 
                         nChunks: int = len(chunkRecordBatches)
 
-                        assert nChunks in (approxNChunks - 1, approxNChunks), \
-                            ValueError(f'*** {filePath}: {nChunks} vs. '
-                                       f'{approxNChunks} Record Batches ***')
+                        # TODO: CHECK
+                        # assert nChunks in (approxNChunks - 1, approxNChunks), \
+                        #     ValueError(f'*** {filePath}: {nChunks} vs. '
+                        #                f'{approxNChunks} Record Batches ***')
 
                         assert nChunksForIntermediateN <= nChunks, \
                             ValueError(f'*** {filePath}: {nChunksForIntermediateN} vs. '
