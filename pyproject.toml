@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'h1st'
-version = '0.1.13.dev0'
+version = '0.1.13.dev1'
 description = 'Human-First AI (H1st)'
 authors = ['Aitomatic, Inc. <engineering@aitomatic.com>']
 license = 'Apache-2.0'
@@ -36,7 +36,7 @@ FSSpec = '^2022.7.1'
 S3FS = '^2022.7.1'
 
 # misc/other
-CLICK = '^8.1.3'
+CLICK = '>= 7.1.2'   # let higher dependencies figure
 Python-DotEnv = '^0.20.0'
 PyYAML = '^6.0'
 'Ruamel.YAML' = '^0.17.21'
