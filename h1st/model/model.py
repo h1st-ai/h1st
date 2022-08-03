@@ -76,7 +76,7 @@ class Model(NodeContainable, Trustable, Modelable):
         repo = ModelRepository.get_model_repo(self)
         return repo.persist(model=self, version=version)
 
-    def load_params(self, version: str = None) -> None:
+    def load(self, version: str = None) -> None:
         """
         Load parameters from the specified `version` from the ModelRepository.
         Leave version blank to load latest version.

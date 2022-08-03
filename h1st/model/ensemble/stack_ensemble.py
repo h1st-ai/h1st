@@ -76,6 +76,10 @@ class StackEnsemble(Ensemble):
         version = super().persist(version)
         return version
 
-    def load_params(self, version: str = None) -> None:
-        self.ensembler.load_params(version)
-        super().load_params(self.ensembler.version)
+    def load(self, version: str = None) -> None:
+        self.ensembler.load(version)
+        super().load(self.ensembler.version)
+
+    # Make it backward compatible.
+    def load_params(self, version: str=None) -> None:
+        return self.load(version)

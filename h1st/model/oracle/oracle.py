@@ -55,6 +55,7 @@ end Note
 @enduml
 """
 
+import logging
 from typing import Dict, List
 import pandas as pd
 from h1st.model.ensemble.stack_ensemble import StackEnsemble
@@ -134,8 +135,12 @@ class Oracle(PredictiveModel):
             version = student.persist(version)
         super().persist(version)
 
-    def load_params(self, version: str = None) -> None:
-        self.ensembler.load_params(version)
+    def load(self, version: str = None) -> None:
+        self.ensembler.load(version)
         for student in self.students:
-            student.load_params(self.ensembler.version)
-        super().load_params(version)
+            student.load(self.ensembler.version)
+        super().load(version)
+
+    # Make it backward compatible.
+    def load_params(self, version: str=None) -> None:
+        return self.load(version)

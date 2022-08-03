@@ -71,3 +71,6 @@ class MLModel(PredictiveModel):
     @base_model.setter
     def base_model(self, value):
         setattr(self, "__base_model", value)
+
+    def load_params(self, version: str = None):
+        super().load(version)
