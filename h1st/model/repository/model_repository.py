@@ -21,7 +21,7 @@ class ModelSerDe:
     RULES_PATH = 'rules.joblib'
     METAINFO_FILE = 'METAINFO.yaml'
 
-    def _is_builtin_class_instance(obj):
+    def _is_builtin_class_instance(self, obj):
         return (obj.__class__.__module__ == 'builtins' 
             or obj.__class__.__module__ == '__builtin__')
 

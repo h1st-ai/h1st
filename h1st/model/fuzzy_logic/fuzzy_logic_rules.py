@@ -18,18 +18,18 @@ class FuzzyLogicRules:
         self.vars = {}
         self.rules = {}
 
-    def add_rule(self, name, if_: Term, then_: Term) -> NoReturn:
+    def add_rule(self, name, if_: Term, then_: Term): #  -> NoReturn
         """
         Add a fuzzy rule. Place antecedent type variables in 'if' statement
-        and place consequent type varibles in 'then' statement.
+        and place consequent type variables in 'then' statement.
 
         .. code-block:: python
             :caption: example
-
-            self.add_rule(
+            flr = FuzzyLogicRules()
+            flr.add_rule(
                 'rule1',
-                if_=self.variables['sensor1']['abnormal'],
-                then_=self.variables['problem1']['yes'])
+                if_=flr.vars['sensor1']['abnormal'],
+                then_=flr.vars['problem1']['yes'])
         """
         rule = ctrl.Rule(if_, then_)
         self.rules[name] = rule
@@ -38,7 +38,7 @@ class FuzzyLogicRules:
         if name in self.rules:
             del self.rules[name]
 
-    def add_variable(self, range_: list, name: str, membership_funcs: list, type_: str) -> NoReturn:
+    def add_variable(self, range_: list, name: str, membership_funcs: list, type_: str): #  -> NoReturn
         """
         Add a variable with their type and membership functions.
 
@@ -53,8 +53,8 @@ class FuzzyLogicRules:
 
         .. code-block:: python
             :caption: example
-
-            self.add_variable(
+            flr = FuzzyLogicRules()
+            flr.add_variable(
                 range_=np.arange(0, 10, 0.5),
                 name='service_quality',
                 membership_funcs=[('Bad', 'gaussian', [2, 1]),
@@ -68,11 +68,9 @@ class FuzzyLogicRules:
             variable = ctrl.Antecedent(range_, name)
         elif type_ == 'consequent':
             variable = ctrl.Consequent(range_, name)
-            if name not in self.consequents:
-                self.consequents.append(name)
         else:
-            logger.warning(f'{type_} is not supported type')
-            return None
+            logger.error(f'{type_} is not supported type')
+            raise ValueError(f'{type_} is not supported type')
 
         for mem_func_name, mem_func_type, mem_func_range in membership_funcs:
             if mem_func_type != 'gaussian':
@@ -82,18 +80,21 @@ class FuzzyLogicRules:
                 variable[mem_func_name] = self.membership[mem_func_type](
                     variable.universe, mem_func_range[0], mem_func_range[1])
 
-        self.variables[name] = variable
+        self.vars[name] = variable
 
     def remove_variable(self, name: str) -> NoReturn:
-        if name in self.variables:
-            del self.variables[name]
+        if name in self.vars:
+            del self.vars[name]
 
     def visualize_fuzzy_variables(self, fussy_model_config) -> None:
         print("=== Antecedents & Consequents ===")
-        for var in self.variables.values():
+        for var in self.vars.values():
             if isinstance(var, skfuzzy.control.Antecedent):
                 var.view()
 
-        for var in self.variables.values():
+        for var in self.vars.values():
             if isinstance(var, skfuzzy.control.Consequent):
                 var.view()
+
+    def get_fuzzy_rules(self) -> skfuzzy.control.Rule:
+        return [rule for rule in self.rules.values()]

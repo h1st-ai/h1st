@@ -3,9 +3,7 @@ from typing import Dict, NoReturn
 
 import skfuzzy
 from skfuzzy import control as ctrl
-from skfuzzy.control.term import Term
 
-from h1st.model.ml_model import MLModel
 from h1st.model.rule_based_model import RuleBasedModel
 
 logging.basicConfig(level=logging.INFO)
