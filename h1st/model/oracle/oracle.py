@@ -129,17 +129,52 @@ class Oracle(PredictiveModel):
         return self.ensembler.predict({'X': pd.concat(student_preds + [predict_data['y']], axis=1)})
 
     def persist(self, version=None):
+        """
+        persist all pieces of oracle and store versions & classes
+        """
+        model_details = {}
         version = self.ensembler.persist(version)
+        model_details['ensembler_class'] = self.ensembler.__class__
+        model_details['ensembler_version'] = version
 
+        student_classes = []
+        student_versions = []
         for student in self.students:
             version = student.persist(version)
+            student_classes.append(student.__class__)
+            student_versions.append(version)
+
+        model_details['student_classes'] = student_classes
+        model_details['student_versions'] = student_versions
+        model_details['teacher_class'] = self.teacher.__class__
+        model_details['teacher_version'] = self.teacher.persist(version)
+        self.stats['model_details'] =  model_details
+
         super().persist(version)
+        return version
 
     def load(self, version: str = None) -> None:
-        self.ensembler.load(version)
-        for student in self.students:
-            student.load(self.ensembler.version)
+        """
+        load all pieces of oracle, return complete oracle
+        """
         super().load(version)
+        info = self.stats['model_details']
+        ensembler = info['ensembler_class']().load(
+            info['ensembler_version']
+        )
+        teacher = info['teacher_class']().load(
+            info['teacher_version']
+        )
+
+        students = []
+        for sclass, sversion in zip(info['student_classes'],
+                                    info['student_versions']):
+            students.append(sclass().load(sversion))
+
+        self.ensembler = ensembler
+        self.students = students
+        self.teacher = teacher
+        return self
 
     # Make it backward compatible.
     def load_params(self, version: str=None) -> None:
