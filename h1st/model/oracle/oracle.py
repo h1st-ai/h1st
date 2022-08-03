@@ -67,19 +67,26 @@ class Oracle(PredictiveModel):
     Oracle Model in Oracle framework
     """
 
-    def __init__(self, 
-                 teacher: PredictiveModel,
-                 students: PredictiveModel,
-                 ensembler: PredictiveModel):
+    def __init__(self):
+        """
+        """
+        self.stats = {}
+
+    @classmethod
+    def create_oracle(cls,
+                      teacher: PredictiveModel,
+                      students: list[PredictiveModel],
+                      ensembler: PredictiveModel):
         """
         :param teacher: The knowledge model.
         :param student_modelers: The student modelers.
         :param ensemble: The ensemble model class.
         """
-        self.teacher = teacher
-        self.students = students
-        self.ensembler = ensembler
-        self.stats = {}
+        model = cls()
+        model.teacher = teacher
+        model.students = students
+        model.ensembler = ensembler
+        return model
 
     @classmethod
     def generate_features(cls, data: Dict):
@@ -121,12 +128,17 @@ class Oracle(PredictiveModel):
             raise RuntimeError('No student built')
 
         # Generate features to get students' predictions
-        predict_data = self.__class__.generate_data(input_data, self.teacher, self.stats)
+        predict_data = self.__class__.generate_data(input_data, self.teacher,
+                                                    self.stats)
 
         # Generate student models' predictions
-        student_preds = [pd.Series(student.predict(predict_data)['predictions']) for student in self.students]
+        student_preds = [pd.Series(student.predict(predict_data)['predictions'])
+                         for student in self.students]
 
-        return self.ensembler.predict({'X': pd.concat(student_preds + [predict_data['y']], axis=1)})
+        out = self.ensembler.predict(
+            {'X': pd.concat(student_preds + [predict_data['y']], axis=1)}
+        )
+        return out
 
     def persist(self, version=None):
         """
