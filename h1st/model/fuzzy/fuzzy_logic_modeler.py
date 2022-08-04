@@ -20,20 +20,18 @@ class FuzzyLogicModeler(Modeler):
     def __init__(self, model_class = FuzzyLogicModel):
         self.model_class = model_class
 
-    def build_skfuzzy_control_system(
-        self, fuzzy_rules: list[skfuzzy.control.rule.Rule]):
-        return skctrl.ControlSystemSimulation(skctrl.ControlSystem(fuzzy_rules))
+    def build_skfuzzy_control_system(self, fuzzy_rules: FuzzyLogicRules):
+        return skctrl.ControlSystemSimulation(
+            skctrl.ControlSystem(fuzzy_rules.get_fuzzy_rules()))
 
-    def build_model(
-        self, 
-        fuzzy_rules: Union[FuzzyLogicRules, List[skfuzzy.control.Rule]]) \
-        -> FuzzyLogicModel:
-        
-        if isinstance(fuzzy_rules, FuzzyLogicRules):
-            fuzzy_rules = fuzzy_rules.get_fuzzy_rules()
+    def build_model(self, fuzzy_logic_rules: FuzzyLogicRules) -> FuzzyLogicModel:
+
+        if isinstance(fuzzy_logic_rules, FuzzyLogicRules):
+            raise ValueError((f'{type(fuzzy_logic_rules)} is not instance'
+                             ' of FuzzyLogicRules'))
 
         # Build fuzzy logic model with fuzzy rules.
         fuzzy_logic_model = self.model_class()
-        fuzzy_logic_model.rules = self.build_skfuzzy_control_system(fuzzy_rules)
+        fuzzy_logic_model.rules = self.build_skfuzzy_control_system(fuzzy_logic_rules)
 
         return fuzzy_logic_model
