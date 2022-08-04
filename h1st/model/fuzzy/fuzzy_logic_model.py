@@ -1,8 +1,5 @@
 import logging
-from typing import Dict, NoReturn
-
-import skfuzzy
-from skfuzzy import control as ctrl
+from typing import Dict
 
 from h1st.model.rule_based_model import RuleBasedModel
 
@@ -19,17 +16,6 @@ class FuzzyLogicModel(RuleBasedModel):
     """
     def __init__(self):
         super().__init__()
-
-    @classmethod
-    def construct_model(
-        cls, 
-        fuzzy_rules: list[skfuzzy.control.rule.Rule]
-        # consequents: list
-    ):
-        model = cls()
-        model.rules = ctrl.ControlSystemSimulation(
-            ctrl.ControlSystem(fuzzy_rules))
-        return model
 
     def execute_rules(self, input_data: Dict) -> Dict:
         if self.rules is None:

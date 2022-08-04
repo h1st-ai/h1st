@@ -1,20 +1,31 @@
+from enum import Enum, auto
 import logging
 from typing import NoReturn
 
 import skfuzzy
-from skfuzzy import control as ctrl
+from skfuzzy import control as skctrl
 from skfuzzy.control.term import Term
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+class FuzzyMembershipFunc(Enum):
+    TRIANGLE = auto()
+    TRAPEZOID = auto()
+    GAUSSIAN = auto()
+
+
 class FuzzyLogicRules:
     def __init__(self) -> None:
         self.membership = {
-            'triangle': skfuzzy.trimf,
-            'trapezoid': skfuzzy.trapmf,
-            'gaussian': skfuzzy.gaussmf,
+            FuzzyMembershipFunc.TRIANGLE: skfuzzy.trimf,
+            FuzzyMembershipFunc.TRAPEZOID: skfuzzy.trapmf,
+            FuzzyMembershipFunc.GAUSSIAN: skfuzzy.gaussmf,
         }
+        self.TRIANGLE = FuzzyMembershipFunc.TRIANGLE
+        self.TRAPEZOID = FuzzyMembershipFunc.TRAPEZOID
+        self.GAUSSIAN = FuzzyMembershipFunc.GAUSSIAN        
         self.vars = {}
         self.rules = {}
 
@@ -31,12 +42,10 @@ class FuzzyLogicRules:
                 if_=flr.vars['sensor1']['abnormal'],
                 then_=flr.vars['problem1']['yes'])
         """
-        rule = ctrl.Rule(if_, then_)
-        self.rules[name] = rule
+        self.rules[name] = skctrl.Rule(if_, then_)
 
     def remove_rule(self, name: str) -> NoReturn:
-        if name in self.rules:
-            del self.rules[name]
+        self.rules.pop(name, None)
 
     def add_variable(self, range_: list, name: str, membership_funcs: list, type_: str): #  -> NoReturn
         """
@@ -65,9 +74,9 @@ class FuzzyLogicRules:
         """
 
         if type_ == 'antecedent':
-            variable = ctrl.Antecedent(range_, name)
+            variable = skctrl.Antecedent(range_, name)
         elif type_ == 'consequent':
-            variable = ctrl.Consequent(range_, name)
+            variable = skctrl.Consequent(range_, name)
         else:
             logger.error(f'{type_} is not supported type')
             raise ValueError(f'{type_} is not supported type')

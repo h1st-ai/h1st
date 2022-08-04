@@ -2,7 +2,7 @@ import numpy as np
 import os
 import tempfile
 
-from h1st.model.fuzzy_logic import FuzzyLogicModeler, \
+from h1st.model.fuzzy import FuzzyLogicModeler, \
     FuzzyLogicModel, FuzzyLogicRules
 
 
@@ -89,7 +89,6 @@ class TestFuzzyLogicModelTestCase():
             fuzzy_logic_model = FuzzyLogicModel().load('test_model')
             assert fuzzy_logic_model.rules is not None
             sensor_input = {
-                
                 'sensor1': 10,
                 'sensor2': 15
             }
