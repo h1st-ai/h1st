@@ -1,4 +1,3 @@
-from enum import Enum, auto
 import logging
 from typing import NoReturn
 
@@ -6,26 +5,19 @@ import skfuzzy
 from skfuzzy import control as skctrl
 from skfuzzy.control.term import Term
 
+from h1st.model.fuzzy import FuzzyMembership
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-class FuzzyMembershipFunc(Enum):
-    TRIANGLE = auto()
-    TRAPEZOID = auto()
-    GAUSSIAN = auto()
 
 
 class FuzzyLogicRules:
     def __init__(self) -> None:
         self.membership = {
-            FuzzyMembershipFunc.TRIANGLE: skfuzzy.trimf,
-            FuzzyMembershipFunc.TRAPEZOID: skfuzzy.trapmf,
-            FuzzyMembershipFunc.GAUSSIAN: skfuzzy.gaussmf,
-        }
-        self.TRIANGLE = FuzzyMembershipFunc.TRIANGLE
-        self.TRAPEZOID = FuzzyMembershipFunc.TRAPEZOID
-        self.GAUSSIAN = FuzzyMembershipFunc.GAUSSIAN        
+            FuzzyMembership.TRIANGLE: skfuzzy.trimf,
+            FuzzyMembership.TRAPEZOID: skfuzzy.trapmf,
+            FuzzyMembership.GAUSSIAN: skfuzzy.gaussmf,
+        }   
         self.vars = {}
         self.rules = {}
 
