@@ -5,7 +5,7 @@ import skfuzzy
 from skfuzzy import control as skctrl
 from skfuzzy.control.term import Term
 
-from h1st.model.fuzzy import FuzzyMembership
+from h1st.model.fuzzy.enums import FuzzyMembership
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
