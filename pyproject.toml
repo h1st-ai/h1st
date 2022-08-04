@@ -18,7 +18,7 @@ Python = '>= 3.8, < 3.10'
 # Data Processing
 NumPy = '^1.21.6'   # let higher dependencies figure
 Pandas = '^1.4.3'
-PyArrow = '^8.0.0'
+PyArrow = '^9.0.0'
 PySpark = '^3.3.0'
 
 # ML/DL
@@ -46,7 +46,7 @@ ULID-Py = '^1.1.0'
 
 
 [tool.poetry.dev-dependencies]
-Commitizen = '^2.29.2'
+Commitizen = '^2.29.3'
 Pre-Commit = '^2.20.0'
 PyLint = '^2.14.5'
 PyTest = '^7.1.2'
