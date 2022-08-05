@@ -5,7 +5,7 @@ import skfuzzy
 from skfuzzy import control as skctrl
 from skfuzzy.control.term import Term
 
-from h1st.model.fuzzy.enums import FuzzyMembership
+from h1st.model.fuzzy.enums import FuzzyMembership as fm
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 class FuzzyLogicRules:
     def __init__(self) -> None:
         self.membership = {
-            FuzzyMembership.TRIANGLE: skfuzzy.trimf,
-            FuzzyMembership.TRAPEZOID: skfuzzy.trapmf,
-            FuzzyMembership.GAUSSIAN: skfuzzy.gaussmf,
+            fm.TRIANGLE: skfuzzy.trimf,
+            fm.TRAPEZOID: skfuzzy.trapmf,
+            fm.GAUSSIAN: skfuzzy.gaussmf,
         }   
         self.vars = {}
         self.rules = {}
@@ -74,7 +74,7 @@ class FuzzyLogicRules:
             raise ValueError(f'{type_} is not supported type')
 
         for mem_func_name, mem_func_type, mem_func_range in membership_funcs:
-            if mem_func_type != 'gaussian':
+            if mem_func_type != fm.GAUSSIAN:
                 variable[mem_func_name] = self.membership[mem_func_type](
                     variable.universe, mem_func_range)
             else:

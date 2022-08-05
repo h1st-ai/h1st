@@ -2,31 +2,34 @@ import numpy as np
 import os
 import tempfile
 
-from h1st.model.fuzzy import FuzzyLogicModeler, \
-    FuzzyLogicModel, FuzzyLogicRules
-
+from h1st.model.fuzzy import (
+    FuzzyLogicModeler, 
+    FuzzyLogicModel, 
+    FuzzyLogicRules,
+    FuzzyMembership as fm
+)
 
 def build_fuzzy_logic_model():
     flr = FuzzyLogicRules()
     flr.add_variable(
         range_=np.arange(0, 10, 0.5),
         name='sensor1',
-        membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                            ('abnormal', 'triangle', [8, 15, 15])],
+        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
+                        ('abnormal', fm.TRIANGLE, [8, 15, 15])],
         type_='antecedent'
     )
     flr.add_variable(
         range_=np.arange(0, 10, 0.5),
         name='sensor2',
-        membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                            ('abnormal', 'triangle', [8, 15, 15])],
+        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
+                        ('abnormal', fm.TRIANGLE, [8, 15, 15])],
         type_='antecedent'
     )
     flr.add_variable(
         range_=np.arange(0, 10, 0.5),
         name='problem1',
-        membership_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
-                            ('yes', 'trapezoid', [4, 6, 10, 10])],
+        membership_funcs=[('no', fm.TRAPEZOID, [0, 0, 4, 6]),
+                        ('yes', fm.TRAPEZOID, [4, 6, 10, 10])],
         type_='consequent'
     )
     flr.add_rule(

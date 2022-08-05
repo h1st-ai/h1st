@@ -26,7 +26,7 @@ class FuzzyLogicModeler(Modeler):
 
     def build_model(self, fuzzy_logic_rules: FuzzyLogicRules) -> FuzzyLogicModel:
 
-        if isinstance(fuzzy_logic_rules, FuzzyLogicRules):
+        if not isinstance(fuzzy_logic_rules, FuzzyLogicRules):
             raise ValueError((f'{type(fuzzy_logic_rules)} is not instance'
                              ' of FuzzyLogicRules'))
 
