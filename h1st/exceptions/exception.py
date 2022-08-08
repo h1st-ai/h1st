@@ -8,3 +8,6 @@ class GraphException(Exception):
 
 class SchemaException(Exception):
     pass
+
+class UnconfiguredEnvironment(Exception):
+    pass

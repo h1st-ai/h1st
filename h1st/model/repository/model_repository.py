@@ -10,6 +10,7 @@ import ulid
 
 from h1st.model.repository.storage.s3 import S3Storage
 from h1st.model.repository.storage.local import LocalStorage
+from h1st.model.repository.storage.azure_blob import AzureBlobStorage
 
 SEP = "::"
 logger = logging.getLogger(__name__)
@@ -197,6 +198,9 @@ class ModelRepository:
             storage = storage.replace("s3://", "").strip("/") + "/"
             bucket, prefix = storage.split("/", 1)
             storage = S3Storage(bucket, prefix.strip("/"))
+            self._NAMESPACE = ""
+        elif isinstance(storage, str) and "blob.core.windows.net" in storage:
+            storage = AzureBlobStorage.from_url(storage)
             self._NAMESPACE = ""
         elif isinstance(storage, str):  # local folder
             storage = LocalStorage(storage)
