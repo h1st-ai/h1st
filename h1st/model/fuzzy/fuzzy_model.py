@@ -7,11 +7,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class FuzzyLogicModel(RuleBasedModel):
+class FuzzyModel(RuleBasedModel):
     """
-    This FuzzyLogicModel is one kind of rule-based model. You can encode your
-    rules in a fuzzy way using variables with membership functions.
-    Add variables and use those variables when defining rules.
+    This FuzzyModel is a RuleBasedModel. You can create FuzzyModel using 
+    build_model method of FuzzyModeler. FuzzyModel has a property called
+    rules and it contains the core ControlSystem from skfuzzy package. 
+    For more information, check out https://pythonhosted.org/scikit-fuzzy/.
 
     """
     def __init__(self):

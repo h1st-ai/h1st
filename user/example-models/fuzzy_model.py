@@ -1,71 +1,128 @@
+import os
+import tempfile
+
 import numpy as np
 
 from h1st.model.fuzzy import (
-    FuzzyLogicModeler, 
-    FuzzyLogicModel, 
-    FuzzyLogicRules,
-    FuzzyMembership as fm
+    FuzzyModeler, 
+    FuzzyModel, 
+    FuzzyMembership as fm,
+    FuzzyVariables,
+    FuzzyRules
 )
 
+def build_fuzzy_model_v1():
 
-def build_fuzzy_model():
-    flr = FuzzyLogicRules()
-    flr.add_variable(
-        range_=np.arange(0, 10, 0.5),
-        name='sensor1',
+    fuzzy_vars = FuzzyVariables()
+    fuzzy_vars.add(
+        var_name='var1',
+        var_type='antecedent',
+        var_range=np.arange(0, 10, 0.5),
         membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
-                        ('abnormal', fm.TRIANGLE, [8, 15, 15])],
-        type_='antecedent'
+                          ('abnormal', fm.TRIANGLE, [8, 15, 15])]
     )
-    flr.add_variable(
-        range_=np.arange(0, 10, 0.5),
-        name='sensor2',
+    fuzzy_vars.add(
+        var_name='var2',
+        var_type='antecedent',
+        var_range=np.arange(0, 10, 0.5),
         membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
-                        ('abnormal', fm.TRIANGLE, [8, 15, 15])],
-        type_='antecedent'
+                        ('abnormal', fm.TRIANGLE, [8, 15, 15])]
     )
-    flr.add_variable(
-        range_=np.arange(0, 10, 0.5),
-        name='problem1',
+    fuzzy_vars.add(
+        var_name='conclusion1',
+        var_type='consequent',
+        var_range=np.arange(0, 10, 0.5),
         membership_funcs=[('no', fm.TRAPEZOID, [0, 0, 4, 6]),
-                        ('yes', fm.TRAPEZOID, [4, 6, 10, 10])],
-        type_='consequent'
+                        ('yes', fm.TRAPEZOID, [4, 6, 10, 10])]
     )
-    flr.add_rule(
-        'rule1',
-        if_=flr.vars['sensor1']['abnormal'] & flr.vars['sensor2']['abnormal'],
-        then_=flr.vars['problem1']['yes'])
-    flr.add_rule(
-        'rule2',
-        if_=flr.vars['sensor1']['normal'],
-        then_=flr.vars['problem1']['no'])
-    flr.add_rule(
-        'rule2',
-        if_=flr.vars['sensor2']['normal'],
-        then_=flr.vars['problem1']['no'])
 
-    modeler = FuzzyLogicModeler()
-    model = modeler.build_model(flr)
+    fuzzy_rule = FuzzyRules()
+    fuzzy_rule.add(
+        'rule1',
+        if_=[{'var1': 'abnormal'}, 'and', {'var2': 'abnormal'}],
+        then_={'conclusion1': 'yes'}
+    )
+    fuzzy_rule.add(
+        'rule2',
+        if_=[{'var1': 'normal'}],
+        then_={'conclusion1': 'no'}
+    )
+    fuzzy_rule.add(
+        'rule3',
+        if_=[{'var2': 'normal'}],
+        then_={'conclusion1': 'no'}
+    )
+    
+    modeler = FuzzyModeler()
+    model = modeler.build_model(fuzzy_vars, fuzzy_rule)
+    return model
+
+
+def build_fuzzy_model_v2():
+    fuzzy_vars = FuzzyVariables()
+    fuzzy_vars.add(
+        var_name='var1',
+        var_type='antecedent',
+        var_range=np.arange(0, 10, 0.5),
+        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
+                          ('abnormal', fm.TRIANGLE, [8, 15, 15])]
+    )
+    fuzzy_vars.add(
+        var_name='var2',
+        var_type='antecedent',
+        var_range=np.arange(0, 10, 0.5),
+        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
+                        ('abnormal', fm.TRIANGLE, [8, 15, 15])]
+    )
+    fuzzy_vars.add(
+        var_name='conclusion1',
+        var_type='consequent',
+        var_range=np.arange(0, 10, 0.5),
+        membership_funcs=[('no', fm.TRAPEZOID, [0, 0, 4, 6]),
+                        ('yes', fm.TRAPEZOID, [4, 6, 10, 10])]
+    )
+
+    fuzzy_rule = FuzzyRules()
+    fuzzy_rule.add(
+        'rule1',
+        if_=fuzzy_vars.var1['abnormal'] & fuzzy_vars.var2['abnormal'],
+        then_=fuzzy_vars.conclusion1['yes']
+    )
+    fuzzy_rule.add(
+        'rule2',
+        if_=fuzzy_vars.var1['normal'],
+        then_=fuzzy_vars.conclusion1['no']
+    )
+    fuzzy_rule.add(
+        'rule3',
+        if_=fuzzy_vars.var2['normal'],
+        then_=fuzzy_vars.conclusion1['no']
+    )
+    
+    modeler = FuzzyModeler()
+    model = modeler.build_model(fuzzy_rule)
     return model
 
 
 if __name__ == "__main__":
-    fuzzy_model = build_fuzzy_model()
-    sensor_input = {
-            'sensor1': 7,
-            'sensor2': 10
-        }
+    fuzzy_model = build_fuzzy_model_v2()
+    input_vars = {
+            'var1': 7,
+            'var2': 10
+    }
     
     # Run prediction of Fuzzy Model.
-    prediction = fuzzy_model.predict(sensor_input)
-    print("prediction['problem1']: ", prediction['problem1'])
+    prediction = fuzzy_model.predict(input_vars)
+    print("prediction['conclusion1']: ", prediction['conclusion1'])
 
     # Persist Fuzzy Model.
-    fuzzy_model.persist('my_version_1')
+    with tempfile.TemporaryDirectory() as path:
+        os.environ['H1ST_MODEL_REPO_PATH'] = path
+        fuzzy_model.persist('my_version_1')
 
-    # Load Fuzzy Model.
-    reloaded_fuzzy_model = FuzzyLogicModel().load('my_version_1')
+        # Load Fuzzy Model.
+        reloaded_fuzzy_model = FuzzyModel().load('my_version_1')
 
-    prediction = reloaded_fuzzy_model.predict(sensor_input)
-    print("prediction['problem1']: ", prediction['problem1'])
+    prediction = reloaded_fuzzy_model.predict(input_vars)
+    print("prediction['conclusion1']: ", prediction['conclusion1'])
 

@@ -34,6 +34,6 @@ BooleanModel -up->PredictiveModel
 RuleBasedModel -up->PredictiveModel
 Oracle -up-> PredictiveModel
 
-FuzzyLogicModel -up->RuleBasedModel
+FuzzyModel -up->RuleBasedModel
 @enduml
 ```

@@ -1,4 +1,6 @@
-from h1st.model.fuzzy.fuzzy_logic_model import FuzzyLogicModel
-from h1st.model.fuzzy.fuzzy_logic_modeler import FuzzyLogicModeler
-from h1st.model.fuzzy.fuzzy_logic_rules import FuzzyLogicRules
+import imp
+from h1st.model.fuzzy.fuzzy_model import FuzzyModel
+from h1st.model.fuzzy.fuzzy_modeler import FuzzyModeler
+from h1st.model.fuzzy.fuzzy_variables import FuzzyVariables
+from h1st.model.fuzzy.fuzzy_rules import FuzzyRules
 from h1st.model.fuzzy.enums import FuzzyMembership
