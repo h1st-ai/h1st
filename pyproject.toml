@@ -22,6 +22,7 @@ shap = ">=0.36.0"
 ulid-py = "^1.1.0"
 pyyaml = "^6.0"
 tensorflow = "^2.8.0"
+azure-storage-file-datalake = "^12.8.0"
 
 [tool.poetry.dev-dependencies]
 commitizen = "^2.20.5"
@@ -30,6 +31,7 @@ pytest = "^7.0.0"
 sphinx = "^4.4.0"
 sphinx-rtd-theme = "^1.0.0"
 pylint = "^2.12.2"
+ipython = "^8.4.0"
 
 [build-system]
 requires = ["poetry-core >= 1.0.0"]
