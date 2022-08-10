@@ -52,7 +52,7 @@ class FuzzyVariables:
         else:
             logger.error(f'{var_type} is not supported type')
             raise ValueError(f'{var_type} is not supported type')
-
+ 
         # Add membership function and its values.
         for mem_func_name, mem_func_type, mem_func_vals in membership_funcs:
             if mem_func_type == fm.TRIANGLE:
