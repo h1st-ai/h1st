@@ -6,34 +6,64 @@ from skfuzzy import control as skctrl
 
 from h1st.model.modeler import Modeler
 from h1st.model.fuzzy.fuzzy_model import FuzzyModel
+from h1st.model.fuzzy.fuzzy_variables import FuzzyVariables
 from h1st.model.fuzzy.fuzzy_rules import FuzzyRules
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class FuzzyModeler(Modeler):
     """
-    Base class for H1st Fuzzy Logic Modelers. Has capabilities that are 
-    specific to FuzzyModel.
-
-    Explain concisely something like, _FuzzyLogicModel is a RuleBasedModel. 
-    You need two things to create a FuzzyLogicModel: fuzzy variables, and fuzzy rules.
-    Fuzzy variables are defined using membership functions or distributions. 
-    Fuzzy rules have predicates ... For more information, check out https://xxx _
+    FuzzyModeler is a Modeler for FuzzyModel. Using FuzzyVariables and FuzzyRules
+    FuzzyModeler builds ControlSystem from skfuzzy package and inject it 
+    into FuzzyModel's rules property. For more information, check out 
+    https://scikit-fuzzy.github.io/scikit-fuzzy/.
 
     """
     def __init__(self, model_class = FuzzyModel):
         self.model_class = model_class
 
-    def build_model(self, rules: FuzzyRules) -> FuzzyModel:
+    def build_model(self, variables: FuzzyVariables, rules: FuzzyRules) -> FuzzyModel:
+        """
+        Build FuzzyModel using variables and rules.
 
+        .. code-block:: python
+            :caption: example
+            vars = FuzzyVariables()
+            vars.add(
+                var_name='var1',
+                var_type='antecedent',
+                var_range=np.arange(0, 15+1e-5, 0.5),
+                membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
+                                  ('abnormal', fm.TRIANGLE, [8, 15, 15])]
+            )
+            vars.add(
+                var_name='conclusion1',
+                var_type='consequent',
+                var_range=np.arange(0, 10+1e-5, 0.5),
+                membership_funcs=[('no', fm.TRAPEZOID, [0, 0, 4, 6]),
+                                  ('yes', fm.TRAPEZOID, [4, 6, 10, 10])]
+            )
+            rules = FuzzyRules()
+            rules.add_rule(
+                'rule1',
+                if_=vars.var1['abnormal'],
+                then_=vars.conclusion1['yes'])
+            modeler = FuzzyModeler()
+            model = modeler.build_model(vars, rules) 
+        """
         if not isinstance(rules, FuzzyRules):
-            raise ValueError((f'{type(rules)} is not instance'
+            raise ValueError((f'{type(rules)} is not an instance'
                              ' of FuzzyRules'))
+        if not isinstance(variables, FuzzyVariables):
+            raise ValueError((f'{type(variables)} is not an instance'
+                             ' of FuzzyRules'))                             
 
-        # Build fuzzy logic model with fuzzy rules.
+        # Build skfuzzy control system.
         m = self.model_class()
+        m.fuzzy_variables = variables
+        m.fuzzy_rules = rules
         m.rules = skctrl.ControlSystemSimulation(
-            skctrl.ControlSystem(rules.get_fuzzy_rules()))
-
+            skctrl.ControlSystem(rules.get_rules()))
         return m

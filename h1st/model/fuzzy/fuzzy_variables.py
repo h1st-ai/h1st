@@ -13,29 +13,35 @@ logger = logging.getLogger(__name__)
 
 class FuzzyVariables:
 
-    def add(self, var_name: str, var_type: str, var_range: list, membership_funcs: list): #  -> NoReturn
+    def add(
+        self, 
+        var_name: str, 
+        var_type: str, 
+        var_range: list, 
+        membership_funcs: list
+    ) -> NoReturn: 
         """
-        Add a variable with their type and membership functions.
+        Add a fuzzy variable with their type and membership functions.
 
         :param range_: the range of variable
         :param name: the name of variable
         :param membership_funcs: this is the list of tuple(membership_func_name, membership_func_type, membership_func_range)
-            There are three different kinds of membership_func_type that are supported and their membership_func_range should follow the following formats.
-            gaussian: [mean, sigma]
-            triangle: [a, b, c] where a <= b <= c
-            trapezoid: [a, b, c, d] where a <= b <= c <= d
+            There are four different kinds of membership_func_type that are supported and their membership_func_range should follow the following formats.
+            GAUSSIAN: [mean, sigma]
+            SIGMOID: [offset, width]
+            TRIANGLE: [a, b, c] where a <= b <= c
+            TRAPEZOID: [a, b, c, d] where a <= b <= c <= d
         :param type_: the varilable type should be either consequent or antecedent
 
         .. code-block:: python
             :caption: example
-            fv = FuzzyVariables()
-            fv.add(
-                var_name='service_quality',
+            vars = FuzzyVariables()
+            vars.add(
+                var_name='var1',
                 var_type='antecedent',
-                var_range=np.arange(0, 10, 0.5),
-                membership_funcs=[('Bad', 'gaussian', [2, 1]),
-                                  ('Decent', 'triangle', [3, 5, 7]),
-                                  ('Great', 'trapezoid', [6, 8, 10, 10])]
+                var_range=np.arange(0, 15+1e-5, 0.5),
+                membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
+                                  ('abnormal', fm.TRIANGLE, [8, 15, 15])]
             )
         """
         # Check variable type. 
@@ -52,20 +58,26 @@ class FuzzyVariables:
             if mem_func_type == fm.TRIANGLE:
                 if len(mem_func_vals) != 3:
                     raise ValueError((f'TRIANGLE membership function needs 3 '
-                        'values. Provided {len(mem_func_vals)} values.'))
+                        f'values. Provided {len(mem_func_vals)} values.'))
                 fuzzy_var[mem_func_name] = skfuzzy.trimf(
                     fuzzy_var.universe, mem_func_vals)
             elif mem_func_type == fm.TRAPEZOID:
                 if len(mem_func_vals) != 4:
                     raise ValueError((f'TRAPEZOID membership function needs 4 '
-                        'values. Provided {len(mem_func_vals)} values.'))
+                        f'values. Provided {len(mem_func_vals)} values.'))
                 fuzzy_var[mem_func_name] = skfuzzy.trapmf(
                     fuzzy_var.universe, mem_func_vals)
             elif mem_func_type == fm.GAUSSIAN:
                 if len(mem_func_vals) != 2:
                     raise ValueError((f'GAUSSIAN membership function needs 2 '
-                        'values. Provided {len(mem_func_vals)} values.'))
+                        f'values. Provided {len(mem_func_vals)} values.'))
                 fuzzy_var[mem_func_name] = skfuzzy.gaussmf(
+                    fuzzy_var.universe, mem_func_vals[0], mem_func_vals[1])
+            elif mem_func_type == fm.SIGMOID:
+                if len(mem_func_vals) != 2:
+                    raise ValueError((f'SIGMOID membership function needs 2 '
+                        f'values. Provided {len(mem_func_vals)} values.'))
+                fuzzy_var[mem_func_name] = skfuzzy.sigmf(
                     fuzzy_var.universe, mem_func_vals[0], mem_func_vals[1])
             else:
                 raise ValueError(f'{mem_func_type} is not supported.')

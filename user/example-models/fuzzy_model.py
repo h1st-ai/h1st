@@ -11,54 +11,7 @@ from h1st.model.fuzzy import (
     FuzzyRules
 )
 
-def build_fuzzy_model_v1():
-
-    fuzzy_vars = FuzzyVariables()
-    fuzzy_vars.add(
-        var_name='var1',
-        var_type='antecedent',
-        var_range=np.arange(0, 10, 0.5),
-        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
-                          ('abnormal', fm.TRIANGLE, [8, 15, 15])]
-    )
-    fuzzy_vars.add(
-        var_name='var2',
-        var_type='antecedent',
-        var_range=np.arange(0, 10, 0.5),
-        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
-                        ('abnormal', fm.TRIANGLE, [8, 15, 15])]
-    )
-    fuzzy_vars.add(
-        var_name='conclusion1',
-        var_type='consequent',
-        var_range=np.arange(0, 10, 0.5),
-        membership_funcs=[('no', fm.TRAPEZOID, [0, 0, 4, 6]),
-                        ('yes', fm.TRAPEZOID, [4, 6, 10, 10])]
-    )
-
-    fuzzy_rule = FuzzyRules()
-    fuzzy_rule.add(
-        'rule1',
-        if_=[{'var1': 'abnormal'}, 'and', {'var2': 'abnormal'}],
-        then_={'conclusion1': 'yes'}
-    )
-    fuzzy_rule.add(
-        'rule2',
-        if_=[{'var1': 'normal'}],
-        then_={'conclusion1': 'no'}
-    )
-    fuzzy_rule.add(
-        'rule3',
-        if_=[{'var2': 'normal'}],
-        then_={'conclusion1': 'no'}
-    )
-    
-    modeler = FuzzyModeler()
-    model = modeler.build_model(fuzzy_vars, fuzzy_rule)
-    return model
-
-
-def build_fuzzy_model_v2():
+def build_fuzzy_model():
     fuzzy_vars = FuzzyVariables()
     fuzzy_vars.add(
         var_name='var1',
@@ -98,14 +51,14 @@ def build_fuzzy_model_v2():
         if_=fuzzy_vars.var2['normal'],
         then_=fuzzy_vars.conclusion1['no']
     )
-    
+
     modeler = FuzzyModeler()
-    model = modeler.build_model(fuzzy_rule)
+    model = modeler.build_model(fuzzy_vars, fuzzy_rule)
     return model
 
 
 if __name__ == "__main__":
-    fuzzy_model = build_fuzzy_model_v2()
+    fuzzy_model = build_fuzzy_model()
     input_vars = {
             'var1': 7,
             'var2': 10
