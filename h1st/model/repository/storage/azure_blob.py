@@ -132,4 +132,4 @@ class AzureBlobStorage(Storage):
         if self.prefix:
             key = f"{self.prefix}/{key}"
 
-        return f"{self.bucket_name}/{key}"
+        return f"{key}"
