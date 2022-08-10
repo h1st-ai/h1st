@@ -38,7 +38,7 @@ class AzureBlobStorage(Storage):
         self.client = self.service_client.get_container_client(bucket_name)
 
     @classmethod
-    def from_url(cls, url: str) -> AzureBlobStorage:
+    def from_url(cls, url: str) -> 'AzureBlobStorage':
         """
         parse azure blob url to return storage object
 
@@ -102,7 +102,7 @@ class AzureBlobStorage(Storage):
         """
         key = self._to_key(name)
         blob = self.client.get_blob_client(blob=key)
-        return blob.upload_blob(values)
+        return blob.upload_blob(value)
 
     def exists(self, name: str) -> bool:
         """
