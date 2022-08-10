@@ -94,3 +94,9 @@ class FuzzyModel(RuleBasedModel):
         self.variables = self.rule_details["variables"]
         self.rules = self.rule_details["rules"]
         return self
+
+    def execute_rules(self, input_data: Dict) -> Dict:
+        df = input_data['X']
+        temp = map(self.execute_rules_pointwise, df.to_dict('records'))
+        predictions = list(map(lambda x: list(x.values())[0], temp))
+        return {'predictions': predictions}

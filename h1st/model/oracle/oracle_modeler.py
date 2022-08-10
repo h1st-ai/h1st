@@ -22,8 +22,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# TODO: ensemble for now just MajorityVotingEnsemble. as v1
+
+
 class OracleModeler(Modeler):
-    def __init__(self, model_class=Oracle):
+    def __init__(self, model_class = Oracle):
         self.model_class = model_class
         self.stats = {}
 
