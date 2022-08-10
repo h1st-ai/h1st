@@ -2,8 +2,6 @@ from typing import Dict, NoReturn, List
 import pandas as pd
 from h1st.model.predictive_model import PredictiveModel
 from .oracle import Oracle
-from .student import RandomForestModeler, AdaBoostModeler
-from .ensemble import Ensemble
 
 
 class TimeSeriesOracle(Oracle):

@@ -3,7 +3,7 @@ import pandas as pd
 from h1st.model.predictive_model import PredictiveModel
 
 
-class Ensemble(PredictiveModel):
+class MajorityVotingEnsemble(PredictiveModel):
     """
     Ensemble Model in Oracle framework
     """

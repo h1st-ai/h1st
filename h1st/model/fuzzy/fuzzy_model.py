@@ -1,6 +1,8 @@
 import logging
 from typing import Dict
 
+import pandas as pd
+
 from h1st.model.rule_based_model import RuleBasedModel
 
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +20,7 @@ class FuzzyModel(RuleBasedModel):
     def __init__(self):
         super().__init__()
 
-    def execute_rules(self, input_data: Dict) -> Dict:
+    def execute_rules_pointwise(self, input_data: Dict) -> Dict:
         if self.rules is None:
             raise ValueError(('Property rules is None. Please load your rules '
                               'to run this method.'))
@@ -30,3 +32,9 @@ class FuzzyModel(RuleBasedModel):
         for cls in self.rules.ctrl.consequents:
             outputs[cls.label] = round(self.rules.output[cls.label], 5)
         return outputs
+
+    def execute_rules(self, input_data: Dict) -> Dict:
+        df = input_data['X']
+        temp = map(self.execute_rules_pointwise, df.to_dict('records'))
+        predictions = list(map(lambda x: list(x.values())[0], temp))
+        return {'predictions': predictions}

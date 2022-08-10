@@ -5,26 +5,32 @@ from h1st.model.ml_modeler import MLModeler
 from h1st.model.modeler import Modeler
 from h1st.model.oracle.oracle import Oracle
 from h1st.model.oracle.student import AdaBoostModeler, RandomForestModeler
-from h1st.model.predictive_model import PredictiveModel
+from h1st.model.oracle.ensemble import MajorityVotingEnsemble
+from h1st.model.rule_based_model import RuleBasedModel
+from h1st.model.rule_based_modeler import RuleBasedModeler
+from h1st.model.ml_modeler import MLModeler
 from h1st.model.ensemble.stack_ensemble_modeler import StackEnsembleModeler
 
 # TODO: fuzzy model output is now like [0.2, 0.5, 0.4, 0.7]
 # TODO: we can build multiple binary classifier or one multi-class classifier
 # TODO: if student is multiple binary classifier, then ensemble also should be like that ? 
 
+# TODO: ensemble for now just MajorityVotingEnsemble. as v1
+
+
 class OracleModeler(Modeler):
-    def __init__(self, teacher: PredictiveModel,
-                 ensembler_modeler: Modeler,
-                 student_modelers: List = [RandomForestModeler(), AdaBoostModeler()],
-                 model_class = Oracle
-                 ):
-        self.teacher = teacher
-        self.student_modelers = student_modelers
-        self.ensembler_modeler = ensembler_modeler
+    def __init__(self, model_class = Oracle):
         self.model_class = model_class
         self.stats = {}
 
-    def build_model(self, data: Dict[str, Any] = None, features: List = None) -> Oracle:
+    def build_model(
+        self, 
+        data: Dict[str, Any], 
+        teacher: RuleBasedModel,
+        student_modelers: List[MLModeler] = [RandomForestModeler(), AdaBoostModeler()],
+        ensembler_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsemble),
+        features: List = None
+    ) -> Oracle:
         """
         Build the student and ensemble components.
         :param data: Unlabeled data.
