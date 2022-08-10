@@ -12,22 +12,22 @@ from h1st.model.fuzzy import (
 
 
 def build_fuzzy_logic_model():
-    fuzzy_vars = FuzzyVariables()
-    fuzzy_vars.add(
+    vars = FuzzyVariables()
+    vars.add(
         var_name='var1',
         var_type='antecedent',
         var_range=np.arange(0, 10, 0.5),
         membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
                           ('abnormal', fm.TRIANGLE, [8, 15, 15])]
     )
-    fuzzy_vars.add(
+    vars.add(
         var_name='var2',
         var_type='antecedent',
         var_range=np.arange(0, 10, 0.5),
         membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
                         ('abnormal', fm.TRIANGLE, [8, 15, 15])]
     )
-    fuzzy_vars.add(
+    vars.add(
         var_name='conclusion1',
         var_type='consequent',
         var_range=np.arange(0, 10, 0.5),
@@ -35,25 +35,25 @@ def build_fuzzy_logic_model():
                         ('yes', fm.TRAPEZOID, [4, 6, 10, 10])]
     )
 
-    fuzzy_rule = FuzzyRules()
-    fuzzy_rule.add(
+    rules = FuzzyRules()
+    rules.add(
         'rule1',
-        if_=fuzzy_vars.var1['abnormal'] & fuzzy_vars.var2['abnormal'],
-        then_=fuzzy_vars.conclusion1['yes']
+        if_=vars.var1['abnormal'] & vars.var2['abnormal'],
+        then_=vars.conclusion1['yes']
     )
-    fuzzy_rule.add(
+    rules.add(
         'rule2',
-        if_=fuzzy_vars.var1['normal'],
-        then_=fuzzy_vars.conclusion1['no']
+        if_=vars.var1['normal'],
+        then_=vars.conclusion1['no']
     )
-    fuzzy_rule.add(
+    rules.add(
         'rule3',
-        if_=fuzzy_vars.var2['normal'],
-        then_=fuzzy_vars.conclusion1['no']
+        if_=vars.var2['normal'],
+        then_=vars.conclusion1['no']
     )
-    
+
     modeler = FuzzyModeler()
-    model = modeler.build_model(fuzzy_rule)
+    model = modeler.build_model(vars, rules)
     return model
 
 
