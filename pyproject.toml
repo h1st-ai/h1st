@@ -46,7 +46,7 @@ ULID-Py = '^1.1.0'
 
 
 [tool.poetry.dev-dependencies]
-Commitizen = '^2.29.3'
+Commitizen = '^2.31.0'
 Pre-Commit = '^2.20.0'
 PyLint = '^2.14.5'
 PyTest = '^7.1.2'
