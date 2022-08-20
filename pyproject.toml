@@ -13,7 +13,7 @@ packages = [
 
 
 [tool.poetry.dependencies]
-Python = '>= 3.8, < 3.10'
+Python = '>= 3.8, < 3.11'
 
 # Data Processing
 NumPy = '^1.22.4'   # let higher dependencies figure
