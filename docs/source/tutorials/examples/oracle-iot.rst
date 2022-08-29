@@ -1462,19 +1462,12 @@ machines (gives many false alarm).
 
 .. code:: python
 
-    from h1st.model.oracle.ts_oracle_modeler import TimeseriesOracleModeler
-    from h1st.model.oracle.student import RandomForestModeler, AdaBoostModeler
-    from h1st.model.rule_based_modeler import RuleBasedModeler
-    from h1st.model.rule_based_model import RuleBasedClassificationModel
-
-    oracle_modeler = TimeseriesOracleModeler(teacher=RuleModel(),
-        student_modelers = [RandomForestModeler(), AdaBoostModeler()],
-        ensembler_modeler = RuleBasedModeler(model_class=RuleBasedClassificationModel)
-        )
-
-    oracle = oracle_modeler.build_model(
-        data={'unlabeled_data': df_model3_train[keys+features]},
-        id_col='machineID',
+    from h1st.model.oracle import TimeSeriesOracle
+    
+    oracle = TimeSeriesOracle(teacher=RuleModel())
+    oracle.build(
+        data={'x': df_model3_train[keys+features]}, 
+        id_col='machineID', 
         ts_col='date'
     )
 

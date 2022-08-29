@@ -21,16 +21,16 @@ class TimeSeriesOracle(Oracle):
         return {'data': ret}
 
     @classmethod
-    def generate_data(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
+    def generate_teacher_prediction(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
         '''
         Generate data to train the Student model
-        :param data: unlabeled data in form of {'X': pd.DataFrame}
+        :param data: unlabeled data in form of {'x': pd.DataFrame}
         :returns: a dictionary of features and teacher's prediction.
         '''
-        if 'X' not in data:
+        if 'x' not in data:
             raise ValueError('Please provide data in form of {\'X\': pd.DataFrame}')
 
-        df = data['X']
+        df = data['x']
 
         id_col = stats['id_col']
         ts_col = stats['ts_col']
@@ -56,7 +56,7 @@ class TimeSeriesOracle(Oracle):
                 if features is not None:
                     group_df = group_df[features]
 
-                teacher_pred = teacher.predict({'X': group_df})
+                teacher_pred = teacher.predict({'x': group_df})
                 if 'predictions' not in teacher_pred:
                     raise KeyError('Teacher\'s output must contain a key named `predictions`')
 
@@ -67,10 +67,10 @@ class TimeSeriesOracle(Oracle):
         else:
             if features is not None:
                 df = df[features]
-            teacher_preds = teacher.predict({'X': df})['predictions']
+            teacher_preds = teacher.predict({'x': df})['predictions']
             df_features = cls.generate_features({'data': df})
 
-        return {'X': df_features, 'y': pd.Series(teacher_preds)}
+        return {'x': df_features, 'y': pd.Series(teacher_preds)}
 
     def predict(self, input_data: Dict) -> Dict:
         '''
