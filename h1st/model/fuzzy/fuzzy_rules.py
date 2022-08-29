@@ -1,4 +1,4 @@
-from typing import NoReturn, List
+from typing import List
 
 from skfuzzy import control as skctrl
 from skfuzzy.control.term import Term
@@ -8,7 +8,7 @@ class FuzzyRules:
     def __init__(self) -> None:
         self.rules = {}
 
-    def add(self, rule_name, if_term: Term, then_term: Term) -> NoReturn:
+    def add(self, rule_name, if_term: Term, then_term: Term) -> None:
         """
         Add a fuzzy rule. Place antecedent type variables in 'if' statement
         and place consequent type variables in 'then' statement.
@@ -34,12 +34,12 @@ class FuzzyRules:
             rules = FuzzyRules()
             rules.add_rule(
                 'rule1',
-                if_term=vars.var1['abnormal'],
-                then_term=vars.conclusion1['yes'])
+                if_term=vars.vars['var1']['abnormal'],
+                then_term=vars.vars['conclusion1']['yes'])
         """
         self.rules[rule_name] = skctrl.Rule(if_term, then_term)
 
-    def remove(self, rule_name: str) -> NoReturn:
+    def remove(self, rule_name: str) -> None:
         if rule_name in self.rules:
             self.rules.pop(rule_name)
         else:

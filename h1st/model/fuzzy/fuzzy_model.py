@@ -37,7 +37,7 @@ class FuzzyModel(RuleBasedModel):
         .. code-block:: python
             :caption: example
             input_data = {'var1': 5, 'var2': 9}
-            predictions = model.execute_rules(input_data)
+            predictions = model.predict(input_data)
         """
         if self.rules is None:
             raise ValueError(

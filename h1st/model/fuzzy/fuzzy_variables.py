@@ -1,5 +1,4 @@
 import logging
-from typing import NoReturn
 
 import skfuzzy
 from skfuzzy import control as skctrl
@@ -16,7 +15,7 @@ class FuzzyVariables:
 
     def add(
         self, var_name: str, var_type: str, var_range: list, membership_funcs: list
-    ) -> NoReturn:
+    ) -> None:
         """
         Add a fuzzy variable with their type and membership functions.
 
@@ -101,7 +100,7 @@ class FuzzyVariables:
 
         self.vars[var_name] = fuzzy_var
 
-    def remove(self, var_name: str) -> NoReturn:
+    def remove(self, var_name: str) -> None:
         if var_name in self.vars:
             self.vars.pop(var_name)
         else:
