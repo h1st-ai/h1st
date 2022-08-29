@@ -7,9 +7,15 @@ from distutils import dir_util
 
 import yaml
 import ulid
+import joblib
+import skfuzzy
+import tensorflow
+import sklearn
 
 from h1st.model.repository.storage.s3 import S3Storage
 from h1st.model.repository.storage.local import LocalStorage
+from h1st.model.ml_model import MLModel
+from h1st.model.rule_based_model import RuleBasedModel
 
 SEP = "::"
 logger = logging.getLogger(__name__)
@@ -22,38 +28,32 @@ class ModelSerDe:
     METAINFO_FILE = 'METAINFO.yaml'
 
     def _is_builtin_class_instance(self, obj):
-        return (obj.__class__.__module__ == 'builtins' 
-            or obj.__class__.__module__ == '__builtin__')
+        return (
+            obj.__class__.__module__ == 'builtins'
+            or obj.__class__.__module__ == '__builtin__'
+        )
 
     def _serialize_basic_obj(self, d, path, obj_file):
-        import joblib
         joblib.dump(d, os.path.join(path, obj_file))
 
     def _deserialize_basic_obj(self, path, obj_file):
-        import joblib
         return joblib.load(os.path.join(path, obj_file))
 
     def _serialize_dict(self, d, path, dict_file):
-        import joblib
         joblib.dump(d, path + '/%s' % dict_file)
 
     def _deserialize_dict(self, path, dict_file):
-        import joblib
         return joblib.load(path + '/%s' % dict_file)
 
     def _get_rule_engine_type(self, rules):
-        import skfuzzy
-
-        if (isinstance(rules, skfuzzy.control.ControlSystemSimulation) 
-           or isinstance(rules, skfuzzy.control.controlsystem.ControlSystemSimulation)):
+        if isinstance(rules, skfuzzy.control.ControlSystemSimulation) or isinstance(
+            rules, skfuzzy.control.controlsystem.ControlSystemSimulation
+        ):
             return 'skfuzzy'
-        else: 
+        else:
             return 'custom'
 
     def _get_model_type(self, model):
-        import tensorflow
-        import sklearn
-
         if isinstance(model, sklearn.base.BaseEstimator):
             return 'sklearn'
         if isinstance(model, tensorflow.keras.Model):
@@ -68,7 +68,6 @@ class ModelSerDe:
         rule_engine_type = self._get_rule_engine_type(rules)
 
         if rule_engine_type == 'skfuzzy':
-            import joblib
             rules_path = '%s.joblib' % rules_name
             joblib.dump(rules, path + '/%s' % rules_path)
         else:
@@ -78,19 +77,16 @@ class ModelSerDe:
 
     def _deserialize_rule_engine(self, model, path, rule_engine_type, rules_path):
         if rule_engine_type == 'skfuzzy':
-            import joblib
             model = joblib.load(path + '/%s' % rules_path)
         else:
-            import joblib
             model = joblib.load(path + '/%s' % rules_path)
 
-        return model            
+        return model
 
     def _serialize_single_model(self, model, path, model_name='model'):
         model_type = self._get_model_type(model)
 
         if model_type == 'sklearn':
-            import joblib
             model_path = '%s.joblib' % model_name
             joblib.dump(model, path + '/%s' % model_path)
         elif model_type == 'tensorflow-keras':
@@ -107,7 +103,6 @@ class ModelSerDe:
     def _deserialize_single_model(self, model, path, model_type, model_path):
         if model_type == 'sklearn':
             # This is a sklearn model
-            import joblib
             model = joblib.load(path + '/%s' % model_path)
             # print(str(type(model)))
         elif model_type == 'tensorflow-keras':
@@ -124,9 +119,6 @@ class ModelSerDe:
         :param model: H1ST Model
         :param path: path to save models to
         """
-        from h1st.model.ml_model import MLModel
-        from h1st.model.rule_based_model import RuleBasedModel
-
         meta_info = {}
 
         if model.metrics:
@@ -145,17 +137,30 @@ class ModelSerDe:
                 if type(model.base_model) == list:
                     meta_info['models'] = []
                     for i, model in enumerate(model.base_model):
-                        model_type, model_path = self._serialize_single_model(model, path, 'model_%d' % i)
-                        meta_info['models'].append({'model_type': model_type, 'model_path': model_path})
+                        model_type, model_path = self._serialize_single_model(
+                            model, path, 'model_%d' % i
+                        )
+                        meta_info['models'].append(
+                            {'model_type': model_type, 'model_path': model_path}
+                        )
                 elif type(model.base_model) == dict:
                     meta_info['models'] = {}
                     for k, model in model.base_model.items():
-                        model_type, model_path = self._serialize_single_model(model, path, 'model_%s' % k)
-                        meta_info['models'][k] = {'model_type': model_type, 'model_path': model_path}
+                        model_type, model_path = self._serialize_single_model(
+                            model, path, 'model_%s' % k
+                        )
+                        meta_info['models'][k] = {
+                            'model_type': model_type,
+                            'model_path': model_path,
+                        }
                 else:
                     # this is a single model
-                    model_type, model_path = self._serialize_single_model(model.base_model, path)
-                    meta_info['models'] = [{'model_type': model_type, 'model_path': model_path}]
+                    model_type, model_path = self._serialize_single_model(
+                        model.base_model, path
+                    )
+                    meta_info['models'] = [
+                        {'model_type': model_type, 'model_path': model_path}
+                    ]
             else:
                 logger.error('.base_model was not assigned.')
 
@@ -163,48 +168,87 @@ class ModelSerDe:
             if model.rules:
                 logger.info('Saving rules property...')
                 if type(model.rules) in self._get_supported_rule_engines():
-                    rule_engine_type, rules_path = self._serialize_rule_engine(model.rules, path)
-                    meta_info['rules'] = [{'rules_type': rule_engine_type, 'rules_path': rules_path}]
-                elif (type(model.rules) == list
-                    and type(model.rules[0]) in self._get_supported_rule_engines()):
+                    rule_engine_type, rules_path = self._serialize_rule_engine(
+                        model.rules, path
+                    )
+                    meta_info['rules'] = [
+                        {'rules_type': rule_engine_type, 'rules_path': rules_path}
+                    ]
+                elif (
+                    type(model.rules) == list
+                    and type(model.rules[0]) in self._get_supported_rule_engines()
+                ):
                     meta_info['rules'] = []
                     for i, rules in enumerate(model.rules):
-                        rule_engine_type, rules_path = self._serialize_rule_engine(rules, path, f'rules_{i}')
-                        meta_info['rules'].append({'rules_type': rule_engine_type, 'rules_path': rules_path})
-                elif (type(model.rules) == dict 
-                    and type(list(model.rules.values())[0]) in self._get_supported_rule_engines()):
+                        rule_engine_type, rules_path = self._serialize_rule_engine(
+                            rules, path, f'rules_{i}'
+                        )
+                        meta_info['rules'].append(
+                            {'rules_type': rule_engine_type, 'rules_path': rules_path}
+                        )
+                elif (
+                    type(model.rules) == dict
+                    and type(list(model.rules.values())[0])
+                    in self._get_supported_rule_engines()
+                ):
                     meta_info['rules'] = {}
                     for key, rules in model.rules.items():
-                        rule_engine_type, rules_path = self._serialize_rule_engine(rules, path, f'rules_{i}')
-                        meta_info['rules'][key] = {'rules_type': rule_engine_type, 'rules_path': rules_path}
-                elif self._is_builtin_class_instance(model.rules): 
+                        rule_engine_type, rules_path = self._serialize_rule_engine(
+                            rules, path, f'rules_{i}'
+                        )
+                        meta_info['rules'][key] = {
+                            'rules_type': rule_engine_type,
+                            'rules_path': rules_path,
+                        }
+                elif self._is_builtin_class_instance(model.rules):
                     self._serialize_basic_obj(model.rules, path, self.RULES_PATH)
-                    meta_info['rules'] = {'rules_type': type(model.rules), 'rule_path': self.RULES_PATH}
+                    meta_info['rules'] = {
+                        'rules_type': type(model.rules),
+                        'rule_path': self.RULES_PATH,
+                    }
                 else:
-                    logging.warn(('This rule engine is custom, so may not work well with ' 
-                        'joblib which is the python package that we use to persist rules.'))
+                    logging.warn(
+                        (
+                            'This rule engine is custom, so may not work well with '
+                            'joblib which is the python package that we use to persist rules.'
+                        )
+                    )
                     self._serialize_basic_obj(model.rules, path, self.RULES_PATH)
-                    meta_info['rules'] = {'rules_type': type(model.rules), 'rule_path': self.RULES_PATH}
+                    meta_info['rules'] = {
+                        'rules_type': type(model.rules),
+                        'rule_path': self.RULES_PATH,
+                    }
 
             else:
                 logger.error('.rules was not assigned.')
 
         elif hasattr(model, 'base_model'):
-            logger.warning(('Your .base_model will not be persisted. '
-                            'If you want to persist your .base_model, '
-                            'must inherit from h1st.MLModel.'))
+            logger.warning(
+                (
+                    'Your .base_model will not be persisted. '
+                    'If you want to persist your .base_model, '
+                    'must inherit from h1st.MLModel.'
+                )
+            )
 
         elif hasattr(model, 'rules'):
-            logger.warning(('Your .rules will not be persisted. '
-                            'If you want to persist your .rules, '
-                            'must inherit from h1st.RuleBasedModel.'))
+            logger.warning(
+                (
+                    'Your .rules will not be persisted. '
+                    'If you want to persist your .rules, '
+                    'must inherit from h1st.RuleBasedModel.'
+                )
+            )
 
         if len(meta_info) == 0:
-            logger.info('Model persistence currently supports only stats, '
-                        'model and metrics properties.')
+            logger.info(
+                'Model persistence currently supports only stats, '
+                'model and metrics properties.'
+            )
             logger.info(
                 'Make sure you store stastistic in stats property, '
-                'models in model property and model metrics in metrics one.')
+                'models in model property and model metrics in metrics one.'
+            )
 
         with open(os.path.join(path, self.METAINFO_FILE), 'w') as file:
             yaml.dump(meta_info, file)
@@ -237,7 +281,8 @@ class ModelSerDe:
                     model_type = model_info['model_type']
                     model_path = model_info['model_path']
                     model.base_model = self._deserialize_single_model(
-                        org_model, path, model_type, model_path)
+                        org_model, path, model_type, model_path
+                    )
                 else:
                     # A list of models
                     model.base_model = []
@@ -247,7 +292,9 @@ class ModelSerDe:
                         model_path = model_info['model_path']
                         model.base_model.append(
                             self._deserialize_single_model(
-                                org_model[i], path, model_type, model_path))
+                                org_model[i], path, model_type, model_path
+                            )
+                        )
 
             elif type(model_infos) == dict:
                 # A dict of models
@@ -257,7 +304,8 @@ class ModelSerDe:
                     model_type = model_info['model_type']
                     model_path = model_info['model_path']
                     model.base_model[model_name] = self._deserialize_single_model(
-                        org_model[model_name], path, model_type, model_path)
+                        org_model[model_name], path, model_type, model_path
+                    )
             else:
                 raise ValueError('Not a valid H1ST Model METAINFO file!')
 
@@ -267,8 +315,12 @@ class ModelSerDe:
             if type(rules_infos) == list:
                 if rules_infos[0]['rules_type'] in self._get_supported_rule_engines():
                     if len(rules_infos) == 1:
-                        model.rules = self._deserialize_rule_engine(org_rules, path, 
-                            rules_infos[0]['rules_type'], rules_infos[0]['rules_path'])
+                        model.rules = self._deserialize_rule_engine(
+                            org_rules,
+                            path,
+                            rules_infos[0]['rules_type'],
+                            rules_infos[0]['rules_path'],
+                        )
                     else:
                         model.rules = []
                         org_rules = org_rules or [None for _ in range(len(rules_infos))]
@@ -276,24 +328,37 @@ class ModelSerDe:
                             model_type = model_info['model_type']
                             model_path = model_info['model_path']
                             model.rules.append(
-                                self._deserialize_rule_engine(org_rules[i], path, 
-                                    rules_infos[i]['rules_type'], 
-                                    rules_infos[i]['rules_path']))
+                                self._deserialize_rule_engine(
+                                    org_rules[i],
+                                    path,
+                                    rules_infos[i]['rules_type'],
+                                    rules_infos[i]['rules_path'],
+                                )
+                            )
             elif type(rules_infos) == dict:
                 if 'rules_type' in rules_infos:
                     if not self._is_builtin_class_instance(rules_infos['rules_type']):
-                        logging.warn(('This rule engine is custom, so may not work well with ' 
-                            'joblib which is the python package that we use to persist rules.'))    
+                        logging.warn(
+                            (
+                                'This rule engine is custom, so may not work well with '
+                                'joblib which is the python package that we use to persist rules.'
+                            )
+                        )
                     model.rules = self._deserialize_basic_obj(path, self.RULES_PATH)
                 else:
-                    if list(rules_infos.values())[0]['rules_type'] \
-                        in self._get_supported_rule_engines():
+                    if (
+                        list(rules_infos.values())[0]['rules_type']
+                        in self._get_supported_rule_engines()
+                    ):
                         model.rules = {}
                         org_rules = org_rules or {k: None for k in rules_infos.keys()}
                         for rules_name, rules_info in rules_infos.items():
                             model.rules[rules_name] = self._deserialize_rule_engine(
-                                org_rules[rules_name], path, rules_info['rules_type'], 
-                                rules_info['rules_path'])    
+                                org_rules[rules_name],
+                                path,
+                                rules_info['rules_type'],
+                                rules_info['rules_path'],
+                            )
             else:
                 raise ValueError('Not a valid H1ST Model METAINFO file!')
 
@@ -384,9 +449,7 @@ class ModelRepository:
             os.makedirs(serialized_dir)
 
             with open(tar_file, 'wb') as f:
-                f.write(self._storage.get_bytes(
-                    self._get_key(model, version)
-                ))
+                f.write(self._storage.get_bytes(self._get_key(model, version)))
 
             _tar_extract(tar_file, serialized_dir)
             self._serder.deserialize(model, serialized_dir)
@@ -428,9 +491,7 @@ class ModelRepository:
         :param path: target folder to extract the model archive
         """
         with tempfile.NamedTemporaryFile(mode="wb") as f:
-            f.write(self._storage.get_bytes(
-                self._get_key(model, version)
-            ))
+            f.write(self._storage.get_bytes(self._get_key(model, version)))
             f.flush()
             f.seek(0)
 
@@ -467,7 +528,9 @@ class ModelRepository:
 
                 # find the first folder containing config.py to get MODEL_REPO_PATH
                 for sub in ref.__class__.__module__.split('.'):
-                    root_module_name = sub if not root_module_name else root_module_name + '.' + sub
+                    root_module_name = (
+                        sub if not root_module_name else root_module_name + '.' + sub
+                    )
 
                     try:
                         module = importlib.import_module(root_module_name + ".config")
@@ -480,6 +543,7 @@ class ModelRepository:
             if not repo_path:
                 try:
                     import config
+
                     repo_path = config.MODEL_REPO_PATH
                 except ModuleNotFoundError:
                     repo_path = None
