@@ -1,7 +1,7 @@
 from typing import Any, Dict
 from copy import deepcopy
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 
@@ -18,7 +18,7 @@ class Student(MLModel):
         :params input_data: an dictionary with key `X` containing the data to get predictions.
         :returns: a dictionary with key `predictions` containing the predictions
         """
-        return {'predictions': self.base_model.predict(input_data['X'])}
+        return {'predictions': self.base_model.predict(input_data['x'])}
 
 
 class StudentModeler(MLModeler):
@@ -31,7 +31,7 @@ class StudentModeler(MLModeler):
         self.base_model = base_model
 
     def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
-        self.base_model.fit(prepared_data['X'], prepared_data['y'])
+        self.base_model.fit(prepared_data['x'], prepared_data['y'])
         return deepcopy(self.base_model)
 
 
@@ -52,18 +52,35 @@ class RandomForestModeler(StudentModeler):
         self.model_class = RandomForestModel
 
 
-class AdaBoostModel(Student):
+class GradBoostModel(Student):
     """
     Knowledge Generalization Model backed by an AdaBoost algorithm
     """
     pass
 
 
-class AdaBoostModeler(StudentModeler):
+class GradBoostModeler(StudentModeler):
     """
     Knowledge Generalization Modeler backed by a AdaBoost algorithm.
     """
 
-    def __init__(self, base_model=AdaBoostClassifier()):
+    def __init__(self, base_model=GradientBoostingClassifier()):
         super().__init__(base_model=base_model)
-        self.model_class = AdaBoostModel
+        self.model_class = GradBoostModel
+
+
+class LogisticRegressionModel(Student):
+    """
+    Knowledge Generalization Model backed by an AdaBoost algorithm
+    """
+    pass
+
+
+class LogisticRegressionModeler(StudentModeler):
+    """
+    Knowledge Generalization Modeler backed by a AdaBoost algorithm.
+    """
+
+    def __init__(self, base_model=LogisticRegression()):
+        super().__init__(base_model=base_model)
+        self.model_class = LogisticRegressionModel

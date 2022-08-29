@@ -16,7 +16,7 @@ from h1st.model.rule_based_model import RuleBasedClassificationModel
 
 class MyMLModel(MLModel):
     def predict(self, input_data: Dict) -> Dict:
-        y = self.base_model.predict(input_data['X'])
+        y = self.base_model.predict(input_data['x'])
         return {'predictions': y}
 
 class MyMLModel1(MyMLModel):
@@ -35,8 +35,8 @@ class MyMLModeler(MLModeler):
     
     def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
         super().evaluate_model(data, model)
-        X, y_true = data['X_test'], data['y_test']
-        y_pred = pd.Series(model.predict({'X': X, 'y': y_true})['predictions'])
+        X, y_true = data['x_test'], data['y_test']
+        y_pred = pd.Series(model.predict({'x': X, 'y': y_true})['predictions'])
         return {'r2_score': r2_score(y_true, y_pred)}
 
 class MyMLModeler1(MyMLModeler):
@@ -44,7 +44,7 @@ class MyMLModeler1(MyMLModeler):
         super().__init__(model_class)
 
     def train_base_model(self, data: Dict[str, Any]) -> Any:
-        X, y = data['X_train'], data['y_train']
+        X, y = data['x_train'], data['y_train']
         model = AdaBoostClassifier(random_state=0)
         model.fit(X, y)
         return model
@@ -54,14 +54,14 @@ class MyMLModeler2(MyMLModeler):
         super().__init__(model_class)
 
     def train_base_model(self, data: Dict[str, Any]) -> Any:
-        X, y = data['X_train'], data['y_train']
+        X, y = data['x_train'], data['y_train']
         model = RandomForestClassifier(random_state=0)
         model.fit(X, y)
         return model
 
 class MyMLModel(MLModel):
     def predict(self, input_data: Dict) -> Dict:
-        y = self.base_model.predict(input_data['X'])
+        y = self.base_model.predict(input_data['x'])
         return {'predictions': y}
 
 class MyMLModeler3(MyMLModeler):
@@ -69,7 +69,7 @@ class MyMLModeler3(MyMLModeler):
         super().__init__(model_class)
 
     def train_base_model(self, data: Dict[str, Any]) -> Any:
-        X, y = data['X_train'], data['y_train']
+        X, y = data['x_train'], data['y_train']
         model = LogisticRegression(random_state=0)
         model.fit(X, y)
         return model
@@ -89,9 +89,9 @@ class TestEnsemble:
         test_data = df_raw.iloc[:n_test, :].reset_index(drop=True)
 
 
-        return {'X_train': training_data[['sepal_length','sepal_width','petal_length','petal_width']],
+        return {'x_train': training_data[['sepal_length','sepal_width','petal_length','petal_width']],
                 'y_train': training_data['species'],
-                'X_test': test_data[['sepal_length','sepal_width','petal_length','petal_width']],
+                'x_test': test_data[['sepal_length','sepal_width','petal_length','petal_width']],
                 'y_test': test_data['species'],
                 }
 
@@ -115,7 +115,7 @@ class TestRuleBasedStackEnsemble(TestEnsemble):
         rule_based_classification_ensemble = rule_based_classification_ensemble_modeler.build_model()
 
         test_data = {
-                'X': pd.DataFrame(
+                'x': pd.DataFrame(
                     [[5.1, 3.5, 1.5, 0.2],
                     [7.1, 3.5, 1.5, 0.6]], 
                     columns=['sepal_length','sepal_width','petal_length','petal_width'])
@@ -145,7 +145,7 @@ class TestMLStackEnsemble(TestEnsemble):
         stack_ensemble_model = stack_ensemble_modeler.build_model(data)
 
         test_data = {
-                'X': pd.DataFrame(
+                'x': pd.DataFrame(
                     [[5.1, 3.5, 1.5, 0.2],
                     [7.1, 3.5, 1.5, 0.6]], 
                     columns=['sepal_length','sepal_width','petal_length','petal_width'])

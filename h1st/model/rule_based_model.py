@@ -28,7 +28,7 @@ class RuleBasedRegressionModel(RuleBasedModel):
         :param input_data: a dictionary of predictions.
         :returns: a pandas series of averaged values per group of predictions.
         """
-        predictions = pd.DataFrame(input_data['X']).mean(axis=1,
+        predictions = pd.DataFrame(input_data['x']).mean(axis=1,
                                                     skipna=True,
                                                     numeric_only=True).values
         return {'predictions': predictions}
@@ -43,6 +43,6 @@ class RuleBasedClassificationModel(RuleBasedModel):
         :param input_data: a dictionary of predictions.
         :returns: a pandas series of the most popular values per group of predictions.
         """
-        predictions = pd.DataFrame(input_data['X']).mode(axis='columns',
+        predictions = pd.DataFrame(input_data['x']).mode(axis='columns',
                                                     numeric_only=True)[0].values
         return {'predictions': predictions}

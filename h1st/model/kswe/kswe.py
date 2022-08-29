@@ -21,8 +21,8 @@ class KSWE(PredictiveModel):
     def predict(self, input_data: Dict):
 
         # Segment data
-        if isinstance(input_data['X'], pd.DataFrame):
-            input_data['X'].reset_index(inplace=True, drop=True)
+        if isinstance(input_data['x'], pd.DataFrame):
+            input_data['x'].reset_index(inplace=True, drop=True)
         segmented_data = self.segmentor.process(input_data)['segment_data']
 
         # Generate sub_model predictions
@@ -37,12 +37,12 @@ class KSWE(PredictiveModel):
             else:
                 # generate predictions from sub_models
                 predictions = self.sub_models[name].predict(
-                    {'X': data})['predictions']
+                    {'x': data})['predictions']
 
             sub_model_predictions[name] = {
                 'index': data.index, 
                 'predictions': predictions,
-                'num_of_data':input_data['X'].shape[0],
+                'num_of_data':input_data['x'].shape[0],
             }
 
         # Generage ensemble's prediction

@@ -24,7 +24,7 @@ class RuleModel(PredictiveModel):
     }
 
     def predict(self, input_data):
-        df = input_data['X']
+        df = input_data['x']
         df_resampled = df.mean(axis=0)
         volt_val = df_resampled['volt']
         rotate_val = df_resampled['rotate']
@@ -42,7 +42,7 @@ class RuleModel(PredictiveModel):
 
 class MyMLModel(MLModel):
     def predict(self, input_data: Dict) -> Dict:
-        y = self.base_model.predict(input_data['X'])
+        y = self.base_model.predict(input_data['x'])
         return {'predictions': y}
 
 class MyMLModeler(MLModeler):
@@ -52,12 +52,12 @@ class MyMLModeler(MLModeler):
     
     def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
         super().evaluate_model(data, model)
-        X, y_true = data['X_test'], data['y_test']
-        y_pred = pd.Series(model.predict({'X': X, 'y': y_true})['predictions'])
+        X, y_true = data['x_test'], data['y_test']
+        y_pred = pd.Series(model.predict({'x': X, 'y': y_true})['predictions'])
         return {'r2_score': metrics.r2_score(y_true, y_pred)}
 
     def train_base_model(self, data: Dict[str, Any]) -> Any:
-        X, y = data['X_train'], data['y_train']
+        X, y = data['x_train'], data['y_train']
         model = LogisticRegression(random_state=0)
         model.fit(X, y)
         return model
@@ -165,7 +165,7 @@ class TestTimeSeriesOracle:
         df.sort_values(['machineID', 'datetime'], inplace=True)
         df.loc[:, 'date'] = df['datetime'].dt.date
 
-        return {'training_data': {'X': df.loc[df.machineID==1, ['machineID', 'date', 'volt', 'rotate', 'pressure', 'vibration']]}}
+        return {'training_data': {'x': df.loc[df.machineID==1, ['machineID', 'date', 'volt', 'rotate', 'pressure', 'vibration']]}}
         
 
     def test_rule_based_ensemble(self):
@@ -175,7 +175,7 @@ class TestTimeSeriesOracle:
                                         student_modelers = [RandomForestModeler(),
                                                             AdaBoostModeler()],
                                         ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']},
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['x']},
                                             id_col='machineID', ts_col='date')
 
         pred = oracle.predict(data['training_data'])['predictions']
@@ -198,7 +198,7 @@ class TestTimeSeriesOracle:
         oracle_modeler = TimeseriesOracleModeler(teacher=RuleModel(),
                                         student_modelers = [RandomForestModeler(), AdaBoostModeler()],
                                         ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']},
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['x']},
                                       id_col='machineID',
                                       ts_col='date',
                                       features=['volt', 'rotate', 'vibration']
@@ -220,11 +220,11 @@ class TestTimeSeriesOracle:
 
     def test_rule_based_ensemble_one_equipment(self):
         data = self.load_data()
-        data['training_data']['X'].drop('machineID', axis=1, inplace=True)
+        data['training_data']['x'].drop('machineID', axis=1, inplace=True)
         oracle_modeler = TimeseriesOracleModeler(teacher=RuleModel(),
                                         student_modelers = [RandomForestModeler(), AdaBoostModeler()],
                                         ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']},
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['x']},
                                             ts_col='date')
 
         pred = oracle.predict(data['training_data'])['predictions']
@@ -251,10 +251,10 @@ class TestTimeSeriesOracle:
         )
 
         num_samples = 2
-        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X'],
-                                             'labeled_data': {'X_train': data['training_data']['X'],
+        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['x'],
+                                             'labeled_data': {'x_train': data['training_data']['x'],
                                                               'y_train': np.array(range(num_samples)),
-                                                              'X_test': data['training_data']['X'],
+                                                              'x_test': data['training_data']['x'],
                                                               'y_test': np.array(range(num_samples))
                                              }
                                             },

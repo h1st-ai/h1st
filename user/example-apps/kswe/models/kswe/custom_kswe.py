@@ -57,27 +57,27 @@ class MySegmentor(Model):
         }
         segmentation_results = {
             'segment_0': {
-                'X_train': 'list of TRAIN_IMAGE',
+                'x_train': 'list of TRAIN_IMAGE',
                 'y_train': 'TRAIN_ANNOTATION.json',
-                'X_test': 'list of TEST_IMAGE',
+                'x_test': 'list of TEST_IMAGE',
                 'y_test': 'TEST_ANNOTATION.json',
             },
             'segment_1': {
-                'X_train': 'list of TRAIN_IMAGE',
+                'x_train': 'list of TRAIN_IMAGE',
                 'y_train': 'TRAIN_ANNOTATION.json',
-                'X_test': 'list of TEST_IMAGE',
+                'x_test': 'list of TEST_IMAGE',
                 'y_test': 'TEST_ANNOTATION.json',
             }
         }
         segmentation_results = {
             'segment_0': {
-                'X': 'list of TRAIN_IMAGE',
+                'x': 'list of TRAIN_IMAGE',
                 'y': 'ANNOTATION.json',
             },
             'segment_1': {
-                'X_train': 'list of TRAIN_IMAGE',
+                'x_train': 'list of TRAIN_IMAGE',
                 'y_train': 'TRAIN_ANNOTATION.json',
-                'X_test': 'list of TEST_IMAGE',
+                'x_test': 'list of TEST_IMAGE',
                 'y_test': 'TEST_ANNOTATION.json',
             }
         }

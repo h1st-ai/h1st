@@ -30,7 +30,7 @@ class TestModelSerDe:
         """
         my_modeler = modeler_class()
         data = my_modeler.load_data()
-        X, y = data['X'], data['y']
+        X, y = data['x'], data['y']
 
         my_modeler.model_class = model_class
 
@@ -79,11 +79,11 @@ class TestModelSerDe:
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'X': data.data, 'y': data.target}
+                return {'x': data.data, 'y': data.target}
 
             def train_base_model(self, prepared_data):
                 model = LogisticRegression(random_state=0)
-                X, y = prepared_data['X'], prepared_data['y']
+                X, y = prepared_data['x'], prepared_data['y']
                 model.fit(X, y)
                 return model
 
@@ -97,11 +97,11 @@ class TestModelSerDe:
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'X': data.data, 'y': data.target}
+                return {'x': data.data, 'y': data.target}
 
             def train_base_model(self, prepared_data):
                 model = MySkLearnEstimator()
-                X, y = prepared_data['X'], prepared_data['y']
+                X, y = prepared_data['x'], prepared_data['y']
                 model.fit(X, y)
                 return model
 
@@ -114,10 +114,10 @@ class TestModelSerDe:
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'X': data.data, 'y': data.target}
+                return {'x': data.data, 'y': data.target}
 
             def train_base_model(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
+                X, y = prepared_data['x'], prepared_data['y']
                 return [LogisticRegression(random_state=0).fit(X, y), LogisticRegression(random_state=0).fit(X, y)]
         
         class MyModel(MLModel):
@@ -129,10 +129,10 @@ class TestModelSerDe:
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'X': data.data, 'y': data.target}
+                return {'x': data.data, 'y': data.target}
 
             def train_base_model(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
+                X, y = prepared_data['x'], prepared_data['y']
                 return {'Iris': LogisticRegression(random_state=0).fit(X, y)}
         
         class MyModel(MLModel):
@@ -144,10 +144,10 @@ class TestModelSerDe:
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'X': data.data, 'y': data.target}
+                return {'x': data.data, 'y': data.target}
 
             def train_base_model(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
+                X, y = prepared_data['x'], prepared_data['y']
                 model = self.model_class.get_model_arch()
                 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
                 model.fit(X, y, verbose=2, batch_size=5, epochs=20)
@@ -171,10 +171,10 @@ class TestModelSerDe:
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'X': data.data, 'y': data.target}
+                return {'x': data.data, 'y': data.target}
 
             def train_base_model(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
+                X, y = prepared_data['x'], prepared_data['y']
                 model = self.model_class.get_model_arch()['Iris']
                 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
                 model.fit(X, y, verbose=2, batch_size=5, epochs=20)
@@ -239,7 +239,7 @@ class TestRuleModel:
     def test_ruled_based_model(self):
         class MyRule(RuleBasedModel):
             def predict(self, input_data):
-                return {"result": sum(input_data['X'])}
+                return {"result": sum(input_data['x'])}
 
         model = MyRule()
-        assert {'result': 42} == model.predict({'X': [1, 1, 10, 10, 20]})
+        assert {'result': 42} == model.predict({'x': [1, 1, 10, 10, 20]})

@@ -23,7 +23,7 @@ predicting setosa iris's with the iris dataset.
             """define a process method to take the input data and output a
                'prediction'
             """
-            df = data['X']
+            df = data['x']
             return {
                 'predictions': pd.Series(map(
                     self.predict_setosa, df['sepal_length'], df['sepal_width']
@@ -43,7 +43,7 @@ predicting setosa iris's with the iris dataset.
     # Build the Oracle
     oracle = Oracle(teacher=IrisRuleModel())
     oracle.build(
-        data={'X': df_X},
+        data={'x': df_X},
         features=['sepal_length','sepal_width']
     )
     # This seems simple, but behind the scenes this system has used your
@@ -54,7 +54,7 @@ predicting setosa iris's with the iris dataset.
     # Behind the scenes prediction is being done by both the Teacher (rule
     # model) and Student (ML model) and both of these predictions are being
     # taken into consideration for final oracle prediction output
-    oracle.predict({'X': df_X[['sepal_length','sepal_width']]})
+    oracle.predict({'x': df_X[['sepal_length','sepal_width']]})
 
     # If you've setup a path for the model repo (see Installation), then
     # you can persist this built oracle for use later
@@ -63,6 +63,6 @@ predicting setosa iris's with the iris dataset.
 
     # Finally, you can load this created oracle for use in inference later:
     oracle_2 = Oracle(teacher=IrisRuleModel()).load('iris_oracle_v1')
-    oracle_2.predict({'X': df_X[['sepal_length','sepal_width']]})
+    oracle_2.predict({'x': df_X[['sepal_length','sepal_width']]})
 
 Enjoy developing your AI systems!

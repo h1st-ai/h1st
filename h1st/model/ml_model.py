@@ -29,25 +29,25 @@ class MLModel(PredictiveModel):
 
             class MyMLModel(MLModel):
                 def predict(self, input_data: Dict) -> Dict:
-            return {'predictions': self.base_model.predict(input_data['X'])}
+            return {'predictions': self.base_model.predict(input_data['x'])}
 
             class MyMLModeler(MLModeler):
                 def __init__(self):
                     self.model_class = MyMLModel
 
                 def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
-                    X, y = prepared_data['X'], prepared_data['y']
+                    X, y = prepared_data['x'], prepared_data['y']
                     model = RandomForestClassifier(random_state=0)
                     model.fit(X, y)
                     return model
 
             X, y = load_iris(return_X_y=True)
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-            prepared_data = {'X': X_train, 'y': y_train}
+            x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+            prepared_data = {'x': x_train, 'y': y_train}
             my_modeler = MyMLModeler()
             my_model = my_modeler.build_model(prepared_data)
 
-            y_pred = my_model.predict({'X': X_test})['predictions']
+            y_pred = my_model.predict({'x': x_test})['predictions']
             accuracy = accuracy_score(y_test, y_pred)
             print("Accuracy (test): %0.1f%% " % (accuracy * 100))
 
@@ -59,7 +59,7 @@ class MLModel(PredictiveModel):
                 # Load the model from the repo
                 my_model_2 = MyMLModel()
                 my_model_2.load_params('1st_version')
-                y_pred = my_model_2.predict({'X': X_test})['predictions']
+                y_pred = my_model_2.predict({'x': x_test})['predictions']
                 accuracy = accuracy_score(y_test, y_pred)
                 print("Accuracy (test): %0.1f%% " % (accuracy * 100))
     """

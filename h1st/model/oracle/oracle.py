@@ -57,10 +57,16 @@ end Note
 
 import logging
 from typing import Dict, List
+from collections import defaultdict
+
 import pandas as pd
+import sklearn
+
+from h1st.model.fuzzy.fuzzy_model import FuzzyModel
 from h1st.model.ensemble.stack_ensemble import StackEnsemble
 from h1st.model.predictive_model import PredictiveModel
-
+from h1st.model.ml_model import MLModel
+from h1st.model.rule_based_model import RuleBasedModel
 
 class Oracle(PredictiveModel):
     """
@@ -68,32 +74,30 @@ class Oracle(PredictiveModel):
     """
 
     def __init__(self):
-        """
-        """
         self.stats = {}
 
     @classmethod
-    def create_oracle(cls,
-                      teacher: PredictiveModel,
-                      students: list[PredictiveModel],
-                      ensembler: PredictiveModel):
+    def construct_oracle(cls,
+                      teacher: RuleBasedModel,
+                      students: list[MLModel],
+                      ensemblers: PredictiveModel):
         """
         :param teacher: The knowledge model.
-        :param student_modelers: The student modelers.
+        :param students: The student model.
         :param ensemble: The ensemble model class.
         """
         model = cls()
         model.teacher = teacher
         model.students = students
-        model.ensembler = ensembler
+        model.ensemblers = ensemblers
         return model
 
-    @classmethod
-    def generate_features(cls, data: Dict):
-        return {'data': data['data'].copy()}
+    # @classmethod
+    # def generate_features(cls, data: Dict):
+    #     return {'data': data['data'].copy()}
 
     @classmethod
-    def generate_data(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
+    def generate_teacher_prediction(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
         """
         Generate data to train Student models.
         Return a copy of the provided data by default.
@@ -101,67 +105,79 @@ class Oracle(PredictiveModel):
         :param data: unlabelled data.
         :returns: a dictionary of features and teacher's prediction.
         """
-        if 'X' not in data:
+        if 'x' not in data:
             raise ValueError('Please provide data in form of {\'X\': pd.DataFrame}')
 
-        df = data['X']
+        df = data['x']
 
         features = stats['features']
         if features is not None:
             df = df[features]
 
-        df = cls.generate_features({'data': df})['data']
-
-        teacher_pred = teacher.predict({'X': df})
+        # df = cls.generate_features({'data': df})['data']
+        teacher_pred = teacher.predict({'x': df})
         if 'predictions' not in teacher_pred:
             raise KeyError('Teacher\'s output must contain a key named `predictions`')
-        return {'X': df.copy(), 'y': pd.Series(teacher_pred['predictions'])}
+
+        
+        return teacher_pred['predictions']
+        # return {'x': df.copy(), 'y': teacher_pred['predictions']}
 
     def predict(self, input_data: Dict) -> Dict:
         """
         Implement logic to generate prediction from data. The Oracle expects the same features provided during `build` phase to be in the provided data. It automatically process the data the same way to that of the `build` phase.
 
-        :params input_data: an dictionary with key `X` containing the data to get predictions.
+        :params input_data: an dictionary with key `x` containing the data to get predictions.
         :returns: a dictionary with key `predictions` containing the predictions
         """
         if not hasattr(self, 'students'):
             raise RuntimeError('No student built')
+        if not hasattr(self, 'ensemblers'):
+            raise RuntimeError('No ensemblers built')            
 
         # Generate features to get students' predictions
-        predict_data = self.__class__.generate_data(input_data, self.teacher,
-                                                    self.stats)
-
-        # Generate student models' predictions
-        student_preds = [pd.Series(student.predict(predict_data)['predictions'])
-                         for student in self.students]
-
-        out = self.ensembler.predict(
-            {'X': pd.concat(student_preds + [predict_data['y']], axis=1)}
-        )
-        return out
+        teacher_prediction = self.__class__.generate_teacher_prediction(
+            input_data, self.teacher, self.stats)
+        predictions = {}
+        for col in teacher_prediction:
+            # Generate student models' predictions
+            student_preds = [pd.Series(student.predict(input_data)['predictions'],
+                                       name=f'stud_{idx}_{col}')
+                            for idx, student in enumerate(self.students[col])]
+            predictions[col] = self.ensemblers[col].predict(
+                {'x': pd.concat(student_preds + [teacher_prediction[col]], axis=1)}
+            )['predictions']
+        return {'predictions': predictions}
 
     def persist(self, version=None):
         """
         persist all pieces of oracle and store versions & classes
         """
         model_details = {}
-        version = self.ensembler.persist(version)
-        model_details['ensembler_class'] = self.ensembler.__class__
-        model_details['ensembler_version'] = version
-
-        student_classes = []
-        student_versions = []
-        for student in self.students:
-            version = student.persist(version)
-            student_classes.append(student.__class__)
-            student_versions.append(version)
-
-        model_details['student_classes'] = student_classes
-        model_details['student_versions'] = student_versions
-        model_details['teacher_class'] = self.teacher.__class__
-        model_details['teacher_version'] = self.teacher.persist(version)
+        student_details = {}
+        ensembler_details = {}
+        for label in self.stats['labels']:
+            student_classes = []
+            student_versions = []
+            for idx, student in enumerate(self.students[label]):
+                student_classes.append(student.__class__)
+                student_versions.append(
+                    student.persist(f'student_{version}_{label}_{idx}'))
+            student_details[label] = {
+                'class': student_classes,
+                'version': student_versions
+            }
+            ensembler_details[label] = {
+                'class': self.ensemblers[label].__class__,
+                'version': self.ensemblers[label].persist(f'ensembler_{version}_{label}')
+            }
+        model_details['teacher_details'] = {
+            'class': self.teacher.__class__,
+            'version': self.teacher.persist(f'teacher_{version}')
+        }
+        model_details['student_details'] = student_details
+        model_details['ensembler_details'] = ensembler_details
         self.stats['model_details'] =  model_details
-
         super().persist(version)
         return version
 
@@ -171,21 +187,22 @@ class Oracle(PredictiveModel):
         """
         super().load(version)
         info = self.stats['model_details']
-        ensembler = info['ensembler_class']().load(
-            info['ensembler_version']
+        teacher = info['teacher_details']['class']().load(
+            info['teacher_details']['version']
         )
-        teacher = info['teacher_class']().load(
-            info['teacher_version']
-        )
+        ensemblers = {}
+        students = defaultdict(list)
+        for label in self.stats['labels']:
+            ensemblers[label] = info['ensembler_details'][label]['class']().load(
+                info['ensembler_details'][label]['version']
+            )
+            for s_class, s_version in zip(info['student_details'][label]['class'],
+                                          info['student_details'][label]['version']):
+                students[label].append(s_class().load(s_version))
 
-        students = []
-        for sclass, sversion in zip(info['student_classes'],
-                                    info['student_versions']):
-            students.append(sclass().load(sversion))
-
-        self.ensembler = ensembler
-        self.students = students
         self.teacher = teacher
+        self.students = students
+        self.ensemblers = ensemblers
         return self
 
     # Make it backward compatible.

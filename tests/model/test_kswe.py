@@ -18,7 +18,7 @@ from h1st.model.kswe import KSWE, KSWEModeler, MaxSegmentationModeler, MajorityV
 
 class MySubModel(MLModel):
     def predict(self, input_data: Dict) -> Dict:
-        y = self.base_model.predict(input_data['X'])
+        y = self.base_model.predict(input_data['x'])
         return {'predictions': y}
 
 
@@ -29,16 +29,16 @@ class MySubModelModeler(MLModeler):
     
     def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
         # super().evaluate_model(data, model)
-        if 'X_test' not in data:
+        if 'x_test' not in data:
             print('No test data found. evaluating training results')
-            X, y_true = data['X_train'], data['y_train']
+            X, y_true = data['x_train'], data['y_train']
         else:
-            X, y_true = data['X_test'], data['y_test']
-        y_pred = pd.Series(model.predict({'X': X})['predictions'])
+            X, y_true = data['x_test'], data['y_test']
+        y_pred = pd.Series(model.predict({'x': X})['predictions'])
         return {'r2_score': sk_metrics.r2_score(y_true, y_pred)}
 
     def train_base_model(self, data: Dict[str, Any]) -> Any:
-        X, y = data['X_train'], data['y_train']
+        X, y = data['x_train'], data['y_train']
         model = LogisticRegression(random_state=0)
         model.fit(X, y)
         return model
@@ -50,12 +50,12 @@ def load_data():
     df_raw['sepal_aspect_ratio'] =  df_raw['sepal_width'] / df_raw['sepal_length'] 
     X_cols = list(df_raw.columns)
     X_cols.remove('species')
-    X_train, X_test, y_train, y_test = train_test_split(
+    x_train, x_test, y_train, y_test = train_test_split(
         df_raw[X_cols], df_raw['species'], test_size=0.4, random_state=1)
     return {
-        'X_train': X_train, 
+        'x_train': x_train, 
         'y_train': y_train, 
-        'X_test': X_test,
+        'x_test': x_test,
         'y_test': y_test,
     }
 
@@ -82,8 +82,8 @@ class TestKSWE:
         )
 
         def test_kswe(kswe, data):
-            X, y_true = data['X_test'], data['y_test']
-            y_pred = pd.Series(kswe.predict({'X': X})['predictions'])
+            X, y_true = data['x_test'], data['y_test']
+            y_pred = pd.Series(kswe.predict({'x': X})['predictions'])
             return {'r2_score': sk_metrics.r2_score(y_true, y_pred)}  
 
         with tempfile.TemporaryDirectory() as path:

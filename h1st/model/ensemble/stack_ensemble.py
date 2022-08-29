@@ -14,12 +14,12 @@ class StackEnsemble(Ensemble):
         h1st model receives a dictionary and returns a dictionary. users can set the key of these
         dictionaries with the following keyword arguments.
 
-            **submodel_predict_input_key (str): the default value of submodel_input_key is 'X' \n
+            **submodel_predict_input_key (str): the default value of submodel_input_key is 'x' \n
             **submodel_predict_output_key (str): the default value of submodel_output_key is 'predictions'
         """
         self.ensembler = ensembler
         self._sub_models = sub_models
-        self._submodel_predict_input_key = kwargs.get('submodel_predict_input_key', 'X')
+        self._submodel_predict_input_key = kwargs.get('submodel_predict_input_key', 'x')
         self._submodel_predict_output_key = kwargs.get('submodel_predict_output_key', 'predictions')
 
     @classmethod
@@ -60,16 +60,16 @@ class StackEnsemble(Ensemble):
 
         This method will raise ModelException if ensembler model has not been trained.
 
-        :param data: must be a dictionary {'X': ...}, with X is raw data (numeric only)
+        :param data: must be a dictionary {'x': ...}, with X is raw data (numeric only)
         :return:
             output will be a dictionary {'predictions': ....}
         """
         X = StackEnsemble.preprocess(self._sub_models,
                                      self._submodel_predict_input_key,
                                      self._submodel_predict_output_key,
-                                     data['X']
+                                     data['x']
                                     )
-        return {'predictions': self.ensembler.predict({'X': X})['predictions']}
+        return {'predictions': self.ensembler.predict({'x': X})['predictions']}
 
     def persist(self, version=None):
         version = self.ensembler.persist(version)

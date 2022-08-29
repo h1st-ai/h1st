@@ -73,7 +73,7 @@ This tutorial shows how you can create Modeler and Model using the iris dataset 
     def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
         super().evaluate_model(data, model)
         X, y_true = data['test_x'], data['test_y']
-        y_pred = pd.Series(model.predict({'X': X, 'y': y_true})['species']).map(model.stats['targets_dict'])
+        y_pred = pd.Series(model.predict({'x': X, 'y': y_true})['species']).map(model.stats['targets_dict'])
         return {'micro_f1_score': f1_score(y_true, y_pred, average='micro')
 
 
@@ -83,14 +83,14 @@ Here, we define a MLModel with predict method which will be used to generate pre
 
     class MyMLModel(MLModel):
         def preprocess(self, data: Dict[str, Any]) -> Dict[str, Any]:
-            raw_data = data['X']
+            raw_data = data['x']
             return {
-                'X': self.stats['scaler'].transform(raw_data)
+                'x': self.stats['scaler'].transform(raw_data)
             }
 
         def predict(self, input_data: dict) -> dict:
             preprocess_data = self.preprocess(input_data)
-            y = self.base_model.predict(preprocess_data['X'])
+            y = self.base_model.predict(preprocess_data['x'])
             return {'species': [self.stats['targets'][item] for item in y]}
 
 
@@ -106,7 +106,7 @@ Now is the time to use our MLModeler and MLModel to create a classification mode
     print(my_ml_model.metrics)
 
     prediction = my_ml_model.predict({
-        'X': pd.DataFrame(
+        'x': pd.DataFrame(
             [[5.1, 3.5, 1.5, 0.2],
             [7.1, 3.5, 1.5, 0.6]], 
             columns=['sepal_length','sepal_width','petal_length','petal_width'])

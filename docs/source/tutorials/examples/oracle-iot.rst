@@ -1352,7 +1352,7 @@ machines.
         }
        
         def predict(self, input_data):
-            df = input_data['X']
+            df = input_data['x']
             df_resampled = df.mean(axis=0)
             
             results = {'predictions': 0}
@@ -1379,7 +1379,7 @@ performance of rule-based Fault Predictor
     y_rule_model_list = []
     for x_test in x_test_list:
         rule_model_pred = rule_model.predict({
-            'X': x_test[features]
+            'x': x_test[features]
         })['predictions']
         y_rule_model_list.append(rule_model_pred)
 
@@ -1461,7 +1461,7 @@ machines (gives many false alarm).
     
     oracle = TimeSeriesOracle(teacher=RuleModel())
     oracle.build(
-        data={'X': df_model3_train[keys+features]}, 
+        data={'x': df_model3_train[keys+features]}, 
         id_col='machineID', 
         ts_col='date'
     )
@@ -1475,7 +1475,7 @@ machines (gives many false alarm).
     y_oracle_list = []
     for x_test in x_test_list:
         oracle_pred = oracle.predict({
-            'X': x_test[keys+features]
+            'x': x_test[keys+features]
         })['predictions'][0]
         y_oracle_list.append(oracle_pred)
 
@@ -1561,7 +1561,7 @@ predictions as the original Oracle object.
     y_oracle_loaded_list = []
     for x_test in x_test_list:
         oracle_pred = oracle_2.predict({
-            'X': x_test[keys+features]
+            'x': x_test[keys+features]
         })['predictions'][0]
         y_oracle_loaded_list.append(oracle_pred)
 

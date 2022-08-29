@@ -44,9 +44,9 @@ only `process` need be implemented.
         def predict(self, data: dict) -> dict:
             """Run model inference on incoming data and return predictions in a
                dictionary. 
-               Input data should have key 'X' with data values
+               Input data should have key 'x' with data values
             """
-            predictions = self.base_model.predict(data['X'])
+            predictions = self.base_model.predict(data['x'])
             return {'predictions': predictions}
             
 
@@ -76,7 +76,7 @@ only `process` need be implemented.
                trained model created by the build_model method, and can be
                persisted along with the model
             """
-            x_test = {'X': data['x_test']}
+            x_test = {'x': data['x_test']}
             y_test = data['y_test']
             y_pred = ml_model.predict(x_test)['predictions']
             accuracy = accuracy_score(y_test, y_pred)
@@ -90,7 +90,7 @@ and are able to run inference on new data and evaluate the model's accuracy.
     :caption: Model training and prediction
 
     X, y = load_iris(return_X_y=True)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
     prepared_data = {'x_train': x_train, 'y': y_train,
                      'x_test': x_test, 'y_test': y_test}
     my_modeler = MyMLModeler()
@@ -114,7 +114,7 @@ When you are satisfied with the model, you can persist its parameters for later 
     # my_model_2 = MyMLModel.load_params(<version>)
 
     # Now you can run your predictions
-    y_pred = my_model_2.predict({'X': X_test})['predictions']
+    y_pred = my_model_2.predict({'x': x_test})['predictions']
     accuracy = accuracy_score(y_test, y_pred)
     print("Accuracy (test): %0.1f%% " % (accuracy * 100))
 

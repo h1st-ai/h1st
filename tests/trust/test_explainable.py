@@ -38,28 +38,28 @@ class ExplainableModel(MLModel):
         X = data.drop("quality", axis=1)
         Y = data["quality"]
         self.features = list(X.columns)
-        X_train, X_test, Y_train, Y_test = train_test_split(
+        x_train, x_test, y_train, y_test = train_test_split(
             X, Y, test_size=self.test_size
         )
         self.prepared_data = {
-            "train_df": X_train,
-            "test_df": X_test,
-            "train_labels": Y_train,
-            "test_labels": Y_test,
+            "train_df": x_train,
+            "test_df": x_test,
+            "train_labels": y_train,
+            "test_labels": y_test,
         }
         return self.prepared_data
 
     def train(self, prepared_data):
-        X_train, Y_train = prepared_data["train_df"], prepared_data["train_labels"]
-        self._native_model.fit(X_train, Y_train)
+        x_train, y_train = prepared_data["train_df"], prepared_data["train_labels"]
+        self._native_model.fit(x_train, y_train)
 
     def _mean_absolute_percentage_error(self, y_true, y_pred):
         y_true, y_pred = np.array(y_true), np.array(y_pred)
         return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
     def evaluate(self, data):
-        X_test, y_true = data["test_df"], data["test_labels"]
-        y_pred = self._native_model.predict(X_test)
+        x_test, y_true = data["test_df"], data["test_labels"]
+        y_pred = self._native_model.predict(x_test)
         self.metrics = {
             "mape": self._mean_absolute_percentage_error(y_true, y_pred)
         }

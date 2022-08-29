@@ -1,14 +1,14 @@
 from typing import Dict, List
 from h1st.model.oracle.oracle_modeler import OracleModeler
 from .ts_oracle import TimeSeriesOracle
-from h1st.model.oracle.student import AdaBoostModeler, AdaBoostModel, RandomForestModeler, RandomForestModel
+from h1st.model.oracle.student import GradBoostModeler, RandomForestModeler, GradBoostModeler
 from h1st.model.predictive_model import PredictiveModel
 
 class TimeseriesOracleModeler(OracleModeler):
     def __init__(self, teacher: PredictiveModel,
                  ensembler_modeler: PredictiveModel,
-                 student_modelers: List = [RandomForestModeler(RandomForestModel),
-                                           AdaBoostModeler(AdaBoostModel)],
+                 student_modelers: List = [RandomForestModeler(),
+                                           GradBoostModeler()],
                  model_class = TimeSeriesOracle
                  ):
         self.teacher = teacher
@@ -20,7 +20,7 @@ class TimeseriesOracleModeler(OracleModeler):
     def build_model(self, data: Dict, id_col: str = None, ts_col: str = None, features: List = None) -> TimeSeriesOracle:
         '''
         Build the oracle
-        :param data: a dictionary {'X': ...}
+        :param data: a dictionary {'x': ...}
         :param id_col: id column that contains entity ids such as `equipment_id`
         :param ts_col: time-granularity column to group the data
         '''

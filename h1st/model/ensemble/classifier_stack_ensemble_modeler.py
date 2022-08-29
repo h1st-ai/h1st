@@ -22,7 +22,7 @@ class ClassifierStackEnsembleModeler(StackEnsembleModeler):
     def evaluate_model(self, prepared_data: Dict, model: Modelable, metrics: List[str] = None) -> NoReturn:
         """
         Evaluates for the test data
-        :param prepared_data: a dictionary {'X_test': ..., 'y_test': ...}
+        :param prepared_data: a dictionary {'x_test': ..., 'y_test': ...}
         :param metrics: list of metrics to return and to persist later by the model.
             Default value = ['confusion_matrix', 'precision', 'recall', 'f1', 'support', 'accuracy']
 
@@ -35,8 +35,8 @@ class ClassifierStackEnsembleModeler(StackEnsembleModeler):
         if not metrics:
             metrics = ['confusion_matrix', 'precision', 'recall', 'f1', 'support', 'accuracy']
 
-        X_test, y_test = prepared_data['X_test'], prepared_data['y_test']
-        y_pred = model.predict({'X': X_test})['predictions']
+        x_test, y_test = prepared_data['x_test'], prepared_data['y_test']
+        y_pred = model.predict({'x': x_test})['predictions']
 
         precision, recall, f1, support = precision_recall_fscore_support(y_test, y_pred)
 

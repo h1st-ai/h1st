@@ -17,8 +17,8 @@ from h1st.model.oracle import OracleModeler
 
 
 def build_iris_fuzzy_model(meta_data):
-    fuzzy_vars = FuzzyVariables()
-    fuzzy_vars.add(
+    vars = FuzzyVariables()
+    vars.add(
         var_name='sepal_length',
         var_type='antecedent',
         var_range=np.arange(
@@ -29,7 +29,7 @@ def build_iris_fuzzy_model(meta_data):
         membership_funcs=[('small', fm.GAUSSIAN, [5, 1]),
                             ('large', fm.TRIANGLE, [6, 6.4, 8])]
     )
-    fuzzy_vars.add(
+    vars.add(
         var_name='sepal_width',
         var_type='antecedent',
         var_range=np.arange(
@@ -40,7 +40,7 @@ def build_iris_fuzzy_model(meta_data):
         membership_funcs=[('small', fm.GAUSSIAN, [2.8, 0.3]),
                           ('large', fm.GAUSSIAN, [3.3, 0.5])]
     )
-    fuzzy_vars.add(
+    vars.add(
         var_name='setosa',
         var_type='consequent',
         var_range=np.arange(0, 1+1e-5, 0.1),
@@ -48,20 +48,20 @@ def build_iris_fuzzy_model(meta_data):
                           ('true', fm.GAUSSIAN, [1, 0.4])]
     )
     
-    fuzzy_rule = FuzzyRules()
-    fuzzy_rule.add(
+    rules = FuzzyRules()
+    rules.add(
         'rule1',
-        if_=fuzzy_vars.sepal_length['small'] & fuzzy_vars.sepal_width['large'],
-        then_=fuzzy_vars.setosa['false']
+        if_=vars.sepal_length['small'] & vars.sepal_width['large'],
+        then_=vars.setosa['false']
     )
-    fuzzy_rule.add(
+    rules.add(
         'rule2',
-        if_=fuzzy_vars.sepal_length['large'] & fuzzy_vars.sepal_width['small'],
-        then_=fuzzy_vars.setosa['true']
+        if_=vars.sepal_length['large'] & vars.sepal_width['small'],
+        then_=vars.setosa['true']
     )
     
     modeler = FuzzyModeler()
-    model = modeler.build_model(fuzzy_rule)
+    model = modeler.build_model(rules)
     return model
 
 
@@ -80,69 +80,49 @@ def load_data():
 
     return {
         'training_data': {
-            'X': training_data[['sepal_length', 'sepal_width']],
+            'x': training_data[['sepal_length', 'sepal_width']],
             'y': training_data['species']
         },
         'test_data': {
-            'X': test_data[['sepal_length', 'sepal_width']],
+            'x': test_data[['sepal_length', 'sepal_width']],
             'y': test_data['species']
         },
     }
 
 
-def build_oracle():
-    fuzzy_teacher = build_iris_fuzzy_model()
-    data = load_data()
-
-    modeler = OracleModeler()
-    oracle = modeler.build_model(
-        data=data,
-        teacher=fuzzy_teacher
-    )
-    return oracle
-
-
 def get_meta_data(data):
     res = {}
-    for k, v in data['training_data']['X'].max().to_dict().items():
+    for k, v in data['training_data']['x'].max().to_dict().items():
         res[k] = {'max': v}
-    for k, v in data['training_data']['X'].min().to_dict().items():
+    for k, v in data['training_data']['x'].min().to_dict().items():
         res[k].update({'min': v})    
     return res
 
+
 def evaluate_model(model, data):
-    X, y_true = data['X_test'], data['y_test']
-    y_pred = pd.Series(model.predict({'X': X})['predictions'])
+    X, y_true = data['x_test'], data['y_test']
+    y_pred = pd.Series(model.predict({'x': X})['predictions'])
     return {'r2_score': metrics.r2_score(y_true, y_pred)}
+
 
 if __name__ == "__main__":
     data = load_data()
     meta_data = get_meta_data(data)
-    fuzzy_model = build_iris_fuzzy_model(meta_data)
+    fuzzy_teacher = build_iris_fuzzy_model(meta_data)
     input_vars = {
         'sepal_length': 5,
         'sepal_width': 3.7
     }
-    result = fuzzy_model.predict(input_vars)
-    print(result)
-    # oracle = build_oracle()
-    # input_vars = {
-    #         'var1': 7,
-    #         'var2': 10
-    # }
+
+    modeler = OracleModeler()
+    fuzzy_thresholds = {'setosa': 0.6, 'non_setosa': 0.49}
+    new_data = {'unlabeled_data': data['training_data']['x']}
+
+    oracle = modeler.build_model(
+        data=new_data, 
+        teacher=fuzzy_teacher,
+        fuzzy_thresholds=fuzzy_thresholds)
     
-    # # Run prediction of Fuzzy Model.
-    # prediction = oracle.predict(input_vars)
-    # print("prediction['conclusion1']: ", prediction['conclusion1'])
-
-    # # Persist Fuzzy Model.
-    # with tempfile.TemporaryDirectory() as path:
-    #     os.environ['H1ST_MODEL_REPO_PATH'] = path
-    #     fuzzy_model.persist('my_version_1')
-
-    #     # Load Fuzzy Model.
-    #     reloaded_fuzzy_model = FuzzyModel().load('my_version_1')
-
-    # prediction = reloaded_fuzzy_model.predict(input_vars)
-    # print("prediction['conclusion1']: ", prediction['conclusion1'])
+    
+    oracle.evaluate(data['test_data'])
 

@@ -16,11 +16,11 @@ class ModelRepositoryTestCase(TestCase):
         class MyModeler(MLModeler):
             def load_data(self) -> dict:
                 data = load_iris()
-                return {'X': data.data, 'y': data.target}
+                return {'x': data.data, 'y': data.target}
 
             def train_base_model(self, prepared_data):
                 model = LogisticRegression(random_state=0)
-                X, y = prepared_data['X'], prepared_data['y']
+                X, y = prepared_data['x'], prepared_data['y']
                 model.fit(X, y)
                 return model
 

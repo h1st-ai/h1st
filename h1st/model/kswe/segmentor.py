@@ -60,15 +60,15 @@ class CombinationSegmentor(Model):
         by_key = list(by.keys())
         if 'dataframe' in input_data:
             data = {}
-            if 'X_train' in input_data['dataframe']:
-                data['X'] = input_data['dataframe']['X_train']
+            if 'x_train' in input_data['dataframe']:
+                data['x'] = input_data['dataframe']['x_train']
                 data['y'] = input_data['dataframe']['y_train']
             segmentation_results = self.get_segments_from_dataframe(
                 data, segmentation_logics, by_key)
-            if 'X_train' in input_data['dataframe']:
+            if 'x_train' in input_data['dataframe']:
                 for name, segmentation_result in segmentation_results.items():
-                    segmentation_result['X_train'] = segmentation_result['X']
-                    del segmentation_result['X']
+                    segmentation_result['x_train'] = segmentation_result['x']
+                    del segmentation_result['x']
                     segmentation_result['y_train'] = segmentation_result['y']
                     del segmentation_result['y']
         elif 'json' in input_data:
@@ -146,7 +146,7 @@ class CombinationSegmentor(Model):
         return filter.values
 
     def get_segments_from_dataframe(self, dataframe, segmentation_logics, segmentation_features_key):
-        X = dataframe['X']
+        X = dataframe['x']
         X_features = list(X.columns)
         for item in segmentation_features_key: X_features.remove(item)
 
@@ -157,7 +157,7 @@ class CombinationSegmentor(Model):
                 filtered_indices = self.get_filtered_indices(X, feature, filter)
                 list_filtered_indices.append(filtered_indices)
             segment_indices = np.column_stack(list_filtered_indices).all(axis=1)
-            segments[segment_name] = {'X': X.loc[segment_indices, X_features]}
+            segments[segment_name] = {'x': X.loc[segment_indices, X_features]}
             if 'y' in dataframe:
                 segments[segment_name]['y'] = dataframe['y'].loc[segment_indices]
         return segments
@@ -165,8 +165,8 @@ class CombinationSegmentor(Model):
     def filter_small_segments(self, segments, min_data_size):
         res = {}
         for segment_name, segment in segments.items():
-            if segment['X_train'].shape[0] < min_data_size:
-                logger.info(f'{segment_name} has {segment["X_train"].shape[0]} number of data points,\
+            if segment['x_train'].shape[0] < min_data_size:
+                logger.info(f'{segment_name} has {segment["x_train"].shape[0]} number of data points,\
                             which is smaller than min_data_size: {min_data_size}')
                 continue
             res[segment_name] = segment
@@ -183,11 +183,11 @@ class MaxSegmentationModel(Model):
 
     def process(self, input_data: dict) -> dict:
         '''
-        input dict requires key "X" contain a pandas dataframe. returns dict
+        input dict requires key 'x' contain a pandas dataframe. returns dict
         with keys "segment_info" containing dict of metadata about each segment
         and "segment_data" with a dict formatted as {segment_name: pd.DataFrame}
         '''
-        X = input_data['X']
+        X = input_data['x']
 
         segments = self.stats['segment_info'].keys()
 
@@ -248,10 +248,10 @@ class MaxSegmentationModeler(Modeler):
         if self.config is None:
             raise ValueError('Must provide config or initialize with config')
 
-        # combine X_train and X_test to create full dataframe to create groups
-        # X_test is optional
-        X = pd.concat([input_data['X_train'],
-                       input_data.get('X_test')], axis=0)
+        # combine x_train and x_test to create full dataframe to create groups
+        # x_test is optional
+        X = pd.concat([input_data['x_train'],
+                       input_data.get('x_test')], axis=0)
 
         # Create bins for individual features
         self._create_bins(X)
@@ -279,12 +279,12 @@ class MaxSegmentationModeler(Modeler):
         return model
 
     def evaluate_model(self, input_data: dict, model: Model):
-        X_train = input_data['X_train']
-        X_test = input_data.get('X_test')
+        x_train = input_data['x_train']
+        x_test = input_data.get('x_test')
          
-        train_segments = model.process({'X': X_train})['segment_data']
-        if X_test is not None:
-            test_segments = model.process({'X': X_test})['segment_data']
+        train_segments = model.process({'x': x_train})['segment_data']
+        if x_test is not None:
+            test_segments = model.process({'x': x_test})['segment_data']
         else:
             test_segments = {}
 
