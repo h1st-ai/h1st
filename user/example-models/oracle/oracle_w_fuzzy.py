@@ -117,6 +117,7 @@ def get_meta_data(data):
     return res
 
 
+
 if __name__ == "__main__":
     data = load_data()
     meta_data = get_meta_data(data)
