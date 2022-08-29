@@ -1,8 +1,4 @@
 import logging
-from typing import List, Union
-
-import skfuzzy
-from skfuzzy import control as skctrl
 
 from h1st.model.modeler import Modeler
 from h1st.model.fuzzy.fuzzy_model import FuzzyModel
@@ -61,9 +57,8 @@ class FuzzyModeler(Modeler):
                              ' of FuzzyRules'))                             
 
         # Build skfuzzy control system.
-        m = self.model_class()
-        m.fuzzy_variables = variables
-        m.fuzzy_rules = rules
-        m.rules = skctrl.ControlSystemSimulation(
-            skctrl.ControlSystem(rules.get_rules()))
-        return m
+        self.model_class = FuzzyModel(
+            variables=variables,
+            rules=rules
+        )
+        return self.model_class
