@@ -1,15 +1,14 @@
 from typing import NoReturn, List
 
-import skfuzzy
 from skfuzzy import control as skctrl
 from skfuzzy.control.term import Term
 
-from h1st.model.fuzzy.enums import FuzzyMembership as fm
-
 
 class FuzzyRules:
-    
-    def add(self, rule_name, if_: Term, then_: Term) -> NoReturn:
+    def __init__(self) -> None:
+        self.rules = {}
+
+    def add(self, rule_name, if_term: Term, then_term: Term) -> NoReturn:
         """
         Add a fuzzy rule. Place antecedent type variables in 'if' statement
         and place consequent type variables in 'then' statement.
@@ -35,14 +34,16 @@ class FuzzyRules:
             rules = FuzzyRules()
             rules.add_rule(
                 'rule1',
-                if_=vars.var1['abnormal'],
-                then_=vars.conclusion1['yes'])
+                if_term=vars.var1['abnormal'],
+                then_term=vars.conclusion1['yes'])
         """
-        setattr(self, rule_name, skctrl.Rule(if_, then_))
+        self.rules[rule_name] = skctrl.Rule(if_term, then_term)
 
     def remove(self, rule_name: str) -> NoReturn:
-        if hasattr(self, rule_name):
-            delattr(self, rule_name)
+        if rule_name in self.rules:
+            self.rules.pop(rule_name)
+        else:
+            raise KeyError('rule name is not existed')
 
-    def get_rules(self) -> List[skfuzzy.control.Rule]:
-        return [rule for rule in self.__dict__.values()]
+    def get_rules(self) -> List[skctrl.Rule]:
+        return list(self.rules.values())
