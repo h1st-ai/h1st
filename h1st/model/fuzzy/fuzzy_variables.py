@@ -106,6 +106,12 @@ class FuzzyVariables:
         else:
             raise KeyError(f"variable name {var_name} does not exist.")
 
+    def get(self, var_name: str) -> skctrl.Antecedent | skctrl.Consequent:
+        if var_name in self.vars:
+            return self.vars[var_name]
+        else:
+            raise KeyError('variable name is not existed')
+
     def visualize(self) -> None:
         print("=== Antecedents & Consequents ===")
         for v in self.vars.values():

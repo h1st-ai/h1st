@@ -34,8 +34,8 @@ class FuzzyRules:
             rules = FuzzyRules()
             rules.add_rule(
                 'rule1',
-                if_term=vars.vars['var1']['abnormal'],
-                then_term=vars.vars['conclusion1']['yes'])
+                if_term=vars.get('var1')['abnormal'],
+                then_term=vars.get('conclusion1')['yes'])
         """
         self.rules[rule_name] = skctrl.Rule(if_term, then_term)
 
@@ -44,6 +44,12 @@ class FuzzyRules:
             self.rules.pop(rule_name)
         else:
             raise KeyError(f"rule name {rule_name} does not exist.")
+
+    def get(self, rule_name: str) -> skctrl.Rule:
+        if rule_name in self.rules:
+            return self.rules[rule_name]
+        else:
+            raise KeyError('rule name is not existed')
 
     def get_rules(self) -> List[skctrl.Rule]:
         return list(self.rules.values())
