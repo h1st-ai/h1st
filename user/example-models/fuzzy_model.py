@@ -4,12 +4,13 @@ import tempfile
 import numpy as np
 
 from h1st.model.fuzzy import (
-    FuzzyModeler, 
-    FuzzyModel, 
+    FuzzyModeler,
+    FuzzyModel,
     FuzzyMembership as fm,
     FuzzyVariables,
-    FuzzyRules
+    FuzzyRules,
 )
+
 
 def build_fuzzy_model():
     vars = FuzzyVariables()
@@ -17,39 +18,45 @@ def build_fuzzy_model():
         var_name='var1',
         var_type='antecedent',
         var_range=np.arange(0, 10, 0.5),
-        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
-                          ('abnormal', fm.TRIANGLE, [8, 15, 15])]
+        membership_funcs=[
+            ('normal', fm.GAUSSIAN, [3, 3.3]),
+            ('abnormal', fm.TRIANGLE, [8, 15, 15]),
+        ],
     )
     vars.add(
         var_name='var2',
         var_type='antecedent',
         var_range=np.arange(0, 10, 0.5),
-        membership_funcs=[('normal', fm.GAUSSIAN, [3, 3.3]),
-                        ('abnormal', fm.TRIANGLE, [8, 15, 15])]
+        membership_funcs=[
+            ('normal', fm.GAUSSIAN, [3, 3.3]),
+            ('abnormal', fm.TRIANGLE, [8, 15, 15]),
+        ],
     )
     vars.add(
         var_name='conclusion1',
         var_type='consequent',
         var_range=np.arange(0, 10, 0.5),
-        membership_funcs=[('no', fm.TRAPEZOID, [0, 0, 4, 6]),
-                        ('yes', fm.TRAPEZOID, [4, 6, 10, 10])]
+        membership_funcs=[
+            ('no', fm.TRAPEZOID, [0, 0, 4, 6]),
+            ('yes', fm.TRAPEZOID, [4, 6, 10, 10]),
+        ],
     )
 
     rules = FuzzyRules()
     rules.add(
         'rule1',
-        if_=vars.var1['abnormal'] & vars.var2['abnormal'],
-        then_=vars.conclusion1['yes']
+        if_term=vars.get('var1')['abnormal'] & vars.get('var2')['abnormal'],
+        then_term=vars.get('conclusion1')['yes'],
     )
     rules.add(
         'rule2',
-        if_=vars.var1['normal'],
-        then_=vars.conclusion1['no']
+        if_term=vars.get('var1')['normal'],
+        then_term=vars.get('conclusion1')['no'],
     )
     rules.add(
         'rule3',
-        if_=vars.var2['normal'],
-        then_=vars.conclusion1['no']
+        if_term=vars.get('var1')['normal'],
+        then_term=vars.get('conclusion1')['no'],
     )
 
     modeler = FuzzyModeler()
@@ -59,11 +66,8 @@ def build_fuzzy_model():
 
 if __name__ == "__main__":
     fuzzy_model = build_fuzzy_model()
-    input_vars = {
-            'var1': 7,
-            'var2': 10
-    }
-    
+    input_vars = {'var1': 7, 'var2': 10}
+
     # Run prediction of Fuzzy Model.
     prediction = fuzzy_model.predict(input_vars)
     print("prediction['conclusion1']: ", prediction['conclusion1'])
@@ -78,4 +82,3 @@ if __name__ == "__main__":
 
     prediction = reloaded_fuzzy_model.predict(input_vars)
     print("prediction['conclusion1']: ", prediction['conclusion1'])
-
