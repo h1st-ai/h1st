@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
@@ -63,7 +63,7 @@ class Model(NodeContainable, Trustable, Modelable):
     def metrics(self, value) -> Dict:
         setattr(self, '__metrics__', value)
 
-    def persist(self, version=None) -> None:
+    def persist(self, version=None) -> str:
         """
         Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
@@ -76,7 +76,7 @@ class Model(NodeContainable, Trustable, Modelable):
         repo = ModelRepository.get_model_repo(self)
         return repo.persist(model=self, version=version)
 
-    def load(self, version: str = None) -> None:
+    def load(self, version: str = None) -> Any:
         """
         Load parameters from the specified `version` from the ModelRepository.
         Leave version blank to load latest version.

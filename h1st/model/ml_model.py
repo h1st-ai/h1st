@@ -72,9 +72,9 @@ class MLModel(PredictiveModel):
     def base_model(self, value):
         setattr(self, "__base_model", value)
 
-    def load(self, version: str = None):
-        super().load(version)
+    def load(self, version: str = None) -> Any:
+        return super().load(version)
 
     # For backward compability
-    def load_params(self, version: str = None):
+    def load_params(self, version: str = None) -> Any:
         return self.load(version)

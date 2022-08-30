@@ -14,8 +14,6 @@ import sklearn
 
 from h1st.model.repository.storage.s3 import S3Storage
 from h1st.model.repository.storage.local import LocalStorage
-from h1st.model.ml_model import MLModel
-from h1st.model.rule_based_model import RuleBasedModel
 
 SEP = "::"
 logger = logging.getLogger(__name__)
@@ -119,6 +117,9 @@ class ModelSerDe:
         :param model: H1ST Model
         :param path: path to save models to
         """
+        from h1st.model.ml_model import MLModel
+        from h1st.model.rule_based_model import RuleBasedModel
+        
         meta_info = {}
 
         if model.metrics:
