@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 class FuzzyModel(RuleBasedModel):
     """
-    FuzzyModel is a RuleBasedModel. You can create FuzzyModel using
-    build_model method of FuzzyModeler. FuzzyModel has a property called
-    rules and it contains the core ControlSystem from skfuzzy package.
+    FuzzyModel is a RuleBasedModel that uses Fuzzy rule engine. You can create
+    FuzzyModel using build_model method of FuzzyModeler. FuzzyModel has a property
+    called rule_engine and it contains the core ControlSystem from skfuzzy package.
     For more information, check out https://scikit-fuzzy.github.io/scikit-fuzzy/.
     """
 
@@ -30,7 +30,7 @@ class FuzzyModel(RuleBasedModel):
 
     def process_rules(self, input_data: Dict) -> Dict:
         """
-        Execute rules on input_data.
+        Process rules on input_data.
 
         .. code-block:: python
             :caption: example
@@ -40,7 +40,7 @@ class FuzzyModel(RuleBasedModel):
         if self.rule_engine is None:
             raise ValueError(
                 (
-                    "Property rule_engine is None. Please load your fuzzy_engine "
+                    "Property rule_engine is None. Please load your rule_engine "
                     "to run this method."
                 )
             )
@@ -58,7 +58,7 @@ class FuzzyModel(RuleBasedModel):
 
     def persist(self, version=None):
         """
-        persist all pieces of oracle and store versions & classes
+        persist rule_engine property and variables, and rules in rule_details.
         """
         self.rule_details = {
             "variables": self.variables,
@@ -69,7 +69,7 @@ class FuzzyModel(RuleBasedModel):
 
     def load(self, version: str = None) -> None:
         """
-        load all pieces of oracle, return complete oracle
+        load rule_engine property and variables, and rules from rule_details.
         """
         super().load(version)
         self.variables = self.rule_details["variables"]

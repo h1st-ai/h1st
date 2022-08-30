@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 class FuzzyModeler(Modeler):
     """
     FuzzyModeler is a Modeler for FuzzyModel. Using FuzzyVariables and FuzzyRules
-    FuzzyModeler builds ControlSystem from skfuzzy package and inject it
-    into FuzzyModel's rules property. For more information, check out
-    https://scikit-fuzzy.github.io/scikit-fuzzy/.
+    FuzzyModeler builds FuzzyModel.
 
     """
 
@@ -55,5 +53,5 @@ class FuzzyModeler(Modeler):
         if not isinstance(variables, FuzzyVariables):
             raise ValueError(f"{type(variables)} is not an instance of FuzzyRules")
 
-        # Build skfuzzy control system.
+        # Build fuzzy model.
         return self.model_class(variables=variables, rules=rules)

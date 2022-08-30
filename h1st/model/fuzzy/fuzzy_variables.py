@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class FuzzyVariables:
     def __init__(self) -> None:
-        self.vars = {}
+        self.variables = {}
 
     def add(
         self, var_name: str, var_type: str, var_range: list, membership_funcs: list
@@ -20,15 +20,15 @@ class FuzzyVariables:
         """
         Add a fuzzy variable with their type and membership functions.
 
-        :param range_: the range of variable
-        :param name: the name of variable
+        :param var_name: the name of variable
+        :param var_type: the varilable type should be either consequent or antecedent
+        :param var_range: the range of variable
         :param membership_funcs: this is the list of tuple(membership_func_name, membership_func_type, membership_func_range)
-            There are four different kinds of membership_func_type that are supported and their membership_func_range should follow the following formats.
+            there are four different kinds of membership_func_type that are supported and their membership_func_range should follow the following formats.
             GAUSSIAN: [mean, sigma]
             SIGMOID: [offset, width]
             TRIANGLE: [a, b, c] where a <= b <= c
             TRAPEZOID: [a, b, c, d] where a <= b <= c <= d
-        :param type_: the varilable type should be either consequent or antecedent
 
         .. code-block:: python
             :caption: example
@@ -99,25 +99,25 @@ class FuzzyVariables:
             else:
                 raise ValueError(f"{mem_func_type} is not supported.")
 
-        self.vars[var_name] = fuzzy_var
+        self.variables[var_name] = fuzzy_var
 
     def remove(self, var_name: str) -> None:
-        if var_name in self.vars:
-            self.vars.pop(var_name)
+        if var_name in self.variables:
+            self.variables.pop(var_name)
         else:
             raise KeyError(f"variable name {var_name} does not exist.")
 
     def get(self, var_name: str) -> Any:
-        if var_name in self.vars:
-            return self.vars[var_name]
+        if var_name in self.variables:
+            return self.variables[var_name]
         else:
             raise KeyError(f"variable name {var_name} does not exist.")
 
     def visualize(self) -> None:
         print("=== Antecedents & Consequents ===")
-        for v in self.vars.values():
+        for v in self.variables.values():
             if isinstance(v, skfuzzy.control.Antecedent):
                 v.view()
-        for v in self.vars.values():
+        for v in self.variables.values():
             if isinstance(v, skfuzzy.control.Consequent):
                 v.view()
