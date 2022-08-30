@@ -45,8 +45,8 @@ class FuzzyModeler(Modeler):
             rules = FuzzyRules()
             rules.add_rule(
                 'rule1',
-                if_=vars.var1['abnormal'],
-                then_=vars.conclusion1['yes'])
+                if_term=vars.get('var1')['abnormal'],
+                then_term=vars.get('conclusion1')['yes'])
             modeler = FuzzyModeler()
             model = modeler.build_model(vars, rules)
         """
