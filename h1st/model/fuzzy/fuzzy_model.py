@@ -23,10 +23,8 @@ class FuzzyModel(RuleBasedModel):
         self.variables = variables
         self.rules = rules
 
-        if rules is None:
-            self.fuzzy_engine = None
-        else:
-            self.fuzzy_engine = skctrl.ControlSystemSimulation(
+        if rules is not None:
+            self.rule_engine = skctrl.ControlSystemSimulation(
                 skctrl.ControlSystem(list(rules.rules.values()))
             )
 
@@ -39,20 +37,20 @@ class FuzzyModel(RuleBasedModel):
             input_data = {'var1': 5, 'var2': 9}
             predictions = model.process_rules(input_data)
         """
-        if self.fuzzy_engine is None:
+        if self.rule_engine is None:
             raise ValueError(
                 (
-                    "Property fuzzy_engine is None. Please load your fuzzy_engine "
+                    "Property rule_engine is None. Please load your fuzzy_engine "
                     "to run this method."
                 )
             )
         for key, value in input_data.items():
-            self.fuzzy_engine.input[key] = value
-        self.fuzzy_engine.compute()
+            self.rule_engine.input[key] = value
+        self.rule_engine.compute()
 
         outputs = {}
-        for cls in self.fuzzy_engine.ctrl.consequents:
-            outputs[cls.label] = round(self.fuzzy_engine.output[cls.label], 5)
+        for cls in self.rule_engine.ctrl.consequents:
+            outputs[cls.label] = round(self.rule_engine.output[cls.label], 5)
         return outputs
 
     def visualize_variables(self):
@@ -65,7 +63,6 @@ class FuzzyModel(RuleBasedModel):
         self.rule_details = {
             "variables": self.variables,
             "rules": self.rules,
-            "rule_engine": self.fuzzy_engine,
         }
         super().persist(version)
         return version
@@ -77,5 +74,4 @@ class FuzzyModel(RuleBasedModel):
         super().load(version)
         self.variables = self.rule_details["variables"]
         self.rules = self.rule_details["rules"]
-        self.fuzzy_engine = self.rule_details["rule_engine"]
         return self
