@@ -30,20 +30,20 @@ class FuzzyModel(RuleBasedModel):
                 skctrl.ControlSystem(rules.get_rules())
             )
 
-    def predict(self, input_data: Dict) -> Dict:
+    def execute_rules(self, input_data: Dict) -> Dict:
         """
         Execute rules on input_data.
 
         .. code-block:: python
             :caption: example
             input_data = {'var1': 5, 'var2': 9}
-            predictions = model.predict(input_data)
+            predictions = model.execute_rules(input_data)
         """
         if self.rules is None:
             raise ValueError(
                 (
-                    'Property rules is None. Please load your rules '
-                    'to run this method.'
+                    "Property rules is None. Please load your rules "
+                    "to run this method."
                 )
             )
         for key, value in input_data.items():

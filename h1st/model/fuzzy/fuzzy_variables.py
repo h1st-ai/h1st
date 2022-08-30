@@ -41,13 +41,13 @@ class FuzzyVariables:
             )
         """
         # Check variable type.
-        if var_type == 'antecedent':
+        if var_type == "antecedent":
             fuzzy_var = skctrl.Antecedent(var_range, var_name)
-        elif var_type == 'consequent':
+        elif var_type == "consequent":
             fuzzy_var = skctrl.Consequent(var_range, var_name)
         else:
-            logger.error(f'{var_type} is not supported type')
-            raise ValueError(f'{var_type} is not supported type')
+            logger.error(f"{var_type} is not supported type")
+            raise ValueError(f"{var_type} is not supported type")
 
         # Add membership function and its values.
         for mem_func_name, mem_func_type, mem_func_vals in membership_funcs:
@@ -55,8 +55,8 @@ class FuzzyVariables:
                 if len(mem_func_vals) != 3:
                     raise ValueError(
                         (
-                            f'TRIANGLE membership function needs 3 '
-                            f'values. Provided {len(mem_func_vals)} values.'
+                            f"TRIANGLE membership function needs 3 "
+                            f"values. Provided {len(mem_func_vals)} values."
                         )
                     )
                 fuzzy_var[mem_func_name] = skfuzzy.trimf(
@@ -66,8 +66,8 @@ class FuzzyVariables:
                 if len(mem_func_vals) != 4:
                     raise ValueError(
                         (
-                            f'TRAPEZOID membership function needs 4 '
-                            f'values. Provided {len(mem_func_vals)} values.'
+                            f"TRAPEZOID membership function needs 4 "
+                            f"values. Provided {len(mem_func_vals)} values."
                         )
                     )
                 fuzzy_var[mem_func_name] = skfuzzy.trapmf(
@@ -77,8 +77,8 @@ class FuzzyVariables:
                 if len(mem_func_vals) != 2:
                     raise ValueError(
                         (
-                            f'GAUSSIAN membership function needs 2 '
-                            f'values. Provided {len(mem_func_vals)} values.'
+                            f"GAUSSIAN membership function needs 2 "
+                            f"values. Provided {len(mem_func_vals)} values."
                         )
                     )
                 fuzzy_var[mem_func_name] = skfuzzy.gaussmf(
@@ -88,15 +88,15 @@ class FuzzyVariables:
                 if len(mem_func_vals) != 2:
                     raise ValueError(
                         (
-                            f'SIGMOID membership function needs 2 '
-                            f'values. Provided {len(mem_func_vals)} values.'
+                            f"SIGMOID membership function needs 2 "
+                            f"values. Provided {len(mem_func_vals)} values."
                         )
                     )
                 fuzzy_var[mem_func_name] = skfuzzy.sigmf(
                     fuzzy_var.universe, mem_func_vals[0], mem_func_vals[1]
                 )
             else:
-                raise ValueError(f'{mem_func_type} is not supported.')
+                raise ValueError(f"{mem_func_type} is not supported.")
 
         self.vars[var_name] = fuzzy_var
 
@@ -104,7 +104,7 @@ class FuzzyVariables:
         if var_name in self.vars:
             self.vars.pop(var_name)
         else:
-            raise KeyError('variable name is not existed')
+            raise KeyError(f"variable name {var_name} does not exist.")
 
     def visualize(self) -> None:
         print("=== Antecedents & Consequents ===")
