@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 import skfuzzy
 from skfuzzy import control as skctrl
@@ -106,7 +107,7 @@ class FuzzyVariables:
         else:
             raise KeyError(f"variable name {var_name} does not exist.")
 
-    def get(self, var_name: str) -> skctrl.Antecedent | skctrl.Consequent:
+    def get(self, var_name: str) -> Any:
         if var_name in self.vars:
             return self.vars[var_name]
         else:
