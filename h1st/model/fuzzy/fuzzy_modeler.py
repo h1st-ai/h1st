@@ -56,5 +56,4 @@ class FuzzyModeler(Modeler):
             raise ValueError(f"{type(variables)} is not an instance of FuzzyRules")
 
         # Build skfuzzy control system.
-        self.model_class = FuzzyModel(variables=variables, rules=rules)
-        return self.model_class
+        return self.model_class(variables=variables, rules=rules)

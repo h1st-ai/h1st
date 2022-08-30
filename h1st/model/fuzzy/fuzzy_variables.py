@@ -111,7 +111,7 @@ class FuzzyVariables:
         if var_name in self.vars:
             return self.vars[var_name]
         else:
-            raise KeyError('variable name is not existed')
+            raise KeyError(f"variable name {var_name} does not exist.")
 
     def visualize(self) -> None:
         print("=== Antecedents & Consequents ===")

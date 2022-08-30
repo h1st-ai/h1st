@@ -49,7 +49,4 @@ class FuzzyRules:
         if rule_name in self.rules:
             return self.rules[rule_name]
         else:
-            raise KeyError('rule name is not existed')
-
-    def get_rules(self) -> List[skctrl.Rule]:
-        return list(self.rules.values())
+            raise KeyError("rule name is not existed")

@@ -20,40 +20,62 @@ class FuzzyModel(RuleBasedModel):
 
     def __init__(self, variables: FuzzyVariables = None, rules: FuzzyRules = None):
         super().__init__()
-        self.fuzzy_variables = variables
-        self.fuzzy_rules = rules
+        self.variables = variables
+        self.rules = rules
 
         if rules is None:
-            self.rules = None
+            self.fuzzy_engine = None
         else:
-            self.rules = skctrl.ControlSystemSimulation(
-                skctrl.ControlSystem(rules.get_rules())
+            self.fuzzy_engine = skctrl.ControlSystemSimulation(
+                skctrl.ControlSystem(list(rules.rules.values()))
             )
 
-    def execute_rules(self, input_data: Dict) -> Dict:
+    def process_rules(self, input_data: Dict) -> Dict:
         """
         Execute rules on input_data.
 
         .. code-block:: python
             :caption: example
             input_data = {'var1': 5, 'var2': 9}
-            predictions = model.execute_rules(input_data)
+            predictions = model.process_rules(input_data)
         """
-        if self.rules is None:
+        if self.fuzzy_engine is None:
             raise ValueError(
                 (
-                    "Property rules is None. Please load your rules "
+                    "Property fuzzy_engine is None. Please load your fuzzy_engine "
                     "to run this method."
                 )
             )
         for key, value in input_data.items():
-            self.rules.input[key] = value
-        self.rules.compute()
+            self.fuzzy_engine.input[key] = value
+        self.fuzzy_engine.compute()
 
         outputs = {}
-        for cls in self.rules.ctrl.consequents:
-            outputs[cls.label] = round(self.rules.output[cls.label], 5)
+        for cls in self.fuzzy_engine.ctrl.consequents:
+            outputs[cls.label] = round(self.fuzzy_engine.output[cls.label], 5)
         return outputs
 
     def visualize_variables(self):
-        self.fuzzy_variables.visualize()
+        self.variables.visualize()
+
+    def persist(self, version=None):
+        """
+        persist all pieces of oracle and store versions & classes
+        """
+        self.rule_details = {
+            "variables": self.variables,
+            "rules": self.rules,
+            "rule_engine": self.fuzzy_engine,
+        }
+        super().persist(version)
+        return version
+
+    def load(self, version: str = None) -> None:
+        """
+        load all pieces of oracle, return complete oracle
+        """
+        super().load(version)
+        self.variables = self.rule_details["variables"]
+        self.rules = self.rule_details["rules"]
+        self.fuzzy_engine = self.rule_details["rule_engine"]
+        return self

@@ -3,8 +3,8 @@ from typing import Any, Dict
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
-from .repository.model_repository import ModelRepository
-from .modeler import Modelable
+from h1st.model.repository.model_repository import ModelRepository
+from h1st.model.modeler import Modelable
 
 
 class Model(NodeContainable, Trustable, Modelable):
@@ -47,21 +47,21 @@ class Model(NodeContainable, Trustable, Modelable):
     ## TODO: Need a better naming and the definition of the property
     @property
     def stats(self):
-        return getattr(self, '__stats__', None)
+        return getattr(self, "__stats__", None)
 
     @stats.setter
     def stats(self, value) -> Dict:
-        setattr(self, '__stats__', value)
+        setattr(self, "__stats__", value)
 
     @property
     def metrics(self):
-        if not hasattr(self, '__metrics__'):
-            setattr(self, '__metrics__', {})
-        return getattr(self, '__metrics__')
+        if not hasattr(self, "__metrics__"):
+            setattr(self, "__metrics__", {})
+        return getattr(self, "__metrics__")
 
     @metrics.setter
     def metrics(self, value) -> Dict:
-        setattr(self, '__metrics__', value)
+        setattr(self, "__metrics__", value)
 
     def persist(self, version=None) -> str:
         """
