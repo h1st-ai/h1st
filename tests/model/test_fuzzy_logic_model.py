@@ -67,19 +67,19 @@ class TestFuzzyLogicModelTestCase:
     def test_fuzzy_logic_model(self):
         m = build_fuzzy_logic_model()
         sensor_input = {'var1': 7, 'var2': 10}
-        prediction = m.predict(sensor_input)
+        prediction = m.process_rules(sensor_input)
         assert prediction['conclusion1'] < 5
 
         sensor_input = {'var1': 3, 'var2': 15}
-        prediction = m.predict(sensor_input)
+        prediction = m.process_rules(sensor_input)
         assert prediction['conclusion1'] < 5
 
         sensor_input = {'var1': 10, 'var2': 5}
-        prediction = m.predict(sensor_input)
+        prediction = m.process_rules(sensor_input)
         assert prediction['conclusion1'] < 5
 
         sensor_input = {'var1': 10, 'var2': 15}
-        prediction = m.predict(sensor_input)
+        prediction = m.process_rules(sensor_input)
         assert prediction['conclusion1'] > 5
 
     def test_fuzzy_model_persist_and_load(self):
@@ -92,5 +92,5 @@ class TestFuzzyLogicModelTestCase:
             m = FuzzyModel().load('test_model')
             assert m.rules is not None
             sensor_input = {'var1': 10, 'var2': 15}
-            prediction = m.predict(sensor_input)
+            prediction = m.process_rules(sensor_input)
             assert prediction['conclusion1'] > 5
