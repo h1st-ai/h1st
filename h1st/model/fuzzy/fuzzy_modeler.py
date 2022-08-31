@@ -16,8 +16,11 @@ class FuzzyModeler(Modeler):
 
     """
 
-    def __init__(self, model_class=FuzzyModel):
-        self.model_class = model_class
+    def __init__(self, model_class: FuzzyModel = None) -> None:
+        if model_class is None:
+            self.model_class = FuzzyModel
+        else:
+            self.model_class = model_class
 
     def build_model(self, variables: FuzzyVariables, rules: FuzzyRules) -> FuzzyModel:
         """
