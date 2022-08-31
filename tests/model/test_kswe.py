@@ -12,8 +12,7 @@ from sklearn.model_selection import train_test_split
 from h1st.model.model import Model
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
-from h1st.model.rule_based_modeler import RuleBasedModeler
-from h1st.model.kswe import KSWE, KSWEModeler, MaxSegmentationModeler, MajorityVotingEnsemble
+from h1st.model.kswe import KSWE, KSWEModeler
 
 
 class MySubModel(MLModel):
@@ -92,7 +91,7 @@ class TestKSWE:
             kswe.persist('my_v1')
             kswe = None
             kswe = KSWE()
-            kswe.load_params('my_v1')
+            kswe.load('my_v1')
             r2_score2 = test_kswe(kswe, data)['r2_score']
             assert r2_score1 == r2_score2
 

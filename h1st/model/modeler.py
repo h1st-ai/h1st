@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from h1st.h1flow.h1step_containable import NodeContainable
 
-from .modelable import Modelable
+from h1st.model.modelable import Modelable
 
 
 class Modeler(NodeContainable):
@@ -51,21 +51,21 @@ class Modeler(NodeContainable):
 
     @property
     def stats(self):
-        return getattr(self, '__stats__', None)
+        return getattr(self, "__stats__", None)
 
     @stats.setter
     def stats(self, value) -> Dict:
-        setattr(self, '__stats__', value)
+        setattr(self, "__stats__", value)
 
     @property
     def metrics(self):
-        if not hasattr(self, '__metrics__'):
-            setattr(self, '__metrics__', {})
-        return getattr(self, '__metrics__')
+        if not hasattr(self, "__metrics__"):
+            setattr(self, "__metrics__", {})
+        return getattr(self, "__metrics__")
 
     @metrics.setter
     def metrics(self, value) -> Dict:
-        setattr(self, '__metrics__', value)
+        setattr(self, "__metrics__", value)
 
     def load_data(self) -> Dict:
         """
@@ -89,7 +89,9 @@ class Modeler(NodeContainable):
         :param model: the corresponding h1st `Model` to evaluate against.
         """
         if type(model) != self.model_class:
-            raise ValueError('The provided model is not a %s' % self.model_class.__name__)
+            raise ValueError(
+                "The provided model is not a %s" % self.model_class.__name__
+            )
 
         return None
 
@@ -98,4 +100,4 @@ class Modeler(NodeContainable):
         Implement logic to create the corresponding Model object
         :returns: the corresponding `Model`.
         """
-        raise NotImplementedError('Inherit and implement this method')
+        raise NotImplementedError("Inherit and implement this method")
