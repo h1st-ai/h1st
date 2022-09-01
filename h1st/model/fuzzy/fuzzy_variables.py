@@ -116,8 +116,8 @@ class FuzzyVariables:
     def visualize(self) -> None:
         print("=== Antecedents & Consequents ===")
         for v in self.variables.values():
-            if isinstance(v, skfuzzy.control.Antecedent):
+            if isinstance(v, skctrl.Antecedent):
                 v.view()
         for v in self.variables.values():
-            if isinstance(v, skfuzzy.control.Consequent):
+            if isinstance(v, skctrl.Consequent):
                 v.view()
