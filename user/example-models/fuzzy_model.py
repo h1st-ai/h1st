@@ -44,18 +44,18 @@ def build_fuzzy_model():
 
     rules = FuzzyRules()
     rules.add(
-        'rule1',
+        rule_name='rule1',
         if_term=vars.get('var1')['abnormal'] & vars.get('var2')['abnormal'],
         then_term=vars.get('conclusion1')['yes'],
     )
     rules.add(
-        'rule2',
+        rule_name='rule2',
         if_term=vars.get('var1')['normal'],
         then_term=vars.get('conclusion1')['no'],
     )
     rules.add(
-        'rule3',
-        if_term=vars.get('var1')['normal'],
+        rule_name='rule3',
+        if_term=vars.get('var2')['normal'],
         then_term=vars.get('conclusion1')['no'],
     )
 
