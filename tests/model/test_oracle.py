@@ -105,30 +105,31 @@ def build_fuzzy_model(data):
     fuzzy_rule = FuzzyRules()
     fuzzy_rule.add(
         "rule1",
-        if_=fuzzy_vars.get("sepal_length")["small"]
+        if_term=fuzzy_vars.get("sepal_length")["small"]
         & fuzzy_vars.get("sepal_width")["large"],
-        then_=fuzzy_vars.get("setosa")["true"],
+        then_term=fuzzy_vars.get("setosa")["true"],
     )
     fuzzy_rule.add(
         "rule2",
-        if_=fuzzy_vars.get("sepal_length")["large"]
+        if_term=fuzzy_vars.get("sepal_length")["large"]
         & fuzzy_vars.get("sepal_width")["small"],
-        then_=fuzzy_vars.setosa["false"],
+        then_term=fuzzy_vars.get("setosa")["false"],
     )
     fuzzy_rule.add(
         "rule3",
-        if_=fuzzy_vars.get("sepal_length")["large"]
+        if_term=fuzzy_vars.get("sepal_length")["large"]
         & fuzzy_vars.get("sepal_width")["small"],
-        then_=fuzzy_vars.non_setosa["true"],
+        then_term=fuzzy_vars.get("non_setosa")["true"],
     )
     fuzzy_rule.add(
         "rule4",
-        if_=fuzzy_vars.sepal_length["small"] & fuzzy_vars.sepal_width["large"],
-        then_=fuzzy_vars.non_setosa["false"],
+        if_term=fuzzy_vars.get("sepal_length")["small"]
+        & fuzzy_vars.get("sepal_width")["large"],
+        then_term=fuzzy_vars.get("non_setosa")["false"],
     )
 
     modeler = FuzzyModeler()
-    return modeler.build_model(fuzzy_rule)
+    return modeler.build_model(fuzzy_vars, fuzzy_rule)
 
 
 def load_data():

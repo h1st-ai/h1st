@@ -69,7 +69,7 @@ if __name__ == "__main__":
     input_vars = {'var1': 7, 'var2': 10}
 
     # Run prediction of Fuzzy Model.
-    prediction = fuzzy_model.predict(input_vars)
+    prediction = fuzzy_model.process_rules(input_vars)
     print("prediction['conclusion1']: ", prediction['conclusion1'])
 
     # Persist Fuzzy Model.
@@ -80,5 +80,5 @@ if __name__ == "__main__":
         # Load Fuzzy Model.
         reloaded_fuzzy_model = FuzzyModel().load('my_version_1')
 
-    prediction = reloaded_fuzzy_model.predict(input_vars)
+    prediction = reloaded_fuzzy_model.process_rules(input_vars)
     print("prediction['conclusion1']: ", prediction['conclusion1'])

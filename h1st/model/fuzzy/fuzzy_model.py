@@ -1,5 +1,6 @@
 import logging
 from typing import Dict
+from typing_extensions import Self
 from skfuzzy import control as skctrl
 
 import pandas as pd
@@ -20,14 +21,16 @@ class FuzzyModel(RuleBasedModel):
     For more information, check out https://scikit-fuzzy.github.io/scikit-fuzzy/.
     """
 
-    def __init__(self, variables: FuzzyVariables = None, rules: FuzzyRules = None):
+    def __init__(
+        self, variables: FuzzyVariables = None, rules: FuzzyRules = None
+    ) -> None:
         super().__init__()
         self.variables = variables
         self.rules = rules
 
         if rules is not None:
             self.rule_engine = skctrl.ControlSystemSimulation(
-                skctrl.ControlSystem(list(rules.rules.values()))
+                skctrl.ControlSystem(rules.list())
             )
 
     def process_rules_pointwise(self, input_data: Dict) -> Dict:
@@ -57,16 +60,23 @@ class FuzzyModel(RuleBasedModel):
         return outputs
 
     def process_rules(self, input_data: Dict) -> Dict:
-        df = input_data["x"]
-        temp = map(self.process_rules_pointwise, df.to_dict("records"))
-        # predictions = list(map(lambda x: list(x.values()), temp))
-        # predictions = list(map(lambda x: 1 if list(x.values())[0] > 0.6 else 0, temp))
-        return {"predictions": pd.DataFrame(temp)}
+        if "x" not in input_data:
+            raise KeyError("x is not in input_data.")
+
+        if isinstance(input_data["x"], pd.DataFrame):
+            data = input_data["x"].to_dict("records")
+        elif isinstance(input_data["x"], list):
+            data = input_data["x"]
+        else:
+            data = [input_data["x"]]
+
+        predictions = map(self.process_rules_pointwise, data)
+        return {"predictions": pd.DataFrame(predictions)}
 
     def visualize_variables(self):
         self.variables.visualize()
 
-    def persist(self, version=None):
+    def persist(self, version=None) -> str:
         """
         persist rule_engine property and variables, and rules in rule_details.
         """
@@ -77,7 +87,7 @@ class FuzzyModel(RuleBasedModel):
         super().persist(version)
         return version
 
-    def load(self, version: str = None) -> None:
+    def load(self, version: str = None) -> Self:
         """
         load rule_engine property and variables, and rules from rule_details.
         """

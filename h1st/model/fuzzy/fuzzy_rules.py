@@ -50,3 +50,6 @@ class FuzzyRules:
             return self.rules[rule_name]
         else:
             raise KeyError(f"rule name {rule_name} does not exist.")
+
+    def list(self) -> List[skctrl.Rule]:
+        return list(self.rules.values())

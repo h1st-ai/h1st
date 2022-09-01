@@ -66,31 +66,31 @@ def build_fuzzy_logic_model():
 class TestFuzzyLogicModelTestCase:
     def test_fuzzy_logic_model(self):
         m = build_fuzzy_logic_model()
-        sensor_input = {"x": {"var1": 7, "var2": 10}}
-        prediction = m.predict(sensor_input)
-        assert prediction["conclusion1"] < 5
+        sensor_input = {"var1": 7, "var2": 10}
+        prediction = m.process_rules({"x": sensor_input})["predictions"]
+        assert prediction["conclusion1"].iloc[0] < 5
 
-        sensor_input = {"x": {"var1": 3, "var2": 15}}
-        prediction = m.predict(sensor_input)
-        assert prediction["conclusion1"] < 5
+        sensor_input = {"var1": 3, "var2": 15}
+        prediction = m.process_rules({"x": sensor_input})["predictions"]
+        assert prediction["conclusion1"].iloc[0] < 5
 
-        sensor_input = {"x": {"var1": 10, "var2": 5}}
-        prediction = m.predict(sensor_input)
-        assert prediction["conclusion1"] < 5
+        sensor_input = {"var1": 10, "var2": 5}
+        prediction = m.process_rules({"x": sensor_input})["predictions"]
+        assert prediction["conclusion1"].iloc[0] < 5
 
-        sensor_input = {"x": {"var1": 10, "var2": 15}}
-        prediction = m.predict(sensor_input)
-        assert prediction["conclusion1"] > 5
+        sensor_input = {"var1": 10, "var2": 15}
+        prediction = m.process_rules({"x": sensor_input})["predictions"]
+        assert prediction["conclusion1"].iloc[0] > 5
 
     def test_fuzzy_model_persist_and_load(self):
         m = build_fuzzy_logic_model()
         with tempfile.TemporaryDirectory() as path:
             os.environ["H1ST_MODEL_REPO_PATH"] = path
             m.persist("test_model")
-
             m = None
             m = FuzzyModel().load("test_model")
             assert m.rules is not None
+
             sensor_input = {"var1": 10, "var2": 15}
-            prediction = m.predict(sensor_input)
-            assert prediction["conclusion1"] > 5
+            prediction = m.process_rules({"x": sensor_input})["predictions"]
+            assert prediction["conclusion1"].iloc[0] > 5
