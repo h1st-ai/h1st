@@ -11,18 +11,25 @@ include = ['h1st/*']
 
 
 [tool.poetry.dependencies]
-Python = ">= 3.8, < 3.11"
+Python = '>= 3.8, < 3.11'
 
+# Data Processing
 PyArrow = '^9.0.0'
-GraphViz = '^0.20.1'
-LIME = '^0.2.0.1'
 S3FS = '^2022.8.2'
+
+# Machine Learning / Deep Learning
 SciKit-Fuzzy = '^0.4.2'
 SciKit-Learn = '^1.1.2'
+TensorFlow = '^2.10.0'
+
+# Trustworthy AI
+GraphViz = '^0.20.1'
+LIME = '^0.2.0.1'
 SHAP = '^0.41.0'
+
+# misc/other
 ULID-Py = '^1.1.0'
 PyYAML = '^6.0'
-TensorFlow = '^2.10.0'
 
 
 [tool.poetry.dev-dependencies]
