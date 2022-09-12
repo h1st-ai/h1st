@@ -98,6 +98,17 @@ def load_data():
         },
     }
 
+    # return {
+    #     "training_data": {
+    #         "x": training_data[["sepal_length", "sepal_width"]],
+    #         "y": training_data["species"],
+    #     },
+    #     "test_data": {
+    #         "x": test_data[["sepal_length", "sepal_width"]],
+    #         "y": test_data["species"],
+    #     },
+    # }
+
 
 def get_meta_data(data):
     res = {}
@@ -106,7 +117,6 @@ def get_meta_data(data):
     for k, v in data["labeled_data"]["x_train"].min().to_dict().items():
         res[k].update({"min": v})
     return res
-
 
 
 if __name__ == "__main__":
