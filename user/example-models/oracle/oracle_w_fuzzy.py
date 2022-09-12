@@ -119,7 +119,6 @@ def get_meta_data(data):
     return res
 
 
-
 if __name__ == "__main__":
     data = load_data()
     # data["labeled_data"]["y_train"].rename(columns={"species": "setosa"}, inplace=True)
