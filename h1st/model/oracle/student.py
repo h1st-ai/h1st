@@ -18,7 +18,7 @@ class Student(MLModel):
         :params input_data: an dictionary with key `X` containing the data to get predictions.
         :returns: a dictionary with key `predictions` containing the predictions
         """
-        return {'predictions': self.base_model.predict(input_data['x'])}
+        return {"predictions": self.base_model.predict(input_data["x"])}
 
 
 class StudentModeler(MLModeler):
@@ -31,7 +31,7 @@ class StudentModeler(MLModeler):
         self.base_model = base_model
 
     def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
-        self.base_model.fit(prepared_data['x'], prepared_data['y'])
+        self.base_model.fit(prepared_data["x"], prepared_data["y"])
         return deepcopy(self.base_model)
 
 
@@ -39,7 +39,9 @@ class RandomForestModel(Student):
     """
     Knowledge Generalization Model backed by a RandomForest algorithm
     """
-    pass
+
+    def predict_proba(self, input_data: Dict) -> Dict:
+        return {"predictions": self.base_model.predict_proba(input_data["x"])}
 
 
 class RandomForestModeler(StudentModeler):
@@ -52,28 +54,13 @@ class RandomForestModeler(StudentModeler):
         self.model_class = RandomForestModel
 
 
-class GradBoostModel(Student):
-    """
-    Knowledge Generalization Model backed by an AdaBoost algorithm
-    """
-    pass
-
-
-class GradBoostModeler(StudentModeler):
-    """
-    Knowledge Generalization Modeler backed by a AdaBoost algorithm.
-    """
-
-    def __init__(self, base_model=GradientBoostingClassifier()):
-        super().__init__(base_model=base_model)
-        self.model_class = GradBoostModel
-
-
 class LogisticRegressionModel(Student):
     """
     Knowledge Generalization Model backed by an AdaBoost algorithm
     """
-    pass
+
+    def predict_proba(self, input_data: Dict) -> Dict:
+        return {"predictions": self.base_model.predict_proba(input_data["x"])}
 
 
 class LogisticRegressionModeler(StudentModeler):

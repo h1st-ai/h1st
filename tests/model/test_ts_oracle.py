@@ -45,28 +45,28 @@ class RuleModel(PredictiveModel):
         return {"predictions": pred}
 
 
-class MyMLModel(MLModel):
-    def predict(self, input_data: Dict) -> Dict:
-        y = self.base_model.predict(input_data["x"])
-        return {"predictions": y}
+# class MyMLModel(MLModel):
+#     def predict(self, input_data: Dict) -> Dict:
+#         y = self.base_model.predict(input_data["x"])
+#         return {"predictions": y}
 
 
-class MyMLModeler(MLModeler):
-    def __init__(self, model_class=MyMLModel):
-        self.model_class = model_class
-        self.stats = {}
+# class MyMLModeler(MLModeler):
+#     def __init__(self, model_class=MyMLModel):
+#         self.model_class = model_class
+#         self.stats = {}
 
-    def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
-        super().evaluate_model(data, model)
-        X, y_true = data["x_test"], data["y_test"]
-        y_pred = pd.Series(model.predict({"x": X, "y": y_true})["predictions"])
-        return {"r2_score": metrics.r2_score(y_true, y_pred)}
+#     def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
+#         super().evaluate_model(data, model)
+#         X, y_true = data["x_test"], data["y_test"]
+#         y_pred = pd.Series(model.predict({"x": X, "y": y_true})["predictions"])
+#         return {"r2_score": metrics.r2_score(y_true, y_pred)}
 
-    def train_base_model(self, data: Dict[str, Any]) -> Any:
-        X, y = data["x_train"], data["y_train"]
-        model = LogisticRegression(random_state=0)
-        model.fit(X, y)
-        return model
+#     def train_base_model(self, data: Dict[str, Any]) -> Any:
+#         X, y = data["x_train"], data["y_train"]
+#         model = LogisticRegression(random_state=0)
+#         model.fit(X, y)
+#         return model
 
 
 class TestTimeSeriesOracle:

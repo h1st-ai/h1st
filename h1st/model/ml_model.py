@@ -29,7 +29,7 @@ class MLModel(PredictiveModel):
 
             class MyMLModel(MLModel):
                 def predict(self, input_data: Dict) -> Dict:
-            return {'predictions': self.base_model.predict(input_data['x'])}
+                    return {'predictions': self.base_model.predict(input_data['x'])}
 
             class MyMLModeler(MLModeler):
                 def __init__(self):
