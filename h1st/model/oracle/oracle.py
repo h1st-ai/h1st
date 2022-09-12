@@ -98,10 +98,6 @@ class Oracle(PredictiveModel):
         model.ensemblers = ensemblers
         return model
 
-    # @classmethod
-    # def generate_features(cls, data: Dict):
-    #     return {'data': data['data'].copy()}
-
     @classmethod
     def generate_teacher_prediction(
         cls, data: Dict, teacher: RuleBasedModel, stats: Dict
@@ -122,7 +118,6 @@ class Oracle(PredictiveModel):
         if features is not None:
             df = df[features]
 
-        # df = cls.generate_features({'data': df})['data']
         teacher_pred = teacher.predict({"x": df})
         if "predictions" not in teacher_pred:
             raise KeyError("Teacher's output must contain a key named `predictions`")
@@ -165,12 +160,7 @@ class Oracle(PredictiveModel):
                         name=f"stud_{idx}_{col}",
                     )
                 )
-            # student_preds = [
-            #     pd.Series(
-            #         student.predict(input_data)["predictions"], name=f"stud_{idx}_{col}"
-            #     )
-            #     for idx, student in enumerate(self.students[col])
-            # ]
+
             ensembler_input = [teacher_prediction[col]] + student_preds
             if isinstance(self.ensemblers[col], MLModel) and (
                 isinstance(input_data["x"], pd.DataFrame)

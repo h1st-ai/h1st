@@ -64,6 +64,7 @@ class OracleModeler(Modeler):
 
         self.stats["fuzzy_thresholds"] = fuzzy_thresholds
         self.stats["features"] = features
+
         # Generate features to get students' predictions
         teacher_predictons = self.model_class.generate_teacher_prediction(
             {"x": data["unlabeled_data"]}, teacher, self.stats
@@ -134,33 +135,16 @@ class OracleModeler(Modeler):
                         ]
                     student_preds_train_data.append(
                         pd.Series(
-                            # s_predict(ensembler_sub_train_data)["predictions"],
                             s_pred_train,
                             name=f"stud_{idx}_{col}",
                         )
                     )
                     student_preds_test_data.append(
                         pd.Series(
-                            # s_predict(ensembler_sub_test_data)["predictions"],
                             s_pred_test,
                             name=f"stud_{idx}_{col}",
                         ),
                     )
-
-                # student_preds_train_data = [
-                #     pd.Series(
-                #         student.predict(ensembler_sub_train_data)["predictions"],
-                #         name=f"stud_{idx}_{col}",
-                #     )
-                #     for idx, student in enumerate(students[col])
-                # ]
-                # student_preds_test_data = [
-                #     pd.Series(
-                #         student.predict(ensembler_sub_test_data)["predictions"],
-                #         name=f"stud_{idx}_{col}",
-                #     )
-                #     for idx, student in enumerate(students[col])
-                # ]
 
                 ensembler_train_input = [
                     teacher_predictons_train[col]
@@ -201,22 +185,16 @@ class OracleModeler(Modeler):
         if self.stats is not None:
             oracle.stats.update(self.stats.copy())
 
+        # Generate metrics
         if labeled_data:
             test_data = {"x": labeled_data["x_test"], "y": labeled_data["y_test"]}
-            oracle.metrics = self.evaluate_model(test_data, oracle)
+            try:
+                oracle.metrics = self.evaluate_model(test_data, oracle)
+            except:
+                logging.error("Couldn't complete the submodel evaluation.")
+            else:
+                logging.info("Evaluated all sub models successfully.")
         return oracle
-
-        # # Generate metrics
-        # if labeled_data:
-        #     test_data = {"x": labeled_data["x_test"], "y": labeled_data["y_test"]}
-        #     try:
-        #         oracle.metrics = self.evaluate_model(test_data, oracle)
-        #     except:
-        #         logging.error("Couldn't complete the submodel evaluation.")
-        #     else:
-        #         logging.info("Evaluated all sub models successfully.")
-
-        # return oracle
 
     def evaluate_model(self, input_data: Dict, model: Oracle) -> Dict:
         if not hasattr(model, "students"):
