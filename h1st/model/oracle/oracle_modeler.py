@@ -201,8 +201,9 @@ class OracleModeler(Modeler):
         if self.stats is not None:
             oracle.stats.update(self.stats.copy())
 
-        test_data = {"x": labeled_data["x_test"], "y": labeled_data["y_test"]}
-        oracle.metrics = self.evaluate_model(test_data, oracle)
+        if labeled_data:
+            test_data = {"x": labeled_data["x_test"], "y": labeled_data["y_test"]}
+            oracle.metrics = self.evaluate_model(test_data, oracle)
         return oracle
 
         # # Generate metrics
