@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class OracleModeler(Modeler):
-    def __init__(self, model_class = Oracle):
+    def __init__(self, model_class=Oracle):
         self.model_class = model_class
         self.stats = {}
 
@@ -67,7 +67,6 @@ class OracleModeler(Modeler):
 
         self.stats["fuzzy_thresholds"] = fuzzy_thresholds
         self.stats["features"] = features
-
         # Generate features to get students' predictions
         teacher_predictons = self.model_class.generate_teacher_prediction(
             {"x": data["unlabeled_data"]}, teacher, self.stats

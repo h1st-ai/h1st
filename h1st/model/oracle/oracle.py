@@ -160,7 +160,6 @@ class Oracle(PredictiveModel):
                         name=f"stud_{idx}_{col}",
                     )
                 )
-
             ensembler_input = [teacher_prediction[col]] + student_preds
             if isinstance(self.ensemblers[col], MLModel) and (
                 isinstance(input_data["x"], pd.DataFrame)
