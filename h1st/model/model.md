@@ -15,7 +15,7 @@ Modeler : build_model() → Modelable
 Modeler : evaluate_model() → dict
 
 Model : persist()
-Model : load_params()
+Model : load()
 Model : process() → Any
 
 @enduml
