@@ -12,8 +12,8 @@ class Modeler(NodeContainable):
     To create your own modeller, inherit `Modeler` class and implement `load_data`, `explore`, `train`,
     `evaluate and `build` accordingly. Please refer to Tutorial for more details how to create a model.
     The framework allows you to persist and load model to the model repository.
-    To persist the model, you can call `persist()`, and then `load_params` to retrieve the model.
-    See `persist()` and `load_params()` document for more detail.
+    To persist the model, you can call `persist()`, and then `load` to retrieve the model.
+    See `persist()` and `load()` document for more detail.
 
         .. code-block:: python
            :caption: Model Persistence and Loading Example
@@ -38,7 +38,7 @@ class Modeler(NodeContainable):
 
            # Load the model from the repo
            my_model_2 = MyModel()
-           my_model_2.load_params('1st_version')
+           my_model_2.load('1st_version')
     """
 
     @property
