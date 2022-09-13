@@ -21,9 +21,7 @@ class FuzzyModel(RuleBasedModel):
     For more information, check out https://scikit-fuzzy.github.io/scikit-fuzzy/.
     """
 
-    def __init__(
-        self, variables: FuzzyVariables = None, rules: FuzzyRules = None
-    ) -> None:
+    def __init__(self, variables: FuzzyVariables = None, rules: FuzzyRules = None):
         super().__init__()
         self.variables = variables
         self.rules = rules
@@ -52,6 +50,7 @@ class FuzzyModel(RuleBasedModel):
 
         for key, value in input_data.items():
             self.rule_engine.input[key] = value
+
         self.rule_engine.compute()
 
         outputs = {}
