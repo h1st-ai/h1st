@@ -21,9 +21,7 @@ class FuzzyModel(RuleBasedModel):
     For more information, check out https://scikit-fuzzy.github.io/scikit-fuzzy/.
     """
 
-    def __init__(
-        self, variables: FuzzyVariables = None, rules: FuzzyRules = None
-    ) -> None:
+    def __init__(self, variables: FuzzyVariables = None, rules: FuzzyRules = None):
         super().__init__()
         self.variables = variables
         self.rules = rules
@@ -52,11 +50,13 @@ class FuzzyModel(RuleBasedModel):
 
         for key, value in input_data.items():
             self.rule_engine.input[key] = value
+
         self.rule_engine.compute()
 
         outputs = {}
-        for cls in self.rule_engine.ctrl.consequents:
-            outputs[cls.label] = round(self.rule_engine.output[cls.label], 5)
+        for cls in self.rules.ctrl.consequents:
+            outputs[cls.label] = round(self.rules.output[cls.label], 3)
+
         return outputs
 
     def process_rules(self, input_data: Dict) -> Dict:
@@ -95,3 +95,11 @@ class FuzzyModel(RuleBasedModel):
         self.variables = self.rule_details["variables"]
         self.rules = self.rule_details["rules"]
         return self
+
+    def execute_rules(self, input_data: Dict) -> Dict:
+        df = input_data['x']
+        temp = map(self.execute_rules_pointwise, df.to_dict('records'))
+        # predictions = list(map(lambda x: list(x.values()), temp))
+        # predictions = list(map(lambda x: 1 if list(x.values())[0] > 0.6 else 0, temp))
+        return {'predictions': pd.DataFrame(temp)}
+

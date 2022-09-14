@@ -14,6 +14,53 @@ class FuzzyVariables:
     def __init__(self) -> None:
         self.variables = {}
 
+    def _setup_triangle_func(self, var, values):
+        if len(values) != 3:
+            raise ValueError(
+                (
+                    f"TRIANGLE membership function needs 3 "
+                    f"values. Provided {len(values)} values."
+                )
+            )
+        return skfuzzy.trimf(var, values)
+
+    def _setup_trapezoid_func(self, var, values):
+        if len(values) != 4:
+            raise ValueError(
+                (
+                    f"TRAPEZOID membership function needs 4 "
+                    f"values. Provided {len(values)} values."
+                )
+            )
+        return skfuzzy.trapmf(var, values)
+
+    def _setup_gaussian_func(self, var, values):
+        if len(values) != 2:
+            raise ValueError(
+                (
+                    f"GAUSSIAN membership function needs 2 "
+                    f"values. Provided {len(values)} values."
+                )
+            )
+        return skfuzzy.gaussmf(var, values[0], values[1])
+
+    def _setup_sigmoid_func(self, var, values):
+        if len(values) != 2:
+            raise ValueError(
+                (
+                    f"SIGMOID membership function needs 2 "
+                    f"values. Provided {len(values)} values."
+                )
+            )
+        return skfuzzy.sigmf(var, values[0], values[1])
+
+    FUNCTION_DICT = {
+        fm.TRIANGLE: _setup_triangle_func,
+        fm.TRAPEZOID: _setup_trapezoid_func,
+        fm.GAUSSIAN: _setup_gaussian_func,
+        fm.SIGMOID: _setup_sigmoid_func,
+    }
+
     def add(
         self, var_name: str, var_type: str, var_range: list, membership_funcs: list
     ) -> None:
@@ -52,49 +99,9 @@ class FuzzyVariables:
 
         # Add membership function and its values.
         for mem_func_name, mem_func_type, mem_func_vals in membership_funcs:
-            if mem_func_type == fm.TRIANGLE:
-                if len(mem_func_vals) != 3:
-                    raise ValueError(
-                        (
-                            f"TRIANGLE membership function needs 3 "
-                            f"values. Provided {len(mem_func_vals)} values."
-                        )
-                    )
-                fuzzy_var[mem_func_name] = skfuzzy.trimf(
-                    fuzzy_var.universe, mem_func_vals
-                )
-            elif mem_func_type == fm.TRAPEZOID:
-                if len(mem_func_vals) != 4:
-                    raise ValueError(
-                        (
-                            f"TRAPEZOID membership function needs 4 "
-                            f"values. Provided {len(mem_func_vals)} values."
-                        )
-                    )
-                fuzzy_var[mem_func_name] = skfuzzy.trapmf(
-                    fuzzy_var.universe, mem_func_vals
-                )
-            elif mem_func_type == fm.GAUSSIAN:
-                if len(mem_func_vals) != 2:
-                    raise ValueError(
-                        (
-                            f"GAUSSIAN membership function needs 2 "
-                            f"values. Provided {len(mem_func_vals)} values."
-                        )
-                    )
-                fuzzy_var[mem_func_name] = skfuzzy.gaussmf(
-                    fuzzy_var.universe, mem_func_vals[0], mem_func_vals[1]
-                )
-            elif mem_func_type == fm.SIGMOID:
-                if len(mem_func_vals) != 2:
-                    raise ValueError(
-                        (
-                            f"SIGMOID membership function needs 2 "
-                            f"values. Provided {len(mem_func_vals)} values."
-                        )
-                    )
-                fuzzy_var[mem_func_name] = skfuzzy.sigmf(
-                    fuzzy_var.universe, mem_func_vals[0], mem_func_vals[1]
+            if mem_func_type in self.FUNCTION_DICT.keys():
+                fuzzy_var[mem_func_name] = self.FUNCTION_DICT[mem_func_type](
+                    self, fuzzy_var.universe, mem_func_vals
                 )
             else:
                 raise ValueError(f"{mem_func_type} is not supported.")
@@ -116,8 +123,8 @@ class FuzzyVariables:
     def visualize(self) -> None:
         print("=== Antecedents & Consequents ===")
         for v in self.variables.values():
-            if isinstance(v, skfuzzy.control.Antecedent):
+            if isinstance(v, skctrl.Antecedent):
                 v.view()
         for v in self.variables.values():
-            if isinstance(v, skfuzzy.control.Consequent):
+            if isinstance(v, skctrl.Consequent):
                 v.view()

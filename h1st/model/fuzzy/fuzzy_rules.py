@@ -37,7 +37,9 @@ class FuzzyRules:
                 if_term=vars.get('var1')['abnormal'],
                 then_term=vars.get('conclusion1')['yes'])
         """
-        self.rules[rule_name] = skctrl.Rule(if_term, then_term)
+        self.rules[rule_name] = skctrl.Rule(
+            antecedent=if_term, consequent=then_term, label=rule_name
+        )
 
     def remove(self, rule_name: str) -> None:
         if rule_name in self.rules:
