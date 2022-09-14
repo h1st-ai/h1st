@@ -3,6 +3,7 @@ from typing import Dict, Any
 import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn import metrics
+from sklearn.preprocessing import StandardScaler
 
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
@@ -29,7 +30,10 @@ class MajorityVotingEnsemble(PredictiveModel):
 
 class GradBoostEnsemble(MLModel):
     def predict(self, input_data: Dict) -> Dict:
-        y = self.base_model.predict(input_data["x"])
+        if isinstance(input_data["x"], pd.DataFrame):
+            input_data["x"] = input_data["x"].values
+        x = self.stats["scaler"].transform(input_data["x"])
+        y = self.base_model.predict(x)
         return {"predictions": y}
 
 
@@ -40,12 +44,17 @@ class GradBoostEnsembleModeler(MLModeler):
 
     def evaluate_model(self, data: Dict, model: MLModel) -> Dict:
         super().evaluate_model(data, model)
-        X, y_true = data["x_test"], data["y_test"]
-        y_pred = pd.Series(model.predict({"x": X, "y": y_true})["predictions"])
+        x, y_true = data["x_test"], data["y_test"]
+        y_pred = pd.Series(model.predict({"x": x, "y": y_true})["predictions"])
         return {"r2_score": metrics.r2_score(y_true, y_pred)}
 
+    def preprocess(self, data):
+        self.stats["scaler"] = StandardScaler()
+        return self.stats["scaler"].fit_transform(data)
+
     def train_base_model(self, data: Dict[str, Any]) -> Any:
-        X, y = data["x_train"], data["y_train"]
+        x, y = data["x_train"], data["y_train"]
+        x = self.preprocess(x)
         model = GradientBoostingClassifier()
-        model.fit(X, y)
+        model.fit(x, y)
         return model

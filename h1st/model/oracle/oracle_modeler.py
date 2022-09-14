@@ -9,12 +9,12 @@ from h1st.model.fuzzy.fuzzy_model import FuzzyModel
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.modeler import Modeler
+from h1st.model.oracle.ensemble import MajorityVotingEnsemble
 from h1st.model.oracle.oracle import Oracle
 from h1st.model.oracle.student import (
     RandomForestModeler,
     LogisticRegressionModeler,
 )
-from h1st.model.oracle.ensemble import MajorityVotingEnsemble
 from h1st.model.rule_based_model import RuleBasedModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 
@@ -38,10 +38,12 @@ class OracleModeler(Modeler):
         ensembler_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsemble),
         features: List = None,
         fuzzy_thresholds: dict = None,
+        inject_x_in_ensembler: bool = False,
     ) -> Oracle:
         """
-        Build the student and ensemble components.
-        :param data: Unlabeled data.
+        Build the components of Oracle, which are students and ensemblers.
+        student is always MLModel and ensembler can be MLModel or RuleBasedModel.
+
         """
         if isinstance(teacher, FuzzyModel) and fuzzy_thresholds is None:
             raise ValueError(
@@ -64,20 +66,26 @@ class OracleModeler(Modeler):
 
         self.stats["fuzzy_thresholds"] = fuzzy_thresholds
         self.stats["features"] = features
+        self.stats["inject_x_in_ensembler"] = inject_x_in_ensembler
 
-        # Generate features to get students' predictions
-        teacher_predictons = self.model_class.generate_teacher_prediction(
+        # Generate teacher's prediction which will be used as y value of students'
+        # training data.
+        teacher_predictons = self.model_class.generate_teacher_predictions(
             {"x": data["unlabeled_data"]}, teacher, self.stats
         )
+
         self.stats["labels"] = [col for col in teacher_predictons]
 
-        if isinstance(teacher, FuzzyModel):
+        # If teacher is FuzzyModel, convert float to zero or one to use this as y value.
+        if isinstance(teacher, FuzzyModel) or issubclass(teacher.__class__, FuzzyModel):
             for key, val in fuzzy_thresholds.items():
                 teacher_predictons[key] = list(
                     map(lambda y: 1 if y > val else 0, teacher_predictons[key])
                 )
 
-        # Build one binary classifier per class of teacher output
+        # Build one binary classifier (from each student modeler) per label of teacher output.
+        # If there are N number of student_modelers and M number of teacher output labels,
+        # then, the total number of student models is N * M.
         students = {}
         for col in teacher_predictons:
             sub_train_data = {"x": data["unlabeled_data"], "y": teacher_predictons[col]}
@@ -86,33 +94,27 @@ class OracleModeler(Modeler):
                 for student_modeler in student_modelers
             ]
 
-        # Build one ensemble per class of teacher output
-        # Train the ensembler
+        # If there is labeled_data and ensembler_modeler is MLModeler,
+        # then prepare the training data of ensembler.
         labeled_data = data.get("labeled_data", None)
-
         if isinstance(ensembler_modeler, MLModeler) and labeled_data is None:
             raise ValueError("No data to train the machine-learning-based ensembler")
-
         ensembler_data = {}
         if labeled_data:
-            teacher_predictons_train = self.model_class.generate_teacher_prediction(
-                {"x": labeled_data["x_train"]}, teacher, self.stats
+            x_train_input = {"x": labeled_data["x_train"]}
+            x_test_input = {"x": labeled_data["x_test"]}
+
+            # Generate teacher predictions
+            teacher_predictons_train = self.model_class.generate_teacher_predictions(
+                x_train_input, teacher, self.stats
             )
-            teacher_predictons_test = self.model_class.generate_teacher_prediction(
-                {"x": labeled_data["x_test"]}, teacher, self.stats
+            teacher_predictons_test = self.model_class.generate_teacher_predictions(
+                x_test_input, teacher, self.stats
             )
 
-            # should update here to create
             for col in teacher_predictons_train:
-                ensembler_sub_train_data = {
-                    "x": labeled_data["x_train"],
-                    "y": teacher_predictons_train[col],
-                }
-                ensembler_sub_test_data = {
-                    "x": labeled_data["x_test"],
-                    "y": teacher_predictons_test[col],
-                }
 
+                # Generate student predictions
                 student_preds_train_data = []
                 student_preds_test_data = []
                 for idx, student in enumerate(students[col]):
@@ -120,19 +122,11 @@ class OracleModeler(Modeler):
                     if callable(predict_proba) and isinstance(
                         ensembler_modeler, MLModeler
                     ):
-                        s_pred_train = predict_proba(ensembler_sub_train_data)[
-                            "predictions"
-                        ][:, 0]
-                        s_pred_test = predict_proba(ensembler_sub_test_data)[
-                            "predictions"
-                        ][:, 0]
+                        s_pred_train = predict_proba(x_train_input)["predictions"][:, 0]
+                        s_pred_test = predict_proba(x_test_input)["predictions"][:, 0]
                     else:
-                        s_pred_train = student.predict(ensembler_sub_train_data)[
-                            "predictions"
-                        ]
-                        s_pred_test = student.predict(ensembler_sub_test_data)[
-                            "predictions"
-                        ]
+                        s_pred_train = student.predict(x_train_input)["predictions"]
+                        s_pred_test = student.predict(x_test_input)["predictions"]
                     student_preds_train_data.append(
                         pd.Series(
                             s_pred_train,
@@ -146,6 +140,7 @@ class OracleModeler(Modeler):
                         ),
                     )
 
+                # Create training data of ensembler
                 ensembler_train_input = [
                     teacher_predictons_train[col]
                 ] + student_preds_train_data
@@ -153,12 +148,17 @@ class OracleModeler(Modeler):
                     teacher_predictons_test[col]
                 ] + student_preds_test_data
 
-                if isinstance(ensembler_modeler, MLModeler) and (
-                    isinstance(ensembler_sub_train_data["x"], pd.DataFrame)
-                    or isinstance(ensembler_sub_train_data["x"], pd.Series)
+                # Inject original x value into input feature of Ensembler
+                if (
+                    isinstance(ensembler_modeler, MLModeler)
+                    and (
+                        isinstance(x_train_input["x"], pd.DataFrame)
+                        or isinstance(x_train_input["x"], pd.Series)
+                    )
+                    and inject_x_in_ensembler
                 ):
-                    ensembler_train_input += [ensembler_sub_train_data["x"]]
-                    ensembler_test_input += [ensembler_sub_test_data["x"]]
+                    ensembler_train_input += [x_train_input["x"]]
+                    ensembler_test_input += [x_test_input["x"]]
 
                 ensembler_data[col] = {
                     "x_train": pd.concat(ensembler_train_input, axis=1).values,
@@ -173,25 +173,35 @@ class OracleModeler(Modeler):
         else:
             ensembler_data = {key: None for key in teacher_predictons}
 
+        # Build one ensemble per label of teacher output (M labels).
+        # There will be M ensemblers in total.
         ensemblers = {}
         for col in ensembler_data:
             ensemblers[col] = ensembler_modeler.build_model(
                 ensembler_data.get(col, None)
             )
 
-        oracle = self.model_class.construct_oracle(teacher, students, ensemblers)
+        # Create Oracle model.
+        oracle = self.model_class(teacher, students, ensemblers)
 
-        # Pass stats to the model
+        # Pass modeler stats to model.
         if self.stats is not None:
             oracle.stats.update(self.stats.copy())
 
-        # Generate metrics
+        # Generate metrics of all sub models (teacher, student, ensembler).
         if labeled_data:
             test_data = {"x": labeled_data["x_test"], "y": labeled_data["y_test"]}
             try:
+                # Copy the metrics into metrics property of oracle
                 oracle.metrics = self.evaluate_model(test_data, oracle)
-            except:
-                logging.error("Couldn't complete the submodel evaluation.")
+            except Exception as e:
+                logging.error(
+                    (
+                        "Couldn't complete the submodel evaluation. "
+                        "Got the following error."
+                    )
+                )
+                logging.error(e)
             else:
                 logging.info("Evaluated all sub models successfully.")
         return oracle
@@ -200,9 +210,10 @@ class OracleModeler(Modeler):
         if not hasattr(model, "students"):
             raise RuntimeError("No student built")
 
-        teacher_pred = model.__class__.generate_teacher_prediction(
+        teacher_pred = model.__class__.generate_teacher_predictions(
             input_data, model.teacher, model.stats
         )
+
         teacher_pred_one_hot = {}
         if isinstance(model.teacher, FuzzyModel):
             for key, val in model.stats["fuzzy_thresholds"].items():
@@ -212,9 +223,12 @@ class OracleModeler(Modeler):
         else:
             teacher_pred_one_hot = teacher_pred
 
+        # Generate the following metrics for each label.
+        # Generate the metrics of all sub models (student, teacher, ensembler)
         evals = {}
-        for metrics in ["accuracy", "f1_score"]:
+        for metrics in ["accuracy", "precision", "recall"]:
             temp = {}
+
             for col in teacher_pred:
                 student_preds_one_hot = [
                     pd.Series(
@@ -240,9 +254,13 @@ class OracleModeler(Modeler):
                     )
 
                 ensembler_input = [teacher_pred[col]] + student_preds
-                if isinstance(model.ensemblers[col], MLModel) and (
-                    isinstance(input_data["x"], pd.DataFrame)
-                    or isinstance(input_data["x"], pd.Series)
+                if (
+                    isinstance(model.ensemblers[col], MLModel)
+                    and (
+                        isinstance(input_data["x"], pd.DataFrame)
+                        or isinstance(input_data["x"], pd.Series)
+                    )
+                    and self.stats["inject_x_in_ensembler"]
                 ):
                     ensembler_input += [input_data["x"]]
                     ensembler_input = pd.concat(ensembler_input, axis=1).values
@@ -274,6 +292,10 @@ class OracleModeler(Modeler):
     ) -> float:
         if metrics == "accuracy":
             return round(sklearn.metrics.accuracy_score(y_true, y_pred), 5)
+        elif metrics == "precision":
+            return round(sklearn.metrics.precision_score(y_true, y_pred), 5)
+        elif metrics == "recall":
+            return round(sklearn.metrics.recall_score(y_true, y_pred), 5)
         elif metrics == "f1_score":
             return round(sklearn.metrics.f1_score(y_true, y_pred), 5)
         else:

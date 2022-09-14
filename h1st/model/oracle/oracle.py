@@ -60,10 +60,7 @@ from typing import Dict, List
 from collections import defaultdict
 
 import pandas as pd
-import sklearn
 
-from h1st.model.fuzzy.fuzzy_model import FuzzyModel
-from h1st.model.ensemble.stack_ensemble import StackEnsemble
 from h1st.model.predictive_model import PredictiveModel
 from h1st.model.ml_model import MLModel
 from h1st.model.rule_based_model import RuleBasedModel
@@ -77,36 +74,27 @@ class Oracle(PredictiveModel):
     Oracle Model in Oracle framework
     """
 
-    def __init__(self):
-        self.stats = {}
-
-    @classmethod
-    def construct_oracle(
-        cls,
-        teacher: RuleBasedModel,
-        students: list[MLModel],
-        ensemblers: PredictiveModel,
+    def __init__(
+        self,
+        teacher: RuleBasedModel = None,
+        students: Dict[str, List[MLModel]] = None,
+        ensemblers: Dict[str, PredictiveModel] = None,
     ):
-        """
-        :param teacher: The knowledge model.
-        :param students: The student model.
-        :param ensemble: The ensemble model class.
-        """
-        model = cls()
-        model.teacher = teacher
-        model.students = students
-        model.ensemblers = ensemblers
-        return model
+        self.stats = {}
+        self.teacher = teacher
+        self.students = students
+        self.ensemblers = ensemblers
 
     @classmethod
-    def generate_teacher_prediction(
+    def generate_teacher_predictions(
         cls, data: Dict, teacher: RuleBasedModel, stats: Dict
     ) -> Dict:
         """
-        Generate data to train Student models.
-        Return a copy of the provided data by default.
-        Override this function to implement custom data generation
-        :param data: unlabelled data.
+        Generate the predictions of teacher for the given data.
+        Override this function to implement custom data generation.
+
+        :param data: unlabelled data in dictionary with key `x`
+        :param teacher: can be boolean or fuzzy rule-based model
         :returns: a dictionary of features and teacher's prediction.
         """
         if "x" not in data:
@@ -136,13 +124,13 @@ class Oracle(PredictiveModel):
         if not hasattr(self, "ensemblers"):
             raise RuntimeError("No ensemblers built")
 
-        # Generate teacher predictions that will be used for student model training
-        teacher_prediction = self.__class__.generate_teacher_prediction(
+        # Generate teacher model's predictions
+        teacher_predictions = self.__class__.generate_teacher_predictions(
             input_data, self.teacher, self.stats
         )
 
         predictions = {}
-        for col in teacher_prediction:
+        for col in teacher_predictions:
 
             # Generate student models' predictions
             student_preds = []
@@ -161,10 +149,16 @@ class Oracle(PredictiveModel):
                     )
                 )
 
-            ensembler_input = [teacher_prediction[col]] + student_preds
-            if isinstance(self.ensemblers[col], MLModel) and (
-                isinstance(input_data["x"], pd.DataFrame)
-                or isinstance(input_data["x"], pd.Series)
+            ensembler_input = [teacher_predictions[col]] + student_preds
+
+            # Inject original x value into input feature of Ensembler
+            if (
+                isinstance(self.ensemblers[col], MLModel)
+                and (
+                    isinstance(input_data["x"], pd.DataFrame)
+                    or isinstance(input_data["x"], pd.Series)
+                )
+                and self.stats["inject_x_in_ensembler"]
             ):
                 ensembler_input += [input_data["x"]]
                 ensembler_input = pd.concat(ensembler_input, axis=1).values
@@ -174,6 +168,8 @@ class Oracle(PredictiveModel):
             predictions[col] = self.ensemblers[col].predict({"x": ensembler_input})[
                 "predictions"
             ]
+
+        # return predictions of ensemblers
         return {"predictions": predictions}
 
     def persist(self, version=None):
@@ -237,6 +233,6 @@ class Oracle(PredictiveModel):
         self.ensemblers = ensemblers
         return self
 
-    # Make it backward compatible.
+    # Keep it for backward compatibility. It will be deprecated in the future.
     def load_params(self, version: str = None) -> None:
         return self.load(version)
