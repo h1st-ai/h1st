@@ -54,8 +54,8 @@ class FuzzyModel(RuleBasedModel):
         self.rule_engine.compute()
 
         outputs = {}
-        for cls in self.rules.ctrl.consequents:
-            outputs[cls.label] = round(self.rules.output[cls.label], 3)
+        for cls in self.rule_engine.ctrl.consequents:
+            outputs[cls.label] = round(self.rule_engine.output[cls.label], 3)
 
         return outputs
 
@@ -97,9 +97,8 @@ class FuzzyModel(RuleBasedModel):
         return self
 
     def execute_rules(self, input_data: Dict) -> Dict:
-        df = input_data['x']
-        temp = map(self.execute_rules_pointwise, df.to_dict('records'))
+        df = input_data["x"]
+        temp = map(self.execute_rules_pointwise, df.to_dict("records"))
         # predictions = list(map(lambda x: list(x.values()), temp))
         # predictions = list(map(lambda x: 1 if list(x.values())[0] > 0.6 else 0, temp))
-        return {'predictions': pd.DataFrame(temp)}
-
+        return {"predictions": pd.DataFrame(temp)}
