@@ -11,8 +11,9 @@ logger = logging.getLogger(__name__)
 
 class FuzzyModeler(Modeler):
     """
-    FuzzyModeler is a Modeler for FuzzyModel. Using FuzzyVariables and FuzzyRules
-    FuzzyModeler builds FuzzyModel.
+    FuzzyModeler is a Modeler for FuzzyModel, inherit `Modeler` class. 
+    A modeler is used to build a model.
+    FuzzyModeler uses FuzzyVariables and FuzzyRules to build FuzzyModel.
 
     """
 
