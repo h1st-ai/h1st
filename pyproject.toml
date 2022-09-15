@@ -7,9 +7,7 @@ license = 'Apache-2.0'
 readme = 'README.md'
 homepage = 'https://h1st.ai'
 repository = 'https://github.com/h1st-ai/h1st'
-packages = [
-  {include = 'h1st'}
-]
+include = ['h1st/*']
 
 
 [tool.poetry.dependencies]
@@ -17,39 +15,39 @@ Python = '>= 3.8, < 3.11'
 
 # Data Processing
 NumPy = '^1.22.4'   # let higher dependencies figure
-Pandas = '^1.4.3'
+Pandas = '^1.4.4'
 PyArrow = '^9.0.0'
 PySpark = '^3.3.0'
 
 # ML/DL
 Imbalanced-Learn = '^0.9.1'
 SciKit-Fuzzy = '^0.4.2'
-SciKit-Learn = '>= 0.24.2'   # not latest, for compat w/ Auto-SKLearn
-TensorFlow = '>= 2.10.0rc2'   # 2.10+ compat w/ AWS Graviton
+SciKit-Learn = '^1.1.2'
+TensorFlow = '^2.10.0'
 
 # Trustworthy AI
 GraphViz = '^0.20.1'
 LIME = '^0.2.0.1'
-SHAP = '>= 0.36.0'   #  not latest, for compat w/ some other common deps
+SHAP = '^0.41.0'
 
 # File Systems
-FSSpec = '^2022.7.1'
-S3FS = '^2022.7.1'
+FSSpec = '^2022.8.2'
+S3FS = '^2022.8.2'
 
 # misc/other
-CLICK = '>= 8.0.4'   # let higher dependencies figure
-Python-DotEnv = '^0.20.0'
+CLICK = '^8.0.4'   # let higher dependencies figure
+Python-DotEnv = '^0.21.0'
 PyYAML = '^6.0'
 'Ruamel.YAML' = '^0.17.21'
-Tqdm = '^4.64.0'
+Tqdm = '^4.64.1'
 ULID-Py = '^1.1.0'
 
 
 [tool.poetry.dev-dependencies]
-Commitizen = '^2.31.0'
+Commitizen = '^2.33.0'
 Pre-Commit = '^2.20.0'
-PyLint = '^2.14.5'
-PyTest = '^7.1.2'
+PyLint = '^2.15.2'
+PyTest = '^7.1.3'
 Sphinx = '^5.1.1'
 Sphinx-RtD-Theme = '^1.0.0'
 
@@ -60,11 +58,10 @@ h1st = 'h1st.utils.tools:h1st_cli'
 
 [build-system]
 requires = [
-  'Poetry-Core >= 1.0.8',
+  'Poetry-Core >= 1.1.0',
 ]
 build-backend = 'poetry.core.masonry.api'
 
 
 [tool.pylint.format]
-# max number of characters on a line
 max-line-length = 120
