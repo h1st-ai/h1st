@@ -17,30 +17,30 @@ from h1st.model.oracle import OracleModeler
 
 
 def build_iris_fuzzy_model(meta_data):
-    vars = FuzzyVariables()
-    vars.add(
+    fuzzy_vars = FuzzyVariables()
+    fuzzy_vars.add(
         var_name="sepal_length",
         var_type="antecedent",
         var_range=np.arange(
             meta_data["sepal_length"]["min"], meta_data["sepal_length"]["max"], 0.1
         ),
         membership_funcs=[
-            ("small", fm.GAUSSIAN, [5, 1]),
-            ("large", fm.TRIANGLE, [6, 6.4, 8]),
+            ("small", fm.GAUSSIAN, [5, 0.7]),
+            ("large", fm.TRAPEZOID, [5.8, 6.4, 8, 8]),
         ],
     )
-    vars.add(
+    fuzzy_vars.add(
         var_name="sepal_width",
         var_type="antecedent",
         var_range=np.arange(
             meta_data["sepal_width"]["min"], meta_data["sepal_width"]["max"], 0.1
         ),
         membership_funcs=[
-            ("small", fm.GAUSSIAN, [2.8, 0.3]),
-            ("large", fm.GAUSSIAN, [3.3, 0.5]),
+            ("small", fm.GAUSSIAN, [2.8, 0.15]),
+            ("large", fm.GAUSSIAN, [3.3, 0.25]),
         ],
     )
-    vars.add(
+    fuzzy_vars.add(
         var_name="setosa",
         var_type="consequent",
         var_range=np.arange(0, 1 + 1e-5, 0.1),
@@ -50,20 +50,22 @@ def build_iris_fuzzy_model(meta_data):
         ],
     )
 
-    rules = FuzzyRules()
-    rules.add(
+    fuzzy_rule = FuzzyRules()
+    fuzzy_rule.add(
         "rule1",
-        if_term=vars.get("sepal_length")["small"] & vars.get("sepal_width")["large"],
-        then_term=vars.get("setosa")["false"],
+        if_term=fuzzy_vars.get("sepal_length")["small"]
+        & fuzzy_vars.get("sepal_width")["large"],
+        then_term=fuzzy_vars.get("setosa")["true"],
     )
-    rules.add(
+    fuzzy_rule.add(
         "rule2",
-        if_term=vars.get("sepal_length")["large"] & vars.get("sepal_width")["small"],
-        then_term=vars.get("setosa")["true"],
+        if_term=fuzzy_vars.get("sepal_length")["large"]
+        & fuzzy_vars.get("sepal_width")["small"],
+        then_term=fuzzy_vars.get("setosa")["false"],
     )
 
     modeler = FuzzyModeler()
-    model = modeler.build_model(vars, rules)
+    model = modeler.build_model(fuzzy_vars, fuzzy_rule)
     return model
 
 
@@ -90,22 +92,11 @@ def load_data():
         "unlabeled_data": training_data[["sepal_length", "sepal_width"]],
         "labeled_data": {
             "x_train": training_data[["sepal_length", "sepal_width"]],
-            "y_train": training_data["species"],
+            "y_train": training_data[["species"]],
             "x_test": test_data[["sepal_length", "sepal_width"]],
-            "y_test": test_data["species"],
+            "y_test": test_data[["species"]],
         },
     }
-
-    # return {
-    #     "training_data": {
-    #         "x": training_data[["sepal_length", "sepal_width"]],
-    #         "y": training_data["species"],
-    #     },
-    #     "test_data": {
-    #         "x": test_data[["sepal_length", "sepal_width"]],
-    #         "y": test_data["species"],
-    #     },
-    # }
 
 
 def get_meta_data(data):
@@ -119,16 +110,14 @@ def get_meta_data(data):
 
 if __name__ == "__main__":
     data = load_data()
+    data["labeled_data"]["y_train"].rename(columns={"species": "setosa"}, inplace=True)
+    data["labeled_data"]["y_test"].rename(columns={"species": "setosa"}, inplace=True)
+
     meta_data = get_meta_data(data)
     fuzzy_teacher = build_iris_fuzzy_model(meta_data)
-    input_vars = {"sepal_length": 5, "sepal_width": 3.7}
-
-    modeler = OracleModeler()
     fuzzy_thresholds = {"setosa": 0.6}
-    # new_data = {"unlabeled_data": data["training_data"]["x"]}
-
+    modeler = OracleModeler()
     oracle = modeler.build_model(
         data=data, teacher=fuzzy_teacher, fuzzy_thresholds=fuzzy_thresholds
     )
-
     print(oracle.metrics)
