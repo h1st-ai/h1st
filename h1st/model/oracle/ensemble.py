@@ -17,11 +17,10 @@ class MajorityVotingEnsemble(PredictiveModel):
 
     def predict(self, input_data: Dict) -> Dict:
         """
-        Combine output of teacher and students using majority vote by default. In case
+        Combine output of teacher and students using majority voting by default. In case
         when majority vote cannot be applied, use teacher's output as the final output.
         Inherit and override this method to use your custom combining approach.
-        :param teacher_pred: teacher's prediction
-        :param student_pred: student's prediction
+        :param input_data: dictionary with `x` key and input data
         :returns: a dictionary with key `predictions` containing the predictions
         """
         predictions = input_data["x"].mode(axis="columns", numeric_only=True)[0]
@@ -53,8 +52,13 @@ class GradBoostEnsembleModeler(MLModeler):
         return self.stats["scaler"].fit_transform(data)
 
     def train_base_model(self, data: Dict[str, Any]) -> Any:
+        from sklearn.neural_network import MLPClassifier
+
         x, y = data["x_train"], data["y_train"]
         x = self.preprocess(x)
-        model = GradientBoostingClassifier()
+        model = MLPClassifier(
+            hidden_layer_sizes=(100, 100), random_state=1, max_iter=2000
+        )
+        # model = GradientBoostingClassifier()
         model.fit(x, y)
         return model

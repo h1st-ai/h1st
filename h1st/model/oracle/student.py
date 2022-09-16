@@ -46,14 +46,9 @@ class RandomForestModeler(MLModeler):
         self.stats = {}
 
     def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
-        from sklearn.svm import SVC
-        from sklearn.gaussian_process import GaussianProcessClassifier
-        from sklearn.gaussian_process.kernels import RBF
-        from sklearn.neighbors import KNeighborsClassifier
-
         x, y = prepared_data["x"], prepared_data["y"]
         x = self.preprocess(x)
-        model = RandomForestClassifier(max_depth=10)
+        model = RandomForestClassifier(max_depth=20, random_state=1)
         model.fit(x, y)
         return model
 

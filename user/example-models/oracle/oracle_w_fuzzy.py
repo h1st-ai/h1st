@@ -76,9 +76,9 @@ def load_data():
         "sepal_width",
         "petal_length",
         "petal_width",
-        "species",
+        "setosa",
     ]
-    df_raw["species"] = df_raw["species"].apply(lambda x: 1 if x == 0 else 0)
+    df_raw["setosa"] = df_raw["setosa"].apply(lambda x: 1 if x == 0 else 0)
 
     # randomly split training and testing dataset
     example_test_data_ratio = 0.4
@@ -92,9 +92,9 @@ def load_data():
         "unlabeled_data": training_data[["sepal_length", "sepal_width"]],
         "labeled_data": {
             "x_train": training_data[["sepal_length", "sepal_width"]],
-            "y_train": training_data[["species"]],
+            "y_train": training_data[["setosa"]],
             "x_test": test_data[["sepal_length", "sepal_width"]],
-            "y_test": test_data[["species"]],
+            "y_test": test_data[["setosa"]],
         },
     }
 
@@ -110,8 +110,8 @@ def get_meta_data(data):
 
 if __name__ == "__main__":
     data = load_data()
-    data["labeled_data"]["y_train"].rename(columns={"species": "setosa"}, inplace=True)
-    data["labeled_data"]["y_test"].rename(columns={"species": "setosa"}, inplace=True)
+    # data["labeled_data"]["y_train"].rename(columns={"species": "setosa"}, inplace=True)
+    # data["labeled_data"]["y_test"].rename(columns={"species": "setosa"}, inplace=True)
 
     meta_data = get_meta_data(data)
     fuzzy_teacher = build_iris_fuzzy_model(meta_data)

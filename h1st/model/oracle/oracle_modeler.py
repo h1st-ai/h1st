@@ -160,16 +160,16 @@ class OracleModeler(Modeler):
                     )
                     and inject_x_in_ensembler
                 ):
-                    ensembler_train_input += [x_train_input["x"]]
-                    ensembler_test_input += [x_test_input["x"]]
+                    ensembler_train_input += [x_train_input["x"].reset_index(drop=True)]
+                    ensembler_test_input += [x_test_input["x"].reset_index(drop=True)]
 
                 ensembler_data[col] = {
                     "x_train": pd.concat(ensembler_train_input, axis=1).values,
-                    "y_train": labeled_data["y_train"][col]
+                    "y_train": labeled_data["y_train"][col].reset_index(drop=True)
                     if isinstance(labeled_data["y_train"], pd.DataFrame)
                     else labeled_data["y_train"],
                     "x_test": pd.concat(ensembler_test_input, axis=1).values,
-                    "y_test": labeled_data["y_test"][col]
+                    "y_test": labeled_data["y_test"][col].reset_index(drop=True)
                     if isinstance(labeled_data["y_test"], pd.DataFrame)
                     else labeled_data["y_test"],
                 }
@@ -180,6 +180,7 @@ class OracleModeler(Modeler):
         # There will be M ensemblers in total.
         ensemblers = {}
         for col in ensembler_data:
+            # print(ensembler_data[col]["x_train"])
             ensemblers[col] = ensembler_modeler.build_model(
                 ensembler_data.get(col, None)
             )
@@ -229,7 +230,7 @@ class OracleModeler(Modeler):
         # Generate the following metrics for each label.
         # Generate the metrics of all sub models (student, teacher, ensembler)
         evals = {}
-        for metrics in ["accuracy", "precision", "recall"]:
+        for metrics in ["f1_score_micro", "f1_score_macro", "precision", "recall"]:
             temp = {}
 
             for col in teacher_pred:
@@ -265,7 +266,7 @@ class OracleModeler(Modeler):
                     )
                     and self.stats["inject_x_in_ensembler"]
                 ):
-                    ensembler_input += [input_data["x"]]
+                    ensembler_input += [input_data["x"].reset_index(drop=True)]
                     ensembler_input = pd.concat(ensembler_input, axis=1).values
                 else:
                     ensembler_input = pd.concat(ensembler_input, axis=1)
@@ -299,7 +300,9 @@ class OracleModeler(Modeler):
             return round(sklearn.metrics.precision_score(y_true, y_pred), 5)
         elif metrics == "recall":
             return round(sklearn.metrics.recall_score(y_true, y_pred), 5)
-        elif metrics == "f1_score":
-            return round(sklearn.metrics.f1_score(y_true, y_pred), 5)
+        elif metrics == "f1_score_micro":
+            return round(sklearn.metrics.f1_score(y_true, y_pred, average="micro"), 5)
+        elif metrics == "f1_score_macro":
+            return round(sklearn.metrics.f1_score(y_true, y_pred, average="macro"), 5)
         else:
             raise ValueError(f"Provided unsupported metrics type {metrics}")

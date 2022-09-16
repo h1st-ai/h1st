@@ -160,7 +160,7 @@ class Oracle(PredictiveModel):
                 )
                 and self.stats["inject_x_in_ensembler"]
             ):
-                ensembler_input += [input_data["x"]]
+                ensembler_input += [input_data["x"].reset_index(drop=True)]
                 ensembler_input = pd.concat(ensembler_input, axis=1).values
             else:
                 ensembler_input = pd.concat(ensembler_input, axis=1)
