@@ -14,7 +14,7 @@ from h1st.model.ml_modeler import MLModeler
 from h1st.model.oracle.oracle import Oracle
 from h1st.model.oracle.oracle_modeler import OracleModeler
 from h1st.model.oracle.student import LogisticRegressionModeler, RandomForestModeler
-from h1st.model.oracle.ensemble import MajorityVotingEnsemble, GradBoostEnsembleModeler
+from h1st.model.oracle.ensemble import MajorityVotingEnsemble, MLPEnsembleModeler
 from h1st.model.rule_based_model import RuleBasedModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 
@@ -246,7 +246,7 @@ class TestOracle:
             data=new_data,
             teacher=RuleModel(),
             student_modelers=[RandomForestModeler(), LogisticRegressionModeler()],
-            ensembler_modeler=GradBoostEnsembleModeler(),
+            ensembler_modeler=MLPEnsembleModeler(),
         )
 
         pred = oracle.predict(data["test_data"])["predictions"]
@@ -309,7 +309,7 @@ class TestOracle:
             teacher=fuzzy_model,
             fuzzy_thresholds={"setosa": 0.6, "non_setosa": 0.49},
             student_modelers=[RandomForestModeler(), LogisticRegressionModeler()],
-            ensembler_modeler=GradBoostEnsembleModeler(),
+            ensembler_modeler=MLPEnsembleModeler(),
         )
 
         pred = oracle.predict(data["test_data"])["predictions"]

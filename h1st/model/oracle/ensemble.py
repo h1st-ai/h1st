@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 import pandas as pd
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn import metrics
 from sklearn.preprocessing import StandardScaler
 
@@ -27,7 +27,7 @@ class MajorityVotingEnsemble(PredictiveModel):
         return {"predictions": predictions}
 
 
-class GradBoostEnsemble(MLModel):
+class MLPEnsemble(MLModel):
     def predict(self, input_data: Dict) -> Dict:
         if isinstance(input_data["x"], pd.DataFrame):
             input_data["x"] = input_data["x"].values
@@ -36,8 +36,8 @@ class GradBoostEnsemble(MLModel):
         return {"predictions": y}
 
 
-class GradBoostEnsembleModeler(MLModeler):
-    def __init__(self, model_class=GradBoostEnsemble):
+class MLPEnsembleModeler(MLModeler):
+    def __init__(self, model_class=MLPEnsemble):
         self.model_class = model_class
         self.stats = {}
 
@@ -52,8 +52,6 @@ class GradBoostEnsembleModeler(MLModeler):
         return self.stats["scaler"].fit_transform(data)
 
     def train_base_model(self, data: Dict[str, Any]) -> Any:
-        from sklearn.neural_network import MLPClassifier
-
         x, y = data["x_train"], data["y_train"]
         x = self.preprocess(x)
         model = MLPClassifier(

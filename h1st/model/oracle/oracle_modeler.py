@@ -230,7 +230,7 @@ class OracleModeler(Modeler):
         # Generate the following metrics for each label.
         # Generate the metrics of all sub models (student, teacher, ensembler)
         evals = {}
-        for metrics in ["f1_score_micro", "f1_score_macro", "precision", "recall"]:
+        for metrics in ["f1_score", "precision", "recall"]:
             temp = {}
 
             for col in teacher_pred:
@@ -300,9 +300,7 @@ class OracleModeler(Modeler):
             return round(sklearn.metrics.precision_score(y_true, y_pred), 5)
         elif metrics == "recall":
             return round(sklearn.metrics.recall_score(y_true, y_pred), 5)
-        elif metrics == "f1_score_micro":
-            return round(sklearn.metrics.f1_score(y_true, y_pred, average="micro"), 5)
-        elif metrics == "f1_score_macro":
-            return round(sklearn.metrics.f1_score(y_true, y_pred, average="macro"), 5)
+        elif metrics == "f1_score":
+            return round(sklearn.metrics.f1_score(y_true, y_pred), 5)
         else:
             raise ValueError(f"Provided unsupported metrics type {metrics}")
