@@ -11,8 +11,8 @@ class MLModel(PredictiveModel):
     `train` and `predict` accordingly. Please refer to Tutorial for more details how to create a model.
 
     The framework allows you to persist and load model to the model repository.
-    To persist the model, you can call `persist()`, and then `load_params()` to retrieve the model.
-    See `persist()` and `load_params()` document for more detail.
+    To persist the model, you can call `persist()`, and then `load()` to retrieve the model.
+    See `persist()` and `load()` document for more detail.
 
         .. code-block:: python
             :caption: Model Persistence and Loading Example
@@ -58,7 +58,7 @@ class MLModel(PredictiveModel):
 
                 # Load the model from the repo
                 my_model_2 = MyMLModel()
-                my_model_2.load_params('1st_version')
+                my_model_2.load('1st_version')
                 y_pred = my_model_2.predict({'X': X_test})['predictions']
                 accuracy = accuracy_score(y_test, y_pred)
                 print("Accuracy (test): %0.1f%% " % (accuracy * 100))
@@ -71,3 +71,10 @@ class MLModel(PredictiveModel):
     @base_model.setter
     def base_model(self, value):
         setattr(self, "__base_model", value)
+
+    def load(self, version: str = None) -> Any:
+        return super().load(version)
+
+    # For backward compability
+    def load_params(self, version: str = None) -> Any:
+        return self.load(version)

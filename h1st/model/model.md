@@ -15,7 +15,7 @@ Modeler : build_model() → Modelable
 Modeler : evaluate_model() → dict
 
 Model : persist()
-Model : load_params()
+Model : load()
 Model : process() → Any
 
 @enduml
@@ -34,6 +34,6 @@ BooleanModel -up->PredictiveModel
 RuleBasedModel -up->PredictiveModel
 Oracle -up-> PredictiveModel
 
-FuzzyLogicModel -up->RuleBasedModel
+FuzzyModel -up->RuleBasedModel
 @enduml
 ```
