@@ -1,17 +1,18 @@
-import numpy as np
 import os
 import tempfile
+
+import numpy as np
 
 from h1st.model.fuzzy import (
     FuzzyModeler,
     FuzzyModel,
-    FuzzyRules,
-    FuzzyVariables,
     FuzzyMembership as fm,
+    FuzzyVariables,
+    FuzzyRules,
 )
 
 
-def build_fuzzy_logic_model():
+def build_fuzzy_model():
     vars = FuzzyVariables()
     vars.add(
         var_name='var1',
@@ -63,34 +64,21 @@ def build_fuzzy_logic_model():
     return model
 
 
-class TestFuzzyLogicModelTestCase:
-    def test_fuzzy_logic_model(self):
-        m = build_fuzzy_logic_model()
-        sensor_input = {'var1': 7, 'var2': 10}
-        prediction = m.process_rules(sensor_input)
-        assert prediction['conclusion1'] < 5
+if __name__ == "__main__":
+    fuzzy_model = build_fuzzy_model()
+    input_vars = {'var1': 7, 'var2': 10}
 
-        sensor_input = {'var1': 3, 'var2': 15}
-        prediction = m.process_rules(sensor_input)
-        assert prediction['conclusion1'] < 5
+    # Run prediction of Fuzzy Model.
+    prediction = fuzzy_model.process_rules(input_vars)
+    print("prediction['conclusion1']: ", prediction['conclusion1'])
 
-        sensor_input = {'var1': 10, 'var2': 5}
-        prediction = m.process_rules(sensor_input)
-        assert prediction['conclusion1'] < 5
+    # Persist Fuzzy Model.
+    with tempfile.TemporaryDirectory() as path:
+        os.environ['H1ST_MODEL_REPO_PATH'] = path
+        fuzzy_model.persist('my_version_1')
 
-        sensor_input = {'var1': 10, 'var2': 15}
-        prediction = m.process_rules(sensor_input)
-        assert prediction['conclusion1'] > 5
+        # Load Fuzzy Model.
+        reloaded_fuzzy_model = FuzzyModel().load('my_version_1')
 
-    def test_fuzzy_model_persist_and_load(self):
-        m = build_fuzzy_logic_model()
-        with tempfile.TemporaryDirectory() as path:
-            os.environ['H1ST_MODEL_REPO_PATH'] = path
-            m.persist('test_model')
-
-            m = None
-            m = FuzzyModel().load('test_model')
-            assert m.rules is not None
-            sensor_input = {'var1': 10, 'var2': 15}
-            prediction = m.process_rules(sensor_input)
-            assert prediction['conclusion1'] > 5
+    prediction = reloaded_fuzzy_model.process_rules(input_vars)
+    print("prediction['conclusion1']: ", prediction['conclusion1'])
