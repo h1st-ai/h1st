@@ -1,7 +1,9 @@
 from typing import Any, Dict
+
 from h1st.model.modelable import Modelable
 from h1st.model.rule_based_model import RuleBasedModel
-from .modeler import Modeler
+from h1st.model.modeler import Modeler
+
 
 class RuleBasedModeler(Modeler):
     def __init__(self, model_class=RuleBasedModel):

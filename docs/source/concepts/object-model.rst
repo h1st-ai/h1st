@@ -49,13 +49,13 @@ RuleBasedModel
 ##############
 A RuleBasedModel is a PredictiveModel that follows Boolean logic at its core.
 
-FuzzyLogicModel
+FuzzyModel
 ###############
-A FuzzyLogicModel is a PredictiveModel that uses fuzzy logic for its outputs.
+A FuzzyModel is a PredictiveModel that uses fuzzy logic for its outputs.
 
 KalmanFilterModel
 #################
-A FuzzyLogicModel is a PredictiveModel that uses Kalman filters for its inferences.
+A KalmanFilterModel is a PredictiveModel that uses Kalman filters for its inferences.
 
 Modeler
 #######

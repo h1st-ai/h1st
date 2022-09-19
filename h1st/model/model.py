@@ -1,10 +1,10 @@
-from typing import Dict
+from typing import Any, Dict
 
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
-from .repository.model_repository import ModelRepository
-from .modeler import Modelable
+from h1st.model.repository.model_repository import ModelRepository
+from h1st.model.modeler import Modelable
 
 
 class Model(NodeContainable, Trustable, Modelable):
@@ -15,8 +15,8 @@ class Model(NodeContainable, Trustable, Modelable):
     Please refer to Tutorial for more details how to create a model.
 
     The framework allows you to persist and load model to the model repository.
-    To persist the model, you can call `persist()`, and then `load_params` to retrieve the model.
-    See `persist()` and `load_params()` document for more detail.
+    To persist the model, you can call `persist()`, and then `load` to retrieve the model.
+    See `persist()` and `load()` document for more detail.
 
         .. code-block:: python
            :caption: Model Persistence and Loading Example
@@ -41,29 +41,29 @@ class Model(NodeContainable, Trustable, Modelable):
 
            # Load the model from the repo
            my_model_2 = MyModel()
-           my_model_2.load_params('1st_version')
+           my_model_2.load('1st_version')
     """
 
     ## TODO: Need a better naming and the definition of the property
     @property
     def stats(self):
-        return getattr(self, '__stats__', None)
+        return getattr(self, "__stats__", None)
 
     @stats.setter
     def stats(self, value) -> Dict:
-        setattr(self, '__stats__', value)
+        setattr(self, "__stats__", value)
 
     @property
     def metrics(self):
-        if not hasattr(self, '__metrics__'):
-            setattr(self, '__metrics__', {})
-        return getattr(self, '__metrics__')
+        if not hasattr(self, "__metrics__"):
+            setattr(self, "__metrics__", {})
+        return getattr(self, "__metrics__")
 
     @metrics.setter
     def metrics(self, value) -> Dict:
-        setattr(self, '__metrics__', value)
+        setattr(self, "__metrics__", value)
 
-    def persist(self, version=None) -> None:
+    def persist(self, version=None) -> str:
         """
         Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
@@ -76,7 +76,7 @@ class Model(NodeContainable, Trustable, Modelable):
         repo = ModelRepository.get_model_repo(self)
         return repo.persist(model=self, version=version)
 
-    def load_params(self, version: str = None) -> None:
+    def load(self, version: str = None) -> Any:
         """
         Load parameters from the specified `version` from the ModelRepository.
         Leave version blank to load latest version.
