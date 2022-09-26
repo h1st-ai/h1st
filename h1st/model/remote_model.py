@@ -1,6 +1,6 @@
 from typing import Dict, Tuple
 import requests
-from .predictive_model import PredictiveModel
+from h1st.model.predictive_model import PredictiveModel
 import pandas as pd
 
 
@@ -8,12 +8,12 @@ class RemoteModel(PredictiveModel):
     """
     Class for making inference calls with models served via the Aitomatic Wed API
 
-    Ex: 
+    Ex:
     model = RemoteModel(API_TOKEN, "MyModelName").load_params()
     predictions = model.predict({'X': MyDataFrame})
     """
-    PREDICTION_ENDPOINT = ''
-    METADATA_ENDPOINT = ''
+    PREDICTION_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/fuzzy/predict'
+    METADATA_ENDPOINT = '://model-api-dev.platform.aitomatic.com/fuzzy/metadata'
 
     def __init__(self, api_access_token, model_name):
         """
@@ -61,10 +61,13 @@ class RemoteModel(PredictiveModel):
             err = f'{resp.status_code}: {resp.content}'
             raise ConnectionError(err)
 
+        resp_content = json.loads(resp.content)
+
         # Convert response back to correct types
         # predictions format to match input_data['X'] format/types
-        predictions = convert_json_to_data(json.loads(resp.content), types_dict)
-        return predictions
+        predictions = convert_json_to_data(resp_content.pop('predictions'), types_dict)
+        resp_content['predictions'] = predictions
+        return resp_content
 
     def process(self, input_data: Dict) -> Dict:
         """
@@ -75,7 +78,10 @@ class RemoteModel(PredictiveModel):
     def persist(self, version: str) -> str:
         raise NotImplementedError()
 
-    def load_params(self, version: str='latest') -> 'RemoteModel':
+    def load_params(self, *args, **kwargs) -> 'RemoteModel':
+        return self.load(*args, **kwargs))
+
+    def load(self, version: str='latest') -> 'RemoteModel':
         """
         load model parameters for usage
 
@@ -133,6 +139,11 @@ def convert_data_to_json(input_data: Dict) -> Tuple[Dict, Dict]:
     return out_data, types_dict
 
 def convert_json_to_data(json_data: Dict, types_dict: Dict) -> Dict:
+    """
+    converts json data input pandas Dataframe or pandas Series or numpy array
+    depending on the types_dict generated when converting the input_data into
+    json
+    """
     out_data = {}
     for k,v in json.loads(json_data).items():
         goal_type = types_dict.get(k, pd.DataFrame)
