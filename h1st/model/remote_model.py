@@ -79,7 +79,7 @@ class RemoteModel(PredictiveModel):
         raise NotImplementedError()
 
     def load_params(self, *args, **kwargs) -> 'RemoteModel':
-        return self.load(*args, **kwargs))
+        return self.load(*args, **kwargs)
 
     def load(self, version: str='latest') -> 'RemoteModel':
         """
