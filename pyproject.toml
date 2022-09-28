@@ -10,7 +10,7 @@ repository = "https://github.com/h1st-ai/h1st"
 include = ["h1st/*"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = ">=3.8,<3.10"
 
 pyarrow = "^7.0.0"
 graphviz = "^0.19.1"
