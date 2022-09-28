@@ -1,3 +1,4 @@
+import json
 from typing import Dict, Tuple
 from h1st.model.predictive_model import PredictiveModel
 
@@ -19,17 +20,17 @@ class RemoteModel(PredictiveModel):
     PREDICTION_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/inferencing'
     METADATA_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/model/metadata'
 
-    def __init__(self, api_access_token, model_name):
+    def __init__(self, api_token, model_name):
         """
         Initialize remote model
 
-        :param api_access_token: Aitomatic API Access Token
+        :param api_token: Aitomatic API Access Token
         :param model_name: name of the model being used
         """
         self.model_name = model_name
-        self.api_access_token = api_access_token
+        self.api_token = api_token
         self.headers = {
-            'access-token': self.api_access_token,
+            'access-token': self.api_token,
             'Content-Type': 'application/json',
             'accept': 'application/json',
         }
@@ -42,13 +43,20 @@ class RemoteModel(PredictiveModel):
         :return: a dictionary with key `predictions` containing the predictions
         """
         # Convert data to JSON safe dict
-        json_data, types_dict = convert_data_to_json(input_data)
+        #json_data, types_dict = convert_data_to_json(input_data)
+
+        # TODO: change API input to take dict with {'input_data': {'X': data}}
+        # so that A) models can take additional dict parameters if needed and
+        # B) appropriate type conversions can be done on response to return to
+        # user the same input type that they put in
+
+        json_data, types_dict = convert_data_to_json(input_data['X'])
 
         # Create web request dicts
         request_data = {
             'model_name': self.model_name,
             'model_version': self.version,
-            'input_data': json_data,
+            'input_data': json_data
         }
 
         # Convert data to json str (NpEncoder allows numpy array conversion)
@@ -69,12 +77,12 @@ class RemoteModel(PredictiveModel):
         # result_file_path = resp_content['result_file_path']
 
         # Convert response back to correct types
-        # predictions format to match input_data['X'] format/types
-        predictions = convert_json_to_data(resp_data.pop('predictions'), types_dict)
-        resp_data['predictions'] = predictions
+        # predictions format to match input_data format/types
+        predictions = convert_json_to_data(resp_data, types_dict)
+        #resp_data['predictions'] = predictions
 
-        # resp_data['result_file_path'] = result_file_path
-        return resp_data
+        #resp_data['result_file_path'] = result_file_path
+        return predictions
 
     def process(self, input_data: Dict) -> Dict:
         """
@@ -154,7 +162,10 @@ def convert_json_to_data(json_data: Dict, types_dict: Dict) -> Dict:
     json
     """
     out_data = {}
-    for k, v in json_data.items():
+    if isinstance(json_data, str):
+        json_data = json.loads(json_data)
+
+    for k,v in json_data.items():
         goal_type = types_dict.get(k, pd.DataFrame)
         if goal_type == pd.DataFrame or goal_type == pd.Series:
             out_data[k] = goal_type([v]).transpose()
