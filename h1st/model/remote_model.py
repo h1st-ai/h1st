@@ -1,7 +1,10 @@
 from typing import Dict, Tuple
-import requests
 from h1st.model.predictive_model import PredictiveModel
+
+import requests
+import json
 import pandas as pd
+import numpy as np
 
 
 class RemoteModel(PredictiveModel):
@@ -12,6 +15,7 @@ class RemoteModel(PredictiveModel):
     model = RemoteModel(API_TOKEN, "MyModelName").load_params()
     predictions = model.predict({'X': MyDataFrame})
     """
+
     PREDICTION_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/inferencing'
     METADATA_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/model/metadata'
 
@@ -23,11 +27,11 @@ class RemoteModel(PredictiveModel):
         :param model_name: name of the model being used
         """
         self.model_name = model_name
-        self.api_token = api_access_token
+        self.api_access_token = api_access_token
         self.headers = {
             'access-token': self.api_access_token,
             'Content-Type': 'application/json',
-            'accept': 'application/json'
+            'accept': 'application/json',
         }
 
     def predict(self, input_data: Dict) -> Dict:
@@ -43,8 +47,8 @@ class RemoteModel(PredictiveModel):
         # Create web request dicts
         request_data = {
             'model_name': self.model_name,
-            'version': self.version,
-            'input_data': json_data
+            'model_version': self.version,
+            'input_data': json_data,
         }
 
         # Convert data to json str (NpEncoder allows numpy array conversion)
@@ -52,9 +56,7 @@ class RemoteModel(PredictiveModel):
 
         # Make web request
         resp = requests.post(
-            self.PREDICTION_ENDPOINT,
-            headers=self.headers,
-            data=request_data
+            self.PREDICTION_ENDPOINT, headers=self.headers, data=request_data
         )
 
         # Handle request errors
@@ -64,14 +66,14 @@ class RemoteModel(PredictiveModel):
 
         resp_content = json.loads(resp.content)
         resp_data = resp_content['result']
-        result_file_path = resp_content['result_file_path']
+        # result_file_path = resp_content['result_file_path']
 
         # Convert response back to correct types
         # predictions format to match input_data['X'] format/types
         predictions = convert_json_to_data(resp_data.pop('predictions'), types_dict)
         resp_data['predictions'] = predictions
 
-        #resp_data['result_file_path'] = result_file_path
+        # resp_data['result_file_path'] = result_file_path
         return resp_data
 
     def process(self, input_data: Dict) -> Dict:
@@ -86,7 +88,7 @@ class RemoteModel(PredictiveModel):
     def load_params(self, *args, **kwargs) -> 'RemoteModel':
         return self.load(*args, **kwargs)
 
-    def load(self, version: str='latest') -> 'RemoteModel':
+    def load(self, version: str = 'latest') -> 'RemoteModel':
         """
         load model parameters for usage
 
@@ -114,14 +116,15 @@ class RemoteModel(PredictiveModel):
         # self.metrics = resp_data['metrics']
         return self
 
+
 def convert_data_to_json(input_data: Dict) -> Tuple[Dict, Dict]:
     """
-    Converts input data to json str for web request. 
+    Converts input data to json str for web request.
     Supports dict, pandas DataFrame, pandas Series and numpy arrays
     """
     out_data = {}
     types_dict = {}
-    for k,v in input_data.items():
+    for k, v in input_data.items():
         types_dict[k] = type(v)
         if isinstance(v, (pd.DataFrame, pd.Series)):
             out_data[k] = json.loads(v.to_json())
@@ -140,8 +143,9 @@ def convert_data_to_json(input_data: Dict) -> Tuple[Dict, Dict]:
     if 'predictions' not in types_dict.keys():
         types_dict['predictions'] = pd.DataFrame
 
-    #out_json = json.dumps(out_data, cls=NpEncoder)
+    # out_json = json.dumps(out_data, cls=NpEncoder)
     return out_data, types_dict
+
 
 def convert_json_to_data(json_data: Dict, types_dict: Dict) -> Dict:
     """
@@ -150,16 +154,17 @@ def convert_json_to_data(json_data: Dict, types_dict: Dict) -> Dict:
     json
     """
     out_data = {}
-    for k,v in json.loads(json_data).items():
+    for k, v in json_data.items():
         goal_type = types_dict.get(k, pd.DataFrame)
         if goal_type == pd.DataFrame or goal_type == pd.Series:
-            out_data[k] = goal_type(v)
+            out_data[k] = goal_type([v]).transpose()
         elif goal_type == np.ndarray:
             out_data[k] = np.array(v, dtype='O')
         else:
             out_data[k] = v
 
     return out_data
+
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -170,4 +175,3 @@ class NpEncoder(json.JSONEncoder):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return super(NpEncoder, self).default(obj)
-
