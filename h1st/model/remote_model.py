@@ -12,8 +12,8 @@ class RemoteModel(PredictiveModel):
     model = RemoteModel(API_TOKEN, "MyModelName").load_params()
     predictions = model.predict({'X': MyDataFrame})
     """
-    PREDICTION_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/fuzzy/predict'
-    METADATA_ENDPOINT = '://model-api-dev.platform.aitomatic.com/fuzzy/metadata'
+    PREDICTION_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/inferencing'
+    METADATA_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/model/metadata'
 
     def __init__(self, api_access_token, model_name):
         """
@@ -25,8 +25,9 @@ class RemoteModel(PredictiveModel):
         self.model_name = model_name
         self.api_token = api_access_token
         self.headers = {
-            'API-ACCESS-TOKEN': self.api_access_token,
-            'Content-Type': 'application/json'
+            'access-token': self.api_access_token,
+            'Content-Type': 'application/json',
+            'accept': 'application/json'
         }
 
     def predict(self, input_data: Dict) -> Dict:
@@ -62,12 +63,16 @@ class RemoteModel(PredictiveModel):
             raise ConnectionError(err)
 
         resp_content = json.loads(resp.content)
+        resp_data = resp_content['result']
+        result_file_path = resp_content['result_file_path']
 
         # Convert response back to correct types
         # predictions format to match input_data['X'] format/types
-        predictions = convert_json_to_data(resp_content.pop('predictions'), types_dict)
-        resp_content['predictions'] = predictions
-        return resp_content
+        predictions = convert_json_to_data(resp_data.pop('predictions'), types_dict)
+        resp_data['predictions'] = predictions
+
+        #resp_data['result_file_path'] = result_file_path
+        return resp_data
 
     def process(self, input_data: Dict) -> Dict:
         """
