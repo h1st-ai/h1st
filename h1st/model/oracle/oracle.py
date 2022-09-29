@@ -170,6 +170,7 @@ class Oracle(PredictiveModel):
             ]
 
         # return predictions of ensemblers
+        predictions = pd.DataFrame(predictions)
         return {"predictions": predictions}
 
     def persist(self, version=None):
