@@ -173,15 +173,10 @@ class RemoteModel(PredictiveModel):
 
         # Convert response back to correct types
         # predictions format to match input_data['X'] format/types
-        # predictions = convert_json_to_data(resp_data.pop('predictions'), types_dict)
-
-        # TODO: Fix this once API is changed to return {'result': {'predictions': pred}}
         predictions = convert_json_to_data(
-            {'predictions': resp_data['result']}, types_dict
+            resp_data['result'], types_dict
         )
-        #resp_data['predictions'] = predictions
 
-        #resp_data['result_file_path'] = result_file_path
         return predictions
 
     def process(self, input_data: Dict) -> Dict:
