@@ -25,6 +25,7 @@ class RemoteModel(PredictiveModel):
 
     PREDICTION_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/inferencing'
     METADATA_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/model/metadata'
+    MODELS_ENDPOINT = 'https://model-api-dev.platform.aitomatic.com/models'
 
     def __init__(self, api_token, model_name, chunk_size=1024):
         """
@@ -222,6 +223,23 @@ class RemoteModel(PredictiveModel):
         # self.stats = resp_data['stats']
         # self.metrics = resp_data['metrics']
         return self
+
+    @staticmethod
+    def get_model_names(api_token):
+        headers = {
+            'access-token': api_token,
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+        }
+        resp = requests.get(RemoteModel.MODELS_ENDPOINT, headers=headers)
+
+        # Handle request errors
+        if resp.status_code != 200:
+            err = f'{resp.status_code}: {resp.content}'
+            raise ConnectionError(err)
+
+        resp_content = json.loads(resp.content)
+        return resp_content['result']['models']
 
 
 def convert_data_to_json(input_data: Dict) -> Tuple[Dict, Dict]:
