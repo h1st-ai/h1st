@@ -1,6 +1,7 @@
 import os
 import tempfile
 from typing import Any, Dict
+from h1st.model.oracle.oracle_model import OracleModel
 import pandas as pd
 from sklearn import datasets, metrics
 from sklearn.linear_model import LogisticRegression
@@ -75,25 +76,30 @@ class TestOracle:
 
     def test_rule_based_ensemble(self):
         data = self.load_data()
-        oracle_modeler = OracleModeler(teacher=RuleModel(),
-                                       student_modelers = [RandomForestModeler(), AdaBoostModeler()],
-                                       ensembler_modeler=RuleBasedModeler(model_class=RuleBasedClassificationModel))
-        oracle = oracle_modeler.build_model({'unlabeled_data': data['training_data']['X']})
+        
+        modeler = OracleModeler()
+        model = modeler.build_model(
+            teacher=RuleModel,
+            students=[RandomForestModeler, AdaBoostModeler],
+            ensembler=RuleBasedModeler(RuleBasedClassificationModel),
+            data={'unlabeled_data': data['training_data']['X']}
+        )
 
-        pred = oracle.predict(data['test_data'])['predictions']
-        assert len(pred) == len(data['test_data']['y'])
-        # print(metrics.f1_score(data['test_data']['y'], pred, average='macro'))
+        assert type(model) == OracleModel
+
+        prediction = model.predict(data['test_data'])['predictions']
+        assert len(prediction) == len(data['test_data']['y'])
 
         with tempfile.TemporaryDirectory() as path:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
-            version = oracle.persist()
+            version = model.persist()
 
-            oracle_2 = Oracle().load_params(version)
+            loaded_model = OracleModel().loads(version)
 
-            assert 'sklearn' in str(type(oracle_2.students[0].base_model))
-            pred_2 = oracle_2.predict(data['test_data'])['predictions']
-            pred_df = pd.DataFrame({'pred': pred, 'pred_2': pred_2})
-            assert len(pred_df[pred_df['pred'] != pred_df['pred_2']]) == 0
+            assert 'sklearn' in str(type(loaded_model.students[0].base_model))
+            new_prediction = loaded_model.predict(data['test_data'])['predictions']
+            pred_df = pd.DataFrame({'old': prediction, 'new': new_prediction})
+            assert len(pred_df[pred_df['old'] != pred_df['new']]) == 0
 
     def test_rule_based_ensemble_one_student(self):
         data = self.load_data()

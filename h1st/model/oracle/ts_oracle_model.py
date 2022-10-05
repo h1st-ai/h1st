@@ -1,17 +1,15 @@
-from typing import Dict, NoReturn, List
 import pandas as pd
+
 from h1st.model.predictive_model import PredictiveModel
-from .oracle import Oracle
-from .student import RandomForestModeler, AdaBoostModeler
-from .ensemble import Ensemble
+from h1st.model.oracle.oracle_model import OracleModel
 
 
-class TimeSeriesOracle(Oracle):
+class TimeSeriesOracleModel(OracleModel):
     def __init__(self):
         super().__init__()
 
     @classmethod
-    def generate_features(cls, data: Dict):
+    def generate_features(cls, data: dict):
         '''
         Generate features to train the Student model.
         By default, we flatten all data points of the grouped dataframe.
@@ -23,7 +21,7 @@ class TimeSeriesOracle(Oracle):
         return {'data': ret}
 
     @classmethod
-    def generate_data(cls, data: Dict, teacher: PredictiveModel, stats: Dict) -> Dict:
+    def generate_data(cls, data: dict, teacher: PredictiveModel, stats: dict) -> dict:
         '''
         Generate data to train the Student model
         :param data: unlabeled data in form of {'X': pd.DataFrame}
@@ -60,7 +58,9 @@ class TimeSeriesOracle(Oracle):
 
                 teacher_pred = teacher.predict({'X': group_df})
                 if 'predictions' not in teacher_pred:
-                    raise KeyError('Teacher\'s output must contain a key named `predictions`')
+                    raise KeyError(
+                        'Teacher\'s output must contain a key named `predictions`'
+                    )
 
                 teacher_preds.append(teacher_pred['predictions'])
 
@@ -74,7 +74,7 @@ class TimeSeriesOracle(Oracle):
 
         return {'X': df_features, 'y': pd.Series(teacher_preds)}
 
-    def predict(self, input_data: Dict) -> Dict:
+    def predict(self, input_data: dict) -> dict:
         '''
         Implement logic to generate prediction from data. The TimeSeries Oracle expects the same `id_col`, `ts_col` and features provided during `build` phase to be in the provided data. It automatically process the data the same way to that of the `build` phase.
         :params input_data: an dictionary with key `X` containing the data to get predictions.

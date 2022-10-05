@@ -9,7 +9,7 @@ from h1st.model.predictive_model import PredictiveModel
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.oracle.student import AdaBoostModel, AdaBoostModeler, RandomForestModel, RandomForestModeler
-from h1st.model.oracle.ts_oracle import TimeSeriesOracle
+from h1st.model.oracle.ts_oracle_model import TimeSeriesOracleModel
 from h1st.model.oracle.ts_oracle_modeler import TimeseriesOracleModeler
 from h1st.model.rule_based_model import RuleBasedClassificationModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
@@ -185,7 +185,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle().load_params(version)
+            oracle_2 = TimeSeriesOracleModel().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']
@@ -211,7 +211,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle().load_params(version)
+            oracle_2 = TimeSeriesOracleModel().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']
@@ -234,7 +234,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle().load_params(version)
+            oracle_2 = TimeSeriesOracleModel().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']
@@ -267,7 +267,7 @@ class TestTimeSeriesOracle:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = oracle.persist()
 
-            oracle_2 = TimeSeriesOracle().load_params(version)
+            oracle_2 = TimeSeriesOracleModel().load_params(version)
             
             assert 'sklearn' in str(type(oracle_2.students[0].base_model))
             pred_2 = oracle_2.predict(data['training_data'])['predictions']

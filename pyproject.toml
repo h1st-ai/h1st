@@ -22,6 +22,7 @@ shap = ">=0.36.0"
 ulid-py = "^1.1.0"
 pyyaml = "^6.0"
 tensorflow = "^2.8.0"
+loguru = "0.6.0"
 
 [tool.poetry.dev-dependencies]
 commitizen = "^2.20.5"

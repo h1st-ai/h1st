@@ -1,31 +1,41 @@
-from typing import Dict, List
+from h1st.model.model import Model
+from h1st.model.modeler import Modeler
 from h1st.model.oracle.oracle_modeler import OracleModeler
-from .ts_oracle import TimeSeriesOracle
-from h1st.model.oracle.student import AdaBoostModeler, AdaBoostModel, RandomForestModeler, RandomForestModel
+from h1st.model.oracle.ts_oracle_model import TimeSeriesOracleModel
+from h1st.model.oracle.student_modelers import (
+    RandomForestModeler,
+    LogisticRegressionModeler,
+)
 from h1st.model.predictive_model import PredictiveModel
 
-class TimeseriesOracleModeler(OracleModeler):
-    def __init__(self, teacher: PredictiveModel,
-                 ensembler_modeler: PredictiveModel,
-                 student_modelers: List = [RandomForestModeler(RandomForestModel),
-                                           AdaBoostModeler(AdaBoostModel)],
-                 model_class = TimeSeriesOracle
-                 ):
-        self.teacher = teacher
-        self.student_modelers = student_modelers
-        self.ensembler_modeler = ensembler_modeler
-        self.model_class = model_class
-        self.stats = {}
 
-    def build_model(self, data: Dict, id_col: str = None, ts_col: str = None, features: List = None) -> TimeSeriesOracle:
+class TimeseriesOracleModeler(OracleModeler):
+    def __init__(self, model_class=None):
+        self.stats = {}
+        self.model_class = (
+            model_class if model_class is not None else TimeSeriesOracleModel
+        )
+
+    def build_model(
+        self,
+        data: dict = None,
+        teacher: Model = PredictiveModel,
+        students: list(Modeler) = [RandomForestModeler, LogisticRegressionModeler],
+        ensembler: Modeler = Modeler,
+        **kwargs
+    ) -> Model:
         '''
         Build the oracle
         :param data: a dictionary {'X': ...}
+        :param teacher: a Model to be used as the teacher in Oracle
+        :param students: a list of Modelers to be used as students in Oracle
+        :param ensembler: a Modeler to be used as an ensemble in Oracle
         :param id_col: id column that contains entity ids such as `equipment_id`
         :param ts_col: time-granularity column to group the data
         '''
-
-        self.stats['id_col'] = id_col
-        self.stats['ts_col'] = ts_col
-
-        return super().build_model(data, features)
+        self.teacher = teacher
+        self.students = students
+        self.ensembler = ensembler
+        self.stats['id_col'] = kwargs['id_col']
+        self.stats['ts_col'] = kwargs['ts_col']
+        return super().build_model(data, teacher, students, ensembler, **kwargs)
