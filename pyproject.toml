@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'h1st'
-version = '0.1.13.dev7'
+version = '0.1.14.dev0'
 description = 'Human-First AI (H1st)'
 authors = ['Aitomatic, Inc. <engineering@aitomatic.com>']
 license = 'Apache-2.0'
@@ -44,11 +44,11 @@ ULID-Py = '>= 1.1.0'
 
 
 [tool.poetry.dev-dependencies]
-Commitizen = '>= 2.34.0'
+Commitizen = '>= 2.35.0'
 Pre-Commit = '>= 2.20.0'
 PyLint = '>= 2.15.3'
 PyTest = '>= 7.1.3'
-Sphinx = '>= 5.1.1'
+Sphinx = '>= 5.2.3'
 Sphinx-RtD-Theme = '>= 1.0.0'
 
 
@@ -58,7 +58,7 @@ h1st = 'h1st.utils.tools:h1st_cli'
 
 [build-system]
 requires = [
-  'Poetry-Core >= 1.2.0',
+  'Poetry-Core >= 1.3.1',
 ]
 build-backend = 'poetry.core.masonry.api'
 
