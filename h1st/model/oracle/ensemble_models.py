@@ -17,7 +17,7 @@ class MajorityVotingEnsembleModel(PredictiveModel):
         :param input_data: dictionary with `X` key and input data
         :returns: a dictionary with key `predictions` containing the predictions
         '''
-        predictions = input_data['x'].mode(axis='columns', numeric_only=True)[0]
+        predictions = input_data['X'].mode(axis='columns', numeric_only=True)[0]
         return {'predictions': predictions}
 
 
