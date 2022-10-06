@@ -1,9 +1,11 @@
+from loguru import logger
 from typing import List
 
 from h1st.model.ensemble.stack_ensemble_modeler import StackEnsembleModeler
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.modeler import Modeler
 from h1st.model.model import Model
+from h1st.model.fuzzy import FuzzyModel
 from h1st.model.oracle.oracle_model import OracleModel
 from h1st.model.oracle.student_modelers import LogisticRegressionModeler, RandomForestModeler
 from h1st.model.oracle.ensemble_models import MajorityVotingEnsembleModel
@@ -43,4 +45,13 @@ class OracleModeler(Modeler):
         Build the components of Oracle, which are students and ensemblers.
         student is always MLModel and ensembler can be MLModel or RuleBasedModel.
         '''
+        if isinstance(teacher, FuzzyModel) and kwargs.get('fuzzy_thresholds') is None:
+            raise ValueError('Should provide fuzzy_thresholds when using FuzzyModel teacher')
+        
+        if not isinstance(students, list):
+            students = [students]
+        for modeler in students:
+            if not isinstance(modeler, MLModeler):
+                raise ValueError('Student modeler should be MLModeler')
+        
         return self.model_class
