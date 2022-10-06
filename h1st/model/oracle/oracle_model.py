@@ -87,8 +87,8 @@ class OracleModel(PredictiveModel):
             index = 0
             for model in self.students[label]:
                 student_classes.append(model.__class__)
-                version = model.persist(f'student_{version}_{label}_{index}')
-                student_versions.append(version)
+                student_version = model.persist(f'student_{version}_{label}_{index}')
+                student_versions.append(student_version)
                 index += 1
 
             student_details[label] = {
