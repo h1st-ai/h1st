@@ -52,10 +52,11 @@ class OracleModeler(Modeler):
         Build the components of Oracle, which are students and ensemblers.
         student is always MLModel and ensembler can be MLModel or RuleBasedModel.
         :param data: dictionary with data to build Oracle model
-        :param teacher: an Instance of Model as the teacher
-        :param students: a list of Modeler Class to act as students
-        :param ensembler: an Instance or a Class of Modeler to act as the ensemble
+        :param teacher_model: a Model as the teacher
+        :param student_modelers: a list of Modeler Class to act as students
+        :param ensembler_modeler: a Modeler to act as the ensembler
         :param fuzzy_thresholds: optional param to be used when teacher is an instance of FuzzyModel
+        :param features: option param to used as feature to gen teacher prediction
         :return: a model which Class depends on OracleModeler init call, default is OracleModel
         '''
         if isclass(teacher_model):
@@ -125,7 +126,7 @@ class OracleModeler(Modeler):
         Generate teacher's prediction which will be used as y value of students' training data.
         '''
         result = self.model_class.generate_teacher_predictions(
-            data={'X': data['unlabeled_data']}, teacher=model
+            data={'X': data['unlabeled_data']}, teacher=model, features=kwargs.get('features')
         )
 
         # If teacher is FuzzyModel, convert float to zero or one to use this as y value.
