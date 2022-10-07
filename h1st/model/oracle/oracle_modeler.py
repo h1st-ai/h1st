@@ -99,7 +99,7 @@ class OracleModeler(Modeler):
         self.stats['inject_x_in_ensembler'] = kwargs.get('inject_x_in_ensembler', False)
 
         teacher_predictions = self.generate_teacher_predictions(
-            data=data, model=teacher_model, kwargs=kwargs
+            data=data, model=teacher_model, **kwargs
         )
         student_models = self.train_students(
             data=data,

@@ -1,4 +1,4 @@
-import logging
+from pandas import DataFrame
 from typing import Dict
 from typing_extensions import Self
 from skfuzzy import control as skctrl
@@ -7,17 +7,14 @@ from h1st.model.rule_based_model import RuleBasedModel
 from h1st.model.fuzzy.fuzzy_variables import FuzzyVariables
 from h1st.model.fuzzy.fuzzy_rules import FuzzyRules
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 class FuzzyModel(RuleBasedModel):
-    """
+    '''
     FuzzyModel is a RuleBasedModel that uses Fuzzy rule engine. You can create
     FuzzyModel using build_model method of FuzzyModeler. FuzzyModel has a property
     called rule_engine and it contains the core ControlSystem from skfuzzy package.
     For more information, check out https://scikit-fuzzy.github.io/scikit-fuzzy/.
-    """
+    '''
 
     def __init__(self, variables: FuzzyVariables = None, rules: FuzzyRules = None):
         super().__init__()
@@ -30,19 +27,33 @@ class FuzzyModel(RuleBasedModel):
             )
 
     def process_rules(self, input_data: Dict) -> Dict:
-        """
+        '''
         Process rules on input_data.
 
         .. code-block:: python
             :caption: example
             input_data = {'var1': 5, 'var2': 9}
-            predictions = model.process_rules(input_data)
-        """
+            predictions = model.process_rules({'X': input_data})
+        '''
+        if 'X' not in input_data:
+            raise KeyError('X is not in input_data.')
+
+        if isinstance(input_data['X'], DataFrame):
+            data = input_data['X'].to_dict('records')
+        elif isinstance(input_data['X'], list):
+            data = input_data['X']
+        else:
+            data = [input_data['X']]
+
+        predictions = map(self.process_rule, data)
+        return {'predictions': DataFrame(predictions)}
+
+    def process_rule(self, input_data: Dict) -> Dict:
         if self.rule_engine is None:
             raise ValueError(
                 (
-                    "Property rule_engine is None. Please load your rule_engine "
-                    "to run this method."
+                    'Property rule_engine is None. Please load your rule_engine '
+                    'to run this method.'
                 )
             )
 
@@ -60,21 +71,21 @@ class FuzzyModel(RuleBasedModel):
         self.variables.visualize()
 
     def persist(self, version=None) -> str:
-        """
+        '''
         persist rule_engine property and variables, and rules in rule_details.
-        """
+        '''
         self.rule_details = {
-            "variables": self.variables,
-            "rules": self.rules,
+            'variables': self.variables,
+            'rules': self.rules,
         }
         super().persist(version)
         return version
 
     def load(self, version: str = None) -> Self:
-        """
+        '''
         load rule_engine property and variables, and rules from rule_details.
-        """
+        '''
         super().load(version)
-        self.variables = self.rule_details["variables"]
-        self.rules = self.rule_details["rules"]
+        self.variables = self.rule_details['variables']
+        self.rules = self.rule_details['rules']
         return self
