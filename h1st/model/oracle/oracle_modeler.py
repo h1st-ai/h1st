@@ -2,7 +2,6 @@ from inspect import isclass
 from loguru import logger
 from typing import List
 
-from h1st.model.ensemble.stack_ensemble_modeler import StackEnsembleModeler
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.modeler import Modeler
 from h1st.model.model import Model
@@ -13,7 +12,6 @@ from h1st.model.oracle.student_modelers import (
     RandomForestModeler,
 )
 from h1st.model.oracle.ensemble_models import MajorityVotingEnsembleModel
-from h1st.model.predictive_model import PredictiveModel
 from h1st.model.rule_based_model import RuleBasedModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 
@@ -40,9 +38,9 @@ class OracleModeler(Modeler):
     def build_model(
         self,
         data: dict = None,
-        teacher: Model = RuleBasedModel(),
-        students: List[Modeler] = [RandomForestModeler, LogisticRegressionModeler],
-        ensembler: Modeler = RuleBasedModeler(MajorityVotingEnsembleModel),
+        teacher_model: Model = RuleBasedModel,
+        student_modelers: List[Modeler] = [RandomForestModeler, LogisticRegressionModeler],
+        ensembler_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsembleModel),
         **kwargs
     ) -> Model:
         '''
@@ -55,50 +53,53 @@ class OracleModeler(Modeler):
         :param fuzzy_thresholds: optional param to be used when teacher is an instance of FuzzyModel
         :return: a model which Class depends on OracleModeler init call, default is OracleModel
         '''
-        if isclass(teacher):
-            teacher = teacher()
-        if isclass(ensembler):
-            ensembler = ensembler()
+        if isclass(teacher_model):
+            teacher_model = teacher_model()
+        if isclass(ensembler_modeler):
+            ensembler_modeler = ensembler_modeler()
 
-        if not isinstance(students, list):
-            students = [students]
+        if not isinstance(student_modelers, list):
+            student_modelers = [student_modelers]
         tmp_students = []
-        for modeler in students:
+        for modeler in student_modelers:
             if isclass(modeler):
                 modeler = modeler()
             tmp_students.append(modeler)
-        students = tmp_students
+        student_modelers = tmp_students
         
-        if isinstance(teacher, FuzzyModel) and kwargs.get('fuzzy_thresholds') is None:
+        if not isinstance(teacher_model, Model):
+            raise TypeError('Teacher should be a Model ')
+        if isinstance(teacher_model, FuzzyModel) and kwargs.get('fuzzy_thresholds') is None:
             raise ValueError(
                 'Should provide fuzzy_thresholds when using FuzzyModel teacher'
             )
         
-        for modeler in students:
+        for modeler in student_modelers:
             if not isinstance(modeler, MLModeler):
                 raise ValueError('Student modeler should be MLModeler')
 
-        if isinstance(ensembler, MLModeler) and data.get('labeled_data') is None:
-            raise ValueError('Should provide labeled data to train ML based ensemble')
+        if not isinstance(ensembler_modeler, Modeler):
+            raise TypeError('Ensembler should be a Modeler')
+        if isinstance(ensembler_modeler, MLModeler) and data.get('labeled_data') is None:
+            raise ValueError('Should provide labeled data to train ML based ensembler')
 
         self.stats['fuzzy_thresholds'] = kwargs.get('fuzzy_thresholds')
         self.stats['features'] = kwargs.get('features')
         self.stats['inject_x_in_ensembler'] = kwargs.get('inject_x_in_ensembler', False)
 
         teacher_predictions = self.generate_teacher_predictions(
-            data=data, teacher=teacher, kwargs=kwargs
+            data=data, teacher=teacher_model, kwargs=kwargs
         )
         student_models = self.train_students(
-            data=data, students=students, teacher_predictions=teacher_predictions
+            data=data, modelers=student_modelers, teacher_predictions=teacher_predictions
         )
         ensemble_models = self.train_ensembles(
-            data=data, ensembler=ensembler, teacher_predictions=teacher_predictions
+            data=data, modeler=ensembler_modeler, teacher_predictions=teacher_predictions
         )
         
         oracle_model = self.model_class(
-            teacher=teacher, students=student_models, ensemblers=ensemble_models
+            teacher=teacher_model, students=student_models, ensemblers=ensemble_models
         )
-
 
         return oracle_model
 
@@ -121,7 +122,7 @@ class OracleModeler(Modeler):
         return result
 
     def train_students(
-        self, data: dict, students: List[Modeler], teacher_predictions: dict
+        self, data: dict, modelers: List[Modeler], teacher_predictions: dict
     ) -> dict:
         '''
         Build one binary classifier (from each student modeler) per label of teacher output.
@@ -133,16 +134,16 @@ class OracleModeler(Modeler):
             train_data = {'X': data['unlabeled_data'], 'y': teacher_predictions[label]}
 
             tmp_array = []
-            for modeler in students:
+            for modeler in modelers:
                 model = modeler.build_model(train_data)
                 tmp_array.append(model)
             result[label] = tmp_array
 
         return result
 
-    def train_ensembles(self, data: dict, ensembler: Modeler, teacher_predictions: dict) -> dict:
+    def train_ensembles(self, data: dict, modeler: Modeler, teacher_predictions: dict) -> dict:
         '''
-        Build one ensemble per label of teacher output (M labels).
+        Build one ensembler per label of teacher output (M labels).
         There will be M ensemblers in total.
         '''
         labeled_data = data.get('labeled_data')
@@ -152,6 +153,6 @@ class OracleModeler(Modeler):
 
         result = {}
         for label in train_data:
-            result[label] = ensembler.build_model(train_data[label])
+            result[label] = modeler.build_model(train_data[label])
         
         return result

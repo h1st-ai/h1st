@@ -70,7 +70,7 @@ if __name__ == "__main__":
     data = load_data()
 
     modeler = OracleModeler()
-    model = modeler.build_model(data=data, teacher=fuzzy_teacher)
+    model = modeler.build_model(data=data, teacher_model=fuzzy_teacher)
 
     # Run prediction of Oracle Model.
     input_vars = {'var1': 7, 'var2': 10}

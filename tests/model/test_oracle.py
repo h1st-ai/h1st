@@ -79,9 +79,9 @@ class TestOracle:
         
         modeler = OracleModeler()
         model = modeler.build_model(
-            teacher=RuleModel,
-            students=[RandomForestModeler, AdaBoostModeler],
-            ensembler=RuleBasedModeler(RuleBasedClassificationModel),
+            teacher_model=RuleModel,
+            student_modelers=[RandomForestModeler, AdaBoostModeler],
+            ensembler_modeler=RuleBasedModeler(RuleBasedClassificationModel),
             data={'unlabeled_data': data['training_data']['X']}
         )
 

@@ -111,6 +111,6 @@ if __name__ == '__main__':
     
     modeler = OracleModeler()
     oracle = modeler.build_model(
-        data=data, teacher=fuzzy_teacher, fuzzy_thresholds=fuzzy_thresholds
+        data=data, teacher_model=fuzzy_teacher, fuzzy_thresholds=fuzzy_thresholds
     )
     print(oracle.metrics)

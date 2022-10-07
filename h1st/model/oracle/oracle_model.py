@@ -1,5 +1,6 @@
 import pandas as pd
 from typing import Dict, List
+from loguru import logger
 
 from h1st.model.model import Model
 from h1st.model.predictive_model import PredictiveModel
@@ -78,9 +79,30 @@ class OracleModel(PredictiveModel):
         result = pd.DataFrame(result)
         return {'predictions': result}
 
-    def persist(self, version=None) -> str:
-        student_details = {}
-        ensembler_details = {}
+    def persist(self, version: str = None) -> str:
+        teacher_details = self._persist_teacher(version)
+        student_details = self._persist_students(version)
+        ensembler_details = self._persist_ensemblers(version)
+
+        model_details = {
+            'teacher_details': teacher_details,
+            'student_details': student_details,
+            'ensembler_details': ensembler_details,
+        }
+        self.stats['model_details'] = model_details
+
+        super().persist(version)
+        return version
+
+    def _persist_teacher(self, version: str = None) -> dict:
+        teacher_version = self.teacher.persist(f'teacher_{version}')
+        return {
+            'class': self.teacher.__class__,
+            'version': teacher_version,
+        }
+
+    def _persist_students(self, version: str = None) -> dict:
+        details = {}
         for label in self.stats['labels']:
             student_classes = []
             student_versions = []
@@ -91,60 +113,59 @@ class OracleModel(PredictiveModel):
                 student_versions.append(student_version)
                 index += 1
 
-            student_details[label] = {
+            details[label] = {
                 'class': student_classes,
                 'version': student_versions,
             }
 
+        return details
+
+    def _persist_ensemblers(self, version: str = None) -> dict:
+        details = {}
+        for label in self.stats['labels']:
             ensembler_version = self.ensemblers[label].persist(
                 f'ensembler_{version}_{label}'
             )
-            ensembler_details[label] = {
+            details[label] = {
                 'class': self.ensemblers[label].__class__,
                 'version': ensembler_version,
             }
 
-        teacher_version = self.teacher.persist(f'teacher_{version}')
-        model_details = {
-            'teacher_details': {
-                'class': self.teacher.__class__,
-                'version': teacher_version,
-            },
-            'student_details': student_details,
-            'ensembler_details': ensembler_details,
-        }
-        self.stats['model_details'] = model_details
-
-        super().persist(version)
-        return version
+        return details
 
     def load(self, version: str = None) -> Model:
         super().load(version)
         model_details = self.stats['model_details']
 
-        teacher_model = model_details['teacher_details']['class']
-        teacher_version = model_details['teacher_details']['version']
-        self.teacher = teacher_model().load(teacher_version)
-
-        students = {}
-        ensemblers = {}
-        for label in self.stats['labels']:
-            students[label] = []
-            for stud_class, stud_version in zip(
-                model_details['student_details'][label]['class'],
-                model_details['student_details'][label]['version'],
-            ):
-                student_model = stud_class().load(stud_version)
-                students[label].append(student_model)
-
-            ensembler_class = model_details['ensembler_details'][label]['class']
-            ensembler_version = model_details['ensembler_details'][label]['version']
-            ensemblers[label] = ensembler_class().load(ensembler_version)
-
-        self.students = students
-        self.ensemblers = ensemblers
+        self._load_teacher(details=model_details['teacher_details'])
+        self._load_students(details=model_details['student_details'])
+        self._load_ensemblers(details=model_details['ensembler_details'])
 
         return self
+
+    def _load_teacher(self, details: dict) -> None:
+        model = details['class']
+        version = details['version']
+        self.teacher = model().load(version)
+
+    def _load_students(self, details: dict) -> None:
+        students = {}
+        for label in self.stats['labels']:
+            students[label] = []
+            for cls, version in zip(
+                details[label]['class'], details[label]['version']
+            ):
+                model = cls().load(version)
+                students[label].append(model)
+        self.students = students
+
+    def _load_ensemblers(self, details: dict) -> None:
+        ensemblers = {}
+        for label in self.stats['labels']:
+            model = details[label]['class']
+            version = details[label]['version']
+            ensemblers[label] = model().load(version)
+        self.ensemblers = ensemblers
 
     # Keep it for backward compatibility. It will be deprecated in the future.
     def load_params(self, version: str = None) -> Model:
