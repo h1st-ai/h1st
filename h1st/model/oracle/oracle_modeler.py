@@ -1,9 +1,11 @@
+import sklearn
 import pandas as pd
 
 from inspect import isclass
 from loguru import logger
 from typing import List, Dict
 
+from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.modeler import Modeler
 from h1st.model.model import Model
@@ -261,3 +263,98 @@ class OracleModeler(Modeler):
             }
 
         return result
+
+    def evaluate_model(self, prepared_data: dict, model: Model) -> dict:
+        if not model.students:
+            raise RuntimeError('No student built')
+
+        teacher_pred = model.__class__.generate_teacher_predictions(
+            prepared_data, model.teacher, features=self.stats['features']
+        )
+
+        teacher_pred_one_hot = {}
+        if isinstance(model.teacher, FuzzyModel):
+            for key, val in model.stats['fuzzy_thresholds'].items():
+                teacher_pred_one_hot[key] = list(
+                    map(lambda y: 1 if y > val else 0, teacher_pred[key])
+                )
+        else:
+            teacher_pred_one_hot = teacher_pred
+
+        # Generate the following metrics for each label.
+        # Generate the metrics of all sub models (student, teacher, ensembler)
+        evals = {}
+        for metrics in ['f1_score', 'precision', 'recall']:
+            temp = {}
+
+            for col in teacher_pred:
+                student_preds_one_hot = [
+                    pd.Series(
+                        student.predict(prepared_data)['predictions'],
+                        name=f'stud_{idx}_{col}',
+                    )
+                    for idx, student in enumerate(model.students[col])
+                ]
+                student_preds = []
+                for idx, student in enumerate(model.students[col]):
+                    predict_proba = getattr(student, 'predict_proba', None)
+                    if callable(predict_proba) and isinstance(
+                        model.ensemblers[col], MLModel
+                    ):
+                        s_pred = predict_proba(prepared_data)['predictions'][:, 0]
+                    else:
+                        s_pred = student.predict(prepared_data)['predictions']
+                    student_preds.append(
+                        pd.Series(
+                            s_pred,
+                            name=f'stud_{idx}_{col}',
+                        )
+                    )
+
+                ensembler_input = [teacher_pred[col]] + student_preds
+                if (
+                    isinstance(model.ensemblers[col], MLModel)
+                    and (
+                        isinstance(prepared_data['x'], pd.DataFrame)
+                        or isinstance(prepared_data['x'], pd.Series)
+                    )
+                    and self.stats['inject_x_in_ensembler']
+                ):
+                    ensembler_input += [prepared_data['x'].reset_index(drop=True)]
+                    ensembler_input = pd.concat(ensembler_input, axis=1).values
+                else:
+                    ensembler_input = pd.concat(ensembler_input, axis=1)
+
+                ensemblers_pred = model.ensemblers[col].predict({'x': ensembler_input})[
+                    'predictions'
+                ]
+                y_true = prepared_data['y'][col]
+
+                temp[col] = {
+                    'teacher': self.get_metrics_score(
+                        y_true, teacher_pred_one_hot[col], metrics
+                    ),
+                    'students': [
+                        self.get_metrics_score(y_true, student_pred, metrics)
+                        for student_pred in student_preds_one_hot
+                    ],
+                    'ensemblers': self.get_metrics_score(
+                        y_true, ensemblers_pred, metrics
+                    ),
+                }
+            evals[metrics] = temp
+        return evals
+
+    def get_metrics_score(
+        self, y_true: List[int], y_pred: List[int], metrics: str
+    ) -> float:
+        if metrics == 'accuracy':
+            return round(sklearn.metrics.accuracy_score(y_true, y_pred), 5)
+        elif metrics == 'precision':
+            return round(sklearn.metrics.precision_score(y_true, y_pred), 5)
+        elif metrics == 'recall':
+            return round(sklearn.metrics.recall_score(y_true, y_pred), 5)
+        elif metrics == 'f1_score':
+            return round(sklearn.metrics.f1_score(y_true, y_pred), 5)
+        else:
+            raise ValueError(f'Provided unsupported metrics type {metrics}')

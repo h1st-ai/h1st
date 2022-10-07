@@ -85,9 +85,9 @@ def load_data():
     return {
         'unlabeled_data': training_data[['sepal_length', 'sepal_width']],
         'labeled_data': {
-            'x_train': training_data[['sepal_length', 'sepal_width']],
+            'X_train': training_data[['sepal_length', 'sepal_width']],
             'y_train': training_data[['setosa']],
-            'x_test': test_data[['sepal_length', 'sepal_width']],
+            'X_test': test_data[['sepal_length', 'sepal_width']],
             'y_test': test_data[['setosa']],
         },
     }
@@ -95,9 +95,9 @@ def load_data():
 
 def get_metadata(data):
     result = {}
-    for k, v in data['labeled_data']['x_train'].max().to_dict().items():
+    for k, v in data['labeled_data']['X_train'].max().to_dict().items():
         result[k] = {'max': v}
-    for k, v in data['labeled_data']['x_train'].min().to_dict().items():
+    for k, v in data['labeled_data']['X_train'].min().to_dict().items():
         result[k].update({'min': v})
     return result
 
