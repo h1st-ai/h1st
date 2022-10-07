@@ -1,3 +1,4 @@
+from loguru import logger
 from pandas import DataFrame
 from typing import Dict
 from typing_extensions import Self

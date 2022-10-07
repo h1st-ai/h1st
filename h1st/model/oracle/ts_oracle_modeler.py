@@ -1,3 +1,5 @@
+from typing import List
+
 from h1st.model.model import Model
 from h1st.model.modeler import Modeler
 from h1st.model.oracle.oracle_modeler import OracleModeler
@@ -20,7 +22,7 @@ class TimeseriesOracleModeler(OracleModeler):
         self,
         data: dict = None,
         teacher: Model = PredictiveModel,
-        students: list(Modeler) = [RandomForestModeler, LogisticRegressionModeler],
+        students: List[Modeler] = [RandomForestModeler, LogisticRegressionModeler],
         ensembler: Modeler = Modeler,
         **kwargs
     ) -> Model:
@@ -36,6 +38,6 @@ class TimeseriesOracleModeler(OracleModeler):
         self.teacher = teacher
         self.students = students
         self.ensembler = ensembler
-        self.stats['id_col'] = kwargs['id_col']
-        self.stats['ts_col'] = kwargs['ts_col']
+        self.stats['id_col'] = kwargs.get('id_col')
+        self.stats['ts_col'] = kwargs.get('ts_col')
         return super().build_model(data, teacher, students, ensembler, **kwargs)

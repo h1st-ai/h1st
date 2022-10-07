@@ -1,7 +1,7 @@
 import os
 import tarfile
 import tempfile
-import logging
+from loguru import logger
 import importlib
 from distutils import dir_util
 
@@ -16,7 +16,6 @@ from h1st.model.repository.storage.s3 import S3Storage
 from h1st.model.repository.storage.local import LocalStorage
 
 SEP = "::"
-logger = logging.getLogger(__name__)
 
 
 class ModelSerDe:
@@ -217,7 +216,7 @@ class ModelSerDe:
                         "rule_path": self.RULE_ENGINE_PATH,
                     }
                 else:
-                    logging.warn(
+                    logger.warning(
                         (
                             "This rule engine is custom, so may not work well with "
                             "joblib which is the python package that we use to persist rules."
@@ -353,7 +352,7 @@ class ModelSerDe:
             elif type(rules_infos) == dict:
                 if "rules_type" in rules_infos:
                     if not self._is_builtin_class_instance(rules_infos["rules_type"]):
-                        logging.warn(
+                        logger.warning(
                             (
                                 "This rule engine is custom, so may not work well with "
                                 "joblib which is the python package that we use to persist rules."

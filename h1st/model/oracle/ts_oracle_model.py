@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import pandas as pd
 
 from h1st.model.predictive_model import PredictiveModel
@@ -21,7 +22,9 @@ class TimeSeriesOracleModel(OracleModel):
         return {'data': ret}
 
     @classmethod
-    def generate_data(cls, data: dict, teacher: PredictiveModel, stats: dict) -> dict:
+    def generate_teacher_prediction(
+        cls, data: dict, teacher: PredictiveModel, stats: dict
+    ) -> dict:
         '''
         Generate data to train the Student model
         :param data: unlabeled data in form of {'X': pd.DataFrame}
