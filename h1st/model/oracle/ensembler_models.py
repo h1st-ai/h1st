@@ -23,11 +23,11 @@ class MajorityVotingEnsembleModel(PredictiveModel):
 
 class MLPEnsembleModel(MLModel):
     def predict(self, input_data: dict) -> dict:
-        if isinstance(input_data['x'], DataFrame):
+        if isinstance(input_data['X'], DataFrame):
             x = input_data['X'].values
         else:
             x = input_data['X']
 
-        x = self.stats['scaler'].transform(input_data['x'])
+        x = self.stats['scaler'].transform(input_data['X'])
         y = self.base_model.predict(x)
         return {'predictions': y}

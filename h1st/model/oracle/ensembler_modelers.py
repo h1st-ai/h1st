@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 
 from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
-from h1st.model.oracle.ensemble_models import MLPEnsembleModel
+from h1st.model.oracle.ensembler_models import MLPEnsembleModel
 
 
 class MLPEnsembleModeler(MLModeler):
@@ -30,5 +30,5 @@ class MLPEnsembleModeler(MLModeler):
     def evaluate_model(self, prepared_data: dict, model: MLModel) -> dict:
         super().evaluate_model(prepared_data, model)
         x, y_true = prepared_data['X_test'], prepared_data['y_test']
-        y_pred = Series(model.predict({'x': x, 'y': y_true})['predictions'])
+        y_pred = Series(model.predict({'X': x, 'y': y_true})['predictions'])
         return {'r2_score': metrics.r2_score(y_true, y_pred)}
