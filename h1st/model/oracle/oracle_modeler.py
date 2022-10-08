@@ -121,6 +121,26 @@ class OracleModeler(Modeler):
             teacher=teacher_model, students=student_models, ensemblers=ensemble_models
         )
 
+        if self.stats is not None:
+            oracle_model.stats.update(self.stats.copy())
+
+        if data.get('labeled_data'):
+            labeled_data = data.get('labeled_data')
+            test_data = {'X': labeled_data['X_test'], 'y': labeled_data['y_test']}
+            try:
+                # Copy the metrics into metrics property of oracle
+                oracle_model.metrics = self.evaluate_model(test_data, oracle_model)
+            except Exception as e:
+                logger.error(
+                    (
+                        'Couldnt complete the submodel evaluation. '
+                        'Got the following error.'
+                    )
+                )
+                logger.error(e)
+            else:
+                logger.info('Evaluated all sub models successfully.')
+
         return oracle_model
 
     def generate_teacher_predictions(self, data: dict, model: Model, **kwargs) -> dict:
@@ -128,7 +148,9 @@ class OracleModeler(Modeler):
         Generate teacher's prediction which will be used as y value of students' training data.
         '''
         result = self.model_class.generate_teacher_predictions(
-            data={'X': data['unlabeled_data']}, teacher=model, features=kwargs.get('features')
+            data={'X': data['unlabeled_data']},
+            teacher=model,
+            features=kwargs.get('features'),
         )
 
         # If teacher is FuzzyModel, convert float to zero or one to use this as y value.
@@ -248,8 +270,8 @@ class OracleModeler(Modeler):
                 )
                 and self.stats['inject_x_in_ensembler']
             ):
-                ensembler_train_input += [x_train_input['x'].reset_index(drop=True)]
-                ensembler_test_input += [x_test_input['x'].reset_index(drop=True)]
+                ensembler_train_input += [x_train_input['X'].reset_index(drop=True)]
+                ensembler_test_input += [x_test_input['X'].reset_index(drop=True)]
 
             result[label] = {
                 'X_train': pd.concat(ensembler_train_input, axis=1).values,
@@ -315,17 +337,17 @@ class OracleModeler(Modeler):
                 if (
                     isinstance(model.ensemblers[col], MLModel)
                     and (
-                        isinstance(prepared_data['x'], pd.DataFrame)
-                        or isinstance(prepared_data['x'], pd.Series)
+                        isinstance(prepared_data['X'], pd.DataFrame)
+                        or isinstance(prepared_data['X'], pd.Series)
                     )
                     and self.stats['inject_x_in_ensembler']
                 ):
-                    ensembler_input += [prepared_data['x'].reset_index(drop=True)]
+                    ensembler_input += [prepared_data['X'].reset_index(drop=True)]
                     ensembler_input = pd.concat(ensembler_input, axis=1).values
                 else:
                     ensembler_input = pd.concat(ensembler_input, axis=1)
 
-                ensemblers_pred = model.ensemblers[col].predict({'x': ensembler_input})[
+                ensemblers_pred = model.ensemblers[col].predict({'X': ensembler_input})[
                     'predictions'
                 ]
                 y_true = prepared_data['y'][col]

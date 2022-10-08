@@ -32,7 +32,7 @@ PredictiveModel -up-> Model
 MLModel -up->PredictiveModel
 BooleanModel -up->PredictiveModel
 RuleBasedModel -up->PredictiveModel
-Oracle -up-> PredictiveModel
+OracleModel -up-> PredictiveModel
 
 FuzzyModel -up->RuleBasedModel
 @enduml

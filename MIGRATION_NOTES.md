@@ -9,4 +9,5 @@ Due to changes to the package structure, please update your H1st code to:
 - The `Modeler` class is introduced with `build_model` method which is used to build the corresponding `Model` instance. The `Model` class' `load_data`, `explore`, `evaluate` now belongs to the `Modeler` class with `explore` being renamed to `explore_data` and `evaluate` being renamed to `evaluate_model`.
 - The `Model` class' `predict` method is renamed to `process`. Its `PredictiveModel` subclass which is then inherited by `RuleBasedModel`, `MLModel` still possess the `predict` method which basically calls the `process` one.
 - The `Model` class' `load` is renamed to `load_params`.
-
+## From version 0.2.0
+- The `OracleModel` is used as the replacement to `Oracle` model
