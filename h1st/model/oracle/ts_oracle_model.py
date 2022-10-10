@@ -1,4 +1,3 @@
-from asyncio.log import logger
 import pandas as pd
 
 from h1st.model.predictive_model import PredictiveModel
