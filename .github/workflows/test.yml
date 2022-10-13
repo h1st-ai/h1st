@@ -92,7 +92,6 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --no-interaction
-          poetry run python -m pip install tensorflow
 
       - name: Run tests
         run: poetry run pytest
