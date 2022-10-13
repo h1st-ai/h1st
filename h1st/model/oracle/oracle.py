@@ -75,7 +75,7 @@ class Oracle(PredictiveModel):
     @classmethod
     def create_oracle(cls,
                       teacher: PredictiveModel,
-                      students: list[PredictiveModel],
+                      students: List[PredictiveModel],
                       ensembler: PredictiveModel):
         """
         :param teacher: The knowledge model.
