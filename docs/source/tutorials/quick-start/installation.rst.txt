@@ -8,7 +8,11 @@ H1st runs on Python 3.8 or above. Install via pip:
     pip install --upgrade pip
     pip3 install h1st
 
-For Windows, please use 64bit version and install VS Build Tools before installing H1st.
+This is recommended to use a virtual environment to install H1st and manage its required dependencies.
+For the users who have to run h1st on OS-Python environment:
+    For Windows, please use 64bit version and install VS Build Tools before installing H1st.
+    For Ubuntu, please ensure to have "python3-dev" and "python3-distutils" apt-packages installed before installing H1st
+    For MacOS, please use the Official Python releases. This is NOT recommended to use the Homebrew to install the Python, especially Python 3.10, due to its incompatibility issues.
 
 Model Repository
 ################

@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "h1st"
-version = "0.1.12"
-description = "Human-First AI (H1ST)"
-authors = ["h1st-ai <engineering@aitomatic.com>"]
+version = "0.1.13"
+description = "Human-First AI (H1st)"
+authors = ["Aitomatic, Inc. <engineering@aitomatic.com>"]
 license = "Apache-2.0"
 readme = "README.md"
 homepage = "https://h1st.ai"
@@ -10,33 +10,48 @@ repository = "https://github.com/h1st-ai/h1st"
 include = ["h1st/*"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.10"
+python = ">=3.8,<3.11"
 
-pyarrow = "^7.0.0"
-graphviz = "^0.19.1"
-lime = "^0.2.0.1"
-s3fs = "^2022.1.0"
-scikit-fuzzy = "^0.4.2"
-scikit-learn = ">=0.24.0"
-shap = ">=0.36.0"
-ulid-py = "^1.1.0"
-pyyaml = "^6.0"
-tensorflow = "^2.8.0"
-azure-storage-file-datalake = "^12.8.0"
+# Data Processing
+numpy = ">=1.22.4"   # let higher dependencies figure
+pandas = ">=1.5.0"
+pyarrow = ">=9.0.0"
+
+# Machine Learning / Deep Learning
+scikit-fuzzy = ">=0.4.2"
+scikit-learn = ">=1.1.2"
+tensorflow = ">=2.10.0"
+
+# Trustworthy AI
+graphviz = ">=0.20.1"
+lime = ">=0.2.0.1"
+shap = ">=0.41.0"
+
+# File Systems
+fsspec = ">=2022.8.2"
+s3fs = ">=2022.8.2"
+
+# misc/other
+click = ">=8.0.4"   # let higher dependencies figure
+python-dotenv = ">=0.21.0"
+pyyaml = ">=6.0"
+"ruamel.yaml" = ">=0.17.21"
+tqdm = ">= 4.64.1"
+ulid-py = ">= 1.1.0"
 
 [tool.poetry.dev-dependencies]
-commitizen = "^2.20.5"
-pre-commit = "^2.17.0"
-pytest = "^7.0.0"
-sphinx = "^4.4.0"
-sphinx-rtd-theme = "^1.0.0"
-pylint = "^2.12.2"
-ipython = "^8.4.0"
+commitizen = ">=2.34.0"
+pre-commit = ">=2.20.0"
+pylint = ">=2.15.3"
+pytest = ">=7.1.3"
+sphinx = ">=5.1.1"
+sphinx-rtd-theme = ">=1.0.0"
 
 [build-system]
-requires = ["poetry-core >= 1.0.0"]
+requires = [
+    "poetry-core >= 1.2.0",
+]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint.format]
-# Maximum number of characters on a single line.
 max-line-length = 120

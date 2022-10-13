@@ -8,6 +8,10 @@ from h1st.model.oracle.student import AdaBoostModeler, RandomForestModeler
 from h1st.model.predictive_model import PredictiveModel
 from h1st.model.ensemble.stack_ensemble_modeler import StackEnsembleModeler
 
+# TODO: fuzzy model output is now like [0.2, 0.5, 0.4, 0.7]
+# TODO: we can build multiple binary classifier or one multi-class classifier
+# TODO: if student is multiple binary classifier, then ensemble also should be like that ? 
+
 class OracleModeler(Modeler):
     def __init__(self, teacher: PredictiveModel,
                  ensembler_modeler: Modeler,

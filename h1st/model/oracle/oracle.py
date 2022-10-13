@@ -55,6 +55,7 @@ end Note
 @enduml
 """
 
+import logging
 from typing import Dict, List
 import pandas as pd
 from h1st.model.ensemble.stack_ensemble import StackEnsemble
@@ -74,7 +75,7 @@ class Oracle(PredictiveModel):
     @classmethod
     def create_oracle(cls,
                       teacher: PredictiveModel,
-                      students: list[PredictiveModel],
+                      students: List[PredictiveModel],
                       ensembler: PredictiveModel):
         """
         :param teacher: The knowledge model.
@@ -164,26 +165,29 @@ class Oracle(PredictiveModel):
         super().persist(version)
         return version
 
-    def load_params(self, version: str = None) -> None:
+    def load(self, version: str = None) -> None:
         """
         load all pieces of oracle, return complete oracle
         """
-        super().load_params(version)
+        super().load(version)
         info = self.stats['model_details']
-        ensembler = info['ensembler_class']().load_params(
+        ensembler = info['ensembler_class']().load(
             info['ensembler_version']
         )
-        teacher = info['teacher_class']().load_params(
+        teacher = info['teacher_class']().load(
             info['teacher_version']
         )
 
         students = []
         for sclass, sversion in zip(info['student_classes'],
                                     info['student_versions']):
-            students.append(sclass().load_params(sversion))
+            students.append(sclass().load(sversion))
 
         self.ensembler = ensembler
         self.students = students
         self.teacher = teacher
         return self
 
+    # Make it backward compatible.
+    def load_params(self, version: str=None) -> None:
+        return self.load(version)

@@ -1,93 +1,96 @@
 import numpy as np
+import os
+import tempfile
 
-from h1st.model.fuzzy_logic_model import FuzzyLogicModel
-
-
-class SensorFuzzyLogicModel(FuzzyLogicModel):
-    def add_variables(self):
-        """
-        Add fuzzy variables with membership functions
-        """
-        self.add_variable(
-            range_=np.arange(0, 10, 0.5),
-            name='sensor1',
-            membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                              ('abnormal', 'triangle', [8, 15, 15])],
-            type_='antecedent'
-        )
-        self.add_variable(
-            range_=np.arange(0, 10, 0.5),
-            name='sensor2',
-            membership_funcs=[('normal', 'gaussian', [3, 3.3]),
-                              ('abnormal', 'triangle', [8, 15, 15])],
-            type_='antecedent'
-        )
-        self.add_variable(
-            range_=np.arange(0, 10, 0.5),
-            name='problem1',
-            membership_funcs=[('no', 'trapezoid', [0, 0, 4, 6]),
-                              ('yes', 'trapezoid', [4, 6, 10, 10])],
-            type_='consequent'
-        )
-
-    def add_rules(self):
-        """
-        Add fuzzy rules here. Place antecedent type variables in 'if' statement
-        and place consequent type varibles in 'then' statement.
-        """
-        vars = self.variables
-        self.add_rule(
-            'rule1',
-            if_=vars['sensor1']['abnormal'] & vars['sensor2']['abnormal'],
-            then_=vars['problem1']['yes'])
-        self.add_rule(
-            'rule2',
-            if_=vars['sensor1']['normal'],
-            then_=vars['problem1']['no'])
-        self.add_rule(
-            'rule2',
-            if_=vars['sensor2']['normal'],
-            then_=vars['problem1']['no'])
+from h1st.model.fuzzy import (
+    FuzzyModeler,
+    FuzzyModel,
+    FuzzyRules,
+    FuzzyVariables,
+    FuzzyMembership as fm,
+)
 
 
-class TestFuzzyLogicModelTestCase():
+def build_fuzzy_logic_model():
+    vars = FuzzyVariables()
+    vars.add(
+        var_name='var1',
+        var_type='antecedent',
+        var_range=np.arange(0, 10, 0.5),
+        membership_funcs=[
+            ('normal', fm.GAUSSIAN, [3, 3.3]),
+            ('abnormal', fm.TRIANGLE, [8, 15, 15]),
+        ],
+    )
+    vars.add(
+        var_name='var2',
+        var_type='antecedent',
+        var_range=np.arange(0, 10, 0.5),
+        membership_funcs=[
+            ('normal', fm.GAUSSIAN, [3, 3.3]),
+            ('abnormal', fm.TRIANGLE, [8, 15, 15]),
+        ],
+    )
+    vars.add(
+        var_name='conclusion1',
+        var_type='consequent',
+        var_range=np.arange(0, 10, 0.5),
+        membership_funcs=[
+            ('no', fm.TRAPEZOID, [0, 0, 4, 6]),
+            ('yes', fm.TRAPEZOID, [4, 6, 10, 10]),
+        ],
+    )
+
+    rules = FuzzyRules()
+    rules.add(
+        rule_name='rule1',
+        if_term=vars.get('var1')['abnormal'] & vars.get('var2')['abnormal'],
+        then_term=vars.get('conclusion1')['yes'],
+    )
+    rules.add(
+        rule_name='rule2',
+        if_term=vars.get('var1')['normal'],
+        then_term=vars.get('conclusion1')['no'],
+    )
+    rules.add(
+        rule_name='rule3',
+        if_term=vars.get('var2')['normal'],
+        then_term=vars.get('conclusion1')['no'],
+    )
+
+    modeler = FuzzyModeler()
+    model = modeler.build_model(vars, rules)
+    return model
+
+
+class TestFuzzyLogicModelTestCase:
     def test_fuzzy_logic_model(self):
-        my_fuzzy_logic_model = SensorFuzzyLogicModel()
-        sensor_input = {
-            'sensor1': 7,
-            'sensor2': 10
-        }
-        prediction = my_fuzzy_logic_model.predict(sensor_input)
-        assert prediction['problem1'] < 5
+        m = build_fuzzy_logic_model()
+        sensor_input = {'var1': 7, 'var2': 10}
+        prediction = m.process_rules(sensor_input)
+        assert prediction['conclusion1'] < 5
 
-        sensor_input = {
-            'sensor1': 3,
-            'sensor2': 15
-        }
-        prediction = my_fuzzy_logic_model.predict(sensor_input)
-        assert prediction['problem1'] < 5
+        sensor_input = {'var1': 3, 'var2': 15}
+        prediction = m.process_rules(sensor_input)
+        assert prediction['conclusion1'] < 5
 
-        sensor_input = {
-            'sensor1': 10,
-            'sensor2': 5
-        }
-        prediction = my_fuzzy_logic_model.predict(sensor_input)
-        assert prediction['problem1'] < 5
+        sensor_input = {'var1': 10, 'var2': 5}
+        prediction = m.process_rules(sensor_input)
+        assert prediction['conclusion1'] < 5
 
-        sensor_input = {
-            'sensor1': 10,
-            'sensor2': 15
-        }
-        prediction = my_fuzzy_logic_model.predict(sensor_input)
-        assert prediction['problem1'] > 5
+        sensor_input = {'var1': 10, 'var2': 15}
+        prediction = m.process_rules(sensor_input)
+        assert prediction['conclusion1'] > 5
 
-    # def test_save_load(self):
-    #     my_fuzzy_logic_model = MyFuzzyLogicModel()
-    #     my_fuzzy_logic_model.persist('test_model')
-    #     my_fuzzy_logic_model.load_params('test_model')
-    #     sensor_input = {
-    #         'sensor1': 10,
-    #         'sensor2': 15
-    #     }
-    #     prediction = my_fuzzy_logic_model.predict(sensor_input)
-    #     assert prediction['problem1'] > 5
+    def test_fuzzy_model_persist_and_load(self):
+        m = build_fuzzy_logic_model()
+        with tempfile.TemporaryDirectory() as path:
+            os.environ['H1ST_MODEL_REPO_PATH'] = path
+            m.persist('test_model')
+
+            m = None
+            m = FuzzyModel().load('test_model')
+            assert m.rules is not None
+            sensor_input = {'var1': 10, 'var2': 15}
+            prediction = m.process_rules(sensor_input)
+            assert prediction['conclusion1'] > 5

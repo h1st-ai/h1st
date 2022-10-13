@@ -50,7 +50,7 @@ class KSWE(PredictiveModel):
 
         return final_predictions
 
-    def persist(self, version: str=None) -> None:
+    def persist(self, version: str=None) -> str:
         if version is None:
             now = datetime.utcnow()
             now_str = now.strftime('%Y%m%d-%H%M')
@@ -70,22 +70,26 @@ class KSWE(PredictiveModel):
         super().persist(version)
         return version
 
-    def load_params(self, version: str=None) -> None:
-        super().load_params(version)
+    def load(self, version: str=None) -> None:
+        super().load(version)
         ensemble_class = self.stats['ensemble_class']
         ensemble_version = self.stats['ensemble_version']
-        self.ensemble = ensemble_class().load_params(ensemble_version)
+        self.ensemble = ensemble_class().load(ensemble_version)
 
         segmentor_class = self.stats['segmentor_class']
         segmentor_version = self.stats['segmentor_version']
-        self.segmentor = segmentor_class().load_params(segmentor_version)
+        self.segmentor = segmentor_class().load(segmentor_version)
 
         sub_models = {}
         for name, info in self.stats['sub_model_info'].items():
-            sub_model = info['model_class']().load_params(info['version'])
+            sub_model = info['model_class']().load(info['version'])
             sub_models[name] = sub_model
         self.sub_models = sub_models
         return self
+
+    # Make it backward compatible.
+    def load_params(self, version: str=None) -> None:
+        return self.load(version)
 
     @classmethod
     def construct_model(cls, segmentor: Model, sub_models: dict, ensemble: Model):
