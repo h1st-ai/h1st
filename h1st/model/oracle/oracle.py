@@ -1,5 +1,4 @@
 from typing import Dict, List
-
 from h1st.model.model import Model
 from h1st.model.oracle.oracle_model import OracleModel
 
