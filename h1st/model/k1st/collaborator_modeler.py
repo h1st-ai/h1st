@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import pandas as pd
 
@@ -6,6 +7,9 @@ from h1st.model.wrapper.multi_modeler import MultiModeler
 from h1st.model.oracle.ensemble import MajorityVotingEnsemble
 from h1st.model.rule_based_modeler import RuleBasedModeler
 from h1st.model.k1st.collaborator import kCollaboratorModel
+from h1st.model.predictive_model import PredictiveModel
+from h1st.model.modeler import Modeler
+from h1st.model.ml_modeler import MLModeler
 
 
 class kCollaboratorModeler(MultiModeler):
@@ -16,10 +20,10 @@ class kCollaboratorModeler(MultiModeler):
         super().__init__()
 
     def build_model(self, prepared_data: dict,
-                    modelers: list['h1st.MLModeler']=[],
-                    ensemble_modeler: 'h1st.Modeler' = RuleBasedModeler(MajorityVotingEnsemble),
-                    models: list['h1st.PredictiveModel']=None,
-                    inject_x_in_ensembler: bool=False) -> 'BaseOracle':
+                    modelers: List[MLModeler]=[],
+                    ensemble_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsemble),
+                    models: List[PredictiveModel]=None,
+                    inject_x_in_ensembler: bool=False) -> kCollaboratorModel:
         '''
         prepared_data must be in the format necessary for modelers
         '''
