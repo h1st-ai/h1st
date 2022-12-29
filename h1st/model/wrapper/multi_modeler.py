@@ -17,7 +17,7 @@ class MultiModeler(Modeler):
         If modelers is a dict, they keys should be unique names for the
         resultant models. If it is a list, the modeler should have model_name
         in stats dict or a name will be automatically assigned"""
-        is isinstance(modelers, list):
+        if isinstance(modelers, list):
             for i, m in enumerate(modelers):
                 if m.stats.get('model_name') is None:
                     m.model_name = f'{m.__class__.__name__}-{i}'
@@ -35,12 +35,12 @@ class MultiModeler(Modeler):
                 delayed(x.build_model)(prepared_data) for x in modelers
             )
             for submodel in submodels:
-                model.add_model(submodel, name=submodel.stats['model_name'])
+                model.add_model(submodel, name=submodel.stats.get('model_name'))
 
         else:
             for modeler in modelers:
                 submodel = modeler.build_model(prepared_data)
-                model.add_model(submodel, name=submodel.stats['model_name'])
+                model.add_model(submodel, name=submodel.stats.get('model_name'))
 
         model.metrics = self.evaluate_model(prepared_data, model)
         model.stats = self.stats.copy()

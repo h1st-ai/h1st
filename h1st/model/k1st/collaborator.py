@@ -4,7 +4,6 @@ import pandas as pd
 
 from h1st.model.wrapper.multi_model import MultiModel
 from h1st.model.ml_model import MLModel
-from h1st.model.oracle.ensemble import MajorityVotingEnsemble
 
 
 class kCollaboratorModel(MultiModel):
@@ -44,7 +43,7 @@ class kCollaboratorModel(MultiModel):
         if self.ensemble is None:
             return {self.output_key: submodel_out}
 
-        ensemble_input = {'x': submodel_out}
+        ensemble_input = {'X': submodel_out}
         ensemble_key = getattr(self.ensemble, 'output_key', 'predictions')
         ensemble_pred = self.ensemble.predict(ensemble_input)[ensemble_key]
         return {self.output_key: ensemble_pred}
@@ -64,6 +63,6 @@ class kCollaboratorModel(MultiModel):
 
         ensemble_version = self.stats['ensemble']['version']
         ensemble_class = self.stats['ensemble']['model_class']
-        self.ensemble = ensemble_class().load(ensemble(version))
+        self.ensemble = ensemble_class().load(ensemble_version)
         return self
 

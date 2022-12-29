@@ -4,11 +4,12 @@ from typing import List
 import pandas as pd
 
 from h1st.model.wrapper.multi_modeler import MultiModeler
-from h1st.model.oracle.ensemble import MajorityVotingEnsemble
+from h1st.model.oracle.ensembler_models import MajorityVotingEnsembleModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 from h1st.model.k1st.collaborator import kCollaboratorModel
 from h1st.model.predictive_model import PredictiveModel
 from h1st.model.modeler import Modeler
+from h1st.model.model import Model
 from h1st.model.ml_modeler import MLModeler
 
 
@@ -21,7 +22,7 @@ class kCollaboratorModeler(MultiModeler):
 
     def build_model(self, prepared_data: dict,
                     modelers: List[MLModeler]=[],
-                    ensemble_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsemble),
+                    ensemble_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsembleModel),
                     models: List[PredictiveModel]=None,
                     inject_x_in_ensembler: bool=False) -> kCollaboratorModel:
         '''
@@ -40,7 +41,7 @@ class kCollaboratorModeler(MultiModeler):
         # If there is labeled_data and ensembler_modeler is MLModeler,
         # then prepare the training data of ensembler.
         labeled_data = prepared_data.get("labeled_data", None)
-        if isinstance(ensembler_modeler, MLModeler) and labeled_data is None:
+        if isinstance(ensemble_modeler, MLModeler) and labeled_data is None:
             raise ValueError("No data to train the machine-learning-based ensembler")
 
         ensembler_data = {}
@@ -87,7 +88,7 @@ class kCollaboratorModeler(MultiModeler):
         return model
 
     def evaluate_model(self, test_data: dict, model: Model):
-        submodel_metrics = super().evaluate_model()
+        submodel_metrics = super().evaluate_model(test_data, model)
         metrics = {'submodel_metrics': submodel_metrics}
         # TODO: Compute overall model metrics
         return metrics
