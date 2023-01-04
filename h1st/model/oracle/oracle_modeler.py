@@ -10,7 +10,7 @@ from h1st.model.ml_modeler import MLModeler
 from h1st.model.modeler import Modeler
 from h1st.model.model import Model
 from h1st.model.fuzzy import FuzzyModel
-from h1st.model.oracle.oracle_model import OracleModel
+from h1st.model.oracle.oracle import Oracle
 from h1st.model.oracle.student_modelers import (
     LogisticRegressionModeler,
     RandomForestModeler,
@@ -35,7 +35,7 @@ class OracleModeler(Modeler):
     def __init__(self, model_class=None):
         self.stats = {}
         if model_class is None:
-            self.model_class = OracleModel
+            self.model_class = Oracle
         else:
             self.model_class = model_class
 
@@ -59,7 +59,7 @@ class OracleModeler(Modeler):
         :param ensembler_modeler: a Modeler to act as the ensembler
         :param fuzzy_thresholds: optional param to be used when teacher is an instance of FuzzyModel
         :param features: option param to used as feature to gen teacher prediction
-        :return: a model which Class depends on OracleModeler init call, default is OracleModel
+        :return: a model which Class depends on OracleModeler init call, default is Oracle
         '''
         if isclass(teacher_model):
             teacher_model = teacher_model()

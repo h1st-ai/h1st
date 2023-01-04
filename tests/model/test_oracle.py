@@ -11,7 +11,6 @@ from h1st.model.fuzzy import (
     FuzzyModeler,
 )
 from h1st.model.oracle.oracle import Oracle
-from h1st.model.oracle.oracle_model import OracleModel
 from h1st.model.oracle.oracle_modeler import OracleModeler
 from h1st.model.oracle.ensembler_models import MajorityVotingEnsembleModel
 from h1st.model.oracle.ensembler_modelers import MLPEnsembleModeler
@@ -176,7 +175,7 @@ def load_data():
     }
 
 
-class TestOracleModel:
+class TestOracle:
     def test_old_oracle_class(self):
         data = load_data()
         modeler = OracleModeler(Oracle)
@@ -219,7 +218,7 @@ class TestOracleModel:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = model.persist()
 
-            loaded_model = OracleModel().load(version)
+            loaded_model = Oracle().load(version)
 
             assert 'sklearn' in str(type(loaded_model.students['setosa'][0].base_model))
             new_prediction = loaded_model.predict(data['test_data'])['predictions']
@@ -246,7 +245,7 @@ class TestOracleModel:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = model.persist()
 
-            loaded_model = OracleModel().load(version)
+            loaded_model = Oracle().load(version)
 
             assert 'sklearn' in str(type(loaded_model.students['setosa'][0].base_model))
             new_prediction = loaded_model.predict(data['test_data'])['predictions']
@@ -280,7 +279,7 @@ class TestOracleModel:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = model.persist()
 
-            loaded_model = OracleModel().load(version)
+            loaded_model = Oracle().load(version)
 
             assert 'sklearn' in str(type(loaded_model.students['setosa'][0].base_model))
             new_prediction = loaded_model.predict(data['test_data'])['predictions']
@@ -309,7 +308,7 @@ class TestOracleModel:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = model.persist()
 
-            loaded_model = OracleModel().load(version)
+            loaded_model = Oracle().load(version)
 
             assert 'sklearn' in str(type(loaded_model.students['setosa'][0].base_model))
             new_prediction = loaded_model.predict(data['test_data'])['predictions']
@@ -345,7 +344,7 @@ class TestOracleModel:
             os.environ['H1ST_MODEL_REPO_PATH'] = path
             version = model.persist()
 
-            loaded_model = OracleModel().load(version)
+            loaded_model = Oracle().load(version)
 
             assert 'sklearn' in str(type(loaded_model.students['setosa'][0].base_model))
             new_prediction = loaded_model.predict(data['test_data'])['predictions']

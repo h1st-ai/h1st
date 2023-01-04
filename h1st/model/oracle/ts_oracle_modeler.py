@@ -3,7 +3,7 @@ from typing import List
 from h1st.model.model import Model
 from h1st.model.modeler import Modeler
 from h1st.model.oracle.oracle_modeler import OracleModeler
-from h1st.model.oracle.ts_oracle_model import TimeSeriesOracleModel
+from h1st.model.oracle.ts_oracle_model import TimeSeriesOracle
 from h1st.model.oracle.student_modelers import (
     RandomForestModeler,
     LogisticRegressionModeler,
@@ -15,7 +15,7 @@ class TimeseriesOracleModeler(OracleModeler):
     def __init__(self, model_class=None):
         self.stats = {}
         self.model_class = (
-            model_class if model_class is not None else TimeSeriesOracleModel
+            model_class if model_class is not None else TimeSeriesOracle
         )
 
     def build_model(

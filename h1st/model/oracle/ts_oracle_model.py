@@ -1,10 +1,10 @@
 import pandas as pd
 
 from h1st.model.predictive_model import PredictiveModel
-from h1st.model.oracle.oracle_model import OracleModel
+from h1st.model.oracle.oracle import Oracle
 
 
-class TimeSeriesOracleModel(OracleModel):
+class TimeSeriesOracle(Oracle):
     def __init__(self):
         super().__init__()
 
