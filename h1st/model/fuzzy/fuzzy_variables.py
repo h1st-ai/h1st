@@ -54,11 +54,22 @@ class FuzzyVariables:
             )
         return skfuzzy.sigmf(var, values[0], values[1])
 
+    def _setup_rsigmoid_func(self, var, values):
+        if len(values) != 2:
+            raise ValueError(
+                (
+                    f"SIGMOID membership function needs 2 "
+                    f"values. Provided {len(values)} values."
+                )
+            )
+        return -1 * (skfuzzy.sigmf(var, values[0], values[1]) - 1)
+
     FUNCTION_DICT = {
         fm.TRIANGLE: _setup_triangle_func,
         fm.TRAPEZOID: _setup_trapezoid_func,
         fm.GAUSSIAN: _setup_gaussian_func,
         fm.SIGMOID: _setup_sigmoid_func,
+        fm.RSIGMOID: _setup_rsigmoid_func
     }
 
     def add(

@@ -6,3 +6,4 @@ class FuzzyMembership(Enum):
     TRAPEZOID = auto()
     GAUSSIAN = auto()
     SIGMOID = auto()
+    RSIGMOID = auto()
