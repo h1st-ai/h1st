@@ -20,11 +20,14 @@ class kCollaboratorModeler(MultiModeler):
     def __init__(self):
         super().__init__()
 
-    def build_model(self, prepared_data: dict,
-                    modelers: List[MLModeler]=[],
-                    ensemble_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsembleModel),
-                    models: List[PredictiveModel]=None,
-                    inject_x_in_ensembler: bool=False) -> kCollaboratorModel:
+    def build_model(
+        self,
+        prepared_data: dict,
+        modelers: List[MLModeler] = [],
+        ensemble_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsembleModel),
+        models: List[PredictiveModel] = None,
+        inject_x_in_ensembler: bool = False,
+    ) -> kCollaboratorModel:
         '''
         prepared_data must be in the format necessary for modelers
         '''
@@ -34,9 +37,9 @@ class kCollaboratorModeler(MultiModeler):
             model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
 
         # train ensemble
-        raw_pred = model.predict(
-            {model.data_key: prepared_data['x_train']}
-        )[model.output_key]
+        raw_pred = model.predict({model.data_key: prepared_data['X_train']})[
+            model.output_key
+        ]
 
         # If there is labeled_data and ensembler_modeler is MLModeler,
         # then prepare the training data of ensembler.
@@ -46,22 +49,20 @@ class kCollaboratorModeler(MultiModeler):
 
         ensembler_data = {}
         if labeled_data:
-            x_train_input = {"x": labeled_data["x_train"]}
-            x_test_input = {"x": labeled_data["x_test"]}
+            x_train_input = {"X": labeled_data["X_train"]}
+            x_test_input = {"X": labeled_data["X_test"]}
 
-            ensembler_train_input = model.predict({
-                model.data_key: x_train_input
-            })[model.output_key]
+            ensembler_train_input = model.predict({model.data_key: x_train_input})[
+                model.output_key
+            ]
 
-            ensembler_test_input = model.predict({
-                model.data_key: x_test_input
-            })
+            ensembler_test_input = model.predict({model.data_key: x_test_input})
 
             ensembler_data = {
-                'x_train': ensembler_train_input,
+                'X_train': ensembler_train_input,
                 'y_train': labeled_data['y_train'],
-                'x_test': ensembler_test_input,
-                'y_test': labeled_data['y_test']
+                'X_test': ensembler_test_input,
+                'y_test': labeled_data['y_test'],
             }
         else:
             ensembler_data = None
@@ -71,7 +72,7 @@ class kCollaboratorModeler(MultiModeler):
 
         # Generate metrics of all sub models (teacher, student, ensembler).
         if labeled_data:
-            test_data = {"x": labeled_data["x_test"], "y": labeled_data["y_test"]}
+            test_data = {"X": labeled_data["X_test"], "y": labeled_data["y_test"]}
             try:
                 model.metrics = self.evaluate_model(test_data, model)
             except Exception as e:
@@ -92,4 +93,3 @@ class kCollaboratorModeler(MultiModeler):
         metrics = {'submodel_metrics': submodel_metrics}
         # TODO: Compute overall model metrics
         return metrics
-

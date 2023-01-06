@@ -8,7 +8,7 @@ from h1st.model.ml_model import MLModel
 
 class kCollaboratorModel(MultiModel):
 
-    name: str='k-Collaborator'
+    name: str = 'k-Collaborator'
     data_key = 'X'
     output_key = 'predictions'
 
@@ -31,14 +31,14 @@ class kCollaboratorModel(MultiModel):
 
         # Inject original x value into input feature of Ensembler
         if (
-                isinstance(self.ensemble, MLModel)
+            isinstance(self.ensemble, MLModel)
             and (
-                isinstance(input_data["x"], pd.DataFrame)
-                or isinstance(input_data["x"], pd.Series)
+                isinstance(input_data["X"], pd.DataFrame)
+                or isinstance(input_data["X"], pd.Series)
             )
             and self.stats["inject_x_in_ensembler"]
         ):
-            submodel_out = pd.concat([submodel_out, input_data['x']], axis=1)
+            submodel_out = pd.concat([submodel_out, input_data['X']], axis=1)
 
         if self.ensemble is None:
             return {self.output_key: submodel_out}
@@ -52,7 +52,7 @@ class kCollaboratorModel(MultiModel):
         ensemble_version = self.ensemble.persist()
         self.stats['ensemble'] = {
             'version': ensemble_version,
-            'model_class': self.ensemble.__class__
+            'model_class': self.ensemble.__class__,
         }
 
         version = super().persist(version)
@@ -65,4 +65,3 @@ class kCollaboratorModel(MultiModel):
         ensemble_class = self.stats['ensemble']['model_class']
         self.ensemble = ensemble_class().load(ensemble_version)
         return self
-
