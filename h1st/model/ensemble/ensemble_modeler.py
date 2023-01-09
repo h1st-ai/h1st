@@ -1,7 +1,15 @@
-from typing import List
-from h1st.model.predictive_model import PredictiveModel
 from h1st.model.modeler import Modeler
-from h1st.model.ml_modeler import MLModeler
+from h1st.model.ensemble.ensemble import LogicalOREnsemble
+
 
 class EnsembleModeler(Modeler):
     pass
+
+
+class LogicalOREnsembleModeler(Modeler):
+    def __init__(self):
+        super().__init__()
+        self.model_class = LogicalOREnsemble
+
+    def build_model(self) -> LogicalOREnsemble:
+        return self.model_class
