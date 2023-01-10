@@ -1796,8 +1796,7 @@ class ParquetDataset(AbstractS3FileDataHandler):
                         other=series.quantile(q=quantileProbsToQuery, interpolation='linear'),
                         inplace=True,
                         axis=None,
-                        level=None,
-                        errors='raise')
+                        level=None)
 
                 (sampleMin, outlierRstMin,
                  sampleMedian,
