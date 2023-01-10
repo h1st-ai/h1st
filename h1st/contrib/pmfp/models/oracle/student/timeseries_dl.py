@@ -129,8 +129,7 @@ class TimeSeriesDLFaultPredStudentModeler(StudentModeler):
             other=False,
             inplace=True,
             axis='index',
-            level=None,
-            errors='raise')
+            level=None)
         teacher_predicted_faults_series.name = 'FAULT'
         print(teacher_predicted_faults_series)
 
@@ -749,8 +748,7 @@ class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
                               other=False,
                               inplace=False,
                               axis='index',
-                              level=None,
-                              errors='raise')
+                              level=None)
                         .astype(dtype=bool, copy=True, errors='raise')),
                 probas_pred=self.batch_process(date=tune_from_date,
                                                to_date=tune_to_date,

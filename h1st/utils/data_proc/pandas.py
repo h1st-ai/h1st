@@ -255,8 +255,7 @@ class PandasMLPreprocessor:
                                         else numPreprocDetails['null-fill-value']),
                                  inplace=False,
                                  axis=None,
-                                 level=None,
-                                 errors='raise')
+                                 level=None)
 
                     if isValid.any(axis='index', skipna=True, level=None)
 
