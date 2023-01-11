@@ -9,7 +9,7 @@ class EnsembleModeler(Modeler):
 class LogicalOREnsembleModeler(Modeler):
     def __init__(self):
         super().__init__()
-        self.model_class = LogicalOREnsemble
+        self.model_class = LogicalOREnsemble()
 
     def build_model(self, input_data: dict) -> LogicalOREnsemble:
         return self.model_class
