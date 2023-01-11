@@ -8,9 +8,8 @@ from sklearn.preprocessing import StandardScaler
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.xgboost.model import XGBRegressionModel
 from h1st.model.xgboost.utils import (
-    extratree_rank_features, 
-    xgb_grid_search, 
-    evaluate_regression_base_model
+    extratree_rank_features,
+    evaluate_regression_base_model,
 )
 
 
@@ -18,8 +17,13 @@ class XGBRegressionModeler(MLModeler):
     model_class = XGBRegressionModel
 
     def __init__(
-        self, result_key: str = 'result', max_features: int = 50, debug: bool = False,
-        eta=0.001, n_estimators=3, max_depth=3
+        self,
+        result_key: str = 'result',
+        max_features: int = 50,
+        debug: bool = False,
+        eta: float = 0.001,
+        n_estimators: int = 3,
+        max_depth: int = 3,
     ) -> None:
         super().__init__()
         self.stats = {
@@ -93,8 +97,8 @@ class XGBRegressionModeler(MLModeler):
 
         # Model Initialization using the above best parameters
         model = XGBRegressor(
-            max_depth=int(max_depth),
-            n_estimators=int(n_estimators),
+            max_depth=max_depth,
+            n_estimators=n_estimators,
             eta=eta,
             seed=42,
             verbosity=0,

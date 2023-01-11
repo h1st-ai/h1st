@@ -50,8 +50,8 @@ class kOracleModeler(MultiModeler):
 
         self.stats['inject_x_in_ensembler'] = inject_x_in_ensembler
         model = super().build_model(prepared_data, modelers)
-        for i, m in enumerate(models):
-            model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
+        # for i, m in enumerate(models):
+        #     model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
 
         # train ensemble
         raw_pred = model.predict({model.data_key: prepared_data['X_train']})[
