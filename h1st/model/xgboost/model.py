@@ -9,6 +9,7 @@ from h1st.model.ml_model import MLModel
 class XGBRegressionModel(MLModel):
     data_key = 'X'
     output_key = 'predictions'
+    name = 'XGBRegressionModel'
 
     def __init__(self) -> None:
         super().__init__()
