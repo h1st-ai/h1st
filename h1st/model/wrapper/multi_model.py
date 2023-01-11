@@ -19,10 +19,10 @@ class MultiModel(PredictiveModel):
         all_pred = []
         for k, v in self.models.items():
             pred_key = getattr(v, 'output_key', 'predictions')
-            pred = v.predict({v.data_key: X})[pred_key]
+            pred: pd.DataFrame = v.predict({v.data_key: X})[pred_key]
 
             all_pred.append(
-                pd.Series(pred, name=f'{k}')
+                pd.Series(pred.squeeze(), name=f'{k}')
             )
 
         out = {self.output_key: pd.concat(all_pred, axis=1)}

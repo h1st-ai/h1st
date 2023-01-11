@@ -10,6 +10,7 @@ from h1st.model.fuzzy.fuzzy_rules import FuzzyRules
 
 
 class FuzzyModel(RuleBasedModel):
+    name = 'FuzzyModel'
     '''
     FuzzyModel is a RuleBasedModel that uses Fuzzy rule engine. You can create
     FuzzyModel using build_model method of FuzzyModeler. FuzzyModel has a property
