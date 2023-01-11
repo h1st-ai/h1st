@@ -18,13 +18,17 @@ class XGBRegressionModeler(MLModeler):
     model_class = XGBRegressionModel
 
     def __init__(
-        self, result_key: str = 'result', max_features: int = 50, debug: bool = False
+        self, result_key: str = 'result', max_features: int = 50, debug: bool = False,
+        eta=0.001, n_estimators=3, max_depth=3
     ) -> None:
         super().__init__()
         self.stats = {
             'result_key': result_key,
             'max_features': max_features,
             'debug': debug,
+            'eta': eta,
+            'n_estimators': n_estimators,
+            "max_depth": max_depth,
         }
 
     def train_base_model(self, prepared_data: dict) -> XGBRegressor:
@@ -40,12 +44,11 @@ class XGBRegressionModeler(MLModeler):
         debug = self.stats['debug']
         logger.info(f'Fitting model {self.model_class.name} for {result_key}')
 
-        X_train, X_test = prepared_data['X_train'], prepared_data['X_test']
-        y_train, y_test = prepared_data['y_train'], prepared_data['y_test']
+        X_train = prepared_data['X_train']
+        y_train = prepared_data['y_train']
 
         if isinstance(y_train, pd.DataFrame) and result_key in y_train.columns:
             y_train = prepared_data['y_train'][result_key]
-            y_test = prepared_data['y_test'][result_key]
         elif not isinstance(y_train, (pd.Series, list, np.array)):
             raise ValueError(
                 'y_train and y_test must be a DataFrame with '
@@ -60,16 +63,11 @@ class XGBRegressionModeler(MLModeler):
             columns=X_train.columns,
             index=X_train.index,
         )
-        X_test = pd.DataFrame(
-            sc_scaler.transform(X_test), columns=X_test.columns, index=X_test.index
-        )
 
         # NaN/Inf should be handled in preprocessing but just in case
         fit_data = {
             'X_train': X_train.dropna(),
-            'X_test': X_test.dropna(),
             'y_train': y_train.loc[X_train.index],
-            'y_test': y_test.loc[X_test.index],
         }
 
         ranked_features, feature_importance = extratree_rank_features(
@@ -89,17 +87,15 @@ class XGBRegressionModeler(MLModeler):
         )
 
         fit_data['X_train'] = fit_data['X_train'][features]
-        fit_data['X_test'] = fit_data['X_test'][features]
-
-        # Get best model parameters
-        params = xgb_grid_search(prepared_data=fit_data, debug=debug)
-        # max_depth, n_estimators, eta, features = params
+        max_depth = self.stats['max_depth']
+        eta = self.stats['eta']
+        n_estimators = self.stats['n_estimators']
 
         # Model Initialization using the above best parameters
         model = XGBRegressor(
-            max_depth=int(params[0]),
-            n_estimators=int(params[1]),
-            eta=params[2],
+            max_depth=int(max_depth),
+            n_estimators=int(n_estimators),
+            eta=eta,
             seed=42,
             verbosity=0,
         )
@@ -110,7 +106,6 @@ class XGBRegressionModeler(MLModeler):
         self.stats.update(
             {
                 'total_training_points': fit_data['X_train'].shape[0],
-                'total_test_points': fit_data['X_test'].shape[0],
             }
         )
         return model
