@@ -49,14 +49,13 @@ class kCollaboratorModeler(MultiModeler):
 
         ensembler_data = {}
         if labeled_data:
-            x_train_input = {"X": labeled_data["X_train"]}
-            x_test_input = {"X": labeled_data["X_test"]}
+            ensembler_train_input = model.predict(
+                {model.data_key: labeled_data["X_train"]}
+            )[model.output_key]
 
-            ensembler_train_input = model.predict({model.data_key: x_train_input})[
-                model.output_key
-            ]
-
-            ensembler_test_input = model.predict({model.data_key: x_test_input})
+            ensembler_test_input = model.predict(
+                {model.data_key: labeled_data["X_test"]}
+            )[model.output_key]
 
             ensembler_data = {
                 'X_train': ensembler_train_input,

@@ -49,7 +49,7 @@ class kCollaboratorModel(MultiModel):
         return {self.output_key: ensemble_pred}
 
     def persist(self, version=None):
-        ensemble_version = self.ensemble.persist()
+        ensemble_version = self.ensemble.persist(version)
         self.stats['ensemble'] = {
             'version': ensemble_version,
             'model_class': self.ensemble.__class__,

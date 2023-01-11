@@ -11,5 +11,5 @@ class LogicalOREnsembleModeler(Modeler):
         super().__init__()
         self.model_class = LogicalOREnsemble
 
-    def build_model(self) -> LogicalOREnsemble:
+    def build_model(self, input_data: dict) -> LogicalOREnsemble:
         return self.model_class
