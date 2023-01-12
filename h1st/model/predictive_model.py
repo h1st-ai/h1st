@@ -8,6 +8,9 @@ class PredictiveModel(Model):
     Base class for all predictive models.
     """
 
+    data_key = 'X'
+    output_key = 'predictions'
+
     def predict(self, input_data: Dict) -> Dict:
         """
         Implement logic to generate prediction from data

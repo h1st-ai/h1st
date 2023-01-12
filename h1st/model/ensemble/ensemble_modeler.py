@@ -1,15 +1,20 @@
 from h1st.model.modeler import Modeler
-from h1st.model.ensemble.ensemble import LogicalOREnsemble
+from h1st.model.rule_based_modeler import RuleBasedModeler
+from h1st.model.ensemble.ensemble import (
+    LogicalOREnsemble, MajorityVotingEnsembleModel
+)
 
 
 class EnsembleModeler(Modeler):
     pass
 
 
-class LogicalOREnsembleModeler(Modeler):
+class LogicalOREnsembleModeler(RuleBasedModeler):
     def __init__(self):
-        super().__init__()
-        self.model_class = LogicalOREnsemble()
+        super().__init__(LogicalOREnsemble)
 
-    def build_model(self, input_data: dict) -> LogicalOREnsemble:
-        return self.model_class
+
+class MajorityVotingEnsembleModeler(RuleBasedModeler):
+    def __init__(self):
+        super().__init__(MajorityVotingEnsembleModel)
+

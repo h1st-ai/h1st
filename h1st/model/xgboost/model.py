@@ -7,6 +7,7 @@ from h1st.model.ml_model import MLModel
 
 
 class XGBRegressionModel(MLModel):
+
     data_key = 'X'
     output_key = 'predictions'
     name = 'XGBRegressionModel'

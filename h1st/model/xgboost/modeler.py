@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.xgboost.model import XGBRegressionModel
 from h1st.model.xgboost.utils import (
+    xgb_grid_search,
     extratree_rank_features,
     evaluate_regression_base_model,
 )
@@ -20,22 +21,22 @@ class XGBRegressionModeler(MLModeler):
         self,
         result_key: str = 'result',
         max_features: int = 50,
-        debug: bool = False,
-        eta: float = 0.001,
-        n_estimators: int = 3,
-        max_depth: int = 3,
+        eta: float = None,
+        n_estimators: int = None,
+        max_depth: int = None,
+        debug=False
     ) -> None:
         super().__init__()
         self.stats = {
             'result_key': result_key,
             'max_features': max_features,
-            'debug': debug,
             'eta': eta,
             'n_estimators': n_estimators,
-            "max_depth": max_depth,
+            'max_depth': max_depth,
+            'debug': debug,
         }
 
-    def train_base_model(self, prepared_data: dict) -> XGBRegressor:
+    def train_base_model(self, input_data: dict) -> XGBRegressor:
         """
         This function can be used to build and train XGBRegression model.
         It also performs gridsearch which helps us to get optimal model
@@ -45,20 +46,17 @@ class XGBRegressionModeler(MLModeler):
         """
         result_key = self.stats['result_key']
         max_features = self.stats['max_features']
-        debug = self.stats['debug']
         logger.info(f'Fitting model {self.model_class.name} for {result_key}')
 
+        prepared_data = self.prepare_data(input_data)
         X_train = prepared_data['X_train']
         y_train = prepared_data['y_train']
-
-        if isinstance(y_train, pd.DataFrame) and result_key in y_train.columns:
-            y_train = prepared_data['y_train'][result_key]
-        elif not isinstance(y_train, (pd.Series, list, np.array)):
-            raise ValueError(
-                'y_train and y_test must be a DataFrame with '
-                'relevant column specified via result_key or '
-                '1-D Array-like'
-            )
+        if 'X_test' in prepared_data:
+            X_test = prepared_data['X_test']
+            y_test = prepared_data['y_test']
+        else:
+            X_test = None
+            y_test = None
 
         self.stats['scaled_features'] = X_train.columns
         sc_scaler = StandardScaler()
@@ -67,11 +65,16 @@ class XGBRegressionModeler(MLModeler):
             columns=X_train.columns,
             index=X_train.index,
         )
+        if X_test is not None:
+            X_test = pd.DataFrame(
+                sc_scaler.transform(X_test),
+                columns=X_test.columns,
+                index=X_test.index,
+            )
 
-        # NaN/Inf should be handled in preprocessing but just in case
         fit_data = {
-            'X_train': X_train.dropna(),
-            'y_train': y_train.loc[X_train.index],
+            'X_train': X_train,
+            'y_train': y_train,
         }
 
         ranked_features, feature_importance = extratree_rank_features(
@@ -91,9 +94,38 @@ class XGBRegressionModeler(MLModeler):
         )
 
         fit_data['X_train'] = fit_data['X_train'][features]
+
         max_depth = self.stats['max_depth']
         eta = self.stats['eta']
         n_estimators = self.stats['n_estimators']
+        if X_test is not None:
+            fit_data['X_test'] = X_test[features]
+            fit_data['y_test'] = y_test
+            logger.info('Found test data, grid searching to '
+                        'optimize hyperparameters.')
+            hyperparams = xgb_grid_search(fit_data, debug=self.stats['debug'],
+                                          max_depth=max_depth,
+                                          n_estimators=n_estimators, eta=eta)
+            max_depth, n_estimators, eta = hyperparams
+            logger.info(f'Best hyperparmeters found:\n'
+                        f'n_estimators: {n_estimators}\n'
+                        f'max_depth: {max_depth}\n'
+                        f'eta: {eta}\n'
+                        f'Replacing passed hyperparameters.'
+                        )
+            self.stats.update({
+                'max_depth': max_depth,
+                'n_estimators': n_estimators,
+                'eta': eta
+            })
+
+
+        if max_depth is None:
+            max_depth = 3
+        if n_estimators is None:
+            n_estimators = 5
+        if eta is None:
+            eta = 0.001
 
         # Model Initialization using the above best parameters
         model = XGBRegressor(
@@ -114,14 +146,45 @@ class XGBRegressionModeler(MLModeler):
         )
         return model
 
-    def evaluate_model(self, prepared_data: dict, trained_model: XGBRegressionModel):
-        """Calculate metrics"""
+    def prepare_data(self, prepared_data: dict):
         fit_data = prepared_data.copy()
-        result_key = self.stats['result_key']
-        fit_data['y_test'] = fit_data['y_test'][result_key]
-        fit_data['y_train'] = fit_data['y_train'][result_key]
+        # NaN/Inf should be handled in preprocessing but just in case
+        X_train = prepared_data['X_train'].dropna()
+        y_train = prepared_data['y_train'].loc[X_train.index]
+        if 'X_test' in prepared_data:
+            X_test = prepared_data['X_test'].dropna()
+            y_test = prepared_data['y_test'].loc[X_test.index]
+        else:
+            X_test = None
+            y_test = None
+
+        if isinstance(y_train, pd.DataFrame) and result_key in y_train.columns:
+            y_train = prepared_data['y_train'][result_key]
+            if y_test is not None:
+                y_test = prepared_data['y_test'][result_key]
+        elif not isinstance(y_train, (pd.Series, list, np.array)):
+            raise ValueError(
+                'y_train and y_test must be a DataFrame with '
+                'relevant column specified via result_key or '
+                '1-D Array-like'
+            )
+
+        fit_data = {
+            'X_train': X_train,
+            'y_train': y_train
+        }
+        if X_test is not None:
+            fit_data['X_test'] = X_test
+            fit_data['y_test'] = y_test
+
+        return fit_data
+
+    def evaluate_model(self, input_data, trained_model):
+        """ Calculate metrics """
+        fit_data = self.prepared_data(input_data)
         return evaluate_regression_base_model(
             fit_data,
             trained_model.base_model,
-            features=trained_model.stats['selected_features'],
+            features=trained_model.stats['selected_features']
         )
+
