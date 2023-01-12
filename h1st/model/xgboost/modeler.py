@@ -21,9 +21,9 @@ class XGBRegressionModeler(MLModeler):
         self,
         result_key: str = 'result',
         max_features: int = 50,
-        eta: float = 0.001,
-        n_estimators: int = 3,
-        max_depth: int = 3,
+        eta: float = None,
+        n_estimators: int = None,
+        max_depth: int = None,
         debug=False
     ) -> None:
         super().__init__()
@@ -94,12 +94,18 @@ class XGBRegressionModeler(MLModeler):
         )
 
         fit_data['X_train'] = fit_data['X_train'][features]
+
+        max_depth = self.stats['max_depth']
+        eta = self.stats['eta']
+        n_estimators = self.stats['n_estimators']
         if X_test is not None:
             fit_data['X_test'] = X_test[features]
             fit_data['y_test'] = y_test
             logger.info('Found test data, grid searching to '
                         'optimize hyperparameters.')
-            hyperparams = xgb_grid_search(fit_data, debug=self.stats['debug'])
+            hyperparams = xgb_grid_search(fit_data, debug=self.stats['debug'],
+                                          max_depth=max_depth,
+                                          n_estimators=n_estimators, eta=eta)
             max_depth, n_estimators, eta = hyperparams
             logger.info(f'Best hyperparmeters found:\n'
                         f'n_estimators: {n_estimators}\n'
@@ -114,9 +120,12 @@ class XGBRegressionModeler(MLModeler):
             })
 
 
-        max_depth = self.stats['max_depth']
-        eta = self.stats['eta']
-        n_estimators = self.stats['n_estimators']
+        if max_depth is None:
+            max_depth = 3
+        if n_estimators is None:
+            n_estimators = 5
+        if eta is None:
+            eta = 0.001
 
         # Model Initialization using the above best parameters
         model = XGBRegressor(

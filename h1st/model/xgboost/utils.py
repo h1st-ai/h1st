@@ -78,16 +78,33 @@ def get_metrics(y_true: np.ndarray, y_pred: np.ndarray, data_name: str) -> dict:
     return metrics
 
 
-def xgb_grid_search(prepared_data: dict, debug: bool = False) -> tuple:
+def xgb_grid_search(prepared_data: dict, debug: bool = False, max_depth=None,
+                    n_estimators=None, eta=None) -> tuple:
     ''' Grid Search : Trying diffferent parameter for model. Evaluating
     model predictions by mae and returning best parameter '''
     # Parameter tuning for max_depth,n_Estimators and ETA for XGBoost
-    if debug:
-        params = [[2], [5, 10], [0.001]]
-    else:
-        params = [[2, 3, 4, 6, 8, 10], [5, 10, 20, 30, 40, 50, 70, 100],
-                  [0.001, 0.01, 0.1, 0.2, 0.3, 0.5, 0.05]]
+    if max_depth is None and debug:
+        max_depth = [2]
+    elif max_depth is None:
+        max_depth = [2,3,4,5,6,8,10]
+    elif not isinstance(max_depth, list):
+        max_depth = [max_depth]
 
+    if n_estimators is None and debug:
+        n_estimators = [5,10]
+    elif n_estimators is None:
+        n_estimators = [5, 10, 20, 30, 40, 50, 70, 100]
+    elif not isinstance(n_esitmators, list):
+        n_estimators = [n_estimators]
+
+    if eta is None and debug:
+        eta = [0.001]
+    elif eta is None:
+        eta = [0.001, 0.01, 0.1, 0.2, 0.3, 0.5, 0.05]
+    elif not isinstance(eta, list):
+        eta = [eta]
+
+    params = [max_depth, n_estimators, eta]
     gridsearch_results = []
     gridsearch_columns = ['max_depth', 'n_estimator', 'lr']
 
