@@ -38,15 +38,17 @@ def evaluate_regression_base_model(prepared_data: dict, model: XGBRegressor, fea
         features = prepared_data['X_train'].columns.tolist()
 
     X_train = prepared_data['X_train'][features].copy()
-    X_test = prepared_data['X_test'][features].copy()
     y_train_pred = model.predict(X_train)
-    y_test_pred = model.predict(X_test)
     y_train_true = prepared_data['y_train'].to_numpy()
-    y_test_true = prepared_data['y_test'].to_numpy()
 
     metrics: dict = {}
     metrics.update(get_metrics(y_train_true, y_train_pred, 'train'))
-    metrics.update(get_metrics(y_test_true, y_test_pred, 'test'))
+    if 'X_test' in prepared_data:
+        X_test = prepared_data['X_test'][features].copy()
+        y_test_pred = model.predict(X_test)
+        y_test_true = prepared_data['y_test'].to_numpy()
+        metrics.update(get_metrics(y_test_true, y_test_pred, 'test'))
+
     return metrics
 
 
