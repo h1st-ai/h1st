@@ -43,7 +43,7 @@ class kCollaboratorModeler(MultiModeler):
 
         # If there is labeled_data and ensembler_modeler is MLModeler,
         # then prepare the training data of ensembler.
-        labeled_data = prepared_data.get("labeled_data", None)
+        labeled_data = prepared_data.get("labeled_data", prepared_data)
         if isinstance(ensemble_modeler, MLModeler) and labeled_data is None:
             raise ValueError("No data to train the machine-learning-based ensembler")
 
