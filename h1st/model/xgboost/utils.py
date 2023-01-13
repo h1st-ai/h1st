@@ -25,14 +25,15 @@ def extratree_rank_features(x: pd.DataFrame, y: pd.DataFrame) -> Tuple[list, lis
     extra_tree_forest.fit(x, y)
 
     # Getting feature with importance
-    ranked_feature = pd.Series(extra_tree_forest.feature_importances_,
-                               index=x.columns)
+    ranked_feature = pd.Series(extra_tree_forest.feature_importances_, index=x.columns)
     ranked_feature = ranked_feature.sort_values(ascending=False)
     return ranked_feature.index.tolist(), ranked_feature.tolist()
 
 
-def evaluate_regression_base_model(prepared_data: dict, model: XGBRegressor, features: list = None) -> dict:
-    ''' Predicting and evaluating the results '''
+def evaluate_regression_base_model(
+    prepared_data: dict, model: XGBRegressor, features: list = None
+) -> dict:
+    '''Predicting and evaluating the results'''
     # Predicting the results
     if features is None:
         features = prepared_data['X_train'].columns.tolist()
@@ -53,48 +54,64 @@ def evaluate_regression_base_model(prepared_data: dict, model: XGBRegressor, fea
 
 
 def get_metrics(y_true: np.ndarray, y_pred: np.ndarray, data_name: str) -> dict:
-    ''' Evaluating for temperature model '''
+    '''Evaluating for temperature model'''
     metrics = {}
     metrics[f'{data_name}_mape'] = round(
-        mean_absolute_percentage_error(y_true, y_pred), 2)
-    metrics[f'{data_name}_mae'] = round(
-        mean_absolute_error( y_true, y_pred), 2)
-    
+        mean_absolute_percentage_error(y_true, y_pred), 2
+    )
+    metrics[f'{data_name}_mae'] = round(mean_absolute_error(y_true, y_pred), 2)
+
     '''Additional Evaluations'''
-    metrics[f'{data_name}_mse'] = round(
-        mean_squared_error( y_true, y_pred), 2)
+    metrics[f'{data_name}_mse'] = round(mean_squared_error(y_true, y_pred), 2)
     metrics[f'{data_name}_rmse'] = round(
-        mean_squared_error( y_true, y_pred, squared=False), 2)
+        mean_squared_error(y_true, y_pred, squared=False), 2
+    )
     metrics[f'{data_name}_nrmse_minmax'] = round(
-        ((mean_squared_error( y_true, y_pred, squared=False))/(y_true.max()- y_true.min())), 2)
+        (
+            (mean_squared_error(y_true, y_pred, squared=False))
+            / (y_true.max() - y_true.min())
+        ),
+        2,
+    )
     metrics[f'{data_name}_nrmse_iq'] = round(
-        ((mean_squared_error( y_true, y_pred, squared=False))/(np.quantile(y_true, 0.75)- np.quantile(y_true, 0.25))), 2)
+        (
+            (mean_squared_error(y_true, y_pred, squared=False))
+            / (np.quantile(y_true, 0.75) - np.quantile(y_true, 0.25))
+        ),
+        2,
+    )
     metrics[f'{data_name}_nrmse_sd'] = round(
-        ((mean_squared_error( y_true, y_pred, squared=False))/(np.std(y_true))), 2)
+        ((mean_squared_error(y_true, y_pred, squared=False)) / (np.std(y_true))), 2
+    )
     metrics[f'{data_name}_nrmse_mean'] = round(
-        ((mean_squared_error( y_true, y_pred, squared=False))/(np.mean(y_true))), 2)
-    metrics[f'{data_name}_rsquared'] = round(
-        r2_score( y_true, y_pred), 2)
+        ((mean_squared_error(y_true, y_pred, squared=False)) / (np.mean(y_true))), 2
+    )
+    metrics[f'{data_name}_rsquared'] = round(r2_score(y_true, y_pred), 2)
     return metrics
 
 
-def xgb_grid_search(prepared_data: dict, debug: bool = False, max_depth=None,
-                    n_estimators=None, eta=None) -> tuple:
-    ''' Grid Search : Trying diffferent parameter for model. Evaluating
-    model predictions by mae and returning best parameter '''
+def xgb_grid_search(
+    prepared_data: dict,
+    debug: bool = False,
+    max_depth: int = None,
+    n_estimators: int = None,
+    eta: float = None,
+) -> Tuple[int, int, float]:
+    '''Grid Search : Trying diffferent parameter for model. Evaluating
+    model predictions by mae and returning best parameter'''
     # Parameter tuning for max_depth,n_Estimators and ETA for XGBoost
     if max_depth is None and debug:
         max_depth = [2]
     elif max_depth is None:
-        max_depth = [2,3,4,5,6,8,10]
+        max_depth = [2, 3, 4, 5, 6, 8, 10]
     elif not isinstance(max_depth, list):
         max_depth = [max_depth]
 
     if n_estimators is None and debug:
-        n_estimators = [5,10]
+        n_estimators = [5, 10]
     elif n_estimators is None:
         n_estimators = [5, 10, 20, 30, 40, 50, 70, 100]
-    elif not isinstance(n_esitmators, list):
+    elif not isinstance(n_estimators, list):
         n_estimators = [n_estimators]
 
     if eta is None and debug:
@@ -110,21 +127,17 @@ def xgb_grid_search(prepared_data: dict, debug: bool = False, max_depth=None,
 
     # Iterating over all parameter combinations
     for tup in itertools.product(*params):
-        model = XGBRegressor(max_depth=tup[0], n_estimators=tup[1],
-                             eta=tup[2], seed=42)
-        model.fit(prepared_data['X_train'],
-                  prepared_data['y_train'].values)
+        model = XGBRegressor(max_depth=tup[0], n_estimators=tup[1], eta=tup[2], seed=42)
+        model.fit(prepared_data['X_train'], prepared_data['y_train'].values)
 
-        metrics = evaluate_regression_base_model(
-            prepared_data, model
-        )
-        gridsearch_results.append(
-            list(tup)+(list(metrics.values()))
-        )
-        
+        metrics = evaluate_regression_base_model(prepared_data, model)
+        gridsearch_results.append(list(tup) + (list(metrics.values())))
+
     gridsearch_columns.extend(list(metrics.keys()))
-    gridsearch_df = pd.DataFrame(gridsearch_results,
-                                 columns=gridsearch_columns)
+    gridsearch_df = pd.DataFrame(gridsearch_results, columns=gridsearch_columns)
     # Selecting best model based on test_mape
     gridsearch_df = gridsearch_df.sort_values('test_mape')
-    return tuple(gridsearch_df[['max_depth', 'n_estimator', 'lr']].iloc[0])
+    best_max_depth, best_n_estimator, best_eta = tuple(
+        gridsearch_df[['max_depth', 'n_estimator', 'lr']].iloc[0]
+    )
+    return (int(best_max_depth), int(best_n_estimator), best_eta)

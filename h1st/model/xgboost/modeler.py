@@ -24,7 +24,7 @@ class XGBRegressionModeler(MLModeler):
         eta: float = None,
         n_estimators: int = None,
         max_depth: int = None,
-        debug=False
+        debug=False,
     ) -> None:
         super().__init__()
         self.stats = {
@@ -101,24 +101,27 @@ class XGBRegressionModeler(MLModeler):
         if X_test is not None:
             fit_data['X_test'] = X_test[features]
             fit_data['y_test'] = y_test
-            logger.info('Found test data, grid searching to '
-                        'optimize hyperparameters.')
-            hyperparams = xgb_grid_search(fit_data, debug=self.stats['debug'],
-                                          max_depth=max_depth,
-                                          n_estimators=n_estimators, eta=eta)
+            logger.info(
+                'Found test data, grid searching to ' 'optimize hyperparameters.'
+            )
+            hyperparams = xgb_grid_search(
+                fit_data,
+                debug=self.stats['debug'],
+                max_depth=max_depth,
+                n_estimators=n_estimators,
+                eta=eta,
+            )
             max_depth, n_estimators, eta = hyperparams
-            logger.info(f'Best hyperparmeters found:\n'
-                        f'n_estimators: {n_estimators}\n'
-                        f'max_depth: {max_depth}\n'
-                        f'eta: {eta}\n'
-                        f'Replacing passed hyperparameters.'
-                        )
-            self.stats.update({
-                'max_depth': max_depth,
-                'n_estimators': n_estimators,
-                'eta': eta
-            })
-
+            logger.info(
+                f'Best hyperparmeters found:\n'
+                f'n_estimators: {n_estimators}\n'
+                f'max_depth: {max_depth}\n'
+                f'eta: {eta}\n'
+                f'Replacing passed hyperparameters.'
+            )
+            self.stats.update(
+                {'max_depth': max_depth, 'n_estimators': n_estimators, 'eta': eta}
+            )
 
         if max_depth is None:
             max_depth = 3
@@ -147,7 +150,8 @@ class XGBRegressionModeler(MLModeler):
         return model
 
     def prepare_data(self, prepared_data: dict):
-        fit_data = prepared_data.copy()
+        result_key = self.stats['result_key']
+
         # NaN/Inf should be handled in preprocessing but just in case
         X_train = prepared_data['X_train'].dropna()
         y_train = prepared_data['y_train'].loc[X_train.index]
@@ -162,17 +166,14 @@ class XGBRegressionModeler(MLModeler):
             y_train = prepared_data['y_train'][result_key]
             if y_test is not None:
                 y_test = prepared_data['y_test'][result_key]
-        elif not isinstance(y_train, (pd.Series, list, np.array)):
+        elif not isinstance(y_train, (pd.Series, list, np.ndarray)):
             raise ValueError(
                 'y_train and y_test must be a DataFrame with '
                 'relevant column specified via result_key or '
                 '1-D Array-like'
             )
 
-        fit_data = {
-            'X_train': X_train,
-            'y_train': y_train
-        }
+        fit_data = {'X_train': X_train, 'y_train': y_train}
         if X_test is not None:
             fit_data['X_test'] = X_test
             fit_data['y_test'] = y_test
@@ -180,11 +181,10 @@ class XGBRegressionModeler(MLModeler):
         return fit_data
 
     def evaluate_model(self, input_data, trained_model):
-        """ Calculate metrics """
-        fit_data = self.prepared_data(input_data)
+        """Calculate metrics"""
+        fit_data = self.prepare_data(input_data)
         return evaluate_regression_base_model(
             fit_data,
             trained_model.base_model,
-            features=trained_model.stats['selected_features']
+            features=trained_model.stats['selected_features'],
         )
-

@@ -8,10 +8,12 @@ from h1st.model.oracle.student_models import RandomForestModel, LogisticRegressi
 
 
 class RandomForestModeler(MLModeler):
+    name = 'RandomForestModel'
     '''
     Knowledge Generalization Modeler backed by a RandomForest algorithm.
     '''
-    def __init__(self, model_class=None):
+
+    def __init__(self, model_class=None, result_key=None):
         self.stats = {}
         self.model_class = model_class if model_class is not None else RandomForestModel
 
@@ -20,28 +22,32 @@ class RandomForestModeler(MLModeler):
         return self.stats["scaler"].fit_transform(data)
 
     def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
-        X = self._preprocess(prepared_data['X'])
-        y = prepared_data['y']
+        X = self._preprocess(prepared_data['X_train'])
+        y = prepared_data['y_train']
         model = RandomForestClassifier(max_depth=20, random_state=1)
         model.fit(X, y)
         return model
 
 
 class LogisticRegressionModeler(MLModeler):
+    name = 'LogisticRegressionModel'
     '''
     Knowledge Generalization Modeler backed by a Logistic Regression algorithm
     '''
-    def __init__(self, model_class=None):
+
+    def __init__(self, model_class=None, result_key=None):
         self.stats = {}
-        self.model_class = model_class if model_class is not None else LogisticRegressionModel
+        self.model_class = (
+            model_class if model_class is not None else LogisticRegressionModel
+        )
 
     def _preprocess(self, data):
         self.stats["scaler"] = StandardScaler()
         return self.stats["scaler"].fit_transform(data)
 
     def train_base_model(self, prepared_data: Dict[str, Any]) -> Any:
-        X = self._preprocess(prepared_data['X'])
-        y = prepared_data['y']
+        X = self._preprocess(prepared_data['X_train'])
+        y = prepared_data['y_train']
         model = LogisticRegression()
         model.fit(X, y)
         return model
