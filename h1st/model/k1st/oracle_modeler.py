@@ -49,7 +49,7 @@ class kOracleModeler(MultiModeler):
             )[teacher_output_key]
 
         self.stats['inject_x_in_ensembler'] = inject_x_in_ensembler
-        model = super().build_model(prepared_data, modelers)
+        model = super().build_model(student_training_data, modelers)
         # for i, m in enumerate(models):
         #     model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
 
