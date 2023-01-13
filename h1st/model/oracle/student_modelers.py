@@ -8,7 +8,6 @@ from h1st.model.oracle.student_models import RandomForestModel, LogisticRegressi
 
 
 class RandomForestModeler(MLModeler):
-    name = 'RandomForestModel'
     '''
     Knowledge Generalization Modeler backed by a RandomForest algorithm.
     '''
@@ -30,7 +29,6 @@ class RandomForestModeler(MLModeler):
 
 
 class LogisticRegressionModeler(MLModeler):
-    name = 'LogisticRegressionModel'
     '''
     Knowledge Generalization Modeler backed by a Logistic Regression algorithm
     '''

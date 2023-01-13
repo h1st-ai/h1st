@@ -2,6 +2,7 @@ from h1st.model.ml_model import MLModel
 
 
 class RandomForestModel(MLModel):
+    name = 'RandomForestModel'
     '''
     Knowledge Generalization Model backed by a RandomForest algorithm
     '''
@@ -26,6 +27,7 @@ class RandomForestModel(MLModel):
 
 
 class LogisticRegressionModel(MLModel):
+    name = 'LogisticRegressionModel'
     '''
     Knowledge Generalization Model backed by a Logistic Regression algorithm
     '''
