@@ -1,9 +1,8 @@
 import logging
 from typing import List
 
-import pandas as pd
-
 from h1st.model.wrapper.multi_modeler import MultiModeler
+from h1st.model.wrapper.multi_model import MultiModel
 from h1st.model.oracle.ensembler_models import MajorityVotingEnsembleModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 from h1st.model.k1st.oracle import kOracleModel
@@ -31,6 +30,11 @@ class kOracleModeler(MultiModeler):
         '''
         prepared_data must be in the format necessary for modelers
         '''
+        if prepared_data is None:
+            model = MultiModel()
+            model.add_model(teacher, f'prebuilt-{teacher.__class__.__name__}')
+            return model
+
         teacher_data_key = getattr(teacher, 'data_key', 'X')
         teacher_output_key = getattr(teacher, 'output_key', 'predictions')
         teacher_pred = teacher.predict(
