@@ -36,6 +36,9 @@ class kCollaboratorModeler(MultiModeler):
         for i, m in enumerate(models):
             model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
 
+        if prepared_data is None:
+            return model
+
         # train ensemble
         raw_pred = model.predict({model.data_key: prepared_data['X_train']})[
             model.output_key
