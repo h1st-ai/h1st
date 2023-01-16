@@ -37,25 +37,21 @@ class kOracleModeler(MultiModeler):
 
         teacher_data_key = getattr(teacher, 'data_key', 'X')
         teacher_output_key = getattr(teacher, 'output_key', 'predictions')
-        teacher_pred = teacher.predict(
-            {
-                teacher_data_key: prepared_data['X_train']
-            }
-        )[teacher_output_key]
+        teacher_pred = teacher.predict({teacher_data_key: prepared_data['X_train']})[
+            teacher_output_key
+        ]
         student_training_data = prepared_data.copy()
         student_training_data['y_train'] = teacher_pred
         if 'X_test' in prepared_data.keys():
             student_training_data['y_test'] = teacher.predict(
-                {
-                    teacher_data_key: prepared_data['X_test']
-
-                }
+                {teacher_data_key: prepared_data['X_test']}
             )[teacher_output_key]
 
         self.stats['inject_x_in_ensembler'] = inject_x_in_ensembler
         model = super().build_model(student_training_data, modelers)
-        # for i, m in enumerate(models):
-        #     model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
+
+        # Add teacher to MultiModel
+        model.add_model(teacher, f'prebuilt-{teacher.__class__.__name__}')
 
         # train ensemble
         raw_pred = model.predict({model.data_key: prepared_data['X_train']})[
