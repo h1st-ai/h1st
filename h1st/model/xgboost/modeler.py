@@ -29,10 +29,10 @@ class XGBRegressionModeler(MLModeler):
         super().__init__()
         self.stats = {
             'result_key': result_key,
-            'max_features': max_features,
+            'max_features': int(max_features),
             'eta': eta,
-            'n_estimators': n_estimators,
-            'max_depth': max_depth,
+            'n_estimators': int(n_estimators),
+            'max_depth': int(max_depth),
             'debug': debug,
         }
 
@@ -44,10 +44,6 @@ class XGBRegressionModeler(MLModeler):
 
         prepared_data requires keys: X_train, y_train, X_test, y_test
         """
-        result_key = self.stats['result_key']
-        max_features = self.stats['max_features']
-        logger.info(f'Fitting model {self.model_class.name} for {result_key}')
-
         prepared_data = self.prepare_data(input_data)
         X_train = prepared_data['X_train']
         y_train = prepared_data['y_train']
@@ -57,6 +53,10 @@ class XGBRegressionModeler(MLModeler):
         else:
             X_test = None
             y_test = None
+
+        result_key = self.stats['result_key']
+        max_features = self.stats['max_features']
+        logger.info(f'Fitting model {self.model_class.name} for {result_key}')
 
         self.stats['scaled_features'] = X_train.columns
         sc_scaler = StandardScaler()
@@ -161,6 +161,10 @@ class XGBRegressionModeler(MLModeler):
         else:
             X_test = None
             y_test = None
+
+        if result_key is None:
+            result_key = y_train.columns[0]
+            self.stats['result_key'] = result_key
 
         if isinstance(y_train, pd.DataFrame) and result_key in y_train.columns:
             y_train = prepared_data['y_train'][result_key]

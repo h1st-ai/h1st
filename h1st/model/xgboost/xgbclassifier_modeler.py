@@ -6,5 +6,4 @@ class XGBClassifierModeler(XGBRegressionModeler):
 
     def __init__(self, threshold=0.5, **kwargs):
         super().__init__(**kwargs)
-        self.stats['threshold'] = threshold
-
+        self.stats['threshold'] = float(threshold)
