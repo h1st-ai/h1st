@@ -21,11 +21,10 @@ class MultiModel(PredictiveModel):
             pred_key = getattr(v, 'output_key', 'predictions')
             pred: pd.DataFrame = v.predict({v.data_key: X})[pred_key]
 
-            all_pred.append(
-                pd.Series(pred.squeeze(), name=f'{k}')
-            )
+            all_pred.append(pd.Series(pred.squeeze(), name=f'{k}'))
 
-        out = {self.output_key: pd.concat(all_pred, axis=1)}
+        concat_df = pd.concat(all_pred, axis=1) if all_pred else pd.DataFrame()
+        out = {self.output_key: concat_df}
         return out
 
     def persist(self, version=None):
@@ -61,7 +60,7 @@ class MultiModel(PredictiveModel):
                 'model_name': k,
                 'model_type': v.name,
                 'metrics': v.metrics,
-                'stats': v.stats
+                'stats': v.stats,
             }
             if k in model_info.keys():
                 model_info[k].update(info)
@@ -83,7 +82,5 @@ class MultiModel(PredictiveModel):
         self._update_model_info()
 
     def get_submodel_model_metrics(self):
-        metrics = {k: getattr(v, 'metrics', {})
-                   for k, v in self.models.items()}
+        metrics = {k: getattr(v, 'metrics', {}) for k, v in self.models.items()}
         return metrics
-
