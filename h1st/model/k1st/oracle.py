@@ -49,11 +49,14 @@ class kOracleModel(MultiModel):
         return {self.output_key: ensemble_pred}
 
     def persist(self, version=None):
-        ensemble_version = self.ensemble.persist()
-        self.stats['ensemble'] = {
-            'version': ensemble_version,
-            'model_class': self.ensemble.__class__,
-        }
+        if self.ensemble:
+            ensemble_version = self.ensemble.persist()
+            self.stats['ensemble'] = {
+                'version': ensemble_version,
+                'model_class': self.ensemble.__class__,
+            }
+        else:
+            self.stats['ensemble'] = None
 
         version = super().persist(version)
         return version
@@ -61,7 +64,11 @@ class kOracleModel(MultiModel):
     def load(self, version=None):
         super().load(version)
 
-        ensemble_version = self.stats['ensemble']['version']
-        ensemble_class = self.stats['ensemble']['model_class']
-        self.ensemble = ensemble_class().load(ensemble_version)
+        if self.stats['ensemble']:
+            ensemble_version = self.stats['ensemble']['version']
+            ensemble_class = self.stats['ensemble']['model_class']
+            self.ensemble = ensemble_class().load(ensemble_version)
+        else:
+            self.ensemble = None
+            
         return self
