@@ -2,7 +2,6 @@ import logging
 from typing import List
 
 from h1st.model.wrapper.multi_modeler import MultiModeler
-from h1st.model.wrapper.multi_model import MultiModel
 from h1st.model.oracle.ensembler_models import MajorityVotingEnsembleModel
 from h1st.model.rule_based_modeler import RuleBasedModeler
 from h1st.model.k1st.oracle import kOracleModel
@@ -31,13 +30,14 @@ class kOracleModeler(MultiModeler):
         prepared_data must be in the format necessary for modelers
         '''
         if prepared_data is None:
-            model = MultiModel()
+            model = kOracleModel()
             model.add_model(teacher, f'prebuilt-{teacher.__class__.__name__}')
+            model.stats['input_features'] = teacher.stats['input_features']
             return model
 
         teacher_data_key = getattr(teacher, 'data_key', 'X')
         teacher_output_key = getattr(teacher, 'output_key', 'predictions')
-        teacher_pred = teacher.predict({teacher_data_key: prepared_data['X_train']})[
+        teacher_pred = teacher.predict({teacher_data_key: prepared_data['X_teacher_train']})[
             teacher_output_key
         ]
         student_training_data = prepared_data.copy()
@@ -102,6 +102,8 @@ class kOracleModeler(MultiModeler):
                 logging.error(e)
             else:
                 logging.info("Evaluated all sub models successfully.")
+
+        model.stats['input_features'] = list(prepared_data['X_train'].columns)
 
         return model
 

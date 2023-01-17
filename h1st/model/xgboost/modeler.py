@@ -147,6 +147,7 @@ class XGBRegressionModeler(MLModeler):
                 'total_training_points': fit_data['X_train'].shape[0],
             }
         )
+        self.stats['input_features'] = features
         return model
 
     def prepare_data(self, prepared_data: dict):

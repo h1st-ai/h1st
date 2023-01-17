@@ -36,6 +36,8 @@ class kCollaboratorModeler(MultiModeler):
         for i, m in enumerate(models):
             model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
 
+        model.stats['input_features'] = list(prepared_data['X_train'].columns)
+
         if prepared_data is None:
             return model
 

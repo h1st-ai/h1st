@@ -30,12 +30,16 @@ class MultiModel(PredictiveModel):
     def persist(self, version=None):
         models = self.models
         model_info = self.model_info
+        input_features = []
         for k, v in models.items():
             model_version = v.persist()
             model_info[k]['version'] = model_version
             model_info[k]['model_class'] = v.__class__
 
+            input_features.extend(v.stats['input_features'])
+
         self.stats['model_info'] = model_info
+        self.stats['input_features'] = list(set(input_features))
         version = super().persist(version)
         return version
 
