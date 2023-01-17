@@ -98,30 +98,30 @@ class XGBRegressionModeler(MLModeler):
         max_depth = self.stats['max_depth']
         eta = self.stats['eta']
         n_estimators = self.stats['n_estimators']
-        if X_test is not None:
-            fit_data['X_test'] = X_test[features]
-            fit_data['y_test'] = y_test
-            logger.info(
-                'Found test data, grid searching to ' 'optimize hyperparameters.'
-            )
-            hyperparams = xgb_grid_search(
-                fit_data,
-                debug=self.stats['debug'],
-                max_depth=max_depth,
-                n_estimators=n_estimators,
-                eta=eta,
-            )
-            max_depth, n_estimators, eta = hyperparams
-            logger.info(
-                f'Best hyperparmeters found:\n'
-                f'n_estimators: {n_estimators}\n'
-                f'max_depth: {max_depth}\n'
-                f'eta: {eta}\n'
-                f'Replacing passed hyperparameters.'
-            )
-            self.stats.update(
-                {'max_depth': max_depth, 'n_estimators': n_estimators, 'eta': eta}
-            )
+        # if X_test is not None:
+        #     fit_data['X_test'] = X_test[features]
+        #     fit_data['y_test'] = y_test
+        #     logger.info(
+        #         'Found test data, grid searching to ' 'optimize hyperparameters.'
+        #     )
+        #     hyperparams = xgb_grid_search(
+        #         fit_data,
+        #         debug=self.stats['debug'],
+        #         max_depth=max_depth,
+        #         n_estimators=n_estimators,
+        #         eta=eta,
+        #     )
+        #     max_depth, n_estimators, eta = hyperparams
+        #     logger.info(
+        #         f'Best hyperparmeters found:\n'
+        #         f'n_estimators: {n_estimators}\n'
+        #         f'max_depth: {max_depth}\n'
+        #         f'eta: {eta}\n'
+        #         f'Replacing passed hyperparameters.'
+        #     )
+        #     self.stats.update(
+        #         {'max_depth': max_depth, 'n_estimators': n_estimators, 'eta': eta}
+        #     )
 
         if max_depth is None:
             max_depth = 3
