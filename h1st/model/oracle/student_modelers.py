@@ -25,7 +25,7 @@ class RandomForestModeler(MLModeler):
         y = prepared_data['y_train']
         model = RandomForestClassifier(max_depth=20, random_state=1)
         model.fit(X, y)
-        self.stats['input_features'] = list(X.columns)
+        self.stats['input_features'] = list(prepared_data['X_train'].columns)
         return model
 
 
@@ -49,5 +49,5 @@ class LogisticRegressionModeler(MLModeler):
         y = prepared_data['y_train']
         model = LogisticRegression()
         model.fit(X, y)
-        self.stats['input_features'] = list(X.columns)
+        self.stats['input_features'] = list(prepared_data['X_train'].columns)
         return model
