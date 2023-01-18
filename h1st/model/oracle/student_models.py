@@ -1,5 +1,3 @@
-import pandas as pd
-
 from h1st.model.ml_model import MLModel
 
 
@@ -16,10 +14,7 @@ class RandomForestModel(MLModel):
         :returns: a dictionary with key `predictions` containing the predictions
         '''
         if self.stats['scaler'] is not None:
-            x = pd.DataFrame(
-                self.stats['scaler'].transform(input_data['X']),
-                columns=self.stats['scaler'].get_feature_names_out(),
-            )
+            x = self.stats['scaler'].transform(input_data['X'])
         else:
             x = input_data['X']
         return {'predictions': self.base_model.predict(x)}
@@ -45,10 +40,7 @@ class LogisticRegressionModel(MLModel):
         :returns: a dictionary with key `predictions` containing the predictions
         '''
         if self.stats['scaler'] is not None:
-            x = pd.DataFrame(
-                self.stats['scaler'].transform(input_data['X']),
-                columns=self.stats['scaler'].get_feature_names_out(),
-            )
+            x = self.stats['scaler'].transform(input_data['X'])
         else:
             x = input_data['X']
         return {'predictions': self.base_model.predict(x)}
