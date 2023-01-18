@@ -1,3 +1,4 @@
+from pandas import DataFrame
 from h1st.model.ml_model import MLModel
 
 
@@ -17,7 +18,11 @@ class RandomForestModel(MLModel):
             x = self.stats['scaler'].transform(input_data['X'])
         else:
             x = input_data['X']
-        return {'predictions': self.base_model.predict(x)}
+
+        predict_df = DataFrame(
+            self.base_model.predict(x), columns=self.stats['output_labels']
+        )
+        return {'predictions': predict_df}
 
     def predict_proba(self, input_data: dict) -> dict:
         if self.stats['scaler'] is not None:
@@ -43,7 +48,11 @@ class LogisticRegressionModel(MLModel):
             x = self.stats['scaler'].transform(input_data['X'])
         else:
             x = input_data['X']
-        return {'predictions': self.base_model.predict(x)}
+
+        predict_df = DataFrame(
+            self.base_model.predict(x), columns=self.stats['output_labels']
+        )
+        return {'predictions': predict_df}
 
     def predict_proba(self, input_data: dict) -> dict:
         if self.stats['scaler'] is not None:
