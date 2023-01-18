@@ -1,3 +1,5 @@
+import pandas as pd
+
 from h1st.model.ml_model import MLModel
 
 
@@ -6,6 +8,7 @@ class RandomForestModel(MLModel):
     '''
     Knowledge Generalization Model backed by a RandomForest algorithm
     '''
+
     def predict(self, input_data: dict) -> dict:
         '''
         Implement logic to generate prediction from data
@@ -13,7 +16,10 @@ class RandomForestModel(MLModel):
         :returns: a dictionary with key `predictions` containing the predictions
         '''
         if self.stats['scaler'] is not None:
-            x = self.stats['scaler'].transform(input_data['X'])
+            x = pd.DataFrame(
+                self.stats['scaler'].transform(input_data['X']),
+                columns=self.stats['scaler'].get_feature_names_out(),
+            )
         else:
             x = input_data['X']
         return {'predictions': self.base_model.predict(x)}
@@ -31,6 +37,7 @@ class LogisticRegressionModel(MLModel):
     '''
     Knowledge Generalization Model backed by a Logistic Regression algorithm
     '''
+
     def predict(self, input_data: dict) -> dict:
         '''
         Implement logic to generate prediction from data
@@ -38,7 +45,10 @@ class LogisticRegressionModel(MLModel):
         :returns: a dictionary with key `predictions` containing the predictions
         '''
         if self.stats['scaler'] is not None:
-            x = self.stats['scaler'].transform(input_data['X'])
+            x = pd.DataFrame(
+                self.stats['scaler'].transform(input_data['X']),
+                columns=self.stats['scaler'].get_feature_names_out(),
+            )
         else:
             x = input_data['X']
         return {'predictions': self.base_model.predict(x)}

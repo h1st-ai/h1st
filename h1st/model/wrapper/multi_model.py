@@ -39,7 +39,10 @@ class MultiModel(PredictiveModel):
             input_features.extend(v.stats['input_features'])
 
         self.stats['model_info'] = model_info
-        self.stats['input_features'] = list(set(input_features))
+
+        input_features = list(set(input_features))
+        self.stats['input_features'] = sorted(input_features)
+
         version = super().persist(version)
         return version
 
