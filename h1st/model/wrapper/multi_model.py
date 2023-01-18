@@ -14,12 +14,17 @@ class MultiModel(PredictiveModel):
         self.stats = {}
 
     def predict(self, data: dict) -> dict:
-
         X = data[self.data_key]
         all_pred = []
+        base_df = None
         for k, v in self.models.items():
             pred_key = getattr(v, 'output_key', 'predictions')
             pred: pd.DataFrame = v.predict({v.data_key: X})[pred_key]
+
+            if base_df is not None:
+                pred.index = base_df.index
+            else:
+                base_df = pred
 
             all_pred.append(pd.Series(pred.squeeze(), name=f'{k}'))
 

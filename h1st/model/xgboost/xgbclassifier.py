@@ -9,7 +9,7 @@ class XGBClassifierModel(XGBRegressionModel):
         return {self.output_key: pred}
 
     def apply_threshold(self, x):
-        return x > self.stats['threshold']
+        return 1 if x >= self.stats['threshold'] else 0
 
     def set_threshold(self, threshold: float):
         self.stats['threshold'] = threshold
