@@ -31,7 +31,7 @@ class MultiModeler(Modeler):
 
         model = self.model_class()
         if parallel:
-            submodels = Parallel(n_jobs=-2, verbose=10)(
+            submodels = Parallel(n_jobs=-2, verbose=50)(
                 delayed(x.build_model)(prepared_data) for x in modelers
             )
             for submodel in submodels:

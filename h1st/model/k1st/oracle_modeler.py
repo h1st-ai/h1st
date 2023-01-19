@@ -25,6 +25,7 @@ class kOracleModeler(MultiModeler):
         ensemble_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsembleModel),
         teacher: PredictiveModel = None,
         inject_x_in_ensembler: bool = False,
+        parallel: bool = False,
     ) -> kOracleModel:
         '''
         prepared_data must be in the format necessary for modelers
@@ -48,7 +49,7 @@ class kOracleModeler(MultiModeler):
             )[teacher_output_key]
 
         self.stats['inject_x_in_ensembler'] = inject_x_in_ensembler
-        model = super().build_model(student_training_data, modelers)
+        model = super().build_model(student_training_data, modelers, parallel)
 
         # Add teacher to MultiModel
         model.add_model(teacher, f'prebuilt-{teacher.__class__.__name__}')

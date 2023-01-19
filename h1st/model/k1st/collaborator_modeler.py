@@ -27,12 +27,13 @@ class kCollaboratorModeler(MultiModeler):
         ensemble_modeler: Modeler = RuleBasedModeler(MajorityVotingEnsembleModel),
         models: List[PredictiveModel] = None,
         inject_x_in_ensembler: bool = False,
+        parallel: bool = False,
     ) -> kCollaboratorModel:
         '''
         prepared_data must be in the format necessary for modelers
         '''
         self.stats['inject_x_in_ensembler'] = inject_x_in_ensembler
-        model = super().build_model(prepared_data, modelers)
+        model = super().build_model(prepared_data, modelers, parallel)
         for i, m in enumerate(models):
             model.add_model(m, name=f'prebuilt-{model.__class__.__name__}-{i}')
 
