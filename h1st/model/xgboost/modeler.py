@@ -21,10 +21,10 @@ class XGBRegressionModeler(MLModeler):
         self,
         result_key: str = 'result',
         max_features: int = 50,
-        eta: float = None,
-        n_estimators: int = None,
-        max_depth: int = None,
-        debug=False,
+        eta: float = 0.001,
+        n_estimators: int = 5,
+        max_depth: int = 3,
+        debug: bool = False,
     ) -> None:
         super().__init__()
         self.stats = {
@@ -122,13 +122,6 @@ class XGBRegressionModeler(MLModeler):
         #     self.stats.update(
         #         {'max_depth': max_depth, 'n_estimators': n_estimators, 'eta': eta}
         #     )
-
-        if max_depth is None:
-            max_depth = 3
-        if n_estimators is None:
-            n_estimators = 5
-        if eta is None:
-            eta = 0.001
 
         # Model Initialization using the above best parameters
         model = XGBRegressor(
