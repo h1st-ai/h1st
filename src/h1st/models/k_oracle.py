@@ -4,7 +4,7 @@ from typing import List
 from h1st.models.model import Model
 
 
-class KOracle:
+class KOracle(Model):
     DEFAULT_TEACHER = Model
     DEFAULT_STUDENTS = [Model]
     DEFAULT_ENSEMBLE = Model
@@ -56,9 +56,3 @@ class KOracle:
 
         ensemble_prediction = self.ensemble.predict(teacher_prediction, student_predictions)
         return ensemble_prediction
-
-    def load(self) -> None:
-        pass
-
-    def persist(self) -> None:
-        pass
