@@ -11,3 +11,8 @@ class MyOracle(Oracle):
 
     def __init__(self):
         super().__init__(Teacher())
+
+if __name__ == '__main__':
+    teacher = Teacher()
+    oracle_model = KOracle(teacher)
+    pred = oracle_model.predict({})
