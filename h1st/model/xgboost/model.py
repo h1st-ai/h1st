@@ -116,7 +116,7 @@ class XGBRegressionModel(MLModel):
 
         result_key = self.stats['result_key']
         max_features = self.stats['max_features']
-        logger.info(f'Fitting model {self.model_class.name} for {result_key}')
+        logger.info(f'Fitting model {self.name} for {result_key}')
 
         self.stats['scaled_features'] = X_train.columns
         sc_scaler = StandardScaler()
