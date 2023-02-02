@@ -12,6 +12,9 @@ class RandomForestModel(MLModel):
     Knowledge Generalization Model backed by a RandomForest algorithm
     '''
 
+    def __init__(self):
+        self.stats = {}
+
     def predict(self, input_data: dict) -> dict:
         '''
         Implement logic to generate prediction from data
