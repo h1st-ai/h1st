@@ -184,7 +184,7 @@ class XGBRegressionModel(MLModel):
         fit_data = self.prepare_data(input_data)
         return evaluate_regression_base_model(
             fit_data,
-            trained_model.base_model,
+            trained_model,
             features=trained_model.stats['selected_features'],
         )
 
