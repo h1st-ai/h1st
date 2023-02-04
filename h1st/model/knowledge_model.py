@@ -2,10 +2,10 @@ from typing import Dict, Any
 
 import pandas as pd
 
-from h1st.model.predictive_model import PredictiveModel
+from h1st.model.model import Model
 
 
-class RuleBasedModel(PredictiveModel):
+class RuleBasedModel(Model):
     @property
     def rule_engine(self) -> Any:
         return getattr(self, "__rule_engine", None)
@@ -28,7 +28,6 @@ class RuleBasedModel(PredictiveModel):
     def predict(self, input_data: Dict) -> Dict:
         return self.process_rules(input_data)
 
-
 class RuleBasedRegressionModel(RuleBasedModel):
     """
     Combine predictions using averaging strategy by default.
@@ -46,7 +45,6 @@ class RuleBasedRegressionModel(RuleBasedModel):
         )
         return {"predictions": predictions}
 
-
 class RuleBasedClassificationModel(RuleBasedModel):
     """
     Combine predictions using majority voting by default.
@@ -63,3 +61,12 @@ class RuleBasedClassificationModel(RuleBasedModel):
             .values
         )
         return {"predictions": predictions}
+
+class BooleanModel(RuleBasedModel):
+    """
+    In H1st AI, we intend for BooleanModel to mean predictive boolean model. It is somewhat pointless to have a
+    "non-predictive" boolean model, since that is basically "just code".
+    """
+
+    def execute_rules(self):
+        pass

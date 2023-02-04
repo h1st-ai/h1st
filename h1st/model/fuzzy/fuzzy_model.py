@@ -3,7 +3,7 @@ from typing import Dict
 from typing_extensions import Self
 from skfuzzy import control as skctrl
 
-from h1st.model.rule_based_model import RuleBasedModel
+from h1st.model.knowledge_model import RuleBasedModel
 from h1st.model.fuzzy.fuzzy_variables import FuzzyVariables
 from h1st.model.fuzzy.fuzzy_rules import FuzzyRules
 
