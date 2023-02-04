@@ -3,11 +3,10 @@ from typing import Any, Dict
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
-from h1st.model.repository.model_repository import ModelRepository
-from h1st.model.modeler import Modelable
+# TODO: Fix this before getting to use, expect to save locally, ideally use native save/ load way
+# from h1st.model.repository.model_repository import ModelRepository
 
-
-class Model(NodeContainable, Trustable, Modelable):
+class Model(NodeContainable, Trustable):
     """
     Base class for H1st Model.
 
@@ -46,6 +45,14 @@ class Model(NodeContainable, Trustable, Modelable):
 
     ## TODO: Need a better naming and the definition of the property
     @property
+    def model_class(self) -> Any:
+        return getattr(self, "__model_class", None)
+
+    @model_class.setter
+    def model_class(self, value):
+        setattr(self, "__model_class", value)
+
+    @property
     def stats(self):
         return getattr(self, "__stats__", None)
 
@@ -63,30 +70,37 @@ class Model(NodeContainable, Trustable, Modelable):
     def metrics(self, value) -> Dict:
         setattr(self, "__metrics__", value)
 
-    def persist(self, version=None) -> str:
-        """
-        Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
+    # def persist(self, version=None) -> str:
+    #     """
+    #     Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
-        `model` property could be single model, list or dict of models
-        Currently, only sklearn and tensorflow-keras are supported.
+    #     `model` property could be single model, list or dict of models
+    #     Currently, only sklearn and tensorflow-keras are supported.
 
-        :param version: model version, leave blank for autogeneration
-        :returns: model version
-        """
-        repo = ModelRepository.get_model_repo(self)
-        return repo.persist(model=self, version=version)
+    #     :param version: model version, leave blank for autogeneration
+    #     :returns: model version
+    #     """
+    #     repo = ModelRepository.get_model_repo(self)
+    #     return repo.persist(model=self, version=version)
 
-    def load(self, version: str = None) -> Any:
-        """
-        Load parameters from the specified `version` from the ModelRepository.
-        Leave version blank to load latest version.
-        """
-        repo = ModelRepository.get_model_repo(self)
-        repo.load(model=self, version=version)
+    # def load(self, version: str = None) -> Any:
+    #     """
+    #     Load parameters from the specified `version` from the ModelRepository.
+    #     Leave version blank to load latest version.
+    #     """
+    #     repo = ModelRepository.get_model_repo(self)
+    #     repo.load(model=self, version=version)
 
         return self
 
-    def process(self, input_data: Dict) -> Dict:
+    def explore_data(self, data: Dict) -> None:
+        """
+        Implement logic to explore data from loaded data
+        :param loaded_data: the data loaded using `load_data`.
+        """
+        pass
+
+    def preprocess(self, input_data: Dict) -> Dict:
         """
         Implement logic to process data
 
@@ -95,3 +109,49 @@ class Model(NodeContainable, Trustable, Modelable):
         """
         # not raise NotImplementedError so the initial model created by integrator will just work
         return input_data
+
+    def train(self, data: Dict[str, Any] = None) -> None:
+        """
+        Implement logic to create the corresponding MLModel, including both training and evaluation.
+        """
+        if self.model_class is None:
+            raise ValueError('Model class not provided')
+
+        if not data:
+            data = self.load_data()
+        
+        base_model = self.train_base_model(data)
+
+        ml_model = self.model_class()
+        ml_model.base_model = base_model
+
+        # Pass stats to the model
+        if self.stats is not None:
+            ml_model.stats = self.stats.copy()
+        # Compute metrics and pass to the model
+        ml_model.metrics = self.evaluate_model(data, ml_model)
+        return ml_model
+
+    def evaluate(self, data: Dict, model: Dict) -> Dict:
+        """
+        Implement logic to evaluate the model using the prepared_data
+        This function will calculate model metrics and store it into self.metrics
+
+        :param prepared_data: the prepared data
+        :param model: the corresponding h1st `Model` to evaluate against.
+        """
+        if type(model) != self.model_class:
+            raise ValueError(
+                "The provided model is not a %s" % self.model_class.__name__
+            )
+
+        return None
+
+    def predict(self, input_data: Dict) -> Dict:
+        """
+        Implement logic to generate prediction from data
+
+        :params input_data is input data for prediction
+        :returns: a dictionary with key `predictions` containing the predictions
+        """
+        return {"predictions": None}
