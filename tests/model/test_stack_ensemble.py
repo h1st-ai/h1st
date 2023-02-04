@@ -12,7 +12,7 @@ from h1st.model.ensemble.stack_ensemble import StackEnsemble
 from h1st.model.ensemble.stack_ensemble_modeler import StackEnsembleModeler
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.ml_model import MLModel
-from h1st.model.rule_based_model import RuleBasedClassificationModel
+from h1st.model.knowledge_model import RuleBasedClassificationModel
 
 class MyMLModel(MLModel):
     def predict(self, input_data: Dict) -> Dict:

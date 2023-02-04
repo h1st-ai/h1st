@@ -11,8 +11,8 @@ from h1st.model.ml_modeler import MLModeler
 from h1st.model.oracle.student import AdaBoostModel, AdaBoostModeler, RandomForestModel, RandomForestModeler
 from h1st.model.oracle.ts_oracle import TimeSeriesOracle
 from h1st.model.oracle.ts_oracle_modeler import TimeseriesOracleModeler
-from h1st.model.rule_based_model import RuleBasedClassificationModel
-from h1st.model.rule_based_modeler import RuleBasedModeler
+from h1st.model.knowledge_model import RuleBasedClassificationModel
+from h1st.model.knowledge_model import RuleBasedModeler
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 

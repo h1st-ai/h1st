@@ -2,13 +2,10 @@ from typing import Dict, Any
 
 import pandas as pd
 
-import __init__
-from h1st.model.rule_based_model import RuleBasedModel
+from h1st.model.knowledge_model import RuleBasedModel
 from h1st.h1flow.h1flow import Graph
-from student import MyStudentModeler, MyStudent
-from ensemble import EnsembleModeler, MyEnsemble
+from ensemble import MyEnsemble
 from oracle import MyOracle
-import __init__
 from h1st.h1flow.h1flow import Graph
 
 
