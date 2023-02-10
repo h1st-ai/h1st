@@ -26,7 +26,10 @@ class MultiModel(PredictiveModel):
             else:
                 base_df = pred
 
-            all_pred.append(pd.Series(pred.squeeze(), name=f'{k}'))
+            if pred.empty:
+                all_pred.append(pd.Series(name=f'{k}'))
+            else:
+                all_pred.append(pd.Series(pred.squeeze(), name=f'{k}'))
 
         concat_df = pd.concat(all_pred, axis=1) if all_pred else pd.DataFrame()
         out = {self.output_key: concat_df}
