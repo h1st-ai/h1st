@@ -1,7 +1,7 @@
 import os
 import tarfile
 import tempfile
-import logging
+from loguru import logger
 import importlib
 from distutils import dir_util
 
@@ -9,14 +9,13 @@ import yaml
 import ulid
 import joblib
 import skfuzzy
-import tensorflow
+# import tensorflow
 import sklearn
 
 from h1st.model.repository.storage.s3 import S3Storage
 from h1st.model.repository.storage.local import LocalStorage
 
 SEP = "::"
-logger = logging.getLogger(__name__)
 
 
 class ModelSerDe:
@@ -55,8 +54,8 @@ class ModelSerDe:
     def _get_model_type(self, model):
         if isinstance(model, sklearn.base.BaseEstimator):
             return "sklearn"
-        if isinstance(model, tensorflow.keras.Model):
-            return "tensorflow-keras"
+        # if isinstance(model, tensorflow.keras.Model):
+        #     return "tensorflow-keras"
         if model is None:
             return "custom"
 
@@ -88,10 +87,10 @@ class ModelSerDe:
         if model_type == "sklearn":
             model_path = "%s.joblib" % model_name
             joblib.dump(model, path + "/%s" % model_path)
-        elif model_type == "tensorflow-keras":
-            model_path = model_name
-            os.makedirs(path + "/%s" % model_path, exist_ok=True)
-            model.save_weights(path + "/%s/weights" % model_path)
+        # elif model_type == "tensorflow-keras":
+        #     model_path = model_name
+        #     os.makedirs(path + "/%s" % model_path, exist_ok=True)
+        #     model.save_weights(path + "/%s/weights" % model_path)
         elif model_type == "custom":
             model_path = model_name  # XXX
         else:
@@ -104,8 +103,8 @@ class ModelSerDe:
             # This is a sklearn model
             model = joblib.load(path + "/%s" % model_path)
             # print(str(type(model)))
-        elif model_type == "tensorflow-keras":
-            model.load_weights(path + "/%s/weights" % model_path).expect_partial()
+        # elif model_type == "tensorflow-keras":
+        #     model.load_weights(path + "/%s/weights" % model_path).expect_partial()
         elif model_type == "custom":
             model = None
 
@@ -217,7 +216,7 @@ class ModelSerDe:
                         "rule_path": self.RULE_ENGINE_PATH,
                     }
                 else:
-                    logging.warn(
+                    logger.warning(
                         (
                             "This rule engine is custom, so may not work well with "
                             "joblib which is the python package that we use to persist rules."
@@ -353,7 +352,7 @@ class ModelSerDe:
             elif type(rules_infos) == dict:
                 if "rules_type" in rules_infos:
                     if not self._is_builtin_class_instance(rules_infos["rules_type"]):
-                        logging.warn(
+                        logger.warning(
                             (
                                 "This rule engine is custom, so may not work well with "
                                 "joblib which is the python package that we use to persist rules."

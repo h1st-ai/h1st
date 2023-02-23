@@ -20,7 +20,7 @@ pyarrow = ">=9.0.0"
 # Machine Learning / Deep Learning
 scikit-fuzzy = ">=0.4.2"
 scikit-learn = ">=1.1.2"
-tensorflow = ">=2.10.0"
+xgboost = ">=1.7.2"
 
 # Trustworthy AI
 graphviz = ">=0.20.1"
@@ -38,6 +38,7 @@ pyyaml = ">=6.0"
 "ruamel.yaml" = ">=0.17.21"
 tqdm = ">= 4.64.1"
 ulid-py = ">= 1.1.0"
+loguru = "0.6.0"
 
 [tool.poetry.dev-dependencies]
 commitizen = ">=2.34.0"
