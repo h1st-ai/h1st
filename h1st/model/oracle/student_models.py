@@ -3,10 +3,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from pandas import DataFrame
-from h1st.model.ml_model import MLModel
+from h1st.model.model import Model
 
 
-class RandomForestModel(MLModel):
+class RandomForestModel(Model):
     name = 'RandomForestModel'
     '''
     Knowledge Generalization Model backed by a RandomForest algorithm
@@ -60,7 +60,7 @@ class RandomForestModel(MLModel):
 
 
 
-class LogisticRegressionModel(MLModel):
+class LogisticRegressionModel(Model):
     name = 'LogisticRegressionModel'
     '''
     Knowledge Generalization Model backed by a Logistic Regression algorithm

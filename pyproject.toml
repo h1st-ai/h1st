@@ -18,7 +18,6 @@ pandas = ">=1.5.0"
 pyarrow = ">=9.0.0"
 
 # Machine Learning / Deep Learning
-scikit-fuzzy = ">=0.4.2"
 scikit-learn = ">=1.1.2"
 xgboost = ">=1.7.2"
 

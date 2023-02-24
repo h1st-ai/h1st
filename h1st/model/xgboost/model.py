@@ -8,11 +8,11 @@ from datetime import datetime
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
-from h1st.model.ml_model import MLModel
+from h1st.model.model import Model
 from h1st.model.xgboost.utils import extratree_rank_features, evaluate_regression_base_model
 
 
-class XGBRegressionModel(MLModel):
+class XGBRegressionModel(Model):
 
     data_key = 'X'
     output_key = 'predictions'
@@ -188,7 +188,7 @@ class XGBRegressionModel(MLModel):
             features=trained_model.stats['selected_features'],
         )
 
-    def train(self, data: Dict[str, Any] = None) -> MLModel:
+    def train(self, data: Dict[str, Any] = None) -> Model:
         """
         Implement logic to create the corresponding MLModel, including both training and evaluation.
         """

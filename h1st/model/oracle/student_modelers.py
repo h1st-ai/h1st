@@ -3,11 +3,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-from h1st.model.ml_modeler import MLModeler
 from h1st.model.oracle.student_models import RandomForestModel, LogisticRegressionModel
 
 
-class RandomForestModeler(MLModeler):
+class RandomForestModeler:
     '''
     Knowledge Generalization Modeler backed by a RandomForest algorithm.
     '''
@@ -30,7 +29,7 @@ class RandomForestModeler(MLModeler):
         return model
 
 
-class LogisticRegressionModeler(MLModeler):
+class LogisticRegressionModeler:
     '''
     Knowledge Generalization Modeler backed by a Logistic Regression algorithm
     '''

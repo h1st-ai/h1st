@@ -5,7 +5,6 @@ from loguru import logger
 from xgboost import XGBRegressor
 from sklearn.preprocessing import StandardScaler
 
-from h1st.model.ml_modeler import MLModeler
 from h1st.model.xgboost.model import XGBRegressionModel
 from h1st.model.xgboost.utils import (
     xgb_grid_search,
@@ -14,7 +13,7 @@ from h1st.model.xgboost.utils import (
 )
 
 
-class XGBRegressionModeler(MLModeler):
+class XGBRegressionModeler:
     model_class = XGBRegressionModel
 
     def __init__(
