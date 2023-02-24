@@ -9,7 +9,6 @@ import yaml
 import ulid
 import joblib
 import skfuzzy
-# import tensorflow
 import sklearn
 
 from h1st.model.repository.storage.s3 import S3Storage
@@ -54,8 +53,7 @@ class ModelSerDe:
     def _get_model_type(self, model):
         if isinstance(model, sklearn.base.BaseEstimator):
             return "sklearn"
-        # if isinstance(model, tensorflow.keras.Model):
-        #     return "tensorflow-keras"
+            
         if model is None:
             return "custom"
 
@@ -87,10 +85,6 @@ class ModelSerDe:
         if model_type == "sklearn":
             model_path = "%s.joblib" % model_name
             joblib.dump(model, path + "/%s" % model_path)
-        # elif model_type == "tensorflow-keras":
-        #     model_path = model_name
-        #     os.makedirs(path + "/%s" % model_path, exist_ok=True)
-        #     model.save_weights(path + "/%s/weights" % model_path)
         elif model_type == "custom":
             model_path = model_name  # XXX
         else:
@@ -103,8 +97,6 @@ class ModelSerDe:
             # This is a sklearn model
             model = joblib.load(path + "/%s" % model_path)
             # print(str(type(model)))
-        # elif model_type == "tensorflow-keras":
-        #     model.load_weights(path + "/%s/weights" % model_path).expect_partial()
         elif model_type == "custom":
             model = None
 

@@ -47,7 +47,7 @@ class Model(NodeContainable, Trustable):
         Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
         `model` property could be single model, list or dict of models
-        Currently, only sklearn and tensorflow-keras are supported.
+        Currently, only sklearn are supported, but you can extend this method to support any framework.
 
         :param version: model version, leave blank for autogeneration
         :returns: model version

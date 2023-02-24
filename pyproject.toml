@@ -19,7 +19,6 @@ pyarrow = ">=9.0.0"
 
 # Machine Learning / Deep Learning
 scikit-learn = ">=1.1.2"
-xgboost = ">=1.7.2"
 
 # Trustworthy AI
 graphviz = ">=0.20.1"
