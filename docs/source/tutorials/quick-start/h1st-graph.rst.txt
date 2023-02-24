@@ -18,7 +18,7 @@ number. The Action HelloPrinter is only passed the even-number data where the
 model returned True. 
 
 .. code-block:: python
-
+  import h1st as h1
   from h1st.model.model import Model
   from h1st.h1flow.h1step import Action
 
@@ -26,7 +26,7 @@ model returned True.
       """
       Simple rule-based model that "predicts" if a given value is an even number
       """
-      def process(self, input_data: dict) -> dict:
+      def predict(self, input_data: dict) -> dict:
           predictions = [{'prediction': x % 2 == 0, 'value': x} for x in input_data["values"]]
           return {"predictions": predictions}
 
@@ -51,7 +51,7 @@ The H1st graph itself is created by adding nodes incrementally.
 
   # In the first Node, the data is passed to the RuleBasedModel's "process"
   # method and a Decision is rendered from model output.
-  g.add(h1.Decision(RuleBasedModel(),
+  g.add(Decision(RuleBasedModel(),
                     result_field="predictions",
                     decision_field="prediction"))
 
