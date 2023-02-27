@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 
 from loguru import logger
+from typing import Dict, Any
 from xgboost import XGBRegressor
 from sklearn.preprocessing import StandardScaler
 
@@ -185,3 +186,28 @@ class XGBRegressionModeler:
             trained_model.base_model,
             features=trained_model.stats['selected_features'],
         )
+
+    def train_model(self, data: Dict[str, Any] = None):
+        """
+        Implement logic to create the corresponding MLModel, including both training and evaluation.
+        """
+        if self.model_class is None:
+            raise ValueError('Model class not provided')
+
+        if not data:
+            data = self.load_data()
+        
+        base_model = self.train_base_model(data)
+
+        ml_model = self.model_class()
+        ml_model.base_model = base_model
+
+        # Pass stats to the model
+        if self.stats is not None:
+            ml_model.stats = self.stats.copy()
+        # Compute metrics and pass to the model
+        ml_model.metrics = self.evaluate_model(data, ml_model)
+        return ml_model
+
+    def build_model(self, data: Dict[str, Any] = None):
+        return self.train_model(data)
