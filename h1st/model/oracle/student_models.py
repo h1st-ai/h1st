@@ -8,12 +8,14 @@ from h1st.model.model import Model
 
 class RandomForestModel(Model):
     name = 'RandomForestModel'
+    input_key = 'X'
+    output_key = 'predictions'
     '''
     Knowledge Generalization Model backed by a RandomForest algorithm
     '''
 
     def __init__(self, result_key=None):
-        self.stats = {}
+        super().__init__()
 
     def predict(self, input_data: dict) -> dict:
         '''
@@ -62,12 +64,14 @@ class RandomForestModel(Model):
 
 class LogisticRegressionModel(Model):
     name = 'LogisticRegressionModel'
+    input_key = 'X'
+    output_key = 'predictions'
     '''
     Knowledge Generalization Model backed by a Logistic Regression algorithm
     '''
 
     def __init__(self, model_class=None, result_key=None):
-        self.stats = {}
+        super().__init__()
 
     def predict(self, input_data: dict) -> dict:
         '''

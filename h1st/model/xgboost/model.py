@@ -14,7 +14,7 @@ from h1st.model.xgboost.utils import extratree_rank_features, evaluate_regressio
 
 class XGBRegressionModel(Model):
 
-    data_key = 'X'
+    input_key = 'X'
     output_key = 'predictions'
     name = 'XGBRegressionModel'
 
@@ -39,7 +39,7 @@ class XGBRegressionModel(Model):
         }
 
     def predict(self, input_data: dict) -> dict:
-        X = input_data[self.data_key]
+        X = input_data[self.input_key]
         output_col = self.stats['result_key']
         results = {}
         # Saving prediction time
