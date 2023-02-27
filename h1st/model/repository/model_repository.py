@@ -109,8 +109,7 @@ class ModelSerDe:
         :param model: H1ST Model
         :param path: path to save models to
         """
-        from h1st.model.ml_model import MLModel
-        from h1st.model.knowledge_model import RuleBasedModel
+        from h1st.model.model import Model
 
         meta_info = {}
 
@@ -124,7 +123,7 @@ class ModelSerDe:
             meta_info["stats"] = self.STATS_PATH
             self._serialize_dict(model.stats, path, self.STATS_PATH)
 
-        if isinstance(model, MLModel):
+        if isinstance(model, Model):
             if model.base_model:
                 logger.info("Saving model property...")
                 if type(model.base_model) == list:
@@ -157,73 +156,73 @@ class ModelSerDe:
             else:
                 logger.error(".base_model was not assigned.")
 
-        elif isinstance(model, RuleBasedModel):
+        # elif isinstance(model, RuleBasedModel):
 
-            if model.rule_details is not None:
-                logger.info("Saving rule_details property...")
-                meta_info["rule_details"] = self.RULE_DETAILS_PATH
-                self._serialize_dict(model.rule_details, path, self.RULE_DETAILS_PATH)
+        #     if model.rule_details is not None:
+        #         logger.info("Saving rule_details property...")
+        #         meta_info["rule_details"] = self.RULE_DETAILS_PATH
+        #         self._serialize_dict(model.rule_details, path, self.RULE_DETAILS_PATH)
 
-            if model.rule_engine is not None:
-                logger.info("Saving rule_engine property...")
-                if type(model.rule_engine) in self._get_supported_rule_engines():
-                    rule_engine_type, rules_path = self._serialize_rule_engine(
-                        model.rule_engine, path
-                    )
-                    meta_info["rule_engine"] = [
-                        {"rules_type": rule_engine_type, "rules_path": rules_path}
-                    ]
-                elif (
-                    type(model.rule_engine) == list
-                    and type(model.rule_engine[0]) in self._get_supported_rule_engines()
-                ):
-                    meta_info["rule_engine"] = []
-                    for i, rules in enumerate(model.rule_engine):
-                        rule_engine_type, rules_path = self._serialize_rule_engine(
-                            rules, path, f"rules_{i}"
-                        )
-                        meta_info["rule_engine"].append(
-                            {"rules_type": rule_engine_type, "rules_path": rules_path}
-                        )
-                elif (
-                    type(model.rule_engine) == dict
-                    and type(list(model.rule_engine.values())[0])
-                    in self._get_supported_rule_engines()
-                ):
-                    meta_info["rule_engine"] = {}
-                    for key, rules in model.rule_engine.items():
-                        rule_engine_type, rules_path = self._serialize_rule_engine(
-                            rules, path, f"rules_{i}"
-                        )
-                        meta_info["rule_engine"][key] = {
-                            "rules_type": rule_engine_type,
-                            "rules_path": rules_path,
-                        }
-                elif self._is_builtin_class_instance(model.rule_engine):
-                    self._serialize_basic_obj(
-                        model.rule_engine, path, self.RULE_ENGINE_PATH
-                    )
-                    meta_info["rule_engine"] = {
-                        "rules_type": type(model.rule_engine),
-                        "rule_path": self.RULE_ENGINE_PATH,
-                    }
-                else:
-                    logger.warning(
-                        (
-                            "This rule engine is custom, so may not work well with "
-                            "joblib which is the python package that we use to persist rules."
-                        )
-                    )
-                    self._serialize_basic_obj(
-                        model.rule_engine, path, self.RULE_ENGINE_PATH
-                    )
-                    meta_info["rule_engine"] = {
-                        "rules_type": type(model.rule_engine),
-                        "rule_path": self.RULE_ENGINE_PATH,
-                    }
+        #     if model.rule_engine is not None:
+        #         logger.info("Saving rule_engine property...")
+        #         if type(model.rule_engine) in self._get_supported_rule_engines():
+        #             rule_engine_type, rules_path = self._serialize_rule_engine(
+        #                 model.rule_engine, path
+        #             )
+        #             meta_info["rule_engine"] = [
+        #                 {"rules_type": rule_engine_type, "rules_path": rules_path}
+        #             ]
+        #         elif (
+        #             type(model.rule_engine) == list
+        #             and type(model.rule_engine[0]) in self._get_supported_rule_engines()
+        #         ):
+        #             meta_info["rule_engine"] = []
+        #             for i, rules in enumerate(model.rule_engine):
+        #                 rule_engine_type, rules_path = self._serialize_rule_engine(
+        #                     rules, path, f"rules_{i}"
+        #                 )
+        #                 meta_info["rule_engine"].append(
+        #                     {"rules_type": rule_engine_type, "rules_path": rules_path}
+        #                 )
+        #         elif (
+        #             type(model.rule_engine) == dict
+        #             and type(list(model.rule_engine.values())[0])
+        #             in self._get_supported_rule_engines()
+        #         ):
+        #             meta_info["rule_engine"] = {}
+        #             for key, rules in model.rule_engine.items():
+        #                 rule_engine_type, rules_path = self._serialize_rule_engine(
+        #                     rules, path, f"rules_{i}"
+        #                 )
+        #                 meta_info["rule_engine"][key] = {
+        #                     "rules_type": rule_engine_type,
+        #                     "rules_path": rules_path,
+        #                 }
+        #         elif self._is_builtin_class_instance(model.rule_engine):
+        #             self._serialize_basic_obj(
+        #                 model.rule_engine, path, self.RULE_ENGINE_PATH
+        #             )
+        #             meta_info["rule_engine"] = {
+        #                 "rules_type": type(model.rule_engine),
+        #                 "rule_path": self.RULE_ENGINE_PATH,
+        #             }
+        #         else:
+        #             logger.warning(
+        #                 (
+        #                     "This rule engine is custom, so may not work well with "
+        #                     "joblib which is the python package that we use to persist rules."
+        #                 )
+        #             )
+        #             self._serialize_basic_obj(
+        #                 model.rule_engine, path, self.RULE_ENGINE_PATH
+        #             )
+        #             meta_info["rule_engine"] = {
+        #                 "rules_type": type(model.rule_engine),
+        #                 "rule_path": self.RULE_ENGINE_PATH,
+        #             }
 
-            else:
-                logger.warning(".rule_engine was not assigned.")
+        #     else:
+        #         logger.warning(".rule_engine was not assigned.")
 
         elif hasattr(model, "base_model"):
             logger.warning(
