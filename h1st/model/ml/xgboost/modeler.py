@@ -6,8 +6,8 @@ from typing import Dict, Any
 from xgboost import XGBRegressor
 from sklearn.preprocessing import StandardScaler
 
-from h1st.model.xgboost.model import XGBRegressionModel
-from h1st.model.xgboost.utils import (
+from h1st.model.ml.xgboost.model import XGBRegressionModel
+from h1st.model.ml.xgboost.utils import (
     xgb_grid_search,
     extratree_rank_features,
     evaluate_regression_base_model,

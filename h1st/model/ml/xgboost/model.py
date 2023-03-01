@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
 from h1st.model.model import Model
-from h1st.model.xgboost.utils import extratree_rank_features, evaluate_regression_base_model
+from h1st.model.ml.xgboost.utils import extratree_rank_features, evaluate_regression_base_model
 
 
 class XGBRegressionModel(Model):

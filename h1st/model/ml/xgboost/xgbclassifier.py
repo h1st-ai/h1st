@@ -1,4 +1,4 @@
-from h1st.model.xgboost.model import XGBRegressionModel
+from h1st.model.ml.xgboost.model import XGBRegressionModel
 
 class XGBClassifierModel(XGBRegressionModel):
     name = 'XGBClassifierModel'
