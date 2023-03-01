@@ -42,12 +42,18 @@ class Model(NodeContainable, Trustable):
            my_model_2 = MyModel()
            my_model_2.load('1st_version')
     """
+    def __init__(self):
+        super().__init__()
+        self.stats = {}
+        self.metrics = {}
+        self.base_model = None
+
     def persist(self, version=None) -> str:
         """
         Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
         `model` property could be single model, list or dict of models
-        Currently, only sklearn are supported, but you can extend this method to support any framework.
+        Currently, only sklearn and tensorflow-keras are supported.
 
         :param version: model version, leave blank for autogeneration
         :returns: model version
@@ -76,6 +82,7 @@ class Model(NodeContainable, Trustable):
             data = self.load_data()
         
         base_model = self.train_base_model(data)
+        self.base_model = base_model
 
         ml_model = self.model_class()
         ml_model.base_model = base_model
