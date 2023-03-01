@@ -1,4 +1,5 @@
-from h1st.model.ml.xgboost.model import XGBRegressionModel
+from h1st.model.ml.xgboost.regression import XGBRegressionModel, XGBRegressionModeler
+
 
 class XGBClassifierModel(XGBRegressionModel):
     name = 'XGBClassifierModel'
@@ -14,3 +15,10 @@ class XGBClassifierModel(XGBRegressionModel):
     def set_threshold(self, threshold: float):
         self.stats['threshold'] = threshold
 
+
+class XGBClassifierModeler(XGBRegressionModeler):
+    model_class = XGBClassifierModel
+
+    def __init__(self, threshold=0.5, **kwargs):
+        super().__init__(**kwargs)
+        self.stats['threshold'] = float(threshold)
