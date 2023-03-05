@@ -23,7 +23,7 @@ class EitherFaultPredEnsemble:
         return teacher_preds | student_preds
 
 
-class UnanimousFaultPredEnsemble(Ensemble):
+class UnanimousFaultPredEnsemble:
     # pylint: disable=too-many-ancestors
     """Unanimous vote between K ("Teacher") & K-Gen ("Student") models."""
 
