@@ -3,11 +3,10 @@ from typing import Any, Dict
 from h1st.h1flow.h1step_containable import NodeContainable
 from h1st.trust.trustable import Trustable
 
+# TODO: Fix this before getting to use, expect to save locally, ideally use native save/ load way
 from h1st.model.repository.model_repository import ModelRepository
-from h1st.model.modeler import Modelable
 
-
-class Model(NodeContainable, Trustable, Modelable):
+class Model(NodeContainable, Trustable):
     """
     Base class for H1st Model.
 
@@ -43,25 +42,11 @@ class Model(NodeContainable, Trustable, Modelable):
            my_model_2 = MyModel()
            my_model_2.load('1st_version')
     """
-
-    ## TODO: Need a better naming and the definition of the property
-    @property
-    def stats(self):
-        return getattr(self, "__stats__", None)
-
-    @stats.setter
-    def stats(self, value) -> Dict:
-        setattr(self, "__stats__", value)
-
-    @property
-    def metrics(self):
-        if not hasattr(self, "__metrics__"):
-            setattr(self, "__metrics__", {})
-        return getattr(self, "__metrics__")
-
-    @metrics.setter
-    def metrics(self, value) -> Dict:
-        setattr(self, "__metrics__", value)
+    def __init__(self):
+        super().__init__()
+        self.stats = {}
+        self.metrics = {}
+        self.base_model = None
 
     def persist(self, version=None) -> str:
         """
@@ -86,12 +71,48 @@ class Model(NodeContainable, Trustable, Modelable):
 
         return self
 
-    def process(self, input_data: Dict) -> Dict:
+    def train(self, data: Dict[str, Any] = None) -> None:
         """
-        Implement logic to process data
+        Implement logic to create the corresponding MLModel, including both training and evaluation.
+        """
+        if self.model_class is None:
+            raise ValueError('Model class not provided')
 
-        :params input_data: data to process
-        :returns: processing result as a dictionary
+        if not data:
+            data = self.load_data()
+        
+        base_model = self.train_base_model(data)
+        self.base_model = base_model
+
+        ml_model = self.model_class()
+        ml_model.base_model = base_model
+
+        if self.stats is not None:
+            ml_model.stats = self.stats.copy()
+        
+        ml_model.metrics = self.evaluate_model(data, ml_model)
+        return ml_model
+
+    def evaluate(self, data: Dict, model: Dict) -> Dict:
         """
-        # not raise NotImplementedError so the initial model created by integrator will just work
-        return input_data
+        Implement logic to evaluate the model using the prepared_data
+        This function will calculate model metrics and store it into self.metrics
+
+        :param prepared_data: the prepared data
+        :param model: the corresponding h1st `Model` to evaluate against.
+        """
+        if type(model) != self.model_class:
+            raise ValueError(
+                "The provided model is not a %s" % self.model_class.__name__
+            )
+
+        return {'data': data}
+
+    def predict(self, input_data: Dict) -> Dict:
+        """
+        Implement logic to generate prediction from data
+
+        :params input_data is input data for prediction
+        :returns: a dictionary with key `predictions` containing the predictions
+        """
+        return {"predictions": input_data}

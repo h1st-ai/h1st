@@ -1,6 +1,5 @@
 import tempfile
 
-import tensorflow as tf
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
@@ -9,7 +8,7 @@ from h1st.model.ml_model import MLModel
 from h1st.model.ml_modeler import MLModeler
 from h1st.model.model import Model
 from h1st.model.repository.model_repository import ModelSerDe
-from h1st.model.rule_based_model import RuleBasedModel
+from h1st.model.knowledge_model import RuleBasedModel
 
 
 class MySkLearnEstimator(BaseEstimator, ClassifierMixin):
@@ -59,9 +58,6 @@ class TestModelSerDe:
             if model_type == 'sklearn':
                 import joblib
                 assert model_type == model_serde._get_model_type(joblib.load('%s/%s' % (path, model_path)))
-            elif model_type == 'tensorflow-keras':
-                # Currently, we save/load weights => nothing do assert here 
-                pass
 
             model_serde.deserialize(model_2, path)
             
@@ -139,61 +135,6 @@ class TestModelSerDe:
             pass
 
         self.assert_models(MyModeler, MyModel, 'sklearn', 'model_Iris.joblib', 'dict')
-
-    def test_serialize_tensorflow_model(self):
-        class MyModeler(MLModeler):
-            def load_data(self) -> dict:
-                data = load_iris()
-                return {'X': data.data, 'y': data.target}
-
-            def train_base_model(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
-                model = self.model_class.get_model_arch()
-                model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                model.fit(X, y, verbose=2, batch_size=5, epochs=20)
-                return model
-        
-        class MyModel(MLModel):
-            def __init__(self):
-                self.base_model = self.get_model_arch()
-
-            @staticmethod
-            def get_model_arch():
-                model = tf.keras.Sequential([
-                                                tf.keras.layers.Dense(8, input_dim=4, activation='relu'),
-                                                tf.keras.layers.Dense(1, activation='softmax')
-                                            ])
-                return model
-
-        self.assert_models(MyModeler, MyModel, 'tensorflow-keras', 'model')
-
-    def test_serialize_dict_tensorflow_model(self):
-        class MyModeler(MLModeler):
-            def load_data(self) -> dict:
-                data = load_iris()
-                return {'X': data.data, 'y': data.target}
-
-            def train_base_model(self, prepared_data):
-                X, y = prepared_data['X'], prepared_data['y']
-                model = self.model_class.get_model_arch()['Iris']
-                model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                model.fit(X, y, verbose=2, batch_size=5, epochs=20)
-                return {'Iris': model}
-        
-        class MyModel(MLModel):
-            def __init__(self):
-                self.base_model = self.get_model_arch()
-
-            @staticmethod
-            def get_model_arch():
-                model = tf.keras.Sequential([
-                                                tf.keras.layers.Dense(8, input_dim=4, activation='relu'),
-                                                tf.keras.layers.Dense(1, activation='softmax')
-                                            ])
-                return {'Iris': model}
-
-        self.assert_models(MyModeler, MyModel, 'tensorflow-keras', 'model_Iris', 'dict')
-
 
 class TestModelStatsSerDe:
     def test_serialize_dict(self):
