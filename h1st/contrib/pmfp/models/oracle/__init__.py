@@ -7,7 +7,6 @@ from typing import List, Sequence, Tuple   # Py3.9+: use built-ins
 
 from pandas import DataFrame, Series
 
-from h1st.model.modeler import Modeler
 from h1st.model.oracle.ensemble import Ensemble
 from h1st.model.oracle.oracle import Oracle
 
@@ -20,7 +19,7 @@ from .student.timeseries_dl import (TimeSeriesDLFaultPredStudentModeler,
 from .ensemble.basic import EitherFaultPredEnsemble
 
 
-class FaultPredOracleModeler(Modeler):
+class FaultPredOracleModeler:
     """Fault Prediction Oracle Modeler."""
 
     def __init__(self, teacher: BaseFaultPredTeacher,
