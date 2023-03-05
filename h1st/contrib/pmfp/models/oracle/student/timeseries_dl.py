@@ -19,8 +19,6 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.neural_network import MLPClassifier
 from ruamel import yaml
 
-from h1st.model.oracle.student import StudentModeler, Student
-
 from h1st.utils.data_proc import (PandasFlatteningSubsampler,
                                   PandasMLPreprocessor,
                                   ParquetDataset)
@@ -42,7 +40,7 @@ _ON_S3: bool = (isinstance(H1ST_MODELS_DIR_PATH, str) and
                 H1ST_MODELS_DIR_PATH.startswith('s3://'))
 
 
-class TimeSeriesDLFaultPredStudentModeler(StudentModeler):
+class TimeSeriesDLFaultPredStudentModeler:
     """Time-Series-DL-based Fault Prediction k-gen ("student") modeler."""
 
     def __init__(self, teacher: BaseFaultPredTeacher,
@@ -347,7 +345,7 @@ class TimeSeriesDLFaultPredStudentModeler(StudentModeler):
         return student_model
 
 
-class TimeSeriesDLFaultPredStudent(BaseFaultPredictor, Student):
+class TimeSeriesDLFaultPredStudent(BaseFaultPredictor):
     # pylint: disable=too-many-ancestors
     """Time-Series-DL-based knowledge generalizer ("student") model class."""
 
