@@ -49,7 +49,7 @@ from h1st.utils.path import add_cwd_to_py_path
                 is_eager=False,
                 envvar=None,
                 # shell_complete=None,
-)
+                )
 @click.argument('model_version',
                 type=str,
                 required=True,
@@ -62,7 +62,7 @@ from h1st.utils.path import add_cwd_to_py_path
                 is_eager=False,
                 envvar=None,
                 # shell_complete=None,
-)
+                )
 @click.argument('date',
                 type=str,
                 required=True,
@@ -75,7 +75,7 @@ from h1st.utils.path import add_cwd_to_py_path
                 is_eager=False,
                 envvar=None,
                 # shell_complete=None,
-)
+                )
 @click.option('--to-date',
               show_default=True,
               prompt=False,
@@ -103,7 +103,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 @click.option('--debug',
               show_default=True,
               prompt=False,
@@ -131,7 +131,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 def predict_faults(
         model_class_name: str, model_version: str,
         date: str, to_date: Optional[str] = None,

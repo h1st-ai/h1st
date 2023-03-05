@@ -53,7 +53,7 @@ from h1st.utils.path import add_cwd_to_py_path
                 is_eager=False,
                 envvar=None,
                 # shell_complete=None,
-)
+                )
 @click.argument('teacher_version',
                 type=str,
                 required=True,
@@ -66,7 +66,7 @@ from h1st.utils.path import add_cwd_to_py_path
                 is_eager=False,
                 envvar=None,
                 # shell_complete=None,
-)
+                )
 @click.option('--input-cat-cols',
               show_default=True,
               prompt=False,
@@ -94,7 +94,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 @click.option('--input-num-cols',
               show_default=True,
               prompt=False,
@@ -122,7 +122,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 @click.option('--input-subsampling-factor',
               show_default=True,
               prompt=False,
@@ -150,7 +150,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 @click.option('--input-n-rows-per-day',
               show_default=True,
               prompt=False,
@@ -178,7 +178,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 @click.option('--train-date-range',
               show_default=False,
               prompt=False,
@@ -206,7 +206,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 @click.option('--tune-date-range',
               show_default=False,
               prompt=False,
@@ -234,7 +234,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 @click.option('--debug',
               show_default=True,
               prompt=False,
@@ -262,7 +262,7 @@ from h1st.utils.path import add_cwd_to_py_path
               is_eager=False,
               envvar=None,
               # shell_complete=None,
-)
+              )
 def oraclize_fault_pred_teacher(teacher_class_name: str, teacher_version: str,
                                 input_cat_cols: str, input_num_cols: str,
                                 input_subsampling_factor: int,
