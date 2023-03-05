@@ -7,7 +7,6 @@ from typing import List, Sequence, Tuple   # Py3.9+: use built-ins
 
 from pandas import DataFrame, Series
 
-from h1st.model.oracle.ensemble import Ensemble
 from h1st.model.oracle.oracle import Oracle
 
 from h1st.utils.data_proc import ParquetDataset
@@ -67,7 +66,7 @@ class FaultPredOracle(BaseFaultPredictor, Oracle):
     def __init__(self,
                  teacher: BaseFaultPredTeacher,
                  student: TimeSeriesDLFaultPredStudent,
-                 ensemble: Ensemble = EitherFaultPredEnsemble()):
+                 ensemble: EitherFaultPredEnsemble = EitherFaultPredEnsemble()):  # noqa: E501
         """Init Fault Prediction Oracle."""
         super().__init__(general_type=teacher.general_type,
                          unique_type_group=teacher.unique_type_group,
@@ -75,7 +74,7 @@ class FaultPredOracle(BaseFaultPredictor, Oracle):
 
         self.teacher: BaseFaultPredTeacher = teacher
         self.student: TimeSeriesDLFaultPredStudent = student
-        self.ensemble: Ensemble = ensemble
+        self.ensemble: EitherFaultPredEnsemble = ensemble
 
     @classmethod
     def load(cls, version: str) -> FaultPredOracle:

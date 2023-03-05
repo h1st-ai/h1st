@@ -3,13 +3,11 @@
 
 from pandas import Series
 
-from h1st.model.oracle.ensemble import Ensemble
-
 
 __all__ = 'EitherFaultPredEnsemble', 'UnanimousFaultPredEnsemble'
 
 
-class EitherFaultPredEnsemble(Ensemble):
+class EitherFaultPredEnsemble:
     # pylint: disable=too-many-ancestors
     """Either K ("Teacher") or K-Gen ("Student") model predicts fault."""
 
