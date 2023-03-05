@@ -7,8 +7,6 @@ from typing import List, Sequence, Tuple   # Py3.9+: use built-ins
 
 from pandas import DataFrame, Series
 
-from h1st.model.oracle.oracle import Oracle
-
 from h1st.utils.data_proc import ParquetDataset
 
 from h1st.contrib.pmfp.models.base import BaseFaultPredictor
@@ -59,7 +57,7 @@ class FaultPredOracleModeler:
             tuning_date_range=self.student_tuning_date_range)
 
 
-class FaultPredOracle(BaseFaultPredictor, Oracle):
+class FaultPredOracle(BaseFaultPredictor):
     # pylint: disable=abstract-method,too-many-ancestors
     """Fault Prediction Oracle."""
 
