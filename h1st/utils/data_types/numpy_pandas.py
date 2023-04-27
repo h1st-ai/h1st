@@ -7,7 +7,6 @@ import numpy
 
 # pylint: disable=unused-import
 from pandas.api.types import (   # noqa: F401
-    is_extension_type,
     is_bool_dtype,
     is_categorical_dtype,
     is_complex_dtype,
