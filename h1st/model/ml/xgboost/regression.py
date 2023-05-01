@@ -224,6 +224,47 @@ class XGBRegressionModeler:
             'debug': debug,
         }
 
+    def __get_model_build_params(self, model: XGBRegressionModel) -> dict:
+        return {
+            'max_depth': model.max_depth,
+            'max_leaves': model.max_leaves,
+            'max_bin': model.max_bin,
+            'grow_policy': model.grow_policy,
+            'learning_rate': model.learning_rate,
+            'n_estimators': model.n_estimators,
+            'verbosity': model.verbosity,
+            'booster': model.booster,
+            'tree_method': model.tree_method,
+            'n_jobs': model.n_jobs,
+            'gamma': model.gamma,
+            'min_child_weight': model.min_child_weight,
+            'max_delta_step': model.max_delta_step,
+            'subsample': model.subsample,
+            'sampling_method': model.sampling_method,
+            'colsample_bytree': model.colsample_bytree,
+            'colsample_bylevel': model.colsample_bylevel,
+            'colsample_bynode': model.colsample_bynode,
+            'reg_alpha': model.reg_alpha,
+            'reg_lambda': model.reg_lambda,
+            'scale_pos_weight': model.scale_pos_weight,
+            'base_score': model.base_score,
+            'random_state': model.random_state,
+            'missing': model.missing,
+            'num_parallel_tree': model.num_parallel_tree,
+            'monotone_constraints': model.monotone_constraints,
+            'interaction_constraints': model.interaction_constraints,
+            'importance_type': model.importance_type,
+            'gpu_id': model.gpu_id,
+            'validate_parameters': model.validate_parameters,
+            'predictor': model.predictor,
+            'enable_categorical': model.enable_categorical,
+            'feature_types': model.feature_types,
+            'max_cat_to_onehot': model.max_cat_to_onehot,
+            'max_cat_threshold': model.max_cat_threshold,
+            'eval_metric': model.eval_metric,
+            'early_stopping_rounds': model.early_stopping_rounds
+        }
+
     def train_base_model(self, input_data: dict) -> XGBRegressor:
         """
         This function can be used to build and train XGBRegression model.
@@ -329,6 +370,7 @@ class XGBRegressionModeler:
             }
         )
         self.stats['input_features'] = features
+        self.stats['build_params'] = self.__get_model_build_params(model)
         return model
 
     def prepare_data(self, prepared_data: dict):
