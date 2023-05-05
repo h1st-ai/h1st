@@ -2,7 +2,7 @@ from h1st.model.ml.xgboost.regression import XGBRegressionModel, XGBRegressionMo
 
 
 class XGBClassifierModel(XGBRegressionModel):
-    name = 'XGBClassifierModel'
+    name = 'XGBClassifier'
 
     def predict(self, input_data: dict) -> dict:
         pred = super().predict(input_data)[self.output_key]
