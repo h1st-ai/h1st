@@ -16,7 +16,7 @@ class XGBRegressionModel(Model):
 
     input_key = 'X'
     output_key = 'predictions'
-    name = 'XGBRegressionModel'
+    name = 'XGBRegression'
 
     def __init__(
         self,
