@@ -34,7 +34,7 @@ from pyarrow.lib import (   # noqa: F401
     union, UnionType,
     dictionary, DictionaryType, Type_DICTIONARY,
     Type_MAP,
-    is_boolean_value, is_float_value, is_integer_value, is_named_tuple,
+    is_boolean_value, is_float_value, is_integer_value,
 )
 
 from pyarrow.types import (   # noqa: F401
