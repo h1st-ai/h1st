@@ -50,7 +50,7 @@ commitizen = ">= 3.2.2"
 pre-commit = ">= 3.3.1"
 pylint = ">= 2.17.4"
 pytest = ">= 7.3.1"
-sphinx = ">= 7.0.0"
+sphinx = ">= 7.0.1"
 sphinx-rtd-theme = ">= 1.2.0"
 
 
@@ -60,7 +60,7 @@ h1st = 'h1st.utils.tools:h1st_cli'
 
 [build-system]
 requires = [
-  "poetry-core >= 1.5.2",
+  "poetry-core >= 1.6.0",
 ]
 build-backend = "poetry.core.masonry.api"
 
