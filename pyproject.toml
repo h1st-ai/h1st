@@ -11,11 +11,11 @@ include = ["h1st/*"]
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">= 3.11"
 
 # Data Processing
 numpy = ">= 1.23"  # let higher dependencies figure
-pandas = ">= 2.0.1"
+pandas = ">= 2.0.2"
 pyarrow = ">= 12.0.0"
 pyspark = ">= 3.4.0"
 
@@ -47,11 +47,11 @@ ulid-py = ">= 1.1.0"
 
 [tool.poetry.dev-dependencies]
 commitizen = ">= 3.2.2"
-pre-commit = ">= 3.3.1"
+pre-commit = ">= 3.3.2"
 pylint = ">= 2.17.4"
 pytest = ">= 7.3.1"
 sphinx = ">= 7.0.1"
-sphinx-rtd-theme = ">= 1.2.0"
+sphinx-rtd-theme = ">= 1.2.1"
 
 
 [tool.poetry.scripts]
@@ -60,7 +60,7 @@ h1st = 'h1st.utils.tools:h1st_cli'
 
 [build-system]
 requires = [
-  "poetry-core >= 1.6.0",
+  "poetry-core >= 1.6.1",
 ]
 build-backend = "poetry.core.masonry.api"
 
