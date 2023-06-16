@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "h1st"
+name = "h1st-contrib"
 version = "2.1.2.dev0"
 description = "Human-First AI (H1st)"
 authors = ["Aitomatic, Inc. <engineering@aitomatic.com>"]
@@ -7,6 +7,9 @@ license = "Apache-2.0"
 readme = "README.md"
 homepage = "https://h1st.ai"
 repository = "https://github.com/h1st-ai/h1st"
+packages = [
+  { include = "h1st" },
+]
 include = ["h1st/*"]
 
 
