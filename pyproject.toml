@@ -8,9 +8,11 @@ readme = "README.md"
 homepage = "https://h1st.ai"
 repository = "https://github.com/h1st-ai/h1st"
 packages = [
-  { include = "h1st" },
+  {include = "h1st"},
 ]
-include = ["h1st/*"]
+include = [
+  "h1st/*",
+]
 
 
 [tool.poetry.dependencies]
