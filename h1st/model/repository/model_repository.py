@@ -526,15 +526,14 @@ class ModelRepository:
 
         return key
 
-    @classmethod
-    def get_model_repo(cls, ref=None):
+    def get_model_repo(self, ref=None):
         """
         Retrieve the default model repository for the project
 
         :param ref: target model
         :returns: Model repository instance
         """
-        if not hasattr(cls, "MODEL_REPO"):  # global ModelRepository.MODEL_REPO
+        if not hasattr(self, "MODEL_REPO"):  # ModelRepository.MODEL_REPO
             repo_path = None
             if ref is not None:
                 # root module
@@ -568,9 +567,9 @@ class ModelRepository:
             if not repo_path:
                 raise RuntimeError("Please set MODEL_REPO_PATH in config.py")
 
-            setattr(cls, "MODEL_REPO", ModelRepository(storage=repo_path))
+            self.MODEL_REPO = ModelRepository(storage=repo_path)
 
-        return getattr(cls, "MODEL_REPO")
+        return self.MODEL_REPO
 
 
 def _tar_create(target, source):
