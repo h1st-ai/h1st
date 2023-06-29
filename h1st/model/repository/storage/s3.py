@@ -2,6 +2,7 @@ from typing import Any, NoReturn
 import cloudpickle
 import s3fs
 from h1st.model.repository.storage.base import Storage
+from loguru import logger
 
 
 class S3Storage(Storage):
@@ -9,7 +10,7 @@ class S3Storage(Storage):
     Provide data storage on top of AWS S3
     """
 
-    def __init__(self, bucket_name: str = "", prefix: str = ""):
+    def __init__(self, bucket_name: str = None, prefix: str = None):
         """
         :param bucket_name: s3 bucket name to store data into
         :param prefix: s3 object prefix, leave blank to store at bucket root
@@ -25,6 +26,8 @@ class S3Storage(Storage):
         :param name: object name
         """
         key = self._to_key(name)
+        logger.info(f"---Loading obj {key} from S3")
+
         try:
             with self.fs.open(key, 'rb') as f:
                 return cloudpickle.load(f)
@@ -38,6 +41,8 @@ class S3Storage(Storage):
         :param name: object name
         """
         key = self._to_key(name)
+        logger.info(f"---Loading bytes {key} from S3")
+
         try:
             with self.fs.open(key, 'rb') as f:
                 return f.read()
@@ -52,6 +57,7 @@ class S3Storage(Storage):
         :param value: value in python object
         """
         key = self._to_key(name)
+        logger.info(f"---Saving obj {key} to S3, value {value}")
 
         with self.fs.open(key, 'wb') as f:
             return cloudpickle.dump(value, f)
@@ -64,6 +70,7 @@ class S3Storage(Storage):
         :param value: value in bytes
         """
         key = self._to_key(name)
+        logger.info(f"---Saving bytes {key} to S3, value {value}")
 
         with self.fs.open(key, 'wb') as f:
             f.write(value)
