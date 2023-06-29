@@ -410,6 +410,7 @@ class ModelRepository:
         # assert isinstance(model, Model)
         # TODO: use version format: v_20200714-1203
         version = version or str(ulid.new())
+        logger.info(f"Persisting model {model} version {version}")
 
         try:
             # serialize a model to a temporary folder and then clean up later
@@ -420,21 +421,25 @@ class ModelRepository:
 
             self._serder.serialize(model, serialized_dir)
             _tar_create(tar_file, serialized_dir)
+            logger.info(f'Created tar file {tar_file} at {serialized_dir} for model {model} version {version}')
 
             with open(tar_file, mode="rb") as f:
                 self._storage.set_bytes(
                     self._get_key(model, version),
                     f.read(),
                 )
+                logger.info(f'Set bytes {self._get_key(model, version)} to storage from {tar_file} - {serialized_dir}')
 
                 self._storage.set_obj(
                     self._get_key(model, "latest"),
                     version,
                 )
+                logger.info(f'Set obj {self._get_key(model, "latest")} to storage from {tar_file} - {serialized_dir}')
 
                 model.version = version
         finally:
             dir_util.remove_tree(tmpdir)
+            logger.info(f'Removed temp dir {tmpdir}')
 
         return version
 
