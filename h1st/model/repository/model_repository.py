@@ -437,7 +437,6 @@ class ModelRepository:
             logger.exception(f'Error persisting model {model} version {version}: {e}')
         finally:
             dir_util.remove_tree(tmpdir)
-            logger.info(f'Removed temp dir {tmpdir}')
 
         return version
 
