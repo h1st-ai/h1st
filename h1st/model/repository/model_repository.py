@@ -421,22 +421,24 @@ class ModelRepository:
 
             self._serder.serialize(model, serialized_dir)
             _tar_create(tar_file, serialized_dir)
-            logger.info(f'Created tar file {tar_file} at {serialized_dir} for model {model} version {version}')
+            logger.info(f'Created tar file {tar_file} for model {model} version {version}')
 
             with open(tar_file, mode="rb") as f:
                 self._storage.set_bytes(
                     self._get_key(model, version),
                     f.read(),
                 )
-                logger.info(f'Set bytes {self._get_key(model, version)} to storage from {tar_file} - {serialized_dir}')
+                logger.info(f'Set bytes {self._get_key(model, version)} to storage from local {tar_file}')
 
                 self._storage.set_obj(
                     self._get_key(model, "latest"),
                     version,
                 )
-                logger.info(f'Set obj {self._get_key(model, "latest")} to storage from {tar_file} - {serialized_dir}')
+                logger.info(f'Set obj {self._get_key(model, "latest")} to storage from local {tar_file}')
 
                 model.version = version
+        except Exception as e:
+            logger.exception(f'Error persisting model {model} version {version}: {e}')
         finally:
             dir_util.remove_tree(tmpdir)
             logger.info(f'Removed temp dir {tmpdir}')
@@ -468,6 +470,8 @@ class ModelRepository:
             _tar_extract(tar_file, serialized_dir)
             self._serder.deserialize(model, serialized_dir)
             model.version = version
+        except Exception as e:
+            logger.exception(f'Error loading model {model} version {version}: {e}')
         finally:
             # We get error from Tensorflow telling that it could not find the folder
             # Unsuccessful TensorSliceReader constructor: Failed to get matching files on
