@@ -57,7 +57,7 @@ class S3Storage(Storage):
         :param value: value in python object
         """
         key = self._to_key(name)
-        logger.info(f"---Saving obj {key} to S3, value {value}")
+        logger.info(f"---Saving obj {key} to S3")
 
         with self.fs.open(key, 'wb') as f:
             return cloudpickle.dump(value, f)
@@ -70,7 +70,7 @@ class S3Storage(Storage):
         :param value: value in bytes
         """
         key = self._to_key(name)
-        logger.info(f"---Saving bytes {key} to S3, value {value}")
+        logger.info(f"---Saving bytes {key} to S3")
 
         with self.fs.open(key, 'wb') as f:
             f.write(value)
