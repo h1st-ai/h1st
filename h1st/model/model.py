@@ -47,9 +47,8 @@ class Model(NodeContainable, Trustable):
         self.stats = {}
         self.metrics = {}
         self.base_model = None
-        self.model_repo = ModelRepository()
 
-    def persist(self, version=None) -> str:
+    def persist(self, path: str, version: str = None) -> str:
         """
         Persist this model's properties to the ModelRepository. Currently, only `stats`, `metrics`, `model` properties are supported.
 
@@ -59,15 +58,15 @@ class Model(NodeContainable, Trustable):
         :param version: model version, leave blank for autogeneration
         :returns: model version
         """
-        repo = self.model_repo.get_model_repo(self)
+        repo = ModelRepository(storage=path)
         return repo.persist(model=self, version=version)
 
-    def load(self, version: str = None) -> Any:
+    def load(self, path: str, version: str = None) -> Any:
         """
         Load parameters from the specified `version` from the ModelRepository.
         Leave version blank to load latest version.
         """
-        repo = self.model_repo.get_model_repo(self)
+        repo = ModelRepository(storage=path)
         repo.load(model=self, version=version)
 
         return self
