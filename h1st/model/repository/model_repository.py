@@ -433,6 +433,8 @@ class ModelRepository:
                 )
 
                 model.version = version
+        except Exception as e:
+            logger.exception(f'Error persisting model {model} version {version}: {e}')
         finally:
             dir_util.remove_tree(tmpdir)
 
@@ -463,6 +465,8 @@ class ModelRepository:
             _tar_extract(tar_file, serialized_dir)
             self._serder.deserialize(model, serialized_dir)
             model.version = version
+        except Exception as e:
+            logger.exception(f'Error loading model {model} version {version}: {e}')
         finally:
             # We get error from Tensorflow telling that it could not find the folder
             # Unsuccessful TensorSliceReader constructor: Failed to get matching files on
