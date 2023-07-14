@@ -41,7 +41,7 @@ NUMPY_FLOAT_TYPES: Tuple[type] = (
     numpy.float16,
     numpy.float32,
     numpy.float64,
-    numpy.float128,
+    numpy.longdouble,
 )
 
 NUMPY_INT_TYPES: Tuple[type] = (
