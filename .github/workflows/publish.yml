@@ -16,7 +16,7 @@ jobs:
           python-version: 3.9
 
       - name: Install Poetry
-        uses: snok/install-poetry@v1.1.6
+        uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
@@ -40,7 +40,7 @@ jobs:
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
-          
+
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -49,7 +49,7 @@ jobs:
       - name: Set version
         run: |
           echo "H1ST_VERSION=$(poetry version -s)" >> $GITHUB_ENV
-        
+
       - name: Create tag using environment variable for version
         uses: julb/action-manage-tag@v1
         with:
