@@ -16,7 +16,7 @@ include = [
 
 
 [tool.poetry.dependencies]
-python = ">= 3.11"
+python = ">= 3.8, < 4"
 
 # Data Processing
 numpy = ">= 1.23"  # let higher dependencies figure
