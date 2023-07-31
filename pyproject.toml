@@ -22,7 +22,6 @@ python = ">= 3.11"
 numpy = ">= 1.23"  # let higher dependencies figure
 pandas = ">= 1.5"  # let higher dependencies figure
 pyarrow = ">= 12.0.1"
-pyspark = ">= 3.4.1"
 
 # Machine Learning / Deep Learning
 imbalanced-learn = ">= 0.11.0"
